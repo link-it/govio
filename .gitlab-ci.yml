@@ -1,0 +1,54 @@
+stages:
+    - test
+    # - sonarqube
+    - build
+#    - integration
+
+
+
+variables: 
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+    # SONAR_HOST_URL: "http://dev.govcloud.it/"
+    # SONAR_TOKEN: "squ_35c667f3567119d5702ffa5fb92ca6eaac5889a6"
+    # SONAR_USER: "gitlab-runner"
+    # SONAR_PASSWORD: "Password@123"
+default:
+    cache:
+        paths:
+            - .m2/repository/
+            - target/
+    image: maven:3-openjdk-11
+
+test_and_coverage:
+    stage: test
+    script:
+        - mvn  -P jar clean test
+        - wget https://raw.githubusercontent.com/rix0rrr/cover2cover/master/cover2cover.py
+        - apt-get update
+        - apt-get -y install python2 npm
+        - python2 ./cover2cover.py web/api-monitoraggio/target/site/jacoco/jacoco.xml web/api-monitoraggio/src/main/java/ > web/api-monitoraggio/target/site/cobertura.xml
+        - python2 ./cover2cover.py batch/acquisizione-gdc/target/site/jacoco/jacoco.xml batch/acquisizione-gdc/src/main/java/ > batch/acquisizione-gdc/target/site/cobertura.xml
+        - python2 ./cover2cover.py batch/elaborazione-gdc-cbi/target/site/jacoco/jacoco.xml batch/elaborazione-gdc-cbi/src/main/java/ > batch/elaborazione-gdc-cbi/target/site/cobertura.xml
+        - python2 ./cover2cover.py batch/riconciliazione-govpay/target/site/jacoco/jacoco.xml batch/riconciliazione-govpay/src/main/java/ > batch/riconciliazione-govpay/target/site/cobertura.xml
+        - mkdir target
+        - npx cobertura-merge -o target/cobertura.xml package1=web/api-monitoraggio/target/site/cobertura.xml package2=batch/acquisizione-gdc/target/site/cobertura.xml package3=batch/elaborazione-gdc-cbi/target/site/cobertura.xml package4=batch/riconciliazione-govpay/target/site/cobertura.xml
+    # dependencies: [] # Per evitare il download di artifact in job precedenti
+    artifacts:
+        untracked: false
+        name: test_and_coverage_report
+        reports:
+          coverage_report:
+            coverage_format: cobertura
+            path: target/cobertura.xml
+          junit: [ web/api-monitoraggio/target/surefire-reports/*.xml, batch/*/target/surefire-reports/*.xml ]
+        expire_in: "1 week"
+
+# code_quality:
+#     stage: sonarqube
+#     script: mvn  -P jar verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.coverage.jacoco.xmlReportPaths=*/*/target/site/cobertura.xml
+#     dependencies: [] # Per evitare il download di artifact in job precedenti
+
+maven_build:
+    stage: build
+    script: mvn package -P war
+    dependencies: [] # Per evitare il download di artifact in job precedenti
