@@ -1,6 +1,6 @@
 stages:
     - test
-    # - sonarqube
+    - sonarqube
     - build
 #    - integration
 
@@ -8,10 +8,10 @@ stages:
 
 variables: 
     MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-    # SONAR_HOST_URL: "http://dev.govcloud.it/"
-    # SONAR_TOKEN: "squ_35c667f3567119d5702ffa5fb92ca6eaac5889a6"
-    # SONAR_USER: "gitlab-runner"
-    # SONAR_PASSWORD: "Password@123"
+    SONAR_HOST_URL: "http://localsonarqube:9000/"
+    SONAR_TOKEN: "squ_35c667f3567119d5702ffa5fb92ca6eaac5889a6"
+    SONAR_USER: "gitlab-runner"
+    SONAR_PASSWORD: "Password@123"
 default:
     cache:
         paths:
@@ -43,10 +43,10 @@ test_and_coverage:
           junit: [ web/api-monitoraggio/target/surefire-reports/*.xml, batch/*/target/surefire-reports/*.xml ]
         expire_in: "1 week"
 
-# code_quality:
-#     stage: sonarqube
-#     script: mvn  -P jar verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.coverage.jacoco.xmlReportPaths=*/*/target/site/cobertura.xml
-#     dependencies: [] # Per evitare il download di artifact in job precedenti
+code_quality:
+    stage: sonarqube
+    script: mvn  -P jar verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.coverage.jacoco.xmlReportPaths=*/*/target/site/cobertura.xml
+    dependencies: [] # Per evitare il download di artifact in job precedenti
 
 maven_build:
     stage: build
