@@ -13,7 +13,7 @@
 	<artifactId>msg-sender</artifactId>
 	<version>1.0.0</version>
 	<packaging>${packaging.type}</packaging>
-	<name>Batch Spedizione messaggi AppIO</name>
+	<name>Spedizione messaggi AppIO</name>
 	<description>Batch verifica del profilo e spedizione messaggi al backoffice di AppIO</description>
 
 	<properties>
