@@ -20,7 +20,7 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 
 	private Logger logger = LoggerFactory.getLogger(GetProfileProcessor.class);
 
-	@Value( "${rest.debugging}" )
+	@Value( "${rest.debugging:false}" )
 	private boolean debugging;
 	
 	@Autowired
