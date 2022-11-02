@@ -25,7 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "govio_messages")
-public class GovioMessagesEntity {
+public class GovioMessageEntity {
 
 @Id
 @SequenceGenerator(name="seq_govio_messages",sequenceName="seq_govio_messages", initialValue=1, allocationSize=1)
@@ -34,12 +34,12 @@ private Long id;
 
 @ManyToOne(fetch = FetchType.EAGER)
 @JoinColumn(name = "id_govio_service_instance", nullable = false)
-private GovioServiceInstancesEntity govioServiceInstance;
+private GovioServiceInstanceEntity govioServiceInstance;
 
 @Column(name = "subject", nullable = false)
-private String Subject;
+private String subject;
 
 @Column(name = "markdown", nullable = false)
-private String Markdown;
+private String markdown;
 
 }

@@ -21,7 +21,7 @@ import lombok.Setter;
 	@NoArgsConstructor
 	@Entity
 	@Table(name = "govio_service_instances")
-	public class GovioServiceInstancesEntity {
+	public class GovioServiceInstanceEntity {
 
 	@Id
 	@SequenceGenerator(name="seq_govio_service_instances",sequenceName="seq_govio_service_instances", initialValue=1, allocationSize=1)
