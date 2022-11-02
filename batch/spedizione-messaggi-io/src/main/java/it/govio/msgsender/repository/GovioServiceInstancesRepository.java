@@ -2,8 +2,8 @@ package it.govio.msgsender.repository;
 
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 
-import it.govio.msgsender.entity.GovioServiceInstancesEntity;
+import it.govio.msgsender.entity.GovioServiceInstanceEntity;
 
-public interface GovioServiceInstancesRepository extends JpaRepositoryImplementation<GovioServiceInstancesEntity, Long> {
+public interface GovioServiceInstancesRepository extends JpaRepositoryImplementation<GovioServiceInstanceEntity, Long> {
 
 }
