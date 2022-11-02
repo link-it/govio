@@ -25,6 +25,9 @@ public class RestTemplateConfig {
 		uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
 		restTemplate.setUriTemplateHandler(uriBuilderFactory);
 
+		
+		// Configuro il serializzatore per non serializzare gli attributi null
+		// Il backend IO non accetta i null values
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setSerializationInclusion(Include.NON_NULL);
 
