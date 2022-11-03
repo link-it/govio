@@ -1,8 +1,6 @@
 package it.govio.msgsender.entity;
 
 
-import java.time.LocalDate;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -58,15 +56,15 @@ private Status status;
 private Integer amount;
 
 @Column(name = "notice_number")
-private String notice_number;
+private String noticeNumber;
 
 @Column(name = "invalid_after_due_date")
-private Boolean invalid_after_due_date;
+private Boolean invalidAfterDueDate;
 
 @Column(name = "payee")
 private String payee;
 
 @Column(name = "appio_message_id")
-private String appio_message_id;
+private String appioMessageId;
 
 }

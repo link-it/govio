@@ -11,15 +11,18 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import it.govio.msgsender.entity.GovioMessageEntity;
-import it.govio.msgsender.entity.GovioMessageEntity.Status;
 import it.pagopa.io.v1.api.DefaultApi;
-import it.pagopa.io.v1.api.beans.FiscalCodePayload;
-import it.pagopa.io.v1.api.beans.LimitedProfile;
+import it.pagopa.io.v1.api.beans.CreatedMessage;
+import it.pagopa.io.v1.api.beans.MessageContent;
+import it.pagopa.io.v1.api.beans.NewMessage;
+import it.pagopa.io.v1.api.beans.PaymentData;
+import it.pagopa.io.v1.api.beans.Payee;
+import it.govio.msgsender.entity.GovioMessageEntity.Status;
 
 @Component
-public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
+public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
 
-	private Logger logger = LoggerFactory.getLogger(GetProfileProcessor.class);
+	private Logger logger = LoggerFactory.getLogger(NewMessageProcessor.class);
 
 	@Value( "${rest.debugging:false}" )
 	private boolean debugging;
@@ -33,26 +36,37 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 		// TODO Aggiungere stampe di debugging
 		// TODO settare la data e l'ora dopo il cambiamento di stato
 
-		logger.info("Verifica profile per il messaggio " + item.getId());
+		logger.info("Spedizione messaggio " + item.getId());
 
-		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
-		fiscalCodePayload.setFiscalCode(item.getTaxcode());
-		backendIOClient.getApiClient().setApiKey(item.getGovioServiceInstance().getApikey());
-		backendIOClient.getApiClient().setDebugging(debugging);
+		NewMessage message = new NewMessage();
+		MessageContent mc = new MessageContent();
 
-		try {
-			LimitedProfile profileByPOST = backendIOClient.getProfileByPOST(fiscalCodePayload);
-			if(profileByPOST.isSenderAllowed()) {
-				logger.info("Verifica completata: spedizione consentita");
-				item.setStatus(Status.RECIPIENT_ALLOWED);
-			} else {
-				logger.info("Verifica completata: spedizione non consentita");
-				item.setStatus(Status.SENDER_NOT_ALLOWED);
+		if(item.getNoticeNumber() != null) {
+			logger.debug("Presente avviso di pagamento n. " + item.getNoticeNumber());
+			PaymentData pd = new PaymentData();
+			pd.setNoticeNumber(item.getNoticeNumber());
+			pd.setAmount(item.getAmount());
+			pd.setInvalidAfterDueDate(item.getInvalidAfterDueDate());
+			if (item.getPayee()!= null) {
+				Payee p = new Payee();
+				p.setFiscalCode(item.getPayee());
+				pd.setPayee(p);
 			}
+			mc.setPaymentData(pd);
+		}
+
+		// setto i dati rimanenti del content
+		mc.setMarkdown(item.getMarkdown());
+		mc.setSubject(item.getSubject());
+		message.setContent(mc);
+
+		message.setFiscalCode(item.getTaxcode());
+		// spedizione del messaggio
+		try {
+			CreatedMessage submitMessageforUserWithFiscalCodeInBody = backendIOClient.submitMessageforUserWithFiscalCodeInBody(message);
+			item.setAppioMessageId(submitMessageforUserWithFiscalCodeInBody.getId());
 		} catch (HttpClientErrorException e) {
-
 			switch (e.getRawStatusCode()) {
-
 			case 400:
 				logErrorResponse(e);
 				item.setStatus(Status.BAD_REQUEST);
@@ -68,7 +82,7 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 			case 404:
 				logger.info("Verifica completata: profilo non esistente");
 				item.setStatus(Status.PROFILE_NOT_EXISTS);
-				break;				
+				break;
 			default:
 				logErrorResponse(e);
 				break;
@@ -82,7 +96,6 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 		} catch (Exception e) {
 			logger.error("Internal server error: " + e.getMessage(), e);
 		}
-
 		return item;
 	}
 
