@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,6 +77,8 @@ public class NewMessageServiceTest {
 				.subject("Subject")
 				.taxcode("AAAAAA00A00A000A")
 				.status(Status.RECIPIENT_ALLOWED)
+				.creationDate(LocalDateTime.now())
+				.scheduledExpeditionDate(LocalDateTime.now())
 				.build();
 		govioMessagesRepository.save(message);
 

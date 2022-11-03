@@ -1,5 +1,7 @@
 package it.govio.msgsender.step;
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -69,24 +71,30 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 			CreatedMessage submitMessageforUserWithFiscalCodeInBody = backendIOClient.submitMessageforUserWithFiscalCodeInBody(message);
 			item.setAppioMessageId(submitMessageforUserWithFiscalCodeInBody.getId());
 			item.setStatus(Status.SENT);
+			item.setExpeditionDate(LocalDateTime.now());
+			item.setLastUpdateStatus(LocalDateTime.now());
 			logger.info("Messaggio spedito con successo. Id: " + item.getAppioMessageId());
 		} catch (HttpClientErrorException e) {
 			switch (e.getRawStatusCode()) {
 			case 400:
 				logErrorResponse(e);
 				item.setStatus(Status.BAD_REQUEST);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			case 401:
 				logErrorResponse(e);
 				item.setStatus(Status.DENIED);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			case 403:
 				logErrorResponse(e);
 				item.setStatus(Status.FORBIDDEN);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			case 404:
 				logger.info("Verifica completata: profilo non esistente");
 				item.setStatus(Status.PROFILE_NOT_EXISTS);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			default:
 				logErrorResponse(e);
