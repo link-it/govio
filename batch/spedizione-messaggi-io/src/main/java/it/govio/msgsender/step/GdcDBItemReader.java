@@ -25,7 +25,7 @@ public class GdcDBItemReader extends RepositoryItemReader<GovioMessageEntity>{
 	public void initDBReader() {
 		this.setRepository(this.riversamentoPagoPaRepository);
 		this.setMethodName("findAllByStatoIn");
-		List<Status> stati = Arrays.asList(Status.SCHEDULED, Status.RECIPIENT_ALLOWED);
+		List<Status> stati = Arrays.asList(Status.SCHEDULED);
 		this.setArguments(Arrays.asList(stati));
 		this.setPageSize(1);
 		final HashMap<String, Sort.Direction> sorts = new HashMap<>();
