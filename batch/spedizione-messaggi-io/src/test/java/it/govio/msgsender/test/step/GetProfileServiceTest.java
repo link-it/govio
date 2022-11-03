@@ -28,6 +28,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import it.govio.msgsender.Application;
 import it.govio.msgsender.entity.GovioMessageEntity;
+import it.govio.msgsender.entity.GovioMessageEntity.Status;
 import it.govio.msgsender.entity.GovioServiceInstanceEntity;
 import it.govio.msgsender.repository.GovioMessagesRepository;
 import it.govio.msgsender.repository.GovioServiceInstancesRepository;
@@ -73,11 +74,13 @@ public class GetProfileServiceTest {
 				.govioServiceInstance(serviceInstanceEntity.get())
 				.markdown("Lorem Ipsum")
 				.subject("Subject")
+				.taxcode("AAAAAA00A00A000A")
+				.status(Status.SCHEDULED)
 				.build();
 		govioMessagesRepository.save(message);
 
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
-		fiscalCodePayload.setFiscalCode("XXXXXX00A00A000A");
+		fiscalCodePayload.setFiscalCode("AAAAAA00A00A000A");
 		
 		RequestEntity<FiscalCodePayload> request = RequestEntity
 				.post(new URI("https://api.io.pagopa.it/api/v1/profiles"))
@@ -101,7 +104,7 @@ public class GetProfileServiceTest {
 		GovioMessageEntity processedMessage = getProfileProcessor.process(message);
 		
 		// TODO verificare lo stato del messaggio, quando disponibile nell'entity
-		assertEquals("RECIPIENT_ALLOWED", processedMessage);
+		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
 
 	}
 }
