@@ -1,5 +1,7 @@
 package it.govio.msgsender.step;
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -45,9 +47,11 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 			if(profileByPOST.isSenderAllowed()) {
 				logger.info("Verifica completata: spedizione consentita");
 				item.setStatus(Status.RECIPIENT_ALLOWED);
+				item.setLastUpdateStatus(LocalDateTime.now());
 			} else {
 				logger.info("Verifica completata: spedizione non consentita");
 				item.setStatus(Status.SENDER_NOT_ALLOWED);
+				item.setLastUpdateStatus(LocalDateTime.now());
 			}
 		} catch (HttpClientErrorException e) {
 
@@ -56,18 +60,22 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 			case 400:
 				logErrorResponse(e);
 				item.setStatus(Status.BAD_REQUEST);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			case 401:
 				logErrorResponse(e);
 				item.setStatus(Status.DENIED);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			case 403:
 				logErrorResponse(e);
 				item.setStatus(Status.FORBIDDEN);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			case 404:
 				logger.info("Verifica completata: profilo non esistente");
 				item.setStatus(Status.PROFILE_NOT_EXISTS);
+				item.setLastUpdateStatus(LocalDateTime.now());
 				break;				
 			default:
 				logErrorResponse(e);
