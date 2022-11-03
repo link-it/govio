@@ -12,8 +12,14 @@ import org.springframework.web.client.HttpStatusCodeException;
 
 import it.govio.msgsender.entity.GovioMessageEntity;
 import it.pagopa.io.v1.api.DefaultApi;
+import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 import it.pagopa.io.v1.api.beans.LimitedProfile;
+import it.pagopa.io.v1.api.beans.MessageContent;
+import it.pagopa.io.v1.api.beans.NewMessage;
+import it.pagopa.io.v1.api.beans.PaymentData;
+import it.pagopa.io.v1.api.beans.Payee;
+import it.govio.msgsender.entity.GovioMessageEntity.Status;
 
 @Component
 public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
@@ -29,44 +35,47 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 	@Override
 	public GovioMessageEntity process(GovioMessageEntity item) throws Exception {
 		
+		// TODO Aggiungere stampe di debugging
+		// TODO settare la data e l'ora dopo il cambiamento di stato
+		
 		logger.info("Verifica profile per il messaggio " + item.getId());
 		
-		// TODO Aggiungere il codice fiscale al messaggio
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
-		fiscalCodePayload.setFiscalCode("XXXXXX00A00A000A");
-		
-		try {
-			backendIOClient.getApiClient().setApiKey(item.getGovioServiceInstance().getApikey());
-			backendIOClient.getApiClient().setDebugging(true);
-			
+		fiscalCodePayload.setFiscalCode(item.getTaxcode());
+		Integer time_to_live = 3600;
+		backendIOClient.getApiClient().setApiKey(item.getGovioServiceInstance().getApikey());
+		backendIOClient.getApiClient().setDebugging(true);
+
+		switch (item.getStatus()) {
+		case SCHEDULED:
+			try {
 			LimitedProfile profileByPOST = backendIOClient.getProfileByPOST(fiscalCodePayload);
-			
 			if(profileByPOST.isSenderAllowed()) {
 				logger.info("Verifica completata: spedizione consentita");
-				// Setta lo stato a "RECIPIENT_ALLOWED"
+				item.setStatus(Status.RECIPIENT_ALLOWED);
 			} else {
 				logger.info("Verifica completata: spedizione non consentita");
-				// Setta lo stato a "SENDER_NOT_ALLOWED"
+				item.setStatus(Status.SENDER_NOT_ALLOWED);
 			}
 		} catch (HttpClientErrorException e) {
-			// Se 400 -> BAD_REQUEST
-			// Se 401 -> DENIED
-			// Se 403 -> FORBIDDEN
-			// Se 404 -> PROFILE_NOT_EXISTS
-			
+
 			switch (e.getRawStatusCode()) {
 
 			case 400:
 				logErrorResponse(e);
+				item.setStatus(Status.BAD_REQUEST);
 				break;
 			case 401:
 				logErrorResponse(e);
+				item.setStatus(Status.DENIED);
 				break;
 			case 403:
 				logErrorResponse(e);
+				item.setStatus(Status.FORBIDDEN);
 				break;
 			case 404:
 				logger.info("Verifica completata: profilo non esistente");
+				item.setStatus(Status.PROFILE_NOT_EXISTS);
 				break;				
 			default:
 				logErrorResponse(e);
@@ -82,9 +91,80 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 			logger.error("Internal server error: " + e.getMessage(), e);
 		}
 		
-		
+		case RECIPIENT_ALLOWED:
+			NewMessage message = new NewMessage();
+			MessageContent mc = new MessageContent();
+			// se presente costruisco il PaymentData
+			if (item.getPayee()!= null) {
+				PaymentData pd = new PaymentData();
+				if (item.getAmount() != null) {
+					pd.setAmount(item.getAmount());
+				}
+				if (item.getInvalid_after_due_date() != null) {
+					pd.setInvalidAfterDueDate(item.getInvalid_after_due_date());
+				}
+				if (item.getNotice_number() != null) {
+					pd.setNoticeNumber(item.getNotice_number());
+				}
+				Payee p = new Payee();
+				if (fiscalCodePayload.getFiscalCode() != null) {
+					p.setFiscalCode(fiscalCodePayload.getFiscalCode());
+				}
+				pd.setPayee(p);
+				mc.setPaymentData(pd);
+			}
+			// setto i dati rimanenti del content
+			if (item.getMarkdown() != null) {
+				mc.setMarkdown(item.getMarkdown());
+			}
+			if (item.getSubject() != null) {
+				mc.setSubject(item.getSubject());
+			}
+			message.setContent(mc);
+			// setto i dati rimanenti del messaggio
+			message.setTimeToLive(time_to_live);
+			message.setFiscalCode(fiscalCodePayload.getFiscalCode());
+			// spedizione del messaggio
+			try {
+			CreatedMessage submitMessageforUserWithFiscalCodeInBody = backendIOClient.submitMessageforUserWithFiscalCodeInBody(message);
+			item.setAppio_message_id(submitMessageforUserWithFiscalCodeInBody.getId());
+			} catch (HttpClientErrorException e) {
+				switch (e.getRawStatusCode()) {
+				case 400:
+					logErrorResponse(e);
+					item.setStatus(Status.BAD_REQUEST);
+					break;
+				case 401:
+					logErrorResponse(e);
+					item.setStatus(Status.DENIED);
+					break;
+				case 403:
+					logErrorResponse(e);
+					item.setStatus(Status.FORBIDDEN);
+					break;
+				case 404:
+					logger.info("Verifica completata: profilo non esistente");
+					item.setStatus(Status.PROFILE_NOT_EXISTS);
+					break;
+				default:
+					logErrorResponse(e);
+					break;
+				}
+			} catch (HttpServerErrorException e) {
+				logger.error("Ricevuto server error da BackendIO: " + e.getMessage());
+				logger.debug("HTTP Status Code: " + e.getRawStatusCode());
+				logger.debug("Status Text: " + e.getStatusText());
+				logger.debug("HTTP Headers: " + e.getResponseHeaders());
+				logger.debug("Response Body: " + e.getResponseBodyAsString());
+			} catch (Exception e) {
+				logger.error("Internal server error: " + e.getMessage(), e);
+			}
+		default:
+			break;
+		}
 		return item;
 	}
+	
 	
 	private void logErrorResponse(HttpStatusCodeException e) {
 		logger.warn("Ricevuto error da BackendIO: " + e.getMessage());
