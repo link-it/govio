@@ -38,6 +38,9 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 
 		logger.info("Spedizione messaggio " + item.getId());
 
+		backendIOClient.getApiClient().setApiKey(item.getGovioServiceInstance().getApikey());
+		backendIOClient.getApiClient().setDebugging(debugging);
+		
 		NewMessage message = new NewMessage();
 		MessageContent mc = new MessageContent();
 
@@ -65,6 +68,8 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 		try {
 			CreatedMessage submitMessageforUserWithFiscalCodeInBody = backendIOClient.submitMessageforUserWithFiscalCodeInBody(message);
 			item.setAppioMessageId(submitMessageforUserWithFiscalCodeInBody.getId());
+			item.setStatus(Status.SENT);
+			logger.info("Messaggio spedito con successo. Id: " + item.getAppioMessageId());
 		} catch (HttpClientErrorException e) {
 			switch (e.getRawStatusCode()) {
 			case 400:
