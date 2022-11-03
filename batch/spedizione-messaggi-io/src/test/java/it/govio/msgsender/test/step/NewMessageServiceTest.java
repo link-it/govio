@@ -42,7 +42,6 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Utility di lettura dei pagamenti")
 public class NewMessageServiceTest {
 
 	@Mock
@@ -67,10 +66,9 @@ public class NewMessageServiceTest {
 	}
 
 	@Test
-	@DisplayName("Test verifica profilo autorizzato")
-	public void getProfileSenderAllowed() throws Exception {
+	@DisplayName("Test io messaggio base")
+	public void newMessageOK() throws Exception {
 
-		// Creo su DB il messaggio da inviare
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		GovioMessageEntity message = GovioMessageEntity.builder()
 				.govioServiceInstance(serviceInstanceEntity.get())
@@ -86,7 +84,7 @@ public class NewMessageServiceTest {
 		MessageContent content = new MessageContent();
 		content.setMarkdown(message.getMarkdown());
 		content.setSubject(message.getSubject());
-		newMessage.setContent(content );
+		newMessage.setContent(content);
 		
 		RequestEntity<NewMessage> request = RequestEntity
 				.post(new URI("https://api.io.pagopa.it/api/v1/messages"))

@@ -40,7 +40,6 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Utility di lettura dei pagamenti")
 public class GetProfileServiceTest {
 
 	@Mock
