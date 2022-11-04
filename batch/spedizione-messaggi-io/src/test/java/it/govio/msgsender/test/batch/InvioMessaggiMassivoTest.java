@@ -6,6 +6,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Assert;
@@ -18,7 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.JobRepositoryTestUtils;
@@ -34,6 +37,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -58,7 +62,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 public class InvioMessaggiMassivoTest {
-	
+
 	@Mock
 	private RestTemplate restTemplate;
 
@@ -71,13 +75,13 @@ public class InvioMessaggiMassivoTest {
 
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
-	
+
 	@Autowired
 	private JobLauncherTestUtils jobLauncherTestUtils;
 
 	@Autowired
 	private JobRepositoryTestUtils jobRepositoryTestUtils;
-	
+
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
@@ -87,15 +91,17 @@ public class InvioMessaggiMassivoTest {
 	public void cleanUp() {
 		jobRepositoryTestUtils.removeJobExecutions();
 	}
-	
+
 	@Test
 	public void spedizioneMessaggiOK() throws Exception {
-	    
+
 		// Caricamento messaggi da inviare
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 
 		govioMessagesRepository.deleteAll();
 		
+		Random r = new Random();
+
 		for(int i=0; i<100; i++) {
 			GovioMessageEntity message = GovioMessageEntity.builder()
 					.govioServiceInstance(serviceInstanceEntity.get())
@@ -108,7 +114,7 @@ public class InvioMessaggiMassivoTest {
 					.build();
 			govioMessagesRepository.save(message);
 		}
-		
+
 		// Mock delle chiamate ai servizi IO
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 		fiscalCodePayload.setFiscalCode("XXXAAA00A00A000A");
@@ -122,19 +128,25 @@ public class InvioMessaggiMassivoTest {
 
 		LimitedProfile profile = new LimitedProfile();
 		profile.setSenderAllowed(true);
-		
+
 		Mockito
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
-		.thenReturn(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK));
-		//.thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-		
+		.thenAnswer(new Answer<ResponseEntity<LimitedProfile>>() {
+			@Override
+			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws InterruptedException{
+				Thread.sleep(r.nextInt(400)+100);
+				return new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK);
+			}
+		});
+
+
 		NewMessage newMessage = new NewMessage();
 		newMessage.setFiscalCode("XXXAAA00A00A000A");
 		MessageContent content = new MessageContent();
 		content.setMarkdown("Lorem Ipsum");
 		content.setSubject("Subject");
 		newMessage.setContent(content);
-		
+
 		RequestEntity<NewMessage> newMessageRequest = RequestEntity
 				.post(new URI("https://api.io.pagopa.it/api/v1/messages"))
 				.accept(MediaType.APPLICATION_JSON)
@@ -143,31 +155,38 @@ public class InvioMessaggiMassivoTest {
 				.header("User-Agent", "Java-SDK")
 				.body(newMessage, NewMessage.class);
 
-		CreatedMessage createdMessage = new CreatedMessage();
-		createdMessage.setId(UUID.randomUUID().toString());
-		
+
+
 		ParameterizedTypeReference.forType(CreatedMessage.class);
 		Mockito
 		.when(restTemplate.exchange(eq(newMessageRequest), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
-		.thenReturn(new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED));
+		.thenAnswer(new Answer<ResponseEntity<CreatedMessage>>() {
+			@Override
+			public ResponseEntity<CreatedMessage> answer(InvocationOnMock invocation) throws InterruptedException{
+				Thread.sleep(r.nextInt(400)+100);
+				CreatedMessage createdMessage = new CreatedMessage();
+				createdMessage.setId(UUID.randomUUID().toString());
+				return new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED);
+			}
+		});
 		Mockito
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-		
-		
+
+
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
-        Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
-		
-        //Controllo che tutti i messaggi siano spediti con successo e aggiornati conseguentemente.
-        
-        List<GovioMessageEntity> findAll = govioMessagesRepository.findAll();
-        for(GovioMessageEntity entity : findAll) {
-        	Assert.assertNotNull(entity.getExpeditionDate());
-        	Assert.assertNotNull(entity.getLastUpdateStatus());
-        	Assert.assertEquals(Status.SENT, entity.getStatus());
-        	Assert.assertNotNull(entity.getAppioMessageId());
-        }
+		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
+
+		//Controllo che tutti i messaggi siano spediti con successo e aggiornati conseguentemente.
+
+		List<GovioMessageEntity> findAll = govioMessagesRepository.findAll();
+		for(GovioMessageEntity entity : findAll) {
+			Assert.assertNotNull(entity.getExpeditionDate());
+			Assert.assertNotNull(entity.getLastUpdateStatus());
+			Assert.assertEquals(Status.SENT, entity.getStatus());
+			Assert.assertNotNull(entity.getAppioMessageId());
+		}
 	}
-	
-	
+
+
 }

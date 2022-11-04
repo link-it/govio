@@ -62,7 +62,7 @@ public class BatchConfig  {
 				.reader(expiredScheduledDateMessageReader(Status.SCHEDULED))
 				.processor(this.getProfileProcessor)
 				.writer(messageWriter())
-				//.taskExecutor(taskExecutor())
+				.taskExecutor(taskExecutor())
 				.build();
 	}
 	
@@ -72,7 +72,7 @@ public class BatchConfig  {
 				.reader(expiredScheduledDateMessageReader(Status.RECIPIENT_ALLOWED))
 				.processor(this.newMessageProcessor)
 				.writer(messageWriter())
-				//.taskExecutor(taskExecutor())
+				.taskExecutor(taskExecutor())
 				.build();
 	}
 	
@@ -94,6 +94,8 @@ public class BatchConfig  {
 		final HashMap<String, Sort.Direction> sorts = new HashMap<>();
 		sorts.put("scheduledExpeditionDate", Sort.Direction.ASC);
 		repositoryItemReader.setSort(sorts);
+		repositoryItemReader.setPageSize(1000);
+		repositoryItemReader.setMaxItemCount(1000);
         return repositoryItemReader;
     }
 
