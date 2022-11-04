@@ -125,8 +125,8 @@ public class InvioMessaggiMassivoTest {
 		
 		Mockito
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
-		//.thenReturn(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK));
-		.thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+		.thenReturn(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK));
+		//.thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 		
 		NewMessage newMessage = new NewMessage();
 		newMessage.setFiscalCode("XXXAAA00A00A000A");
