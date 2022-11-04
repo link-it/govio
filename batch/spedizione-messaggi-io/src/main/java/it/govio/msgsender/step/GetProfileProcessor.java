@@ -48,11 +48,9 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 			if(profileByPOST.isSenderAllowed()) {
 				logger.info("Verifica completata: spedizione consentita");
 				item.setStatus(Status.RECIPIENT_ALLOWED);
-				item.setLastUpdateStatus(LocalDateTime.now());
 			} else {
 				logger.info("Verifica completata: spedizione non consentita");
 				item.setStatus(Status.SENDER_NOT_ALLOWED);
-				item.setLastUpdateStatus(LocalDateTime.now());
 			}
 		} catch (HttpClientErrorException e) {
 			switch (e.getRawStatusCode()) {
@@ -91,9 +89,8 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 			logger.error("Ricevuto errore non previsto da BackendIO: " + e.getMessage());
 		} catch (Exception e) {
 			logger.error("Internal server error: " + e.getMessage(), e);
-			item.setLastUpdateStatus(LocalDateTime.now());
 		}
-
+		item.setLastUpdateStatus(LocalDateTime.now());
 		return item;
 	}
 
