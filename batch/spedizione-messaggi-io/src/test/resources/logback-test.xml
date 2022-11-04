@@ -31,6 +31,7 @@
 	  <logger name="reactor.netty.http.client" level="ERROR" additivity="false">
 	      <appender-ref ref="STDOUT" />
     </logger>	 
+    <!-- Impostare questo logger a TRACE per stampare i valori delle query -->
      <logger name="org.hibernate.type" level="ERROR" additivity="false">
 	      <appender-ref ref="STDOUT" />
     </logger>
