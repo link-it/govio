@@ -41,7 +41,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class GetProfileServiceTest {
+public class UC1_GetProfileServiceTest {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -65,8 +65,8 @@ public class GetProfileServiceTest {
 	}
 
 	@Test
-	@DisplayName("Test verifica profilo autorizzato")
-	public void getProfileSenderAllowed() throws Exception {
+	@DisplayName("UC1.6: Recipient allowed")
+	public void UC_1_6_RecipientAllowed() throws Exception {
 
 		// Creo su DB il messaggio da inviare
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);

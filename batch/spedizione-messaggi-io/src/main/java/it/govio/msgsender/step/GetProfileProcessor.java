@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 
 import it.govio.msgsender.entity.GovioMessageEntity;
 import it.govio.msgsender.entity.GovioMessageEntity.Status;
@@ -54,7 +55,6 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 				item.setLastUpdateStatus(LocalDateTime.now());
 			}
 		} catch (HttpClientErrorException e) {
-
 			switch (e.getRawStatusCode()) {
 
 			case 400:
@@ -87,8 +87,11 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 			logger.debug("Status Text: " + e.getStatusText());
 			logger.debug("HTTP Headers: " + e.getResponseHeaders());
 			logger.debug("Response Body: " + e.getResponseBodyAsString());
+		} catch (RestClientException e) {
+			logger.error("Ricevuto errore non previsto da BackendIO: " + e.getMessage());
 		} catch (Exception e) {
 			logger.error("Internal server error: " + e.getMessage(), e);
+			item.setLastUpdateStatus(LocalDateTime.now());
 		}
 
 		return item;
