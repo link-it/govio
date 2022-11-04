@@ -18,6 +18,8 @@ import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Sort;
 
 import it.govio.msgsender.entity.GovioMessageEntity;
@@ -49,12 +51,18 @@ public class BatchConfig  {
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
 	
+	
+	public TaskExecutor taskExecutor() {
+	    return new SimpleAsyncTaskExecutor("spring_batch_msgsender");
+	}
+	
 	public Step getProfileStep(){
 		return steps.get("getProfileStep")
 				.<GovioMessageEntity, GovioMessageEntity>chunk(10)
 				.reader(expiredScheduledDateMessageReader(Status.SCHEDULED))
 				.processor(this.getProfileProcessor)
 				.writer(messageWriter())
+				//.taskExecutor(taskExecutor())
 				.build();
 	}
 	
@@ -64,6 +72,7 @@ public class BatchConfig  {
 				.reader(expiredScheduledDateMessageReader(Status.RECIPIENT_ALLOWED))
 				.processor(this.newMessageProcessor)
 				.writer(messageWriter())
+				//.taskExecutor(taskExecutor())
 				.build();
 	}
 	

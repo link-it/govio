@@ -43,7 +43,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class NewMessageServiceTest {
+public class UC2_NewMessageServiceTest {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -67,8 +67,8 @@ public class NewMessageServiceTest {
 	}
 
 	@Test
-	@DisplayName("Test io messaggio base")
-	public void newMessageOK() throws Exception {
+	@DisplayName("UC2.6: Messaggio minimale (no avviso, no scadenza, no payee, no email)")
+	public void UC2_6_MinimalMessageOk() throws Exception {
 
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		GovioMessageEntity message = GovioMessageEntity.builder()

@@ -26,6 +26,7 @@ import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,6 +54,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @SpringBatchTest
 @EnableAutoConfiguration
 @ContextConfiguration(classes = { Application.class })
+@SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 public class InvioMessaggiMassivoTest {
@@ -123,7 +125,8 @@ public class InvioMessaggiMassivoTest {
 		
 		Mockito
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
-		.thenReturn(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK));
+		//.thenReturn(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK));
+		.thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 		
 		NewMessage newMessage = new NewMessage();
 		newMessage.setFiscalCode("XXXAAA00A00A000A");
