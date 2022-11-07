@@ -1,6 +1,8 @@
 package it.govio.msgsender.step;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +61,9 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 			}
 			mc.setPaymentData(pd);
 		}
-
+		
 		// setto i dati rimanenti del content
+		mc.setDueDate(new Timestamp(item.getDue_date().toEpochSecond(ZoneOffset.UTC)));
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);

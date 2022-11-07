@@ -1,241 +1,307 @@
-	package it.govio.msgsender.test.step;
+package it.govio.msgsender.test.step;
 
-	import static org.junit.jupiter.api.Assertions.assertEquals;
-	import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 
-	import java.net.URI;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
-	import java.util.UUID;
+import java.util.UUID;
 
-	import org.junit.jupiter.api.BeforeEach;
-	import org.junit.jupiter.api.DisplayName;
-	import org.junit.jupiter.api.Test;
-	import org.junit.jupiter.api.extension.ExtendWith;
-	import org.mockito.InjectMocks;
-	import org.mockito.Mock;
-	import org.mockito.Mockito;
-	import org.mockito.MockitoAnnotations;
-	import org.mockito.junit.jupiter.MockitoExtension;
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-	import org.springframework.boot.test.context.SpringBootTest;
-	import org.springframework.core.ParameterizedTypeReference;
-	import org.springframework.http.HttpStatus;
-	import org.springframework.http.MediaType;
-	import org.springframework.http.RequestEntity;
-	import org.springframework.http.ResponseEntity;
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-	import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
-	import it.govio.msgsender.Application;
-	import it.govio.msgsender.entity.GovioMessageEntity;
+import it.govio.msgsender.Application;
+import it.govio.msgsender.entity.GovioMessageEntity;
 import it.govio.msgsender.entity.GovioMessageEntity.GovioMessageEntityBuilder;
 import it.govio.msgsender.entity.GovioMessageEntity.Status;
 import it.govio.msgsender.entity.GovioServiceInstanceEntity;
-	import it.govio.msgsender.repository.GovioMessagesRepository;
-	import it.govio.msgsender.repository.GovioServiceInstancesRepository;
-	import it.govio.msgsender.step.NewMessageProcessor;
-	import it.pagopa.io.v1.api.beans.CreatedMessage;
+import it.govio.msgsender.repository.GovioMessagesRepository;
+import it.govio.msgsender.repository.GovioServiceInstancesRepository;
+import it.govio.msgsender.step.NewMessageProcessor;
+import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.MessageContent;
-	import it.pagopa.io.v1.api.beans.NewMessage;
-	import it.pagopa.io.v1.api.impl.ApiClient;
+import it.pagopa.io.v1.api.beans.NewMessage;
+import it.pagopa.io.v1.api.beans.NewMessageDefaultAddresses;
+import it.pagopa.io.v1.api.impl.ApiClient;
 import it.pagopa.io.v1.api.beans.Payee;
+import it.pagopa.io.v1.api.beans.PaymentData;
 
-	@SpringBootTest(classes = Application.class)
-	@AutoConfigureMockMvc
-	@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = Application.class)
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class UC2_NewMessageServiceTest {
 
-		@Mock
-		private RestTemplate restTemplate;
+	@Mock
+	private RestTemplate restTemplate;
 
-		@Autowired
-		private NewMessageProcessor newMessageProcessor; 
-		
-		@Autowired
-		@InjectMocks
-		private ApiClient apiClient;
+	@Autowired
+	private NewMessageProcessor newMessageProcessor; 
 
-		@Autowired
-		private GovioServiceInstancesRepository govioServiceInstancesRepository;
+	@Autowired
+	@InjectMocks
+	private ApiClient apiClient;
 
-		@Autowired
-		private GovioMessagesRepository govioMessagesRepository;
+	@Autowired
+	private GovioServiceInstancesRepository govioServiceInstancesRepository;
 
-		@BeforeEach
-		void setUp(){
-			MockitoAnnotations.openMocks(this);
-		}
+	@Autowired
+	private GovioMessagesRepository govioMessagesRepository;
 
-		
-		GovioMessageEntity buildMessage(long due_date,Integer amount,String noticeNumber,boolean invalidAfterDueDate,Payee p,String email) throws URISyntaxException {
-			Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-			GovioMessageEntityBuilder messageEntity = GovioMessageEntity.builder()
-					.govioServiceInstance(serviceInstanceEntity.get())
-					.markdown("Lorem Ipsum")
-					.subject("Subject")
-					.taxcode("AAAAAA00A00A000A")
-					.status(Status.RECIPIENT_ALLOWED)
-					.creationDate(LocalDateTime.now())
-					.scheduledExpeditionDate(LocalDateTime.now());
-					if (due_date > 0) messageEntity.due_date(LocalDateTime.now().plusDays(due_date));
-					if (amount > 0) {
-						messageEntity.amount(amount);
-						messageEntity.noticeNumber(noticeNumber);
-						messageEntity.invalidAfterDueDate(invalidAfterDueDate);
-					}
-					if (p != null) messageEntity.payee(p.getFiscalCode());
-					if (email != null) messageEntity.email(email);
-			GovioMessageEntity message = messageEntity.build();
-			govioMessagesRepository.save(message);
-			return message;
-		}
-				
-		void util(GovioMessageEntity message, HttpStatus response,GovioMessageEntity.Status check) throws Exception {
-
-			NewMessage newMessage = new NewMessage();
-			newMessage.setFiscalCode(message.getTaxcode());
-			MessageContent content = new MessageContent();
-			content.setMarkdown(message.getMarkdown());
-			content.setSubject(message.getSubject());
-			newMessage.setContent(content);
-			
-			RequestEntity<NewMessage> request = RequestEntity
-					.post(new URI("https://api.io.pagopa.it/api/v1/messages"))
-					.accept(MediaType.APPLICATION_JSON)
-					.contentType(MediaType.APPLICATION_JSON)
-					.header("Ocp-Apim-Subscription-Key", message.getGovioServiceInstance().getApikey())
-					.header("User-Agent", "Java-SDK")
-					.body(newMessage, NewMessage.class);
-
-			CreatedMessage createdMessage = new CreatedMessage();
-			createdMessage.setId(UUID.randomUUID().toString());
-
-			ParameterizedTypeReference.forType(CreatedMessage.class);
-			Mockito
-			.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
-			.thenReturn(new ResponseEntity<CreatedMessage>(createdMessage, response));
-			Mockito
-			.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-			
-			GovioMessageEntity processedMessage = newMessageProcessor.process(message);
-			
-			assertEquals(check, processedMessage.getStatus());
-
-		}
-		
-		void utilFail(GovioMessageEntity message,HttpClientErrorException e,GovioMessageEntity.Status check) throws Exception {
-			NewMessage newMessage = new NewMessage();
-			newMessage.setFiscalCode(message.getTaxcode());
-			MessageContent content = new MessageContent();
-			content.setMarkdown(message.getMarkdown());
-			content.setSubject(message.getSubject());
-			newMessage.setContent(content);
-
-			RequestEntity<NewMessage> request = RequestEntity
-					.post(new URI("https://api.io.pagopa.it/api/v1/messages"))
-					.accept(MediaType.APPLICATION_JSON)
-					.contentType(MediaType.APPLICATION_JSON)
-					.header("Ocp-Apim-Subscription-Key", message.getGovioServiceInstance().getApikey())
-					.header("User-Agent", "Java-SDK")
-					.body(newMessage, NewMessage.class);
-
-			CreatedMessage createdMessage = new CreatedMessage();
-			createdMessage.setId(UUID.randomUUID().toString());
-
-			ParameterizedTypeReference.forType(CreatedMessage.class);
-			Mockito
-			.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
-			.thenThrow(e);
-			Mockito
-			.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-			
-			
-			GovioMessageEntity processedMessage = newMessageProcessor.process(message);
-			
-			assertEquals(check, processedMessage.getStatus());
-
-		}
-
-
-		@Test
-		@DisplayName("UC2.1: Bad request")
-		public void UC2_1_BadRequest () throws Exception {
-			HttpClientErrorException e = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-			utilFail(buildMessage(0, 0, null, false, null, null), e, GovioMessageEntity.Status.BAD_REQUEST);
-		}
-
-		@Test
-		@DisplayName("UC2.2: Profile not exists")
-		public void UC2_2_ProfileNotExists () throws Exception {
-			HttpClientErrorException e = new HttpClientErrorException(HttpStatus.NOT_FOUND);
-			utilFail(buildMessage(0, 0, null, false, null, null), e, GovioMessageEntity.Status.PROFILE_NOT_EXISTS);
-		}
-		/*
-		@Test
-		@DisplayName("UC2.3: Sender not allowed")
-		public void UC2_3_SenderNotAllowed() throws Exception {
-			util(HttpStatus.OK, GovioMessageEntity.Status.SENDER_NOT_ALLOWED);
-		}
-		*/
-		@Test
-		@DisplayName("UC2.4: Denied)")
-		public void UC2_4_Denied() throws Exception {
-			HttpClientErrorException e = new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
-			utilFail(buildMessage(0, 0, null, false, null, null), e, GovioMessageEntity.Status.DENIED);
-		}
-
-		
-		@Test
-		@DisplayName("UC2_5_Forbidden")
-		public void UC2_5_Forbidden() throws Exception {
-			HttpClientErrorException e = new HttpClientErrorException(HttpStatus.FORBIDDEN);
-			utilFail(buildMessage(0, 0, null, false, null, null), e, GovioMessageEntity.Status.FORBIDDEN);
-		}
-
-		@Test
-		@DisplayName("UC2.6: Messaggio minimale (no avviso, no scadenza, no payee, no email)")
-		public void UC2_6_MessaggioMinimale() throws Exception {
-			util(buildMessage(0, 0, null, false, null, null), HttpStatus.CREATED, GovioMessageEntity.Status.SENT);
-		}
-
-		@Test
-		@DisplayName("UC2.7: Messaggio con avviso")
-		public void UC2_7_MessaggioConAvviso() throws Exception {
-			util(buildMessage(0, 1000, "122222222222222222", false, null, null), HttpStatus.CREATED, GovioMessageEntity.Status.SENT);
-		}
-
-		@Test
-		@DisplayName("UC2.8: Messaggio con scadenza")
-		public void UC2_8_MessaggioConScadenza() throws Exception {
-			Payee p = new Payee().fiscalCode("12345678901");
-			util(buildMessage(1L, 1, "122222222222222222", false, p, null), HttpStatus.CREATED, GovioMessageEntity.Status.SENT);
-		}
-
-		@Test
-		@DisplayName("UC2.9: Messaggio con payee")
-		public void UC2_9_MessaggioConpayee() throws Exception {
-			Payee p = new Payee().fiscalCode("12345678901");
-			util(buildMessage(0, 0, null, false, p, null), HttpStatus.CREATED, GovioMessageEntity.Status.SENT);
-		}
-
-		@Test
-		@DisplayName("UC2.10: Messaggio con email")
-		public void UC2_10_MessaggioConEmail() throws Exception {
-			String email = new String("email@gmail.com");
-			util(buildMessage(0, 0, null, false, null, email), HttpStatus.CREATED, GovioMessageEntity.Status.SENT);
-		}
-
-		@Test
-		@DisplayName("UC2.11: Messaggio non consegnato (eg http 500 o errore rete o altro)")
-		public void UC2_11_NonConseganto() throws Exception {
-			HttpClientErrorException e = new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
-			utilFail(buildMessage(0, 0, null, false, null, null), e, GovioMessageEntity.Status.RECIPIENT_ALLOWED);
-		}
-
-		
-		
+	@BeforeEach
+	void setUp(){
+		MockitoAnnotations.openMocks(this);
 	}
+
+	/**
+	 * Costruisce e inserisce in DB un GovioMessageEntity. I parametri obbligatori sono gia' inclusi.
+	 * @param due_date
+	 * @param amount
+	 * @param noticeNumber
+	 * @param invalidAfterDueDate
+	 * @param p
+	 * @param email
+	 * @return
+	 * @throws URISyntaxException
+	 */
+	private GovioMessageEntity buildGovioMessageEntity(boolean due_date, Integer amount, String noticeNumber, boolean invalidAfterDueDate, Payee payee, String email) throws URISyntaxException {
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		GovioMessageEntityBuilder messageEntity = GovioMessageEntity.builder()
+				.govioServiceInstance(serviceInstanceEntity.get())
+				.markdown("Lorem Ipsum")
+				.subject("Subject")
+				.taxcode("AAAAAA00A00A000A")
+				.status(Status.RECIPIENT_ALLOWED)
+				.creationDate(LocalDateTime.now())
+				.scheduledExpeditionDate(LocalDateTime.now());
+		if (due_date) messageEntity.due_date(LocalDateTime.now().plusDays(3));
+		if (amount > 0) {
+			messageEntity.amount(amount);
+			messageEntity.noticeNumber(noticeNumber);
+			messageEntity.invalidAfterDueDate(invalidAfterDueDate);
+		}
+		if (payee != null) messageEntity.payee(payee.getFiscalCode());
+		if (email != null) messageEntity.email(email);
+		GovioMessageEntity message = messageEntity.build();
+		govioMessagesRepository.save(message);
+		return message;
+	}
+
+	/**
+	 * Costruisce il model NewMessage previsto nella richiesta a IO corrispondente al GovioMessageEntity in input
+	 * @param govioMessageEntity
+	 * @return
+	 */
+	private NewMessage buildExpectedNewMessageRequest(GovioMessageEntity govioMessageEntity) {
+		NewMessage newMessage = new NewMessage();
+
+		if(govioMessageEntity.getEmail() != null) {
+			NewMessageDefaultAddresses address = new NewMessageDefaultAddresses();
+			address.setEmail(govioMessageEntity.getEmail());
+			newMessage.setDefaultAddresses(address );
+		}
+		newMessage.setFiscalCode(govioMessageEntity.getTaxcode());
+		MessageContent content = new MessageContent();
+		content.setMarkdown(govioMessageEntity.getMarkdown());
+		content.setSubject(govioMessageEntity.getSubject());
+		content.setDueDate(new Timestamp(govioMessageEntity.getDue_date().toEpochSecond(ZoneOffset.UTC)));
+		if(govioMessageEntity.getNoticeNumber() != null) {
+			Assert.assertNotNull(govioMessageEntity.getAmount());
+			PaymentData paymentData = new PaymentData();
+			paymentData.setAmount(govioMessageEntity.getAmount());
+			paymentData.setInvalidAfterDueDate(govioMessageEntity.getInvalidAfterDueDate());
+			paymentData.setNoticeNumber(govioMessageEntity.getNoticeNumber());
+			if(govioMessageEntity.getPayee() != null) {
+				Payee payee = new Payee();
+				payee.setFiscalCode(govioMessageEntity.getPayee());
+				paymentData.setPayee(payee );
+			}
+			content.setPaymentData(paymentData);
+		}
+		newMessage.setContent(content);
+		return newMessage;
+	}
+
+	/**
+	 * Predispone il mock del servizio IO in caso di spedizione con successo 
+	 * @param govioMessageEntity 
+	 * @throws Exception
+	 */
+	private void setupRestTemplateMock(GovioMessageEntity govioMessageEntity) throws Exception {
+		NewMessage newMessage = buildExpectedNewMessageRequest(govioMessageEntity);
+
+		RequestEntity<NewMessage> request = RequestEntity
+				.post(new URI("https://api.io.pagopa.it/api/v1/messages"))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Ocp-Apim-Subscription-Key", govioMessageEntity.getGovioServiceInstance().getApikey())
+				.header("User-Agent", "Java-SDK")
+				.body(newMessage, NewMessage.class);
+
+		CreatedMessage createdMessage = new CreatedMessage();
+		createdMessage.setId(UUID.randomUUID().toString());
+
+		ParameterizedTypeReference.forType(CreatedMessage.class);
+		Mockito
+		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
+		.thenReturn(new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED));
+		Mockito
+		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+	}
+
+	/**
+	 * Predispone il mock del servizio IO in caso di spedizione con errore 
+	 * @param govioMessageEntity 
+	 * @param exception
+	 * @throws Exception
+	 */
+	private void setupRestTemplateMock(GovioMessageEntity message, HttpClientErrorException exception) throws Exception {
+		NewMessage newMessage = buildExpectedNewMessageRequest(message);
+
+		RequestEntity<NewMessage> request = RequestEntity
+				.post(new URI("https://api.io.pagopa.it/api/v1/messages"))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Ocp-Apim-Subscription-Key", message.getGovioServiceInstance().getApikey())
+				.header("User-Agent", "Java-SDK")
+				.body(newMessage, NewMessage.class);
+
+		ParameterizedTypeReference.forType(CreatedMessage.class);
+		Mockito
+		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
+		.thenThrow(exception);
+		Mockito
+		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+	}
+
+
+	@Test
+	@DisplayName("UC2.1: Bad request")
+	public void UC2_1_BadRequest () throws Exception {
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		setupRestTemplateMock(buildGovioMessageEntity, e);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.BAD_REQUEST, processedMessage.getStatus());
+	}
+
+	@Test
+	@DisplayName("UC2.2: Profile not exists")
+	public void UC2_2_ProfileNotExists () throws Exception {
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		setupRestTemplateMock(buildGovioMessageEntity, e);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.PROFILE_NOT_EXISTS, processedMessage.getStatus());
+	}
+	
+	/*
+	@Test
+	@DisplayName("UC2.3: Sender not allowed")
+	public void UC2_3_SenderNotAllowed() throws Exception {
+		util(HttpStatus.OK, GovioMessageEntity.Status.SENDER_NOT_ALLOWED);
+	}
+	 */
+	
+	@Test
+	@DisplayName("UC2.4: Denied)")
+	public void UC2_4_Denied() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
+		setupRestTemplateMock(buildGovioMessageEntity, e);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.DENIED, processedMessage.getStatus());
+	}
+
+
+	@Test
+	@DisplayName("UC2_5_Forbidden")
+	public void UC2_5_Forbidden() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.FORBIDDEN);
+		setupRestTemplateMock(buildGovioMessageEntity, e);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.FORBIDDEN, processedMessage.getStatus());
+	}
+
+	@Test
+	@DisplayName("UC2.6: Messaggio minimale (no avviso, no scadenza, no payee, no email)")
+	public void UC2_6_MessaggioMinimale() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		setupRestTemplateMock(buildGovioMessageEntity);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());
+	}
+
+	@Test
+	@DisplayName("UC2.7: Messaggio con avviso")
+	public void UC2_7_MessaggioConAvviso() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 1000, "122222222222222222", false, null, null);
+		setupRestTemplateMock(buildGovioMessageEntity);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());
+	}
+
+	@Test
+	@DisplayName("UC2.8: Messaggio con scadenza")
+	public void UC2_8_MessaggioConScadenza() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(true, 1, "122222222222222222", false, null, null);
+		setupRestTemplateMock(buildGovioMessageEntity);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());
+	}
+
+	@Test
+	@DisplayName("UC2.9: Messaggio con payee")
+	public void UC2_9_MessaggioConpayee() throws Exception {
+		Payee p = new Payee().fiscalCode("12345678901");
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, p, null);
+		setupRestTemplateMock(buildGovioMessageEntity);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());
+	}
+
+	@Test
+	@DisplayName("UC2.10: Messaggio con email")
+	public void UC2_10_MessaggioConEmail() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, "email@gmail.com");
+		setupRestTemplateMock(buildGovioMessageEntity);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());
+	}
+
+	@Test
+	@DisplayName("UC2.11: Messaggio non consegnato (eg http 500 o errore rete o altro)")
+	public void UC2_11_NonConsegnato() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+		setupRestTemplateMock(buildGovioMessageEntity, e);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
+	}
+
+
+
+}

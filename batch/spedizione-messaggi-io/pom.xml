@@ -225,7 +225,7 @@
 							<generatorName>java</generatorName>
 							<configOptions>
 								<booleanGetterPrefix>is</booleanGetterPrefix>
-								<dateLibrary>java11</dateLibrary>
+								<dateLibrary>java8</dateLibrary>
 								<library>resttemplate</library>
 								<serializationLibrary>jackson</serializationLibrary>
 								<sourceFolder>generated-sources/java/</sourceFolder>
