@@ -126,6 +126,7 @@ public class UC2_NewMessageServiceTest {
 		MessageContent content = new MessageContent();
 		content.setMarkdown(govioMessageEntity.getMarkdown());
 		content.setSubject(govioMessageEntity.getSubject());
+		if(govioMessageEntity.getDue_date() != null)
 		content.setDueDate(new Timestamp(govioMessageEntity.getDue_date().toEpochSecond(ZoneOffset.UTC)));
 		if(govioMessageEntity.getNoticeNumber() != null) {
 			Assert.assertNotNull(govioMessageEntity.getAmount());
