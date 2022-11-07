@@ -22,7 +22,7 @@ default:
 test_and_coverage:
     stage: test
     script:
-        - mvn  -P jar clean test
+        - mvn clean test
         - wget https://raw.githubusercontent.com/rix0rrr/cover2cover/master/cover2cover.py
         - apt-get update
         - apt-get -y install python2 npm
@@ -45,10 +45,10 @@ test_and_coverage:
 
 code_quality:
     stage: sonarqube
-    script: mvn  -P jar verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.coverage.jacoco.xmlReportPaths=*/*/target/site/cobertura.xml
+    script: mvn verify sonar:sonar -Dsonar.qualitygate.wait=true -Dsonar.coverage.jacoco.xmlReportPaths=*/*/target/site/cobertura.xml
     dependencies: [] # Per evitare il download di artifact in job precedenti
 
 maven_build:
     stage: build
-    script: mvn package -P war
+    script: mvn package
     dependencies: [] # Per evitare il download di artifact in job precedenti
