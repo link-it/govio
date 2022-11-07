@@ -12,4 +12,5 @@ import it.govio.msgsender.entity.GovioMessageEntity.Status;
 public interface GovioMessagesRepository extends JpaRepositoryImplementation<GovioMessageEntity, Long> {
 	
 	public Page<GovioMessageEntity> findAllByStatusAndScheduledExpeditionDateBefore(Status status, LocalDateTime expeditionDate, Pageable pageable);
+	
 }
