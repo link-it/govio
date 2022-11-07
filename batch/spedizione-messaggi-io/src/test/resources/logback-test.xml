@@ -10,7 +10,7 @@
 		</encoder>
 	</appender>
 	
-		<logger name="it.govio" level="INFO" additivity="false">
+		<logger name="it.govio" level="ERROR" additivity="false">
 			<appender-ref ref="STDOUT" />
 		</logger>
 		
