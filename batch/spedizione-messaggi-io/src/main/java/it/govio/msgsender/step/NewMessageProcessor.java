@@ -19,6 +19,7 @@ import it.pagopa.io.v1.api.DefaultApi;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.MessageContent;
 import it.pagopa.io.v1.api.beans.NewMessage;
+import it.pagopa.io.v1.api.beans.NewMessageDefaultAddresses;
 import it.pagopa.io.v1.api.beans.PaymentData;
 import it.pagopa.io.v1.api.beans.Payee;
 import it.govio.msgsender.entity.GovioMessageEntity.Status;
@@ -62,8 +63,15 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 			mc.setPaymentData(pd);
 		}
 		
+		if(item.getEmail() != null) { 
+			NewMessageDefaultAddresses defaultAddress = new NewMessageDefaultAddresses();
+			defaultAddress.setEmail(item.getEmail());
+			message.setDefaultAddresses(defaultAddress);
+		}
+		
 		// setto i dati rimanenti del content
-		mc.setDueDate(new Timestamp(item.getDue_date().toEpochSecond(ZoneOffset.UTC)));
+		if(item.getDue_date() != null)
+			mc.setDueDate(new Timestamp(item.getDue_date().toEpochSecond(ZoneOffset.UTC)));
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);
