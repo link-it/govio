@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import it.govio.msgsender.repository.GovioMessagesRepository;
 import it.govio.msgsender.repository.GovioServiceInstancesRepository;
 import it.govio.msgsender.step.NewMessageProcessor;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
+import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 import it.pagopa.io.v1.api.beans.MessageContent;
 import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.impl.ApiClient;
@@ -43,7 +45,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class UC2_NewMessageServiceTest {
+public class nomeDaCambiare2 {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -64,8 +66,8 @@ public class UC2_NewMessageServiceTest {
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
-	}
-
+	}	
+	
 	@Test
 	@DisplayName("UC2.6: Messaggio minimale (no avviso, no scadenza, no payee, no email)")
 	public void UC2_6_MinimalMessageOk() throws Exception {

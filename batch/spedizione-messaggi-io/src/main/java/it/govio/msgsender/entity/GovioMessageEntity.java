@@ -66,6 +66,9 @@ public class GovioMessageEntity {
 	@Column(name = "payee")
 	private String payee;
 
+	@Column(name = "email")
+	private String email;
+
 	@Column(name = "appio_message_id")
 	private String appioMessageId;
 
@@ -77,7 +80,10 @@ public class GovioMessageEntity {
 
 	@Column(name = "expedition_date")
 	private LocalDateTime expeditionDate;
-
+	
+	@Column(name = "due_date")
+	private LocalDateTime due_date;
+	
 	@Column(name = "last_update_status")
 	private LocalDateTime lastUpdateStatus;
 
