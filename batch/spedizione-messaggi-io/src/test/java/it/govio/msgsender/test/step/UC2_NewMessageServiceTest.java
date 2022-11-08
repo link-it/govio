@@ -3,10 +3,10 @@ package it.govio.msgsender.test.step;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,12 +30,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import it.govio.msgsender.Application;
 import it.govio.msgsender.entity.GovioMessageEntity;
-import it.govio.msgsender.entity.GovioMessageEntity.GovioMessageEntityBuilder;
 import it.govio.msgsender.entity.GovioMessageEntity.Status;
 import it.govio.msgsender.entity.GovioServiceInstanceEntity;
 import it.govio.msgsender.repository.GovioMessagesRepository;
@@ -76,7 +77,7 @@ public class UC2_NewMessageServiceTest {
 	}
 
 	/**
-	 * Costruisce e inserisce in DB un GovioMessageEntity. I parametri obbligatori sono gia' inclusi.
+	 * Costruisce e inserisce in DB un GovioMessageEntity pronto per la spedizione. I parametri obbligatori sono gia' inclusi.
 	 * @param due_date
 	 * @param amount
 	 * @param noticeNumber
@@ -88,23 +89,7 @@ public class UC2_NewMessageServiceTest {
 	 */
 	private GovioMessageEntity buildGovioMessageEntity(boolean due_date, Integer amount, String noticeNumber, boolean invalidAfterDueDate, Payee payee, String email) throws URISyntaxException {
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-		GovioMessageEntityBuilder messageEntity = GovioMessageEntity.builder()
-				.govioServiceInstance(serviceInstanceEntity.get())
-				.markdown("Lorem Ipsum")
-				.subject("Subject")
-				.taxcode("AAAAAA00A00A000A")
-				.status(Status.RECIPIENT_ALLOWED)
-				.creationDate(LocalDateTime.now())
-				.scheduledExpeditionDate(LocalDateTime.now());
-		if (due_date) messageEntity.due_date(LocalDateTime.now().plusDays(3));
-		if (amount > 0) {
-			messageEntity.amount(amount);
-			messageEntity.noticeNumber(noticeNumber);
-			messageEntity.invalidAfterDueDate(invalidAfterDueDate);
-		}
-		if (payee != null) messageEntity.payee(payee.getFiscalCode());
-		if (email != null) messageEntity.email(email);
-		GovioMessageEntity message = messageEntity.build();
+		GovioMessageEntity message = new GovioMessageBuilder().buildGovioMessageEntity(serviceInstanceEntity.get(), Status.RECIPIENT_ALLOWED, due_date, amount, noticeNumber, invalidAfterDueDate, payee, email);
 		govioMessagesRepository.save(message);
 		return message;
 	}
@@ -178,7 +163,7 @@ public class UC2_NewMessageServiceTest {
 	 * @param exception
 	 * @throws Exception
 	 */
-	private void setupRestTemplateMock(GovioMessageEntity message, HttpClientErrorException exception) throws Exception {
+	private void setupRestTemplateMock(GovioMessageEntity message, RestClientException exception) throws Exception {
 		NewMessage newMessage = buildExpectedNewMessageRequest(message);
 
 		RequestEntity<NewMessage> request = RequestEntity
@@ -294,15 +279,34 @@ public class UC2_NewMessageServiceTest {
 	}
 
 	@Test
-	@DisplayName("UC2.11: Messaggio non consegnato (eg http 500 o errore rete o altro)")
-	public void UC2_11_NonConsegnato() throws Exception {
+	@DisplayName("UC2.11: Errore 5xx)")
+	public void UC2_11_Errore5xx() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
-		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+		HttpServerErrorException e = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+		setupRestTemplateMock(buildGovioMessageEntity, e);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
+	}
+	
+	@Test
+	@DisplayName("UC2.12: Errore 4xx non previsto")
+	public void UC2_12_Errore4xxNonPrevisto() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.I_AM_A_TEAPOT);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
 		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
 	}
 
+	@Test
+	@DisplayName("UC2.13: Errore interno")
+	public void UC2_13_ErroreNonPrevisto() throws Exception {
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
+		RestClientException e = new RestClientException("Error");
+		setupRestTemplateMock(buildGovioMessageEntity, e);
+		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
+		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
+	}
 
 
 }

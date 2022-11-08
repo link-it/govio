@@ -109,11 +109,7 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 				break;
 			}
 		} catch (HttpServerErrorException e) {
-			logger.error("Ricevuto server error da BackendIO: {}", e.getMessage());
-			logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
-			logger.debug("Status Text: {}", e.getStatusText());
-			logger.debug("HTTP Headers: {}", e.getResponseHeaders());
-			logger.debug("Response Body: {}", e.getResponseBodyAsString());
+			logErrorResponse(e);
 		} catch (Exception e) {
 			logger.error("Internal server error", e);
 		}
@@ -122,7 +118,10 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 
 
 	private void logErrorResponse(HttpStatusCodeException e) {
-		logger.warn("Ricevuto error da BackendIO: {}", e.getMessage());
+		if(e instanceof HttpServerErrorException)
+			logger.error("Ricevuto server error da BackendIO: {}", e.getMessage());
+		else
+			logger.warn("Ricevuto client error da BackendIO: {}", e.getMessage());
 		logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
 		logger.debug("Status Text: {}", e.getStatusText());
 		logger.debug("HTTP Headers: {}", e.getResponseHeaders());

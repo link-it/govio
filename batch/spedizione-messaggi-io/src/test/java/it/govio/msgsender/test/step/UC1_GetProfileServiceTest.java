@@ -2,8 +2,10 @@ package it.govio.msgsender.test.step;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+
+import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.net.URISyntaxException;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -82,22 +85,23 @@ public class UC1_GetProfileServiceTest {
 		jobRepositoryTestUtils.removeJobExecutions();
 	}
 	
-	public <T> void util( ResponseEntity<LimitedProfile> re,GovioMessageEntity.Status check) throws Exception{
-		// creazione del messaggio
+	private GovioMessageEntity buildGovioMessageEntity() throws URISyntaxException {
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-		GovioMessageEntity message = GovioMessageEntity.builder()
-				.govioServiceInstance(serviceInstanceEntity.get())
-				.markdown("Lorem Ipsum")
-				.subject("Subject")
-				.taxcode("AAAAAA00A00A000A")
-				.status(Status.SCHEDULED)
-				.creationDate(LocalDateTime.now())
-				.scheduledExpeditionDate(LocalDateTime.now())
-				.build();
+		GovioMessageEntity message = new GovioMessageBuilder()
+				.buildGovioMessageEntity(serviceInstanceEntity.get(), Status.SCHEDULED, false, null, null, false, null, null);
 		govioMessagesRepository.save(message);
+		return message;
+	}
 
+	/**
+	 * Predispone il mock del servizio IO in caso di spedizione con successo 
+	 * @param govioMessageEntity 
+	 * @param exception
+	 * @throws Exception
+	 */
+	private void setupRestTemplateMock(GovioMessageEntity message, LimitedProfile profile) throws Exception {
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
-		fiscalCodePayload.setFiscalCode("AAAAAA00A00A000A");
+		fiscalCodePayload.setFiscalCode(message.getTaxcode());
 		
 		RequestEntity<FiscalCodePayload> request = RequestEntity
 				.post(new URI("https://api.io.pagopa.it/api/v1/profiles"))
@@ -107,39 +111,25 @@ public class UC1_GetProfileServiceTest {
 				.header("User-Agent", "Java-SDK")
 				.body(fiscalCodePayload, FiscalCodePayload.class);
 		// preparazione mockito
-		ParameterizedTypeReference.forType(LimitedProfile.class);
 		Mockito
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
-		.thenReturn(re);
+		.thenReturn(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK));
 		Mockito
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 		
-		// test
-		GovioMessageEntity processedMessage = getProfileProcessor.process(message);
-		
-		// check
-		// TODO verificare lo stato del messaggio, quando disponibile nell'entity
-		assertEquals(check, processedMessage.getStatus());
 		return;
 	}
 	
 	
-	public void utilFail( HttpClientErrorException e,GovioMessageEntity.Status check) throws Exception{
-		// creazione del messaggio
-		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-		GovioMessageEntity message = GovioMessageEntity.builder()
-				.govioServiceInstance(serviceInstanceEntity.get())
-				.markdown("Lorem Ipsum")
-				.subject("Subject")
-				.taxcode("AAAAAA00A00A000A")
-				.status(Status.SCHEDULED)
-				.creationDate(LocalDateTime.now())
-				.scheduledExpeditionDate(LocalDateTime.now())
-				.build();
-		govioMessagesRepository.save(message);
-
+	/**
+	 * Predispone il mock del servizio IO in caso di spedizione con errore 
+	 * @param govioMessageEntity 
+	 * @param exception
+	 * @throws Exception
+	 */
+	private void setupRestTemplateMock(GovioMessageEntity message, RestClientException exception) throws Exception {
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
-		fiscalCodePayload.setFiscalCode("AAAAAA00A00A000A");
+		fiscalCodePayload.setFiscalCode(message.getTaxcode());
 		
 		RequestEntity<FiscalCodePayload> request = RequestEntity
 				.post(new URI("https://api.io.pagopa.it/api/v1/profiles"))
@@ -148,38 +138,31 @@ public class UC1_GetProfileServiceTest {
 				.header("Ocp-Apim-Subscription-Key", message.getGovioServiceInstance().getApikey())
 				.header("User-Agent", "Java-SDK")
 				.body(fiscalCodePayload, FiscalCodePayload.class);
-		// preparazione mockito
-		ParameterizedTypeReference.forType(LimitedProfile.class);
+		
 		Mockito
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
-		.thenThrow(e);
+		.thenThrow(exception);
 		Mockito
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-		
-		// test
-		GovioMessageEntity processedMessage = getProfileProcessor.process(message);
-		
-		// check
-		// TODO verificare lo stato del messaggio, quando disponibile nell'entity
-		assertEquals(check, processedMessage.getStatus());
 		return;
 	}
 	
-	
-	
-
 	@Test
 	@DisplayName("UC1.1: Bad request")
 	public void UC_1_1_BadRequest() throws Exception {
-		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
-		utilFail(e, GovioMessageEntity.Status.BAD_REQUEST);
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.BAD_REQUEST));
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.BAD_REQUEST, processedMessage.getStatus());
 	}
 
 	@Test
 	@DisplayName("UC1.2: Profile not exists")
 	public void UC_1_2_ProfileNotExists() throws Exception {
-		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.NOT_FOUND);
-		utilFail(e, GovioMessageEntity.Status.PROFILE_NOT_EXISTS);
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.NOT_FOUND));
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.PROFILE_NOT_EXISTS, processedMessage.getStatus());
 	}
 
 	@Test
@@ -187,21 +170,28 @@ public class UC1_GetProfileServiceTest {
 	public void UC_1_3_SenderNotAllowed() throws Exception {
 		LimitedProfile profile = new LimitedProfile();
 		profile.setSenderAllowed(false);
-		util(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK), GovioMessageEntity.Status.SENDER_NOT_ALLOWED);
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, profile);
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.SENDER_NOT_ALLOWED, processedMessage.getStatus());
 	}
 
 	@Test
 	@DisplayName("UC1.4: Denied")
 	public void UC_1_4_Denied() throws Exception {
-		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
-		utilFail(e, GovioMessageEntity.Status.DENIED);
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.DENIED, processedMessage.getStatus());
 	}
 
 	@Test
 	@DisplayName("UC1.5: Forbidden")
 	public void UC_1_5_Forbidden() throws Exception {
-		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.FORBIDDEN);
-		utilFail(e, GovioMessageEntity.Status.FORBIDDEN);
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.FORBIDDEN));
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.FORBIDDEN, processedMessage.getStatus());
 	}
 
 	@Test
@@ -209,7 +199,36 @@ public class UC1_GetProfileServiceTest {
 	public void UC_1_6_RecipientAllowed() throws Exception {
 		LimitedProfile profile = new LimitedProfile();
 		profile.setSenderAllowed(true);
-		util(new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK), GovioMessageEntity.Status.RECIPIENT_ALLOWED);
-
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, profile);
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
+	}
+	
+	@Test
+	@DisplayName("UC1.7: Errore 4xx non previsto")
+	public void UC_1_7_Errore4xxNonPrevisto() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.I_AM_A_TEAPOT));
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.SCHEDULED, processedMessage.getStatus());
+	}
+	
+	@Test
+	@DisplayName("UC1.8: Errore 5xx")
+	public void UC_1_7_Errore5xx() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.SCHEDULED, processedMessage.getStatus());
+	}
+	
+	@Test
+	@DisplayName("UC1.8: Errore interno")
+	public void UC_1_8_ErroreInterno() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
+		setupRestTemplateMock(govioMessageEntity, new RestClientException("Exception"));
+		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
+		assertEquals(Status.SCHEDULED, processedMessage.getStatus());
 	}
 }
