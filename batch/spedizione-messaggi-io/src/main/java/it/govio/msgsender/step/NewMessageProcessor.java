@@ -38,10 +38,7 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 	@Override
 	public GovioMessageEntity process(GovioMessageEntity item) throws Exception {
 
-		// TODO Aggiungere stampe di debugging
-		// TODO settare la data e l'ora dopo il cambiamento di stato
-
-		logger.info("Spedizione messaggio " + item.getId());
+		logger.info("Spedizione messaggio {}", item.getId());
 
 		backendIOClient.getApiClient().setApiKey(item.getGovioServiceInstance().getApikey());
 		backendIOClient.getApiClient().setDebugging(debugging);
@@ -50,7 +47,7 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 		MessageContent mc = new MessageContent();
 
 		if(item.getNoticeNumber() != null) {
-			logger.debug("Presente avviso di pagamento n. " + item.getNoticeNumber());
+			logger.debug("Presente avviso di pagamento n. {}", item.getNoticeNumber());
 			PaymentData pd = new PaymentData();
 			pd.setNoticeNumber(item.getNoticeNumber());
 			pd.setAmount(item.getAmount());
@@ -84,7 +81,7 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 			item.setStatus(Status.SENT);
 			item.setExpeditionDate(LocalDateTime.now());
 			item.setLastUpdateStatus(LocalDateTime.now());
-			logger.info("Messaggio spedito con successo. Id: " + item.getAppioMessageId());
+			logger.info("Messaggio spedito con successo. Id: {}", item.getAppioMessageId());
 		} catch (HttpClientErrorException e) {
 			switch (e.getRawStatusCode()) {
 			case 400:
@@ -112,23 +109,23 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 				break;
 			}
 		} catch (HttpServerErrorException e) {
-			logger.error("Ricevuto server error da BackendIO: " + e.getMessage());
-			logger.debug("HTTP Status Code: " + e.getRawStatusCode());
-			logger.debug("Status Text: " + e.getStatusText());
-			logger.debug("HTTP Headers: " + e.getResponseHeaders());
-			logger.debug("Response Body: " + e.getResponseBodyAsString());
+			logger.error("Ricevuto server error da BackendIO: {}", e.getMessage());
+			logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
+			logger.debug("Status Text: {}", e.getStatusText());
+			logger.debug("HTTP Headers: {}", e.getResponseHeaders());
+			logger.debug("Response Body: {}", e.getResponseBodyAsString());
 		} catch (Exception e) {
-			logger.error("Internal server error: " + e.getMessage(), e);
+			logger.error("Internal server error", e);
 		}
 		return item;
 	}
 
 
 	private void logErrorResponse(HttpStatusCodeException e) {
-		logger.warn("Ricevuto error da BackendIO: " + e.getMessage());
-		logger.debug("HTTP Status Code: " + e.getRawStatusCode());
-		logger.debug("Status Text: " + e.getStatusText());
-		logger.debug("HTTP Headers: " + e.getResponseHeaders());
-		logger.debug("Response Body: " + e.getResponseBodyAsString());	
+		logger.warn("Ricevuto error da BackendIO: {}", e.getMessage());
+		logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
+		logger.debug("Status Text: {}", e.getStatusText());
+		logger.debug("HTTP Headers: {}", e.getResponseHeaders());
+		logger.debug("Response Body: {}", e.getResponseBodyAsString());	
 	}
 }

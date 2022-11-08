@@ -36,7 +36,7 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 		// TODO Aggiungere stampe di debugging
 		// TODO settare la data e l'ora dopo il cambiamento di stato
 
-		logger.info("Verifica profile per il messaggio " + item.getId());
+		logger.info("Verifica profile per il messaggio {}", item.getId());
 
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 		fiscalCodePayload.setFiscalCode(item.getTaxcode());
@@ -80,15 +80,15 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 				break;
 			}
 		} catch (HttpServerErrorException e) {
-			logger.error("Ricevuto server error da BackendIO: " + e.getMessage());
-			logger.debug("HTTP Status Code: " + e.getRawStatusCode());
-			logger.debug("Status Text: " + e.getStatusText());
-			logger.debug("HTTP Headers: " + e.getResponseHeaders());
-			logger.debug("Response Body: " + e.getResponseBodyAsString());
+			logger.error("Ricevuto server error da BackendIO: {}", e.getMessage());
+			logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
+			logger.debug("Status Text: {}", e.getStatusText());
+			logger.debug("HTTP Headers: {}", e.getResponseHeaders());
+			logger.debug("Response Body: {}", e.getResponseBodyAsString());
 		} catch (RestClientException e) {
-			logger.error("Ricevuto errore non previsto da BackendIO: " + e.getMessage());
+			logger.error("Ricevuto errore non previsto da BackendIO: {}", e.getMessage());
 		} catch (Exception e) {
-			logger.error("Internal server error: " + e.getMessage(), e);
+			logger.error("Internal server error", e);
 		}
 		item.setLastUpdateStatus(LocalDateTime.now());
 		return item;
@@ -96,10 +96,10 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 
 
 	private void logErrorResponse(HttpStatusCodeException e) {
-		logger.warn("Ricevuto error da BackendIO: " + e.getMessage());
-		logger.debug("HTTP Status Code: " + e.getRawStatusCode());
-		logger.debug("Status Text: " + e.getStatusText());
-		logger.debug("HTTP Headers: " + e.getResponseHeaders());
-		logger.debug("Response Body: " + e.getResponseBodyAsString());	
+		logger.warn("Ricevuto error da BackendIO: {}", e.getMessage());
+		logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
+		logger.debug("Status Text: {}", e.getStatusText());
+		logger.debug("HTTP Headers: {}", e.getResponseHeaders());
+		logger.debug("Response Body: {}", e.getResponseBodyAsString());	
 	}
 }
