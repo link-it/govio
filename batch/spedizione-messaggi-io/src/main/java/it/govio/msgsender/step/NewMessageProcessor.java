@@ -100,7 +100,7 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 				item.setLastUpdateStatus(LocalDateTime.now());
 				break;
 			case 404:
-				logger.info("Verifica completata: profilo non esistente");
+				logger.info("Messaggio non spedito: profilo non esistente");
 				item.setStatus(Status.PROFILE_NOT_EXISTS);
 				item.setLastUpdateStatus(LocalDateTime.now());
 				break;

@@ -3,7 +3,6 @@ package it.govio.msgsender.test.step;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -32,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -139,6 +139,7 @@ public class UC1_GetProfileServiceTest {
 				.header("User-Agent", "Java-SDK")
 				.body(fiscalCodePayload, FiscalCodePayload.class);
 		
+		// preparazione mockito
 		Mockito
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
 		.thenThrow(exception);
@@ -218,7 +219,7 @@ public class UC1_GetProfileServiceTest {
 	@DisplayName("UC1.8: Errore 5xx")
 	public void UC_1_7_Errore5xx() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
-		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+		setupRestTemplateMock(govioMessageEntity, new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
 		assertEquals(Status.SCHEDULED, processedMessage.getStatus());
 	}

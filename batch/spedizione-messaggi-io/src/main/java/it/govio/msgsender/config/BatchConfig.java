@@ -16,9 +16,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.integration.async.AsyncItemProcessor;
-import org.springframework.batch.integration.async.AsyncItemWriter;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.RepositoryItemWriter;
@@ -80,12 +77,12 @@ public class BatchConfig  {
 				.build();
 	}
 	
-	private AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncProcessor(ItemProcessor<GovioMessageEntity, GovioMessageEntity> itemProcessor) {
-		    AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncItemProcessor = new AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity>();
-		    asyncItemProcessor.setTaskExecutor(taskExecutor());
-		    asyncItemProcessor.setDelegate(itemProcessor);
-		    return asyncItemProcessor;
-	}
+//	private AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncProcessor(ItemProcessor<GovioMessageEntity, GovioMessageEntity> itemProcessor) {
+//		    AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncItemProcessor = new AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity>();
+//		    asyncItemProcessor.setTaskExecutor(taskExecutor());
+//		    asyncItemProcessor.setDelegate(itemProcessor);
+//		    return asyncItemProcessor;
+//	}
 
 	public Step newMessageStep(){
 		return steps.get("newMessageStep")
@@ -100,11 +97,11 @@ public class BatchConfig  {
 				.build();
 	}
 	
-	private AsyncItemWriter<GovioMessageEntity> asyncMessageWriter(){
-		AsyncItemWriter<GovioMessageEntity> asyncItemWriter = new AsyncItemWriter<GovioMessageEntity>();
-	    asyncItemWriter.setDelegate(messageWriter());
-	    return asyncItemWriter;
-	}
+//	private AsyncItemWriter<GovioMessageEntity> asyncMessageWriter(){
+//		AsyncItemWriter<GovioMessageEntity> asyncItemWriter = new AsyncItemWriter<GovioMessageEntity>();
+//	    asyncItemWriter.setDelegate(messageWriter());
+//	    return asyncItemWriter;
+//	}
 	
     private RepositoryItemWriter<GovioMessageEntity> messageWriter() {
         final RepositoryItemWriter<GovioMessageEntity> repositoryItemWriter = new RepositoryItemWriter<>();
