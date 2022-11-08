@@ -34,7 +34,7 @@ public class RestTemplateConfig {
 		MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
 		messageConverter.setObjectMapper(objectMapper);
 		
-		restTemplate.getMessageConverters().removeIf(m -> m.getClass().getName().equals(MappingJackson2HttpMessageConverter.class.getName()));
+		restTemplate.getMessageConverters().removeIf(m -> m instanceof MappingJackson2HttpMessageConverter);
 		restTemplate.getMessageConverters().add(messageConverter);
 
 		return restTemplate;
