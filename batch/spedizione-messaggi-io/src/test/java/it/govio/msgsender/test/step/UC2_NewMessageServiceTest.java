@@ -3,7 +3,6 @@ package it.govio.msgsender.test.step;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
@@ -244,7 +243,7 @@ public class UC2_NewMessageServiceTest {
 	@Test
 	@DisplayName("UC2.7: Messaggio con avviso")
 	public void UC2_7_MessaggioConAvviso() throws Exception {
-		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 1000, "122222222222222222", false, null, null);
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 1, "000000000000000000", false, null, null);
 		setupRestTemplateMock(buildGovioMessageEntity);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
 		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());
@@ -253,7 +252,7 @@ public class UC2_NewMessageServiceTest {
 	@Test
 	@DisplayName("UC2.8: Messaggio con scadenza")
 	public void UC2_8_MessaggioConScadenza() throws Exception {
-		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(true, 1, "122222222222222222", false, null, null);
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(true, 1, "000000000000000000", false, null, null);
 		setupRestTemplateMock(buildGovioMessageEntity);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
 		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());
@@ -263,7 +262,7 @@ public class UC2_NewMessageServiceTest {
 	@DisplayName("UC2.9: Messaggio con payee")
 	public void UC2_9_MessaggioConpayee() throws Exception {
 		Payee p = new Payee().fiscalCode("12345678901");
-		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, p, null);
+		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 1, "000000000000000000", false, p, null);
 		setupRestTemplateMock(buildGovioMessageEntity);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
 		assertEquals(GovioMessageEntity.Status.SENT, processedMessage.getStatus());

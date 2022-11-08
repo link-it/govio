@@ -1,34 +1,34 @@
 package it.govio.msgsender.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+//import static org.junit.Assert.assertNotNull;
+//import static org.junit.Assert.assertTrue;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
-
-import org.junit.jupiter.api.Test;
+//import java.io.IOException;
+//
+//import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.HttpClientErrorException;
+//import org.springframework.web.client.HttpClientErrorException;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.core.exc.StreamReadException;
+//import com.fasterxml.jackson.databind.DatabindException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.govio.msgsender.Application;
-import it.pagopa.io.v1.api.DefaultApi;
-import it.pagopa.io.v1.api.beans.CreatedMessage;
-import it.pagopa.io.v1.api.beans.LimitedProfile;
-import it.pagopa.io.v1.api.beans.MessageContent;
-import it.pagopa.io.v1.api.beans.NewMessage;
-import it.pagopa.io.v1.api.beans.ProblemJson;
+//import it.pagopa.io.v1.api.DefaultApi;
+//import it.pagopa.io.v1.api.beans.CreatedMessage;
+//import it.pagopa.io.v1.api.beans.LimitedProfile;
+//import it.pagopa.io.v1.api.beans.MessageContent;
+//import it.pagopa.io.v1.api.beans.NewMessage;
+//import it.pagopa.io.v1.api.beans.ProblemJson;
 
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
