@@ -33,9 +33,6 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 	@Override
 	public GovioMessageEntity process(GovioMessageEntity item) throws Exception {
 
-		// TODO Aggiungere stampe di debugging
-		// TODO settare la data e l'ora dopo il cambiamento di stato
-
 		logger.info("Verifica profile per il messaggio {}", item.getId());
 
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
@@ -80,11 +77,7 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 				break;
 			}
 		} catch (HttpServerErrorException e) {
-			logger.error("Ricevuto server error da BackendIO: {}", e.getMessage());
-			logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
-			logger.debug("Status Text: {}", e.getStatusText());
-			logger.debug("HTTP Headers: {}", e.getResponseHeaders());
-			logger.debug("Response Body: {}", e.getResponseBodyAsString());
+			logErrorResponse(e);
 		} catch (RestClientException e) {
 			logger.error("Ricevuto errore non previsto da BackendIO: {}", e.getMessage());
 		} catch (Exception e) {
@@ -94,9 +87,11 @@ public class GetProfileProcessor implements ItemProcessor<GovioMessageEntity, Go
 		return item;
 	}
 
-
 	private void logErrorResponse(HttpStatusCodeException e) {
-		logger.warn("Ricevuto error da BackendIO: {}", e.getMessage());
+		if(e instanceof HttpServerErrorException)
+			logger.error("Ricevuto server error da BackendIO: {}", e.getMessage());
+		else
+			logger.warn("Ricevuto client error da BackendIO: {}", e.getMessage());
 		logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
 		logger.debug("Status Text: {}", e.getStatusText());
 		logger.debug("HTTP Headers: {}", e.getResponseHeaders());
