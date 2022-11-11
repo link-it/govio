@@ -34,7 +34,8 @@ public class GetMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 		try {
 			FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 			fiscalCodePayload.setFiscalCode(item.getTaxcode());
-			 ExternalMessageResponseWithContent message = backendIOClient.getMessage(fiscalCodePayload.getFiscalCode(), item.getId().toString());
+			System.out.println(fiscalCodePayload.getFiscalCode() + "           " +item.getAppio_message_id());
+			 ExternalMessageResponseWithContent message = backendIOClient.getMessage(fiscalCodePayload.getFiscalCode(), item.getAppio_message_id());
 			 /* risposte possibili:
 		      "ACCEPTED": the message has been accepted and will be processed for
 		      delivery;

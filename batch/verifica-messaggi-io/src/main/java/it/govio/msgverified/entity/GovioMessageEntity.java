@@ -58,5 +58,7 @@ import lombok.AllArgsConstructor;
 
 		@Column(name = "last_update_status")
 		private LocalDateTime lastUpdateStatus;
-
+		
+		@Column(name = "appio_message_id")
+		private String appio_message_id;
 	}
