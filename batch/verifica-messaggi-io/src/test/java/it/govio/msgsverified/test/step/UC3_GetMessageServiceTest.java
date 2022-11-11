@@ -1,6 +1,7 @@
 package it.govio.msgsverified.test.step;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.net.URI;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -25,6 +27,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -45,6 +49,7 @@ import it.govio.msgverified.step.GetMessageProcessor;
 import it.pagopa.io.v1.api.beans.ExternalMessageResponseWithContent;
 import it.pagopa.io.v1.api.beans.MessageStatusValue;
 import it.pagopa.io.v1.api.impl.ApiClient;
+import junit.framework.Assert;
 
 @RunWith(SpringRunner.class)
 @SpringBatchTest
@@ -53,7 +58,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class GetMessageServiceTest {
+public class UC3_GetMessageServiceTest {
 	
 	@Mock
 	private RestTemplate restTemplate;
@@ -100,29 +105,15 @@ public class GetMessageServiceTest {
 		return message;
 	}
 	
+	final ArgumentCaptor<RequestEntity<Void>> captor = ArgumentCaptor.forClass(RequestEntity.class);
 
+	
 	private void setupRestTemplateMock(GovioMessageEntity message,Status status) throws Exception {
-		/*
-		response.setId(1L);
-		response.setTaxcode("AAAAAA00A00A000A");
-		response.setStatus(status);
-		response.setSubject(message.getSubject());
-		response.setMarkdown(message.getMarkdown());
-		*/
-
-		RequestEntity<Void> request  = RequestEntity
-				.get(new URI("https://api.io.pagopa.it/api/v1/messages/AAAAAA00A00A000A/101010101"))
-				.accept(MediaType.APPLICATION_JSON)
-				.header("Ocp-Apim-Subscription-Key", message.getGovioServiceInstance().getApikey())
-				.header("User-Agent", "Java-SDK")
-				.build();
-
 		ExternalMessageResponseWithContent response = new ExternalMessageResponseWithContent();
 		response.setStatus(MessageStatusValue.fromValue(status.toString()));
-		ParameterizedTypeReference.forType(ExternalMessageResponseWithContent.class);
 		// preparazione mockito
 		Mockito
-		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<ExternalMessageResponseWithContent>() {})))
+		.when(restTemplate.exchange(captor.capture(), eq(new ParameterizedTypeReference<ExternalMessageResponseWithContent>() {})))
 		.thenReturn(new ResponseEntity<ExternalMessageResponseWithContent>(response, HttpStatus.OK));
 		Mockito
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
@@ -131,10 +122,15 @@ public class GetMessageServiceTest {
 
 	@Test
 	@DisplayName("UC1.1: good THROTTLED")
-	public void UC_1_1_GoodRequest() throws Exception {
+	public void UC_3_1_GoodRequest() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.THROTTLED);
 		setupRestTemplateMock(govioMessageEntity,Status.THROTTLED);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
+		
+		assertEquals(HttpMethod.GET, captor.getValue().getMethod());
+		assertEquals(new URI("https://api.io.pagopa.it/api/v1/messages/"+govioMessageEntity.getTaxcode()+"/" + govioMessageEntity.getAppio_message_id()), captor.getValue().getUrl());
+		assertEquals(govioMessageEntity.getGovioServiceInstance().getApikey(), captor.getValue().getHeaders().getFirst("Ocp-Apim-Subscription-Key"));
+		
 		assertEquals(Status.THROTTLED, processedMessage.getStatus());
 	}
 /*

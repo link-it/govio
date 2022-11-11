@@ -148,7 +148,6 @@ public class UC2_NewMessageServiceTest {
 		CreatedMessage createdMessage = new CreatedMessage();
 		createdMessage.setId(UUID.randomUUID().toString());
 
-		ParameterizedTypeReference.forType(CreatedMessage.class);
 		Mockito
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
 		.thenReturn(new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED));
