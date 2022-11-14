@@ -35,6 +35,8 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -107,9 +109,10 @@ public class UC3_GetMessageServiceTest {
 	
 	final ArgumentCaptor<RequestEntity<Void>> captor = ArgumentCaptor.forClass(RequestEntity.class);
 
-	
+
 	private void setupRestTemplateMock(GovioMessageEntity message,Status status) throws Exception {
 		ExternalMessageResponseWithContent response = new ExternalMessageResponseWithContent();
+		// non prevede la possibilità di creare un messagio con status SENT
 		response.setStatus(MessageStatusValue.fromValue(status.toString()));
 		// preparazione mockito
 		Mockito
@@ -120,9 +123,22 @@ public class UC3_GetMessageServiceTest {
 		return;
 	}
 
+	private void setupRestTemplateMockFail(GovioMessageEntity message,Status status, RestClientException exception) throws Exception {
+		ExternalMessageResponseWithContent response = new ExternalMessageResponseWithContent();
+		response.setStatus(MessageStatusValue.fromValue(status.toString()));
+		// preparazione mockito
+		Mockito
+		.when(restTemplate.exchange(captor.capture(), eq(new ParameterizedTypeReference<ExternalMessageResponseWithContent>() {})))
+		.thenThrow(exception);
+		Mockito
+		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+		return;
+	}
+
+
 	@Test
-	@DisplayName("UC1.1: good THROTTLED")
-	public void UC_3_1_GoodRequest() throws Exception {
+	@DisplayName("UC1.1: THROTTLED")
+	public void UC_3_1_THROTTLED() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.THROTTLED);
 		setupRestTemplateMock(govioMessageEntity,Status.THROTTLED);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
@@ -133,41 +149,80 @@ public class UC3_GetMessageServiceTest {
 		
 		assertEquals(Status.THROTTLED, processedMessage.getStatus());
 	}
-/*
+
 	@Test
-	@DisplayName("UC1.2: good PROCESSED")
-	public void UC_1_2_GoodProcessed() throws Exception {
-		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.PROCESSED);
-		setupRestTemplateMock(govioMessageEntity,Status.PROCESSED);
+	@DisplayName("UC1.2: SENT")
+	public void UC_1_2_SENT() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.SENT);
+		setupRestTemplateMock(govioMessageEntity,Status.SENT);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
-		assertEquals(Status.PROCESSED, processedMessage.getStatus());
+		
+		assertEquals(HttpMethod.GET, captor.getValue().getMethod());
+		assertEquals(new URI("https://api.io.pagopa.it/api/v1/messages/"+govioMessageEntity.getTaxcode()+"/" + govioMessageEntity.getAppio_message_id()), captor.getValue().getUrl());
+		assertEquals(govioMessageEntity.getGovioServiceInstance().getApikey(), captor.getValue().getHeaders().getFirst("Ocp-Apim-Subscription-Key"));
+
+		assertEquals(Status.SENT, processedMessage.getStatus());
 	}
 
 	@Test
-	@DisplayName("UC1.3: good PROCESSED")
-	public void UC_1_3_GoodRejected() throws Exception {
-		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.REJECTED);
-		setupRestTemplateMock(govioMessageEntity,Status.REJECTED);
+	@DisplayName("UC1.3: ACCEPTED")
+	public void UC_1_3_ACCEPTED() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.ACCEPTED);
+		setupRestTemplateMock(govioMessageEntity,Status.ACCEPTED);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
-		assertEquals(Status.REJECTED, processedMessage.getStatus());
+
+		assertEquals(HttpMethod.GET, captor.getValue().getMethod());
+		assertEquals(new URI("https://api.io.pagopa.it/api/v1/messages/"+govioMessageEntity.getTaxcode()+"/" + govioMessageEntity.getAppio_message_id()), captor.getValue().getUrl());
+		assertEquals(govioMessageEntity.getGovioServiceInstance().getApikey(), captor.getValue().getHeaders().getFirst("Ocp-Apim-Subscription-Key"));
+
+		
+		assertEquals(Status.ACCEPTED, processedMessage.getStatus());
 	}
 
 	@Test
-	@DisplayName("UC1.3: good FAILED")
-	public void UC_1_3_GoodRFAILED() throws Exception {
-		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.FAILED);
-		setupRestTemplateMock(govioMessageEntity,Status.FAILED);
+	@DisplayName("UC1.4: UNAUTHORIZED")
+	public void UC_1_4_UNAUTHORIZED() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.ACCEPTED);
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
+		setupRestTemplateMockFail(govioMessageEntity,Status.ACCEPTED,e);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
-		assertEquals(Status.FAILED, processedMessage.getStatus());
+		
+		assertEquals(HttpMethod.GET, captor.getValue().getMethod());
+		assertEquals(new URI("https://api.io.pagopa.it/api/v1/messages/"+govioMessageEntity.getTaxcode()+"/" + govioMessageEntity.getAppio_message_id()), captor.getValue().getUrl());
+		assertEquals(govioMessageEntity.getGovioServiceInstance().getApikey(), captor.getValue().getHeaders().getFirst("Ocp-Apim-Subscription-Key"));
+
+		assertEquals(Status.ACCEPTED, processedMessage.getStatus());
 	}
 	
-401 - Unauthorized
+	@Test
+	@DisplayName("UC1.5: FORBIDDEN")
+	public void UC_1_5_FORBIDDEN() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.ACCEPTED);
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.FORBIDDEN);
+		setupRestTemplateMockFail(govioMessageEntity,Status.ACCEPTED,e);
+		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
+		
+		assertEquals(HttpMethod.GET, captor.getValue().getMethod());
+		assertEquals(new URI("https://api.io.pagopa.it/api/v1/messages/"+govioMessageEntity.getTaxcode()+"/" + govioMessageEntity.getAppio_message_id()), captor.getValue().getUrl());
+		assertEquals(govioMessageEntity.getGovioServiceInstance().getApikey(), captor.getValue().getHeaders().getFirst("Ocp-Apim-Subscription-Key"));
 
-403 - Forbidden.
+		assertEquals(Status.ACCEPTED, processedMessage.getStatus());
+	}
 
-404 - No message found for the provided ID.
+	
+	@Test
+	@DisplayName("UC1.6: NOT FOUND")
+	public void UC_1_6_NOT_FOUND() throws Exception {
+		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.ACCEPTED);
+		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.NOT_FOUND);
+		setupRestTemplateMockFail(govioMessageEntity,Status.ACCEPTED,e);
+		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
+		
+		assertEquals(HttpMethod.GET, captor.getValue().getMethod());
+		assertEquals(new URI("https://api.io.pagopa.it/api/v1/messages/"+govioMessageEntity.getTaxcode()+"/" + govioMessageEntity.getAppio_message_id()), captor.getValue().getUrl());
+		assertEquals(govioMessageEntity.getGovioServiceInstance().getApikey(), captor.getValue().getHeaders().getFirst("Ocp-Apim-Subscription-Key"));
 
-429 - Too many requests
-
-*/
+		assertEquals(Status.ACCEPTED, processedMessage.getStatus());
+	}
 }
+

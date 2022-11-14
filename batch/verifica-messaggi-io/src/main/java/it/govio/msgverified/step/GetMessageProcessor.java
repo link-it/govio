@@ -1,6 +1,8 @@
 package it.govio.msgverified.step;
 
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import it.govio.msgverified.entity.GovioMessageEntity;
 import it.pagopa.io.v1.api.DefaultApi;
@@ -34,8 +37,9 @@ public class GetMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 		try {
 			FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 			fiscalCodePayload.setFiscalCode(item.getTaxcode());
-			System.out.println(fiscalCodePayload.getFiscalCode() + "           " +item.getAppio_message_id());
 			 ExternalMessageResponseWithContent message = backendIOClient.getMessage(fiscalCodePayload.getFiscalCode(), item.getAppio_message_id());
+			 GovioMessageEntity gme = new GovioMessageEntity();
+			 gme.setStatus(item.getStatus());
 			 /* risposte possibili:
 		      "ACCEPTED": the message has been accepted and will be processed for
 		      delivery;
@@ -52,13 +56,40 @@ public class GetMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 		      "REJECTED": either the recipient does not exist, or the sender has been
 		      blocked
 */
-				System.out.println(message.getStatus().toString());
 				item.setStatus(GovioMessageEntity.Status.valueOf(message.getStatus().toString()));
-//			 item.setStatus(message.getReadStatus());
+				return gme;
+
+		} catch (HttpClientErrorException e) {
+			switch (e.getRawStatusCode()) {
+			case 400:
+	//			logErrorResponse(e);
+	//			item.setStatus(GovioMessageEntity.Status.DENIED);
+	//			item.setLastUpdateStatus(LocalDateTime.now());
+				break;
+			case 401:
+	//			logErrorResponse(e);
+	//			item.setStatus(GovioMessageEntity.Status.DENIED);
+	//			item.setLastUpdateStatus(LocalDateTime.now());
+				break;
+			case 403:
+		//		logErrorResponse(e);
+	//			item.setStatus(GovioMessageEntity.Status.FORBIDDEN);
+	//			item.setLastUpdateStatus(LocalDateTime.now());
+				break;
+			case 404:
+	//			logger.info("Messaggio non spedito: profilo non esistente");
+//				item.setStatus(Status.PROFILE_NOT_EXISTS);
+	//			item.setLastUpdateStatus(LocalDateTime.now());
+				break;
+			default:
+	//			logErrorResponse(e);
+				break;
+			}
+		} catch (HttpServerErrorException e) {
+	//		logErrorResponse(e);
+		} catch (Exception e) {
+			logger.error("Internal server error", e);
 		}
-		catch(HttpClientErrorException e) {
-			System.out.println("fallito");
-		}
-		return null;
-		}
+		return item;
+	}
 }
