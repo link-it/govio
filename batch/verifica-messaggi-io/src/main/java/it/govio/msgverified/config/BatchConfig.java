@@ -30,6 +30,7 @@ import it.govio.msgverified.entity.GovioMessageEntity;
 import it.govio.msgverified.entity.GovioMessageEntity.Status;
 import it.govio.msgverified.repository.GovioMessagesRepository;
 import it.govio.msgverified.step.GetMessageProcessor;
+import it.pagopa.io.v1.api.beans.ExternalMessageResponseWithContent;
 
 @Configuration
 @EnableBatchProcessing
@@ -60,58 +61,58 @@ public class BatchConfig  {
 		
 		public Step getMessageStep(){
 			return steps.get("getMessageStep")
-//					.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
-//					.reader(expiredScheduledDateMessageCursor(Status.SCHEDULED))
-//					.processor(asyncProcessor(this.getProfileProcessor))
-//					.writer(asyncMessageWriter())
-					.<GovioMessageEntity, GovioMessageEntity>chunk(1)
-					// TODO aggiungere Status.ACCEPTED,Status.THROTTLED e le date
-					// fare altri due reader oppure metterli insieme a SENT ?
-					.reader(sentMessageReader(Status.THROTTLED))
+					.<GovioMessageEntity, GovioMessageEntity>chunk(10)
+					.reader(expiredScheduledDateMessageCursor(Status.THROTTLED,Status.SENT,Status.ACCEPTED))
 					.processor(this.getMessageProcessor)
 					.writer(messageWriter())
 					.build();
 		}
 		
-	    private RepositoryItemReader<GovioMessageEntity> sentMessageReader(Status status) {
+		/*
+	    private RepositoryItemReader<GovioMessageEntity> messageReader(Status sent,Status accepted, Status throttled) {
 	        final RepositoryItemReader<GovioMessageEntity> repositoryItemReader = new RepositoryItemReader<>();
 	        repositoryItemReader.setRepository(govioMessagesRepository);
-	        repositoryItemReader.setMethodName("findAllByStatus");
+	        repositoryItemReader.setMethodName("findAllByStatusAndExpeditionDateAndLastUpdateStatusBefore");
 	        List<Object> methodArgs = new ArrayList<Object>();
-	        methodArgs.add(status);
-//       	methodArgs.add(LocalDateTime.now());
+	        methodArgs.add(accepted);
+	        methodArgs.add(sent);
+	        methodArgs.add(throttled);
+	        methodArgs.add(LocalDateTime.now());
 	        repositoryItemReader.setArguments(methodArgs);
 			final HashMap<String, Sort.Direction> sorts = new HashMap<>();
-		//	sorts.put("scheduledExpeditionDate", Sort.Direction.ASC);
+			sorts.put("expeditionDate", Sort.Direction.ASC);
+			sorts.put("lastUpdateStatus", Sort.Direction.ASC);
 			repositoryItemReader.setSort(sorts);
 			repositoryItemReader.setPageSize(1000);
 			repositoryItemReader.setMaxItemCount(1000);
 	        return repositoryItemReader;
 	    }
-	    
+	    */
+
 	    private RepositoryItemWriter<GovioMessageEntity> messageWriter() {
 	        final RepositoryItemWriter<GovioMessageEntity> repositoryItemWriter = new RepositoryItemWriter<>();
 	        repositoryItemWriter.setRepository(govioMessagesRepository);
 	        repositoryItemWriter.setMethodName("save");
 	        return repositoryItemWriter;
 	    }
-	    /*
-	    public ItemReader<GovioMessageEntity> messageCursor(Status status) {
+	    
+	    
+	    public ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status sent,Status accepted, Status throttled) {
 	        JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
-	        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status = :status");
+	        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status = :sent AND msg.status = :accepted AND msg.status = :throttled AND (msg.expeditionDate < :now OR msg.lastUpdateStatus < :now)");
 	        itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
 	        itemReader.setSaveState(true);
 	        Map<String, Object> parameters = new HashMap<String, Object>();
-	        parameters.put("status", status);
-	   //     parameters.put("now", LocalDateTime.now());
+	        parameters.put("sent", sent);
+	        parameters.put("accepted", accepted);
+	        parameters.put("throttled", throttled);
+	        parameters.put("now", LocalDateTime.now());
 	        itemReader.setParameterValues(parameters);
 	        return itemReader;
 	    }
-*/
-
-		@Bean
+	    
+	    @Bean
 		public Job acquisizioneGdCJob(){
-			// TODO aggiungere il nome 
 			return jobs.get("verificaMessaggiGovIOJob")
 					.incrementer(new RunIdIncrementer())
 					.start(getMessageStep())

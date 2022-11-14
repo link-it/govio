@@ -982,6 +982,7 @@ definitions:
     type: string
     enum:
       - ACCEPTED
+      - SENT
       - THROTTLED
       - FAILED
       - PROCESSED

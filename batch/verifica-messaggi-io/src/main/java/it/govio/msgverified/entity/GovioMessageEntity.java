@@ -29,7 +29,7 @@ import lombok.AllArgsConstructor;
 	@Entity
 	@Table(name = "govio_messages")
 	public class GovioMessageEntity {
-		public enum Status {ACCEPTED, THROTTLED, SENT, FAILED, PROCESSED, REJECTED}
+		public enum Status {ACCEPTED, THROTTLED, SENT, DENIED, FORBIDDEN, NOT_FOUND}
 
 		@Id
 		@SequenceGenerator(name="seq_govio_messages",sequenceName="seq_govio_messages", initialValue=1, allocationSize=1)
