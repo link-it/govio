@@ -1,4 +1,4 @@
-package it.govio.msgsender.test;
+package it.govio.batch.test;
 
 //import static org.junit.Assert.assertNotNull;
 //import static org.junit.Assert.assertTrue;

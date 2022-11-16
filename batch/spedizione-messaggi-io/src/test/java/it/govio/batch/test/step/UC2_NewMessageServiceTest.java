@@ -1,4 +1,4 @@
-package it.govio.msgsender.test.step;
+package it.govio.batch.test.step;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,6 +41,7 @@ import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.step.NewMessageProcessor;
+import it.govio.batch.test.utils.GovioMessageBuilder;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.MessageContent;
 import it.pagopa.io.v1.api.beans.NewMessage;

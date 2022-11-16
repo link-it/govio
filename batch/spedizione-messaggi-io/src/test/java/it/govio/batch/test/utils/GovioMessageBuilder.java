@@ -1,4 +1,4 @@
-package it.govio.msgsender.test.step;
+package it.govio.batch.test.utils;
 
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;

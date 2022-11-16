@@ -978,22 +978,15 @@ definitions:
         $ref: '#/definitions/NotificationChannelStatusValue'
       webhook:
         $ref: '#/definitions/NotificationChannelStatusValue'
-  RejectedMessageStatusValue:
+  MessageStatusValue:
     type: string
-    x-extensible-enum:
-      - REJECTED
-  NotRejectedMessageStatusValue:
-    type: string
-    x-extensible-enum:
+    enum:
       - ACCEPTED
+      - SENT
       - THROTTLED
       - FAILED
       - PROCESSED
-  MessageStatusValue:
-    x-one-of: true
-    allOf:
-      - $ref: '#/definitions/RejectedMessageStatusValue'
-      - $ref: '#/definitions/NotRejectedMessageStatusValue'
+      - REJECTED
     description: >-
       The processing status of a message.
 

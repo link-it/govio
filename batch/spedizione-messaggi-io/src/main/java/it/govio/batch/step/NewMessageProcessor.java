@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
@@ -25,12 +26,9 @@ import it.pagopa.io.v1.api.beans.PaymentData;
 import it.pagopa.io.v1.api.beans.Payee;
 
 @Component
-public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
+public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 
 	private Logger logger = LoggerFactory.getLogger(NewMessageProcessor.class);
-
-	@Value( "${rest.debugging:false}" )
-	private boolean debugging;
 
 	@Autowired
 	private DefaultApi backendIOClient;
@@ -80,51 +78,18 @@ public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, Go
 			item.setAppioMessageId(submitMessageforUserWithFiscalCodeInBody.getId());
 			item.setStatus(Status.SENT);
 			item.setExpeditionDate(LocalDateTime.now());
-			item.setLastUpdateStatus(LocalDateTime.now());
 			logger.info("Messaggio spedito con successo. Id: {}", item.getAppioMessageId());
 		} catch (HttpClientErrorException e) {
-			switch (e.getRawStatusCode()) {
-			case 400:
-				logErrorResponse(e);
-				item.setStatus(Status.BAD_REQUEST);
-				item.setLastUpdateStatus(LocalDateTime.now());
-				break;
-			case 401:
-				logErrorResponse(e);
-				item.setStatus(Status.DENIED);
-				item.setLastUpdateStatus(LocalDateTime.now());
-				break;
-			case 403:
-				logErrorResponse(e);
-				item.setStatus(Status.FORBIDDEN);
-				item.setLastUpdateStatus(LocalDateTime.now());
-				break;
-			case 404:
-				logger.info("Messaggio non spedito: profilo non esistente");
-				item.setStatus(Status.PROFILE_NOT_EXISTS);
-				item.setLastUpdateStatus(LocalDateTime.now());
-				break;
-			default:
-				logErrorResponse(e);
-				break;
-			}
+			item.setStatus(handleRestClientException(e));
 		} catch (HttpServerErrorException e) {
-			logErrorResponse(e);
+			handleRestClientException(e);
+		} catch (RestClientException e) {
+			handleRestClientException(e);
 		} catch (Exception e) {
-			logger.error("Internal server error", e);
+			handleRestClientException(e);
 		}
+		item.setLastUpdateStatus(LocalDateTime.now());
 		return item;
 	}
 
-
-	private void logErrorResponse(HttpStatusCodeException e) {
-		if(e instanceof HttpServerErrorException)
-			logger.error("Ricevuto server error da BackendIO: {}", e.getMessage());
-		else
-			logger.warn("Ricevuto client error da BackendIO: {}", e.getMessage());
-		logger.debug("HTTP Status Code: {}", e.getRawStatusCode());
-		logger.debug("Status Text: {}", e.getStatusText());
-		logger.debug("HTTP Headers: {}", e.getResponseHeaders());
-		logger.debug("Response Body: {}", e.getResponseBodyAsString());	
-	}
 }
