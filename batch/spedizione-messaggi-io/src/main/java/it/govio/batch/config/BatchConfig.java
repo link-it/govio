@@ -1,4 +1,4 @@
-package it.govio.msgsender.config;
+package it.govio.batch.config;
 
 
 import java.time.LocalDateTime;
@@ -27,11 +27,11 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Sort;
 
-import it.govio.msgsender.entity.GovioMessageEntity;
-import it.govio.msgsender.entity.GovioMessageEntity.Status;
-import it.govio.msgsender.repository.GovioMessagesRepository;
-import it.govio.msgsender.step.GetProfileProcessor;
-import it.govio.msgsender.step.NewMessageProcessor;
+import it.govio.batch.entity.GovioMessageEntity;
+import it.govio.batch.entity.GovioMessageEntity.Status;
+import it.govio.batch.repository.GovioMessagesRepository;
+import it.govio.batch.step.GetProfileProcessor;
+import it.govio.batch.step.NewMessageProcessor;
 
 
 @Configuration

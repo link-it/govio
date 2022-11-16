@@ -44,17 +44,10 @@ public class BatchConfig  {
 		private StepBuilderFactory steps;
 		
 		@Autowired
-		JobRepository jobRepository;
-		
-		@Autowired
 		private GetMessageProcessor getMessageProcessor;
 		
 		@Autowired
 		private GovioMessagesRepository govioMessagesRepository;
-		
-		@Autowired
-		private EntityManager entityManager;
-		
 		
 		public TaskExecutor taskExecutor() {
 		    return new SimpleAsyncTaskExecutor("spring_batch_msgverified");

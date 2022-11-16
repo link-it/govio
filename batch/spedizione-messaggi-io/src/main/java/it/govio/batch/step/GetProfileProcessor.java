@@ -1,4 +1,4 @@
-package it.govio.msgsender.step;
+package it.govio.batch.step;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +13,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
-import it.govio.msgsender.entity.GovioMessageEntity;
-import it.govio.msgsender.entity.GovioMessageEntity.Status;
+import it.govio.batch.entity.GovioMessageEntity;
+import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.pagopa.io.v1.api.DefaultApi;
 import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 import it.pagopa.io.v1.api.beans.LimitedProfile;

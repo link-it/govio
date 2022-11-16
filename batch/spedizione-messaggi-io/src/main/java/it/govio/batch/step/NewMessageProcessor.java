@@ -1,4 +1,4 @@
-package it.govio.msgsender.step;
+package it.govio.batch.step;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -14,7 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
-import it.govio.msgsender.entity.GovioMessageEntity;
+import it.govio.batch.entity.GovioMessageEntity;
+import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.pagopa.io.v1.api.DefaultApi;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.MessageContent;
@@ -22,7 +23,6 @@ import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.beans.NewMessageDefaultAddresses;
 import it.pagopa.io.v1.api.beans.PaymentData;
 import it.pagopa.io.v1.api.beans.Payee;
-import it.govio.msgsender.entity.GovioMessageEntity.Status;
 
 @Component
 public class NewMessageProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
