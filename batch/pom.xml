@@ -15,6 +15,7 @@
 	<name>GovIO - Batch</name>
 	<modules>
 		<module>spedizione-messaggi-io</module>
+		<module>verifica-messaggi-io</module>
 	</modules>
 </project>
 
