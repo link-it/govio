@@ -1,4 +1,4 @@
-package it.govio.msgsender.config;
+package it.govio.batch.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

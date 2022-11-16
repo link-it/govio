@@ -1,4 +1,4 @@
-package it.govio.msgsender.entity;
+package it.govio.batch.entity;
 
 
 import java.time.LocalDateTime;

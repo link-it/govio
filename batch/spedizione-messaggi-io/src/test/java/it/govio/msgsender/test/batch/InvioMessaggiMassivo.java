@@ -40,12 +40,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import it.govio.msgsender.Application;
-import it.govio.msgsender.entity.GovioMessageEntity;
-import it.govio.msgsender.entity.GovioServiceInstanceEntity;
-import it.govio.msgsender.entity.GovioMessageEntity.Status;
-import it.govio.msgsender.repository.GovioMessagesRepository;
-import it.govio.msgsender.repository.GovioServiceInstancesRepository;
+import it.govio.batch.Application;
+import it.govio.batch.entity.GovioMessageEntity;
+import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.entity.GovioMessageEntity.Status;
+import it.govio.batch.repository.GovioMessagesRepository;
+import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 import it.pagopa.io.v1.api.beans.LimitedProfile;

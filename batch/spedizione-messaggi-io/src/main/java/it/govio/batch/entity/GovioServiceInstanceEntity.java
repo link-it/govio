@@ -1,4 +1,4 @@
-package it.govio.msgsender.entity;
+package it.govio.batch.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

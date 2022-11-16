@@ -3,10 +3,10 @@ package it.govio.msgsender.test.step;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 
-import it.govio.msgsender.entity.GovioMessageEntity;
-import it.govio.msgsender.entity.GovioServiceInstanceEntity;
-import it.govio.msgsender.entity.GovioMessageEntity.GovioMessageEntityBuilder;
-import it.govio.msgsender.entity.GovioMessageEntity.Status;
+import it.govio.batch.entity.GovioMessageEntity;
+import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.entity.GovioMessageEntity.GovioMessageEntityBuilder;
+import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.pagopa.io.v1.api.beans.Payee;
 
 public class GovioMessageBuilder {
