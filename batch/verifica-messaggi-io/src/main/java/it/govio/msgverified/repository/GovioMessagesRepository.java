@@ -1,18 +1,13 @@
 package it.govio.msgverified.repository;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
-
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import it.govio.msgverified.entity.GovioMessageEntity;
-import it.govio.msgverified.entity.GovioMessageEntity.Status;
 
 
-public interface GovioMessagesRepository extends JpaRepositoryImplementation<GovioMessageEntity, Long> {
-	
-	public Page<GovioMessageEntity> findAllByStatusAndExpeditionDateAndLastUpdateStatusBefore(Status status, LocalDateTime expeditionDate,LocalDateTime last_status_update, Pageable pageable);
-
-	
+public interface GovioMessagesRepository extends JpaRepository<GovioMessageEntity, Long> {
+	 @Query("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE (msg.status = ?1 OR msg.status = ?2 OR msg.status =?3) AND (msg.expeditionDate < ?4 OR msg.lastUpdateStatus < ?4)")
+	public Page<GovioMessageEntity> findByStatus(String status1, String status2, String status3,Pageable pageable);
 }
