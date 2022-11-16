@@ -26,9 +26,9 @@ test_and_coverage:
         - wget https://raw.githubusercontent.com/rix0rrr/cover2cover/master/cover2cover.py
         - apt-get update
         - apt-get -y install python2 npm
-        - python2 ./cover2cover.py batch/spedizione-messaggi-io/target/site/jacoco/jacoco.xml batch/spedizione-messaggi-io/src/main/java/ > batch/spedizione-messaggi-io/target/site/cobertura.xml
+        - python2 ./cover2cover.py batch/target/site/jacoco/jacoco.xml batch/src/main/java/ > batch/target/site/cobertura.xml
         - mkdir target
-        - npx cobertura-merge -o target/cobertura.xml package1=batch/spedizione-messaggi-io/target/site/cobertura.xml
+        - npx cobertura-merge -o target/cobertura.xml package1=batch/target/site/cobertura.xml
     # dependencies: [] # Per evitare il download di artifact in job precedenti
     artifacts:
         untracked: false
@@ -37,7 +37,7 @@ test_and_coverage:
           coverage_report:
             coverage_format: cobertura
             path: target/cobertura.xml
-          junit: [ batch/spedizione-messaggi-io/target/surefire-reports/*.xml ]
+          junit: [ batch/target/surefire-reports/*.xml ]
         expire_in: "1 week"
 
 code_quality:
