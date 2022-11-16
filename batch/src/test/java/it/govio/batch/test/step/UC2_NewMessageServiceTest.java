@@ -2,7 +2,6 @@ package it.govio.batch.test.step;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,7 +53,7 @@ import it.pagopa.io.v1.api.beans.PaymentData;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class UC2_NewMessageServiceTest {
+class UC2_NewMessageServiceTest {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -112,8 +111,8 @@ public class UC2_NewMessageServiceTest {
 		MessageContent content = new MessageContent();
 		content.setMarkdown(govioMessageEntity.getMarkdown());
 		content.setSubject(govioMessageEntity.getSubject());
-		if(govioMessageEntity.getDue_date() != null)
-		content.setDueDate(new Timestamp(govioMessageEntity.getDue_date().toEpochSecond(ZoneOffset.UTC)));
+		if(govioMessageEntity.getDueDate() != null)
+		content.setDueDate(new Timestamp(govioMessageEntity.getDueDate().toEpochSecond(ZoneOffset.UTC)));
 		if(govioMessageEntity.getNoticeNumber() != null) {
 			Assert.assertNotNull(govioMessageEntity.getAmount());
 			PaymentData paymentData = new PaymentData();
@@ -151,7 +150,7 @@ public class UC2_NewMessageServiceTest {
 		createdMessage.setId(UUID.randomUUID().toString());
 
 		Mockito
-		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
+		.when(restTemplate.exchange(request, new ParameterizedTypeReference<CreatedMessage>() {}))
 		.thenReturn(new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED));
 		Mockito
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
@@ -176,7 +175,7 @@ public class UC2_NewMessageServiceTest {
 
 		ParameterizedTypeReference.forType(CreatedMessage.class);
 		Mockito
-		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
+		.when(restTemplate.exchange(request, new ParameterizedTypeReference<CreatedMessage>() {}))
 		.thenThrow(exception);
 		Mockito
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
@@ -185,7 +184,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.1: Bad request")
-	public void UC2_1_BadRequest () throws Exception {
+	void UC2_1_BadRequest () throws Exception {
 		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
@@ -195,7 +194,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.2: Profile not exists")
-	public void UC2_2_ProfileNotExists () throws Exception {
+	void UC2_2_ProfileNotExists () throws Exception {
 		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.NOT_FOUND);
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
@@ -213,7 +212,7 @@ public class UC2_NewMessageServiceTest {
 	
 	@Test
 	@DisplayName("UC2.4: Denied)")
-	public void UC2_4_Denied() throws Exception {
+	void UC2_4_Denied() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.UNAUTHORIZED);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
@@ -224,7 +223,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2_5_Forbidden")
-	public void UC2_5_Forbidden() throws Exception {
+	void UC2_5_Forbidden() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.FORBIDDEN);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
@@ -234,7 +233,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.6: Messaggio minimale (no avviso, no scadenza, no payee, no email)")
-	public void UC2_6_MessaggioMinimale() throws Exception {
+	void UC2_6_MessaggioMinimale() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		setupRestTemplateMock(buildGovioMessageEntity);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
@@ -243,7 +242,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.7: Messaggio con avviso")
-	public void UC2_7_MessaggioConAvviso() throws Exception {
+	void UC2_7_MessaggioConAvviso() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 1, "000000000000000000", false, null, null);
 		setupRestTemplateMock(buildGovioMessageEntity);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
@@ -252,7 +251,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.8: Messaggio con scadenza")
-	public void UC2_8_MessaggioConScadenza() throws Exception {
+	void UC2_8_MessaggioConScadenza() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(true, 1, "000000000000000000", false, null, null);
 		setupRestTemplateMock(buildGovioMessageEntity);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
@@ -261,7 +260,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.9: Messaggio con payee")
-	public void UC2_9_MessaggioConpayee() throws Exception {
+	void UC2_9_MessaggioConpayee() throws Exception {
 		Payee p = new Payee().fiscalCode("12345678901");
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 1, "000000000000000000", false, p, null);
 		setupRestTemplateMock(buildGovioMessageEntity);
@@ -271,7 +270,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.10: Messaggio con email")
-	public void UC2_10_MessaggioConEmail() throws Exception {
+	void UC2_10_MessaggioConEmail() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, "email@gmail.com");
 		setupRestTemplateMock(buildGovioMessageEntity);
 		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
@@ -280,7 +279,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.11: Errore 5xx)")
-	public void UC2_11_Errore5xx() throws Exception {
+	void UC2_11_Errore5xx() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		HttpServerErrorException e = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
@@ -291,7 +290,7 @@ public class UC2_NewMessageServiceTest {
 	
 	@Test
 	@DisplayName("UC2.12: Errore 4xx non previsto")
-	public void UC2_12_Errore4xxNonPrevisto() throws Exception {
+	void UC2_12_Errore4xxNonPrevisto() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.I_AM_A_TEAPOT);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
@@ -301,7 +300,7 @@ public class UC2_NewMessageServiceTest {
 
 	@Test
 	@DisplayName("UC2.13: Errore interno")
-	public void UC2_13_ErroreNonPrevisto() throws Exception {
+	void UC2_13_ErroreNonPrevisto() throws Exception {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		RestClientException e = new RestClientException("Error");
 		setupRestTemplateMock(buildGovioMessageEntity, e);

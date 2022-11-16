@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
@@ -62,8 +61,8 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		}
 		
 		// setto i dati rimanenti del content
-		if(item.getDue_date() != null)
-			mc.setDueDate(new Timestamp(item.getDue_date().toEpochSecond(ZoneOffset.UTC)));
+		if(item.getDueDate() != null)
+			mc.setDueDate(new Timestamp(item.getDueDate().toEpochSecond(ZoneOffset.UTC)));
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);
@@ -79,8 +78,6 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		} catch (HttpClientErrorException e) {
 			item.setStatus(handleRestClientException(e));
 		} catch (HttpServerErrorException e) {
-			handleRestClientException(e);
-		} catch (RestClientException e) {
 			handleRestClientException(e);
 		} catch (Exception e) {
 			handleRestClientException(e);

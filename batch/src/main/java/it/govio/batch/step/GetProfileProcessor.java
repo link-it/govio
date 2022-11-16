@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
@@ -46,8 +45,6 @@ public class GetProfileProcessor extends GovioMessageAbstractProcessor {
 		} catch (HttpClientErrorException e) {
 			item.setStatus(handleRestClientException(e));
 		} catch (HttpServerErrorException e) {
-			handleRestClientException(e);
-		} catch (RestClientException e) {
 			handleRestClientException(e);
 		} catch (Exception e) {
 			handleRestClientException(e);

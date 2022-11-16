@@ -82,7 +82,7 @@ public class GovioMessageEntity {
 	private LocalDateTime expeditionDate;
 	
 	@Column(name = "due_date")
-	private LocalDateTime due_date;
+	private LocalDateTime dueDate;
 	
 	@Column(name = "last_update_status")
 	private LocalDateTime lastUpdateStatus;

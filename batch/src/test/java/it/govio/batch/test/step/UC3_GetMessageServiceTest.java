@@ -25,14 +25,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
-import it.govio.batch.entity.GovioMessageEntity.GovioMessageEntityBuilder;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioMessagesRepository;
@@ -41,13 +38,12 @@ import it.govio.batch.step.GetMessageProcessor;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 import it.pagopa.io.v1.api.beans.ExternalMessageResponseWithContent;
 import it.pagopa.io.v1.api.beans.MessageStatusValue;
-import it.pagopa.io.v1.api.beans.Payee;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class UC3_GetMessageServiceTest {
+class UC3_GetMessageServiceTest {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -102,23 +98,23 @@ public class UC3_GetMessageServiceTest {
 		return;
 	}
 
-	private void setupRestTemplateMockFail(GovioMessageEntity message,Status status,RestClientException exception) throws Exception {
-		ExternalMessageResponseWithContent response = new ExternalMessageResponseWithContent();
-		response.setStatus(MessageStatusValue.fromValue(status.toString()));
-		Mockito
-		.when(restTemplate.exchange(captor.capture(), eq(new ParameterizedTypeReference<ExternalMessageResponseWithContent>() {})))
-		.thenThrow(exception);
-		Mockito
-		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-		return;
-	}
+//	private void setupRestTemplateMockFail(GovioMessageEntity message,Status status,RestClientException exception) throws Exception {
+//		ExternalMessageResponseWithContent response = new ExternalMessageResponseWithContent();
+//		response.setStatus(MessageStatusValue.fromValue(status.toString()));
+//		Mockito
+//		.when(restTemplate.exchange(captor.capture(), eq(new ParameterizedTypeReference<ExternalMessageResponseWithContent>() {})))
+//		.thenThrow(exception);
+//		Mockito
+//		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+//		return;
+//	}
 
 
 
 
 	@Test
 	@DisplayName("UC1.1: THROTTLED")
-	public void UC_3_1_THROTTLED() throws Exception {
+	void UC_3_1_THROTTLED() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.THROTTLED);
 		setupRestTemplateMock(govioMessageEntity,Status.PROCESSED);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
@@ -131,7 +127,7 @@ public class UC3_GetMessageServiceTest {
 
 	@Test
 	@DisplayName("UC1.2: SENT")
-	public void UC_3_2_SENT() throws Exception {
+	void UC_3_2_SENT() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.SENT);
 		setupRestTemplateMock(govioMessageEntity,Status.PROCESSED);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
@@ -144,7 +140,7 @@ public class UC3_GetMessageServiceTest {
 
 	@Test
 	@DisplayName("UC1.3: ACCEPTED")
-	public void UC_3_3_ACCEPTED() throws Exception {
+	void UC_3_3_ACCEPTED() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity(Status.ACCEPTED);
 		setupRestTemplateMock(govioMessageEntity,Status.PROCESSED);
 		GovioMessageEntity processedMessage = getMessageProcessor.process(govioMessageEntity);
@@ -157,19 +153,19 @@ public class UC3_GetMessageServiceTest {
 
 //	@Test
 //	@DisplayName("UC1.4: UNAUTHORIZED")
-//	public void UC_1_4_UNAUTHORIZED() throws Exception {
+//	void UC_1_4_UNAUTHORIZED() throws Exception {
 //		eseguiTest(Status.ACCEPTED, HttpStatus.UNAUTHORIZED);
 //	}
 //
 //	@Test
 //	@DisplayName("UC1.5: FORBIDDEN")
-//	public void UC_1_5_FORBIDDEN() throws Exception {
+//	void UC_1_5_FORBIDDEN() throws Exception {
 //		eseguiTest(Status.ACCEPTED, HttpStatus.FORBIDDEN);
 //	}
 //
 //	@Test
 //	@DisplayName("UC1.6: NOT FOUND")
-//	public void UC_1_6_NOT_FOUND() throws Exception {
+//	void UC_1_6_NOT_FOUND() throws Exception {
 //		eseguiTest(Status.ACCEPTED, HttpStatus.NOT_FOUND);
 //	}
 }
