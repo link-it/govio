@@ -1,26 +1,23 @@
 package it.govio.batch.test.step;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.batch.test.JobRepositoryTestUtils;
-import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,8 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
@@ -38,8 +33,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
-import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
+import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.step.GetProfileProcessor;
@@ -48,10 +43,6 @@ import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 import it.pagopa.io.v1.api.beans.LimitedProfile;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
-@RunWith(SpringRunner.class)
-@SpringBatchTest
-@EnableAutoConfiguration
-@ContextConfiguration(classes = { Application.class })
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
@@ -73,19 +64,11 @@ public class UC1_GetProfileServiceTest {
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
 
-	@Autowired
-	private JobRepositoryTestUtils jobRepositoryTestUtils;
-
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
 	}
 
-	@AfterEach
-	public void cleanUp() {
-		jobRepositoryTestUtils.removeJobExecutions();
-	}
-	
 	private GovioMessageEntity buildGovioMessageEntity() throws URISyntaxException {
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		GovioMessageEntity message = new GovioMessageBuilder()
@@ -212,8 +195,9 @@ public class UC1_GetProfileServiceTest {
 	public void UC_1_7_Errore4xxNonPrevisto() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.I_AM_A_TEAPOT));
-		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
-		assertEquals(Status.SCHEDULED, processedMessage.getStatus());
+	    assertThrows(HttpClientErrorException.class, () -> {
+	    	getProfileProcessor.process(govioMessageEntity);
+	    });	
 	}
 	
 	@Test
@@ -221,8 +205,9 @@ public class UC1_GetProfileServiceTest {
 	public void UC_1_7_Errore5xx() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
-		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
-		assertEquals(Status.SCHEDULED, processedMessage.getStatus());
+	    assertThrows(HttpServerErrorException.class, () -> {
+	    	getProfileProcessor.process(govioMessageEntity);
+	    });	
 	}
 	
 	@Test
@@ -230,7 +215,8 @@ public class UC1_GetProfileServiceTest {
 	public void UC_1_8_ErroreInterno() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new RestClientException("Exception"));
-		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
-		assertEquals(Status.SCHEDULED, processedMessage.getStatus());
+	    assertThrows(RestClientException.class, () -> {
+	    	getProfileProcessor.process(govioMessageEntity);
+	    });	
 	}
 }

@@ -2,6 +2,7 @@ package it.govio.batch.test.utils;
 
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
@@ -28,6 +29,18 @@ public class GovioMessageBuilder {
 		}
 		if (payee != null) messageEntity.payee(payee.getFiscalCode());
 		if (email != null) messageEntity.email(email);
+		
+		switch (status) {
+		case SENT:
+		case THROTTLED:
+		case ACCEPTED:
+			messageEntity.expeditionDate(LocalDateTime.now());
+			messageEntity.appioMessageId(UUID.randomUUID().toString());
+			break;
+		default:
+			break;
+		}
+		
 		GovioMessageEntity message = messageEntity.build();
 		return message;
 	}

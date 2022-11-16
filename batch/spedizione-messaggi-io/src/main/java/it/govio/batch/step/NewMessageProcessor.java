@@ -6,13 +6,10 @@ import java.time.ZoneOffset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
 import it.govio.batch.entity.GovioMessageEntity;
@@ -22,8 +19,8 @@ import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.MessageContent;
 import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.beans.NewMessageDefaultAddresses;
-import it.pagopa.io.v1.api.beans.PaymentData;
 import it.pagopa.io.v1.api.beans.Payee;
+import it.pagopa.io.v1.api.beans.PaymentData;
 
 @Component
 public class NewMessageProcessor extends GovioMessageAbstractProcessor {
