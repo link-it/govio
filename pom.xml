@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.govio</groupId>
 	<artifactId>bom</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 	<packaging>pom</packaging>
-	<name>GovIO - BOM</name>
+	<name>GovIO</name>
 	<modules>
 		<module>batch</module>
 	</modules>
