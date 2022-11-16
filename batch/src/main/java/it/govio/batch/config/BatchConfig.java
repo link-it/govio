@@ -121,14 +121,14 @@ public class BatchConfig  {
 	}
 	
 	private AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncProcessor(GovioMessageAbstractProcessor itemProcessor) {
-	    AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncItemProcessor = new AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity>();
+	    AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncItemProcessor = new AsyncItemProcessor<>();
 	    asyncItemProcessor.setTaskExecutor(taskExecutor());
 	    asyncItemProcessor.setDelegate(itemProcessor);
 	    return asyncItemProcessor;
 	}
 	
 	private AsyncItemWriter<GovioMessageEntity> asyncMessageWriter(){
-		AsyncItemWriter<GovioMessageEntity> asyncItemWriter = new AsyncItemWriter<GovioMessageEntity>();
+		AsyncItemWriter<GovioMessageEntity> asyncItemWriter = new AsyncItemWriter<>();
 	    asyncItemWriter.setDelegate(messageWriter());
 	    return asyncItemWriter;
 	}
@@ -145,7 +145,7 @@ public class BatchConfig  {
         itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < :now");
         itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
         itemReader.setSaveState(true);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("statuses", statuses);
         parameters.put("now", LocalDateTime.now());
         itemReader.setParameterValues(parameters);

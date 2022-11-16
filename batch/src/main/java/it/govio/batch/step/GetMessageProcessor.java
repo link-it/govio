@@ -1,15 +1,11 @@
 package it.govio.batch.step;
 
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.pagopa.io.v1.api.DefaultApi;
@@ -20,9 +16,6 @@ import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 public class GetMessageProcessor extends GovioMessageAbstractProcessor { 
 
 	private Logger logger = LoggerFactory.getLogger(GetMessageProcessor.class);
-
-	@Value( "${rest.debugging:false}" )
-	private boolean debugging;
 
 	@Autowired
 	private DefaultApi backendIOClient;
@@ -38,14 +31,12 @@ public class GetMessageProcessor extends GovioMessageAbstractProcessor {
 			FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 			fiscalCodePayload.setFiscalCode(item.getTaxcode());
 			ExternalMessageResponseWithContent message = backendIOClient.getMessage(fiscalCodePayload.getFiscalCode(), item.getAppioMessageId());
-			logger.info("Verifica completata: messaggio in stato " + message.getStatus());
+			logger.info("Verifica completata: messaggio in stato {}", message.getStatus());
 			item.setStatus(GovioMessageEntity.Status.valueOf(message.getStatus().toString()));
 		} catch (HttpClientErrorException e) {
 			// Ho avuto un errore client. Non cambio di stato, passo oltre
 			handleRestClientException(e);
 		} catch (HttpServerErrorException e) {
-			handleRestClientException(e);
-		} catch (RestClientException e) {
 			handleRestClientException(e);
 		} catch (Exception e) {
 			handleRestClientException(e);

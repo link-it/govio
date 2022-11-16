@@ -21,7 +21,7 @@ public class GovioMessageBuilder {
 				.status(status)
 				.creationDate(LocalDateTime.now())
 				.scheduledExpeditionDate(LocalDateTime.now());
-		if (due_date) messageEntity.due_date(LocalDateTime.now().plusDays(3));
+		if (due_date) messageEntity.dueDate(LocalDateTime.now().plusDays(3));
 		if (amount != null && amount > 0) {
 			messageEntity.amount(amount);
 			messageEntity.noticeNumber(noticeNumber);
