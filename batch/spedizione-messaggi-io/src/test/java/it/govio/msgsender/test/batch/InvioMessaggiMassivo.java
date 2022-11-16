@@ -2,6 +2,7 @@ package it.govio.msgsender.test.batch;
 
 import static org.mockito.ArgumentMatchers.eq;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -132,8 +133,12 @@ public class InvioMessaggiMassivo {
 		.when(restTemplate.exchange(eq(request), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
 		.thenAnswer(new Answer<ResponseEntity<LimitedProfile>>() {
 			@Override
-			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws InterruptedException{
-				Thread.sleep(r.nextInt(400)+100);
+			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws Exception{
+				int nextInt = r.nextInt(400);
+				Thread.sleep(nextInt+100);
+				if(nextInt < 40) { //10%
+					throw new IOException();
+				}
 				return new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK);
 			}
 		});
