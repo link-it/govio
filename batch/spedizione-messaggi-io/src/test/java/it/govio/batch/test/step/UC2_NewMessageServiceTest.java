@@ -1,5 +1,6 @@
 package it.govio.batch.test.step;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -283,8 +284,9 @@ public class UC2_NewMessageServiceTest {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		HttpServerErrorException e = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
-		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
-		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
+	    assertThrows(HttpServerErrorException.class, () -> {
+	    	newMessageProcessor.process(buildGovioMessageEntity);
+	    });
 	}
 	
 	@Test
@@ -293,9 +295,9 @@ public class UC2_NewMessageServiceTest {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		HttpClientErrorException e = new HttpClientErrorException(HttpStatus.I_AM_A_TEAPOT);
 		setupRestTemplateMock(buildGovioMessageEntity, e);
-		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
-		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
-	}
+	    assertThrows(HttpClientErrorException.class, () -> {
+	    	newMessageProcessor.process(buildGovioMessageEntity);
+	    });	}
 
 	@Test
 	@DisplayName("UC2.13: Errore interno")
@@ -303,9 +305,9 @@ public class UC2_NewMessageServiceTest {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		RestClientException e = new RestClientException("Error");
 		setupRestTemplateMock(buildGovioMessageEntity, e);
-		GovioMessageEntity processedMessage = newMessageProcessor.process(buildGovioMessageEntity);
-		assertEquals(GovioMessageEntity.Status.RECIPIENT_ALLOWED, processedMessage.getStatus());
-	}
+	    assertThrows(RestClientException.class, () -> {
+	    	newMessageProcessor.process(buildGovioMessageEntity);
+	    });	}
 
 
 }
