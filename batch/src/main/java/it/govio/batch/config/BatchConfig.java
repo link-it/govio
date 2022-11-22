@@ -17,11 +17,17 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.database.JpaCursorItemReader;
+import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
@@ -31,6 +37,7 @@ import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.step.GetProfileProcessor;
 import it.govio.batch.step.GovioMessageAbstractProcessor;
 import it.govio.batch.step.NewMessageProcessor;
+import it.govio.batch.step.ProcessProcessor;
 
 
 @Configuration
@@ -52,9 +59,12 @@ public class BatchConfig  {
 	@Autowired
 	private NewMessageProcessor getMessageProcessor;
 	
+	//@Autowired
+	//private ProcessProcessor processProcessor;
+	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
-	
+		
 	@Autowired
 	private EntityManager entityManager;
 	
@@ -80,6 +90,71 @@ public class BatchConfig  {
 				.build();
 	}
 	
+	/*
+	@Bean(name = "JobAcquisizioneMessaggiIO")
+	public Job acquisizioneMessaggiIO(){
+		return jobs.get("JobAcquisizioneMessaggiIO")
+				.incrementer(new RunIdIncrementer())
+				.start(acquireMessagesStep())
+				.build();
+	}
+
+	public Step acquireMessagesStep() {
+    return steps.get("step1").<GovioCSVEntity, Future<GovioFileEntity>>chunk(5)
+            .reader(reader())
+            .processor(this.processProcessor)
+            .writer(writer())
+            .build();
+      }
+*/
+/*
+	  private ItemWriter<? super Future<GovioFileEntity>> writer() {
+				AsyncItemWriter<GovioFileEntity> asyncItemWriter = new AsyncItemWriter<>();
+		//	    asyncItemWriter.messageWriter2();
+			    return asyncItemWriter;
+			}
+	    private RepositoryItemWriter<GovioFileEntity> messageWriter2() {
+	        final RepositoryItemWriter<GovioFileEntity> repositoryItemWriter = new RepositoryItemWriter<>();
+	        repositoryItemWriter.setRepository(govioFilesRepository);
+	        repositoryItemWriter.setMethodName("save");
+	        return repositoryItemWriter;
+	    }
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public FlatFileItemReader<GovioCSVEntity> reader()
+	  {
+	    //Create reader instance
+	    FlatFileItemReader<GovioCSVEntity> reader = new FlatFileItemReader<GovioCSVEntity>();
+	     
+	    //Set input file location
+	    reader.setResource(new FileSystemResource("src/test/resources/csv-test"));
+	     
+	    //Set number of lines to skips. Use it if file has header rows.
+	    reader.setLinesToSkip(1);   
+	     
+	    //Configure how each line will be parsed and mapped to different values
+	    reader.setLineMapper(new DefaultLineMapper() {
+	      {
+	        setLineTokenizer(new DelimitedLineTokenizer() {
+	          {
+	            setNames(new String[] { "taxcode", "expedition_date"});
+	          }
+	        });
+	        //Set values in GovioFileEntity class
+	        setFieldSetMapper(new BeanWrapperFieldSetMapper<GovioFileEntity>() {
+	          {
+	            setTargetType(GovioFileEntity.class);
+	          }
+	        });
+	      }
+	    });
+	    return reader;
+	  }
+*/
+
+
+	
+	
 	public Step getProfileStep(){
 		Status[] statuses = {Status.SCHEDULED};
 		return steps.get("getProfileStep")
@@ -92,7 +167,7 @@ public class BatchConfig  {
 				.skipLimit(Integer.MAX_VALUE)
 				.build();
 	}
-	
+
 	public Step newMessageStep(){
 		Status[] statuses = {Status.RECIPIENT_ALLOWED};
 		return steps.get("newMessageStep")
@@ -107,7 +182,6 @@ public class BatchConfig  {
 	}
 	
 	public Step getMessageStep(){
-		
 		Status[] statuses = {Status.SENT, Status.THROTTLED, Status.ACCEPTED};
 		return steps.get("getMessaggeStep")
 		.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
@@ -132,6 +206,7 @@ public class BatchConfig  {
 	    asyncItemWriter.setDelegate(messageWriter());
 	    return asyncItemWriter;
 	}
+	
 	
     private RepositoryItemWriter<GovioMessageEntity> messageWriter() {
         final RepositoryItemWriter<GovioMessageEntity> repositoryItemWriter = new RepositoryItemWriter<>();
