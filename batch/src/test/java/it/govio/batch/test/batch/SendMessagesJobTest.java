@@ -103,6 +103,7 @@ public class SendMessagesJobTest {
 
 	@BeforeEach
 	void setUp(){
+		 
 		MockitoAnnotations.openMocks(this);
 		govioMessagesRepository.deleteAll();
 		
@@ -126,10 +127,6 @@ public class SendMessagesJobTest {
 	@Test
 	public void sendMessagesOk() throws Exception {
 
-		// Caricamento messaggi da inviare
-
-		govioMessagesRepository.deleteAll();
-		
 		Random r = new Random();
 
 		Set<String> failedTaxCodes = new HashSet<>();
@@ -190,26 +187,7 @@ public class SendMessagesJobTest {
 	@Test
 	public void sendMessagesFailure() throws Exception {
 
-		// Caricamento messaggi da inviare
-		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-
-		govioMessagesRepository.deleteAll();
-		
 		Random r = new Random();
-
-		for(int i=0; i<100; i++) {
-			GovioMessageEntity message = GovioMessageEntity.builder()
-					.govioServiceInstance(serviceInstanceEntity.get())
-					.markdown("Lorem Ipsum")
-					.subject("Subject")
-					.taxcode(String.format("%03d", i) + "AAA00A00A000A")
-					.scheduledExpeditionDate(LocalDateTime.now().minusDays(1))
-					.creationDate(LocalDateTime.now().minusDays(2))
-					.status(Status.SCHEDULED)
-					.build();
-			govioMessagesRepository.save(message);
-		}
-		
 		Set<String> failedTaxCodes = new HashSet<>();
 
 		Mockito
