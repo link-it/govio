@@ -1,42 +1,33 @@
 package it.govio.batch.test;
 
-//import static org.junit.Assert.assertNotNull;
-//import static org.junit.Assert.assertTrue;
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertTrue;
 
-//import java.io.IOException;
-//
-//import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.runner.RunWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-//import org.springframework.web.client.HttpClientErrorException;
 
 import it.govio.batch.Application;
+import it.pagopa.io.v1.api.DefaultApi;
+import it.pagopa.io.v1.api.beans.LimitedProfile;
 
-@RunWith(SpringRunner.class)
-@EnableAutoConfiguration
-@ContextConfiguration(classes = { Application.class })
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@TestInstance(Lifecycle.PER_CLASS)
+@SpringBootTest(classes = Application.class)
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class Test1 {
 	
-//	@Autowired
-//	private DefaultApi backendIOClient;
-//	
-//	@Test
-//	void GetProfileTest() {
-//		backendIOClient.getApiClient().setApiKey("17886617e07d47e8b1ba314f2f1e3052");
-//		backendIOClient.getApiClient().setDebugging(true);
-//	    LimitedProfile lp = backendIOClient.getProfile("AAAAAA00A00A000A");
-//	    assertTrue(lp.isSenderAllowed());
-//	}
+	@Autowired
+	private DefaultApi backendIOClient;
+	
+	@Test
+	void GetProfileTest() {
+		backendIOClient.getApiClient().setApiKey("17886617e07d47e8b1ba314f2f1e3052");
+		backendIOClient.getApiClient().setDebugging(true);
+	    LimitedProfile lp = backendIOClient.getProfile("AAAAAA00A00A000A");
+	    assertTrue(lp.isSenderAllowed());
+	}
 //	
 //	@Test
 //	void SendMessageOkTest(){
