@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
+import it.govio.batch.exception.BackendioRuntimeException;
 import it.govio.batch.step.GetMessageProcessor;
 
 @Configuration
@@ -36,7 +37,7 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 		.processor(asyncProcessor(this.getMessageProcessor))
 		.writer(asyncMessageWriter())
 		.faultTolerant()
-		.skip(Throwable.class)
+		.skip(BackendioRuntimeException.class)
 		.skipLimit(Integer.MAX_VALUE)
 		.build();
 	}
