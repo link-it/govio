@@ -58,7 +58,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class SendMessagesJobTest {
+class SendMessagesJobTest {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -125,7 +125,7 @@ public class SendMessagesJobTest {
 
 
 	@Test
-	public void sendMessagesOk() throws Exception {
+	void sendMessagesOk() throws Exception {
 
 		Random r = new Random();
 
@@ -139,7 +139,8 @@ public class SendMessagesJobTest {
 				@SuppressWarnings("unchecked")
 				String fiscalCode = ((RequestEntity<FiscalCodePayload>) invocation.getArgument(0)).getBody().getFiscalCode();
 				int nextInt = r.nextInt(400);
-				Thread.sleep(nextInt+100);
+//				// Simulazione ritardo chiamata http
+//				Thread.sleep(nextInt+100);
 				
 				// Nel 10% dei casi lancio una eccezione, se il codice fiscale non è già stato oggetto di eccezioni.
 				if(nextInt < 40 && failedTaxCodes.contains(fiscalCode)) { 
@@ -158,7 +159,8 @@ public class SendMessagesJobTest {
 		.thenAnswer(new Answer<ResponseEntity<CreatedMessage>>() {
 			@Override
 			public ResponseEntity<CreatedMessage> answer(InvocationOnMock invocation) throws InterruptedException{
-				Thread.sleep(r.nextInt(400)+100);
+//				// Simulazione ritardo chiamata http
+//				Thread.sleep(r.nextInt(400)+100);
 				CreatedMessage createdMessage = new CreatedMessage();
 				createdMessage.setId(UUID.randomUUID().toString());
 				return new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED);
@@ -185,7 +187,7 @@ public class SendMessagesJobTest {
 
 
 	@Test
-	public void sendMessagesFailure() throws Exception {
+	void sendMessagesFailure() throws Exception {
 
 		Random r = new Random();
 		Set<String> failedTaxCodes = new HashSet<>();
@@ -198,7 +200,8 @@ public class SendMessagesJobTest {
 				@SuppressWarnings("unchecked")
 				String fiscalCode = ((RequestEntity<FiscalCodePayload>) invocation.getArgument(0)).getBody().getFiscalCode();
 				int nextInt = r.nextInt(400);
-				Thread.sleep(nextInt+100);
+//				// Simulazione ritardo chiamata http			
+//				Thread.sleep(nextInt+100);
 				
 				// Nel 10% dei casi lancio una eccezione, se il codice fiscale non è già stato oggetto di eccezioni.
 				if(nextInt < 40 && failedTaxCodes.contains(fiscalCode)) { 
@@ -217,7 +220,8 @@ public class SendMessagesJobTest {
 		.thenAnswer(new Answer<ResponseEntity<CreatedMessage>>() {
 			@Override
 			public ResponseEntity<CreatedMessage> answer(InvocationOnMock invocation) throws InterruptedException{
-				Thread.sleep(r.nextInt(400)+100);
+//				// Simulazione ritardo chiamata http			
+//				Thread.sleep(r.nextInt(400)+100);
 				CreatedMessage createdMessage = new CreatedMessage();
 				createdMessage.setId(UUID.randomUUID().toString());
 				return new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED);

@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Assert;
@@ -54,7 +53,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
-public class VerifyMessagesJobTest {
+class VerifyMessagesJobTest {
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -94,14 +93,14 @@ public class VerifyMessagesJobTest {
 	}
 
 	@Test
-	public void verifyMessagesOk() throws Exception {
+	void verifyMessagesOk() throws Exception {
 
 		// Caricamento messaggi da inviare
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 
 		govioMessagesRepository.deleteAll();
 		
-		Random r = new Random();
+		
 
 		for(int i=0; i<100; i++) {
 			GovioMessageEntityBuilder messageBuilder = GovioMessageEntity.builder()
@@ -134,8 +133,10 @@ public class VerifyMessagesJobTest {
 		.thenAnswer(new Answer<ResponseEntity<ExternalMessageResponseWithContent>>() {
 			@Override
 			public ResponseEntity<ExternalMessageResponseWithContent> answer(InvocationOnMock invocation) throws Exception{
-				int nextInt = r.nextInt(400);
-				Thread.sleep(nextInt+100);
+//				java.util.Random r = new java.util.Random();
+//				int nextInt = r.nextInt(400);
+//				// Simulazione ritardo chiamata http
+//				Thread.sleep(nextInt+100);
 				ExternalMessageResponseWithContent response = new ExternalMessageResponseWithContent();
 				response.setStatus(MessageStatusValue.PROCESSED);
 				return new ResponseEntity<ExternalMessageResponseWithContent>(response, HttpStatus.OK);

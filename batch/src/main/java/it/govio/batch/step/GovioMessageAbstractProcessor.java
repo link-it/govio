@@ -12,6 +12,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
+import it.govio.batch.exception.BackendioRuntimeException;
 
 @Component
 public abstract class GovioMessageAbstractProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
@@ -43,9 +44,9 @@ public abstract class GovioMessageAbstractProcessor implements ItemProcessor<Gov
 		throw e;
 	}
 	
-	protected void handleRestClientException(Exception e) throws Exception {
+	protected void handleRestClientException(Exception e) {
 		logger.error("Internal server error", e);
-		throw e;
+		throw new BackendioRuntimeException(e);
 	}
 
 
