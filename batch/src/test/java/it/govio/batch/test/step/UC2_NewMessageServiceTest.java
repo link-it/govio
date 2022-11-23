@@ -37,6 +37,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.exception.BackendioRuntimeException;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
@@ -304,7 +305,7 @@ class UC2_NewMessageServiceTest {
 		GovioMessageEntity buildGovioMessageEntity = buildGovioMessageEntity(false, 0, null, false, null, null);
 		RestClientException e = new RestClientException("Error");
 		setupRestTemplateMock(buildGovioMessageEntity, e);
-	    assertThrows(RestClientException.class, () -> {
+	    assertThrows(BackendioRuntimeException.class, () -> {
 	    	newMessageProcessor.process(buildGovioMessageEntity);
 	    });	}
 

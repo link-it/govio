@@ -34,6 +34,7 @@ import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.exception.BackendioRuntimeException;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.step.GetProfileProcessor;
@@ -201,7 +202,7 @@ class UC1_GetProfileServiceTest {
 	
 	@Test
 	@DisplayName("UC1.8: Errore 5xx")
-	void UC_1_7_Errore5xx() throws Exception {
+	void UC_1_8_Errore5xx() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 	    assertThrows(HttpServerErrorException.class, () -> {
@@ -210,11 +211,11 @@ class UC1_GetProfileServiceTest {
 	}
 	
 	@Test
-	@DisplayName("UC1.8: Errore interno")
-	void UC_1_8_ErroreInterno() throws Exception {
+	@DisplayName("UC1.9: Errore interno")
+	void UC_1_9_ErroreInterno() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new RestClientException("Exception"));
-	    assertThrows(RestClientException.class, () -> {
+	    assertThrows(BackendioRuntimeException.class, () -> {
 	    	getProfileProcessor.process(govioMessageEntity);
 	    });	
 	}

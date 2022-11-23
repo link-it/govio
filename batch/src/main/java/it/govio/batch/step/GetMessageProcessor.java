@@ -1,5 +1,7 @@
 package it.govio.batch.step;
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,7 @@ public class GetMessageProcessor extends GovioMessageAbstractProcessor {
 		} catch (Exception e) {
 			handleRestClientException(e);
 		}
+		item.setLastUpdateStatus(LocalDateTime.now());
 		return item;
 	}
 	
