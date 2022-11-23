@@ -13,7 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -25,6 +24,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Setter
 @Getter	
 @Builder
@@ -47,7 +47,7 @@ public class GovioFileEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 	
-	@Column(name = "location")
+	@Column(name = "location", nullable = false)
 	private String location;
 
 	@Column(name = "status", nullable = false)

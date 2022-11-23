@@ -30,6 +30,7 @@ import lombok.Setter;
 @Component
 @Table(name = "govio_files_messages")
 public class GovioFileMessageEntity {
+	
 	@Id
 	@SequenceGenerator(name="seq_govio_messages",sequenceName="seq_govio_messages", initialValue=1, allocationSize=1)
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_messages")
