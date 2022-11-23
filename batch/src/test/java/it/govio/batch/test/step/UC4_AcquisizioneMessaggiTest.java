@@ -15,7 +15,7 @@ import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
-import it.govio.batch.step.ProcessProcessor;
+import it.govio.batch.step.CsvItemProcessor;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
 
@@ -23,7 +23,7 @@ import it.govio.batch.test.utils.GovioMessageBuilder;
 @SpringBootTest(classes = Application.class)
 public class UC4_AcquisizioneMessaggiTest {
 	@Autowired
-	ProcessProcessor processProcessor;
+	CsvItemProcessor processProcessor;
 	@Autowired
 	private GovioServiceInstancesRepository govioServiceInstancesRepository;
 

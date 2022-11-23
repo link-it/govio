@@ -22,6 +22,9 @@ import lombok.Setter;
 	@Entity
 	@Table(name = "govio_placeholders")
 	public class GovioPlaceholderEntity {
+		
+		enum Type { STRING, DATE, DATETIME };
+		
 		@Id
 		@SequenceGenerator(name="seq_govio_placeholders",sequenceName="seq_govio_placeholders", initialValue=1, allocationSize=1)
 		@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_placeholders")
@@ -30,6 +33,15 @@ import lombok.Setter;
 		@Column(name = "name", nullable = false)
 		private String name;
 		
+		@Column(name = "description")
+		private String description;
+		
+		@Column(name = "example", nullable = false)
+		private String example;
+		
 		@Column(name = "type", nullable = false)
-		private String type;
+		private Type type;
+		
+		@Column(name = "pattern")
+		private String pattern;
 }
