@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import it.govio.batch.Application;
+import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.step.CsvItemProcessor;
-import it.govio.batch.test.utils.GovioMessageBuilder;
+import it.govio.batch.step.beans.CsvItem;
+import it.govio.batch.step.beans.GovioMessage;
 
 
 
@@ -31,12 +33,32 @@ public class UC4_AcquisizioneMessaggiTest {
 	@DisplayName("UC4.1: Acquisizione Messaggi")
 	void test() throws Exception {
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-		GovioMessageEntity message = new GovioMessageBuilder().buildGovioMessageEntity(serviceInstanceEntity.get(), Status.CREATED, false, null, null, false, null, null);
-		message.setExpeditionDate(LocalDateTime.of(2022, 11, 22, 19, 4));
+		CsvItem message = new CsvItem();
+		message.setScheduledExpeditionDate(LocalDateTime.of(2022, 11, 22, 19, 4));
 		message.setTaxcode("RSSMRO00A00A000A");
-		String risultato = processProcessor.process(message);
-		String successo = ("Il Comune di Empoli la informa che il 2022-11-22 alle ore 19:04 scadrà la sua Carta di Identità con numero RSSMRO00A00A000A.");
-		assertEquals(risultato,successo);
-
+		message.setServiceInstance(serviceInstanceEntity.get());
+		GovioMessage risultato = processProcessor.process(message);
+		
+		GovioMessage successo = new GovioMessage();
+		
+		successo.setGovioFileMessageEntity(new GovioFileMessageEntity());
+		
+		GovioMessageEntity govioMessageEntity = new GovioMessageEntity().builder()
+				.govioServiceInstance(serviceInstanceEntity.get())
+				.markdown("Il Comune di Empoli la informa che il 2022-11-22 alle ore 19:04 scadrà la sua Carta di Identità con numero RSSMRO00A00A000A.")
+				.subject("Il Comune di Empoli la informa che il 2022-11-22 alle ore 19:04 scadrà la sua Carta di Identità con numero RSSMRO00A00A000A.")
+				.scheduledExpeditionDate(LocalDateTime.of(2022, 11, 22, 19, 4))
+				.taxcode("RSSMRO00A00A000A")
+				.status(Status.SCHEDULED)
+				.creationDate(null)
+				.build();
+		
+		successo.setGovioMessageEntity(govioMessageEntity);
+		assertEquals(risultato.getGovioMessageEntity().getGovioServiceInstance(),successo.getGovioMessageEntity().getGovioServiceInstance());
+		assertEquals(risultato.getGovioMessageEntity().getMarkdown(),successo.getGovioMessageEntity().getMarkdown());
+		assertEquals(risultato.getGovioMessageEntity().getSubject(),successo.getGovioMessageEntity().getSubject());
+		assertEquals(risultato.getGovioMessageEntity().getScheduledExpeditionDate(),successo.getGovioMessageEntity().getScheduledExpeditionDate());
+		assertEquals(risultato.getGovioMessageEntity().getTaxcode(),successo.getGovioMessageEntity().getTaxcode());
+		assertEquals(risultato.getGovioMessageEntity().getStatus(),successo.getGovioMessageEntity().getStatus());
 	}
 }

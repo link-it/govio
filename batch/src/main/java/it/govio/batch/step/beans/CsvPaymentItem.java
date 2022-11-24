@@ -1,5 +1,8 @@
 package it.govio.batch.step.beans;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +16,8 @@ public class CsvPaymentItem extends CsvItem {
 	
 	String noticeNumber;
 	long amount;
+	String payeeTaxcode;
+	LocalDateTime dueDate;
 	boolean invalidAfterDueDate;
-	
+
 }
