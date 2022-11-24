@@ -1,10 +1,13 @@
 package it.govio.batch.entity;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -40,7 +43,8 @@ import lombok.Setter;
 		private String example;
 		
 		@Column(name = "type", nullable = false)
-		private Type type;
+		private String type;
+		// private Type type; nella query prendeva il valore come intero e non come enum
 		
 		@Column(name = "pattern")
 		private String pattern;
