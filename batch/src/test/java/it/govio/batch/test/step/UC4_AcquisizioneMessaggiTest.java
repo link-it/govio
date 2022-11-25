@@ -27,16 +27,4 @@ public class UC4_AcquisizioneMessaggiTest {
 	@Autowired
 	private GovioServiceInstancesRepository govioServiceInstancesRepository;
 
-	@Test
-	@DisplayName("UC4.1: Acquisizione Messaggi")
-	void test() throws Exception {
-		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-		GovioMessageEntity message = new GovioMessageBuilder().buildGovioMessageEntity(serviceInstanceEntity.get(), Status.CREATED, false, null, null, false, null, null);
-		message.setExpeditionDate(LocalDateTime.of(2022, 11, 22, 19, 4));
-		message.setTaxcode("RSSMRO00A00A000A");
-		String risultato = processProcessor.process(message);
-		String successo = ("Il Comune di Empoli la informa che il 2022-11-22 alle ore 19:04 scadrà la sua Carta di Identità con numero RSSMRO00A00A000A.");
-		assertEquals(risultato,successo);
-
-	}
 }

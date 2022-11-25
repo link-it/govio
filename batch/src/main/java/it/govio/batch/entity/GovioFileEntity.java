@@ -18,7 +18,6 @@ import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
-import it.govio.batch.entity.GovioMessageEntity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +33,8 @@ import lombok.Setter;
 @Table(name = "govio_files")
 @Component("govioFileEntity")
 public class GovioFileEntity {
+
+	public enum Status {PROCESSED, CREATED}
 
 	@Id
 	@SequenceGenerator(name="seq_govio_files",sequenceName="seq_govio_files", initialValue=1, allocationSize=1)
