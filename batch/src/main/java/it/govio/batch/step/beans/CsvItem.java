@@ -1,8 +1,8 @@
 package it.govio.batch.step.beans;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.Properties;
 
+import it.govio.batch.entity.GovioServiceInstanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,13 +15,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CsvItem {
-	
-	String taxcode;
-	LocalDateTime scheduledDate;
-	
+	GovioServiceInstanceEntity govioServiceInstance;
 	long rowNumber;
 	String rawData;
-	
-	Map<String, String> placeholderValues;
-	
+	String taxcode;
+	String scheduledDate;
+	String noticeNumber;
+	String amount;
+	String invalidAfterDueDate;
+	Properties placeholderValues;
 }
