@@ -58,7 +58,7 @@ public class GovioMessageEntity {
 	private Status status;
 
 	@Column(name = "amount")
-	private Integer amount;
+	private Long amount;
 
 	@Column(name = "notice_number")
 	private String noticeNumber;

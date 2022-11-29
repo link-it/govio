@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import it.govio.batch.exception.TemplateValidationException;
 
-public class IntegerCsvItem extends CsvItem{
+public class LongCsvItem extends CsvItem{
 	
-	private Logger logger = LoggerFactory.getLogger(IntegerCsvItem.class);
+	private Logger logger = LoggerFactory.getLogger(LongCsvItem.class);
 	
-	public IntegerCsvItem(int index, String name, boolean mandatory) {
+	public LongCsvItem(int index, String name, boolean mandatory) {
 		super(index, name, mandatory);
 	}
 	
@@ -26,7 +26,7 @@ public class IntegerCsvItem extends CsvItem{
 		// Se c'e' un valore, controllo che sia compatibile.
 		if(value != null && !value.isBlank()) {
 			try {
-				Integer.parseInt(value);
+				Long.parseLong(value);
 			} catch (NumberFormatException e) {
 				logger.debug("Validazione del numero fallita: {}", e.getMessage());
 				throw new TemplateValidationException(String.format("Il valore {} del campo {} non presenta un numero valido.", value, name));
@@ -34,15 +34,15 @@ public class IntegerCsvItem extends CsvItem{
 		}
 	}
 	
-	public Integer getIntegerValue(String[] values) throws TemplateValidationException {
+	public Long getLongValue(String[] values) throws TemplateValidationException {
 		String value = getValue(values);
 		validateValue(value);
-		return Integer.valueOf(value);
+		return Long.valueOf(value);
 	}
 
 	@Override
 	public Map<String, String> getPlaceholderValues(String[] values) throws TemplateValidationException {
-		Integer value = getIntegerValue(values);
+		Long value = getLongValue(values);
 		
 		Double truncatedDouble = BigDecimal.valueOf(value)
 			    .setScale(2)

@@ -12,7 +12,7 @@ import it.pagopa.io.v1.api.beans.Payee;
 
 public class GovioMessageBuilder {
 	
-	public GovioMessageEntity buildGovioMessageEntity(GovioServiceInstanceEntity serviceInstanceEntity, Status status, boolean due_date, Integer amount, String noticeNumber, boolean invalidAfterDueDate, Payee payee, String email) throws URISyntaxException {
+	public GovioMessageEntity buildGovioMessageEntity(GovioServiceInstanceEntity serviceInstanceEntity, Status status, boolean due_date, Long amount, String noticeNumber, boolean invalidAfterDueDate, Payee payee, String email) throws URISyntaxException {
 		GovioMessageEntityBuilder messageEntity = GovioMessageEntity.builder()
 				.govioServiceInstance(serviceInstanceEntity)
 				.markdown("Lorem Ipsum")
