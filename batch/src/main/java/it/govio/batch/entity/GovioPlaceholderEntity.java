@@ -44,7 +44,7 @@ import lombok.Setter;
 		
 		@Column(name = "type", nullable = false)
 		private String type;
-		// private Type type; nella query prendeva il valore come intero e non come enum
+		// private Type type;
 		
 		@Column(name = "pattern")
 		private String pattern;

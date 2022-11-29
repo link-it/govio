@@ -1,8 +1,6 @@
 package it.govio.batch.step.beans;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
