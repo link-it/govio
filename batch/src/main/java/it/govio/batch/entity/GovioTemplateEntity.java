@@ -1,5 +1,7 @@
 package it.govio.batch.entity;
 
+import java.util.Set;
+import java.util.SortedSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,8 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -25,18 +27,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "govio_templates")
-public class GovioTemplateEntity {
+public class GovioTemplateEntity  {
 	
 	@Id
 	@SequenceGenerator(name="seq_govio_templates",sequenceName="seq_govio_templates", initialValue=1, allocationSize=1)
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_templates")
 	private Long id;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_service_instance", nullable = false)
-	private GovioServiceInstanceEntity govioServiceInstance;
-
-	@Column(name = "name", nullable = false)
+	
+	@Column(name = "name")
 	private String name;
 	
 	@Column(name = "description")
@@ -53,4 +51,7 @@ public class GovioTemplateEntity {
 
 	@Column(name = "has_payment", nullable = false)
 	private Boolean hasPayment;
+	
+	@OneToMany(mappedBy = "govioTemplate", fetch = FetchType.EAGER)
+	Set<GovioTemplatePlaceholderEntity> govioTemplatePlaceholders;
 }
