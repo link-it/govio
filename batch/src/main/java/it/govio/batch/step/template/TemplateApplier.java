@@ -25,7 +25,7 @@ public class TemplateApplier {
 		LocalDateTime dueDate = getDuedate(splitted);
 		String noticeNumber = getNoticeNumber(splitted);;
 		String payee = getPayee(splitted);
-		Integer amount = getAmount(splitted);
+		Long amount = getAmount(splitted);
 		boolean invalidAfterDueDate = getInvalidAfterDueDate(splitted);
 		LocalDateTime scheduledExpeditionDate = getScheduledExpeditionDate(splitted);
 		
@@ -67,9 +67,9 @@ public class TemplateApplier {
 		return csvItem != null ? csvItem.getBooleanValue(splitted) : null;
 	}
 
-	private Integer getAmount(String[] splitted) {
-		IntegerCsvItem csvItem = (IntegerCsvItem) items.get( CsvItem.Keys.AMOUNT.toString());
-		return csvItem != null ? csvItem.getIntegerValue(splitted) : null;
+	private Long getAmount(String[] splitted) {
+		LongCsvItem csvItem = (LongCsvItem) items.get( CsvItem.Keys.AMOUNT.toString());
+		return csvItem != null ? csvItem.getLongValue(splitted) : null;
 	}
 
 	private String getPayee(String[] splitted) {

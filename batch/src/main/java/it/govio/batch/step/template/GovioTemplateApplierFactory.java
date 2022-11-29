@@ -32,7 +32,7 @@ public class GovioTemplateApplierFactory {
 			CsvItem noticeNumberItem = new StringCsvItem(++index, CsvItem.Keys.NOTICENUMBER.toString(), true, "^[0123][0-9]{17}$");
 			items.put(CsvItem.Keys.NOTICENUMBER.toString(), noticeNumberItem);
 
-			CsvItem amountItem = new IntegerCsvItem(++index, CsvItem.Keys.AMOUNT.toString(), true);
+			CsvItem amountItem = new LongCsvItem(++index, CsvItem.Keys.AMOUNT.toString(), true);
 			items.put(CsvItem.Keys.AMOUNT.toString(), amountItem);
 
 			CsvItem invalidAfterDueDateItem = new BooleanCsvItem(++index, CsvItem.Keys.INVALIDAFTERDUEDATE.toString(), true);
