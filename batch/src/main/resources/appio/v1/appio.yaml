@@ -1509,6 +1509,7 @@ definitions:
           Amount of payment in euro cent. PagoPA accepts up to 9999999999 euro
           cents.
         type: integer
+        format: int64
         minimum: 1
         maximum: 9999999999
       notice_number:

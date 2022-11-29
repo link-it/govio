@@ -1,7 +1,5 @@
 package it.govio.batch.step;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -35,12 +33,17 @@ public class CsvItemProcessor implements ItemProcessor<CsvItem, GovioMessage> {
 		.line_number(item.getRowNumber())
 		.line_record(item.getRawData())
 		.build();
+		
 		try {
 			validation(item);
 		} catch (TemplateValidationException e) {
 			govioFileMessageEntity.setError(e.getMessage());
-			return GovioMessage.builder().govioFileMessageEntity(govioFileMessageEntity).build(); //TODO
-		}		
+			
+			return GovioMessage.builder().govioFileMessageEntity(govioFileMessageEntity)
+					.govioFileMessageEntity(govioFileMessageEntity)
+					.govioMessageEntity(null)
+					.build(); //TODO
+		}
 		
 		// Applicare il template ai valori dell'item
 		StringSubstitutor sub = buildMap(item);
@@ -58,8 +61,8 @@ public class CsvItemProcessor implements ItemProcessor<CsvItem, GovioMessage> {
                 .status(Status.SCHEDULED)
                 .creationDate(LocalDateTime.now())
                 .scheduledExpeditionDate(item.getScheduledExpeditionDate())
-                .build();
-
+                .build();		
+		
 		govioFileMessageEntity.setGovioMessage(messageEntity);
 
 		govioMessage.setGovioMessageEntity(messageEntity);
@@ -67,24 +70,48 @@ public class CsvItemProcessor implements ItemProcessor<CsvItem, GovioMessage> {
 		return govioMessage;
 	}
 	
-	
+	public GovioMessage process(CsvPaymentItem item) {
+		try {
+			validation(item);
+		} catch (TemplateValidationException e) {
+			GovioFileMessageEntity govioFileMessageEntity = new GovioFileMessageEntity();
+			govioFileMessageEntity.setError(e.getMessage());
+			// perchè costruire un messaggio, non va restituita una eccezione?
+			return GovioMessage.builder().govioFileMessageEntity(govioFileMessageEntity)
+					.govioFileMessageEntity(govioFileMessageEntity)
+					.govioMessageEntity(null)
+					.build(); //TODO
+		}
+
+		GovioMessage message = process((CsvItem)item);
+		message.getGovioMessageEntity().setExpeditionDate(item.getScheduledExpeditionDate());
+    	message.getGovioMessageEntity().setAmount(item.getAmount());
+    	message.getGovioMessageEntity().setNoticeNumber(item.getNoticeNumber());
+    	message.getGovioMessageEntity().setPayee(item.getPayeeTaxcode());
+    	message.getGovioMessageEntity().setInvalidAfterDueDate(item.isInvalidAfterDueDate());
+    return message;
+	}	
 	
 	StringSubstitutor buildMap(CsvItem item) {
-		Map<String, String> valuesMap = new HashMap<String, String>();
+		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put("taxcode", item.getTaxcode());
 		LocalDateTime date = item.getScheduledExpeditionDate().truncatedTo(ChronoUnit.MINUTES);
 		String[] parts = date.toString().split("T");
 		valuesMap.put("expedition_date.date", parts[0]);
 		valuesMap.put("expedition_date.time", parts[1]);
-		StringSubstitutor sub = new StringSubstitutor(valuesMap);
-		return sub;
+		return new StringSubstitutor(valuesMap);
 	}
 
 	
 	StringSubstitutor buildMap(CsvPaymentItem item) {
-		buildMap((CsvItem)item);
+		Map<String, String> valuesMap = new HashMap<>();
+		
+		valuesMap.put("taxcode", item.getTaxcode());
+		LocalDateTime date = item.getScheduledExpeditionDate().truncatedTo(ChronoUnit.MINUTES);
+		String[] parts = date.toString().split("T");
+		valuesMap.put("expedition_date.date", parts[0]);
+		valuesMap.put("expedition_date.time", parts[1]);
 
-		Map<String, String> valuesMap = new HashMap<String, String>();
 		valuesMap.put("notice_number", item.getNoticeNumber());
 		valuesMap.put("amount", item.getAmount()+"");
 		valuesMap.put("payee_taxcode", item.getPayeeTaxcode());
@@ -92,18 +119,17 @@ public class CsvItemProcessor implements ItemProcessor<CsvItem, GovioMessage> {
 		// si assume che il reader abbia effettuato i controlli sulla presenza dei dati opzionali e popolato correttamente i campi relativi
 		// solo se il template has_due_date
 		if (item.getServiceInstance().getGovioTemplate().getHasDueDate()) {
-			LocalDateTime date = item.getDueDate().truncatedTo(ChronoUnit.MINUTES);
-			String[] parts = date.toString().split("T");
+			date = item.getDueDate().truncatedTo(ChronoUnit.MINUTES);
+			parts = date.toString().split("T");
 			valuesMap.put("due_date.date", parts[0]);
 			valuesMap.put("due_date.time", parts[1]);
 		}
 		// solo se il template has_payment e due_date
-		if (item.getServiceInstance().getGovioTemplate().getHasDueDate() || item.getServiceInstance().getGovioTemplate().getHasPayment()) {
+		if (item.getServiceInstance().getGovioTemplate().getHasDueDate() && item.getServiceInstance().getGovioTemplate().getHasPayment()) {
 		if (item.isInvalidAfterDueDate()) valuesMap.put("invalid_after_due_date","true");
 		else valuesMap.put("invalid_after_due_date","false");
 		}
-		StringSubstitutor sub = new StringSubstitutor(valuesMap);
-		return sub;
+		return new StringSubstitutor(valuesMap);
 	}
 	
 
@@ -118,28 +144,26 @@ public class CsvItemProcessor implements ItemProcessor<CsvItem, GovioMessage> {
 		Matcher matcher = pattern.matcher(taxcode);
 		if (!matcher.find())
 			throw new TemplateValidationException("taxcode non valido");
-		// - Se un campo abbia un valore compatibile con il tipo
-		String date = item.getScheduledExpeditionDate().toString();
 		// se le date sono valide
 	}
 	
 	void validation(CsvPaymentItem item) throws TemplateValidationException {
 		validation((CsvItem)item);
 		// - I campi obbligatori ci siano
-		if (item.getNoticeNumber()==null) throw new TemplateValidationException("getNoticeNumber null");
+		if (item.getNoticeNumber()==null) throw new TemplateValidationException("notice number null");
 		// - Se un campo ha un pattern impostato sia rispettato
-		Pattern pattern = Pattern.compile("^[0123][0-9]{17}$");
+		Pattern pattern = Pattern.compile("^[0123]\\d{17}$");
 		Matcher matcher = pattern.matcher(item.getNoticeNumber());
-		if (!matcher.find()) {
-			throw new TemplateValidationException("notice_number non valido");
+		if (!matcher.matches()) {
+			throw new TemplateValidationException("notice number non valido");
 		}
 		if (item.getAmount()>9999999999L){
 			throw new TemplateValidationException("amount non valido");
 		}
-		pattern = Pattern.compile("d/{11}");
+		pattern = Pattern.compile("\\d{11}");
 		matcher = pattern.matcher(item.getPayeeTaxcode());
 		if (!matcher.find()) {
-			throw new TemplateValidationException("payee_taxcode non valido");
+			throw new TemplateValidationException("payee taxcode non valido");
 		}
 	}
 }
