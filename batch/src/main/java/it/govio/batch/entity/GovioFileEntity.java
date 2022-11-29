@@ -34,7 +34,7 @@ import lombok.Setter;
 @Component("govioFileEntity")
 public class GovioFileEntity {
 
-	public enum Status {PROCESSED, CREATED}
+	public enum Status {CREATED, PROCESSING, PROCESSED}
 
 	@Id
 	@SequenceGenerator(name="seq_govio_files",sequenceName="seq_govio_files", initialValue=1, allocationSize=1)
@@ -56,16 +56,16 @@ public class GovioFileEntity {
 	private Status status;
 	
 	@Column(name = "status_detail")
-	private String status_detail;
+	private String statusDetail;
 	
 	@Column(name = "message_body")
-	private String message_body;
+	private String messageBody;
 
 	@Column(name = "acquired_messages")
-	private Long acquired_messages;
+	private Long acquiredMessages;
 
 	@Column(name = "error_messages")
-	private Long error_messages;
+	private Long errorMessages;
 	
 	@Column(name = "creation_date", nullable = false)
 	private LocalDateTime creationDate;

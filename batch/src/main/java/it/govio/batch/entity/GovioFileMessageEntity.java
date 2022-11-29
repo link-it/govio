@@ -4,12 +4,12 @@ package it.govio.batch.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -32,19 +32,23 @@ import lombok.Setter;
 public class GovioFileMessageEntity {
 	
 	@Id
-	@SequenceGenerator(name="seq_govio_messages",sequenceName="seq_govio_messages", initialValue=1, allocationSize=1)
-	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_messages")
+	@SequenceGenerator(name="seq_govio_file_messages",sequenceName="seq_govio_file_messages", initialValue=1, allocationSize=1)
+	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_file_messages")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_message", nullable = false)
+	@OneToOne
+	@JoinColumn(name = "id_govio_message", nullable = true)
 	private GovioMessageEntity govioMessage;
 
+	@ManyToOne
+	@JoinColumn(name = "id_govio_files", nullable = false)
+	private GovioFileEntity govioFile;
+	
 	@Column(name = "line_record")
-	private String line_record;
+	private String lineRecord;
 	
 	@Column(name = "line_number")
-	private Long line_number;
+	private Long lineNumber;
 
 	@Column(name = "error")
 	private String error;

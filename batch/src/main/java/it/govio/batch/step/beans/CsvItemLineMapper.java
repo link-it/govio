@@ -1,44 +1,40 @@
 package it.govio.batch.step.beans;
 
-import java.time.LocalDateTime;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.batch.item.file.transform.LineTokenizer;
 import org.springframework.beans.factory.annotation.Value;
 
-import it.govio.batch.exception.CsvFormatException;
-import it.govio.batch.step.beans.CsvItem.CsvItemBuilder;
-
 public class CsvItemLineMapper extends DefaultLineMapper<CsvItem> {
+	
+	public CsvItemLineMapper(LineTokenizer lineTokenizer) {
+		this.lineTokenizer = lineTokenizer;
+	}
 
 	public LineTokenizer lineTokenizer;
 
 	@Value( "${csv.fieldnames.amount:importo}" )
-	private String fieldname_amount;
+	public static String fieldname_amount;
 
 	@Value( "${csv.fieldnames.invalidAfterDueDate:invalidaAllaScadenza}" )
-	private String fieldname_invalidAfterDueDate;
+	public static String fieldname_invalidAfterDueDate;
 
 	@Value( "${csv.fieldnames.noticeNumber:numeroAvviso}" )
-	private String fieldname_noticeNumber;
+	public static String fieldname_noticeNumber;
 
 	@Value( "${csv.fieldnames.scheduledDate:dataNotifica}" )
-	private String fieldname_scheduledDate;
+	public static String fieldname_scheduledDate;
 
 	@Value( "${csv.fieldnames.taxCode:codiceFiscale}" )
-	private String fieldname_taxCode;
+	public static String fieldname_taxCode;
 
 
 	@Override
 	public CsvItem mapLine(String line, int lineNumber) throws Exception {
 
-		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
-		FieldSet tokenizedLine = delimitedLineTokenizer.tokenize(line);
+		FieldSet tokenizedLine = lineTokenizer.tokenize(line);
 		Properties properties = tokenizedLine.getProperties();
 
 		return CsvItem.builder()

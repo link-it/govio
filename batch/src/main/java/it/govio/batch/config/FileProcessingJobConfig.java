@@ -1,40 +1,32 @@
 package it.govio.batch.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.integration.async.AsyncItemProcessor;
-import org.springframework.batch.item.data.RepositoryItemWriter;
+import org.springframework.batch.core.partition.support.Partitioner;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.MultiResourceItemReader;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import it.govio.batch.entity.GovioFileEntity;
-import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
-import it.govio.batch.exception.BackendioRuntimeException;
-import it.govio.batch.repository.GovioFileMessagesRepository;
+import it.govio.batch.entity.GovioFileMessageEntity;
+import it.govio.batch.entity.GovioTemplateEntity;
 import it.govio.batch.repository.GovioFilesRepository;
-import it.govio.batch.step.CsvItemProcessor;
-import it.govio.batch.step.FileUpdateTasklet;
-import it.govio.batch.step.beans.CsvItem;
+import it.govio.batch.step.GovioFileItemProcessor;
+import it.govio.batch.step.GovioFileItemWriter;
+import it.govio.batch.step.GovioFilePartitioner;
+import it.govio.batch.step.UpdateFileStatusTasklet;
+import it.govio.batch.step.beans.GovioFileMessageLineMapper;
 
 @Configuration
 public class FileProcessingJobConfig {
@@ -46,111 +38,111 @@ public class FileProcessingJobConfig {
 	protected StepBuilderFactory steps;
 
 	@Autowired
-	private CsvItemProcessor csvItemProcessor;
+	private GovioFilesRepository govioFilesRepository;
 
 	@Autowired
-	private GovioFileMessagesRepository govioFileMessagesRepository;
-	
-	private List<GovioFileEntity> govioFileEntities;
-	
-	private Resource[] resources;
+	private UpdateFileStatusTasklet updateFileStatusTasklet;
 
-	private GovioFilesRepository govioFilesRepository;
+	@Autowired
+	@Qualifier("govioFileItemReader")
+	private FlatFileItemReader<GovioFileMessageEntity> govioFileItemReader;
+
+	@Autowired
+	@Qualifier("govioFileItemProcessor")
+	private ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor;
+
+	@Autowired
+	@Qualifier("govioFileItemWriter")
+	private ItemWriter<GovioFileMessageEntity> govioFileItemWriter;
 	
-	protected TaskExecutor taskExecutor() {
-		return new SimpleAsyncTaskExecutor("spring_batch_fileprocessor");
+	@Bean
+	public ThreadPoolTaskExecutor taskExecutor() {
+		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+		taskExecutor.setMaxPoolSize(3);
+		taskExecutor.setCorePoolSize(3);
+		taskExecutor.setQueueCapacity(3);
+		taskExecutor.afterPropertiesSet();
+		return taskExecutor;
 	}
 
 	@Bean(name = "FileProcessingJob")
-	public Job verificaMessaggiIO(){
-		
-    	govioFileEntities = govioFilesRepository.findByStatus(Status.CREATED);
-    	List<Resource> resourceList = new ArrayList<>();
-    	for(GovioFileEntity entity : govioFileEntities) {
-    		resourceList.add(new FileSystemResource(entity.getLocation()));
-    	}
-		this.resources = (Resource[]) resourceList.toArray();
-		
+	public Job fileProcessingJob(){
 		return jobs.get("FileProcessingJob")
 				.incrementer(new RunIdIncrementer())
-				.start(processCsvStep())
-				.next(processCsvStep())
-				.next(updateFileStep())
+				.start(promoteProcessingFileTasklet())
+				.next(govioFileReaderMasterStep())
+				//				.next(updateFileStep())
 				.build();
 	}
 
 	@Bean
-	public Step processCsvStep(){
-		return steps.get("processCsvStep")
-				.<CsvItem, GovioFileMessageEntity>chunk(10)
-				.reader(multiResourceItemReader())
-				.processor(this.csvItemProcessor)
-				.writer(messageWriter())
-				.faultTolerant()
-				.skip(BackendioRuntimeException.class)
-				.skipLimit(Integer.MAX_VALUE)
+	public Step promoteProcessingFileTasklet() {
+		updateFileStatusTasklet.setPreviousStatus(Status.CREATED);
+		updateFileStatusTasklet.setAfterStatus(Status.PROCESSING);
+		return steps.get("promoteProcessingFileTasklet")
+				.tasklet(updateFileStatusTasklet)
 				.build();
 	}
 
 	@Bean
-	public Step updateFileStep() {
-		FileUpdateTasklet task = new FileUpdateTasklet();
-		task.setGovioFiles(govioFileEntities);
-		return steps.get("updateFileStep")
-				.tasklet(task)
+	@Qualifier("govioFileReaderMasterStep")
+	public Step govioFileReaderMasterStep() {
+		return steps.get("govioFileReaderMasterStep")
+				.partitioner("loadCsvFileToDbStep", govioFilePartitioner())
+				.step(loadCsvFileToDbStep())
+				.taskExecutor(taskExecutor())
+				.build();
+	}
+
+	/**
+	 * Step che legge un CSV e ne memorizza il contenuto in GovioMessageFile
+	 * @return
+	 */
+	@Bean
+	public Step loadCsvFileToDbStep(){
+		return steps.get("loadCsvFileToDbStep")
+				.<GovioFileMessageEntity, GovioFileMessageEntity>chunk(10)
+				.reader(govioFileItemReader)
+				.processor(govioFileItemProcessor)
+				.writer(govioFileItemWriter)
 				.build();
 	}
 
 	@Bean
-	public MultiResourceItemReader<CsvItem> multiResourceItemReader() 
-	{
-		MultiResourceItemReader<CsvItem> resourceItemReader = new MultiResourceItemReader<CsvItem>();
-		resourceItemReader.setResources(resources);
-		resourceItemReader.setDelegate(reader());
-		return resourceItemReader;
+	@StepScope
+	@Qualifier("govioFileItemReader")
+	public FlatFileItemReader<GovioFileMessageEntity> govioFileItemReader(@Value("#{stepExecutionContext[location]}") String filename) {
+		FlatFileItemReader<GovioFileMessageEntity> flatFileItemReader = new FlatFileItemReader<>();
+		flatFileItemReader.setLinesToSkip(1);
+		flatFileItemReader.setLineMapper(new GovioFileMessageLineMapper());
+		flatFileItemReader.setResource(new FileSystemResource(filename));
+		return flatFileItemReader;
 	}
-
 
 	@Bean
-	public FlatFileItemReader<CsvItem> reader() 
-	{
-		//Create reader instance
-		FlatFileItemReader<CsvItem> reader = new FlatFileItemReader<CsvItem>();
-
-		//Set number of lines to skips. Use it if file has header rows.
-		reader.setLinesToSkip(1);   
-
-		//Configure how each line will be parsed and mapped to different values
-		reader.setLineMapper(new DefaultLineMapper() {
-			{
-				//3 columns in each row
-				setLineTokenizer(new DelimitedLineTokenizer() {
-					{
-						setNames(new String[] { "id", "firstName", "lastName" });
-					}
-				});
-				//Set values in Employee class
-				setFieldSetMapper(new BeanWrapperFieldSetMapper<CsvItem>() {
-					{
-						setTargetType(CsvItem.class);
-					}
-				});
-			}
-		});
-		return reader;
+	@StepScope
+	@Qualifier("govioFileItemProcessor")
+	public ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor(@Value("#{stepExecutionContext[template]}") GovioTemplateEntity template) {
+		GovioFileItemProcessor processor = new GovioFileItemProcessor();
+		processor.setGovioTemplate(template);
+		return processor;
+	}
+	
+	@Bean
+	@StepScope
+	@Qualifier("govioFileItemWriter")
+	public ItemWriter<GovioFileMessageEntity> govioFileItemWriter(@Value("#{stepExecutionContext[id]}") long govioFileId){
+		GovioFileItemWriter govioFileItemWriter =  new GovioFileItemWriter();
+		govioFileItemWriter.setGovioFileEntityId(govioFileId);
+		return govioFileItemWriter;
 	}
 
-	protected AsyncItemProcessor<CsvItem, GovioFileMessageEntity> asyncProcessor(CsvItemProcessor itemProcessor) {
-		AsyncItemProcessor<CsvItem, GovioFileMessageEntity> asyncItemProcessor = new AsyncItemProcessor<>();
-		asyncItemProcessor.setTaskExecutor(taskExecutor());
-		asyncItemProcessor.setDelegate(itemProcessor);
-		return asyncItemProcessor;
+	@Bean
+	@StepScope
+	public Partitioner govioFilePartitioner() {
+		GovioFilePartitioner partitioner = new GovioFilePartitioner();
+		partitioner.setGovioFileEntities(govioFilesRepository.findByStatus(Status.PROCESSING));
+		return partitioner;
 	}
 
-	protected RepositoryItemWriter<GovioFileMessageEntity> messageWriter() {
-		final RepositoryItemWriter<GovioFileMessageEntity> repositoryItemWriter = new RepositoryItemWriter<>();
-		repositoryItemWriter.setRepository(govioFileMessagesRepository);
-		repositoryItemWriter.setMethodName("save");
-		return repositoryItemWriter;
-	}
 }
