@@ -25,7 +25,7 @@ public class GovioTemplateApplierFactory {
 		CsvItem expeditionDateTime = new DateTimeCsvItem(++index, CsvItem.Keys.EXPEDITIONDATE.toString(), true);
 		items.put(CsvItem.Keys.EXPEDITIONDATE.toString(), expeditionDateTime);
 
-		CsvItem dueDateItem = new DateCsvItem(++index, CsvItem.Keys.DUEDATE.toString(), hasDueDate);
+		CsvItem dueDateItem = new DateTimeCsvItem(++index, CsvItem.Keys.DUEDATE.toString(), hasDueDate);
 		items.put(CsvItem.Keys.DUEDATE.toString(), dueDateItem);
 
 		if(hasPayment) {
