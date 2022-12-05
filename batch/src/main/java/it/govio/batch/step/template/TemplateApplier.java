@@ -10,8 +10,10 @@ import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.exception.TemplateValidationException;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class TemplateApplier {
 
 	private String message;
@@ -23,10 +25,10 @@ public class TemplateApplier {
 
 		String taxcode = getTaxcode(splitted);
 		LocalDateTime dueDate = getDuedate(splitted);
-		String noticeNumber = getNoticeNumber(splitted);;
+		String noticeNumber = getNoticeNumber(splitted);
 		String payee = getPayee(splitted);
 		Long amount = getAmount(splitted);
-		boolean invalidAfterDueDate = getInvalidAfterDueDate(splitted);
+		Boolean invalidAfterDueDate = getInvalidAfterDueDate(splitted);
 		LocalDateTime scheduledExpeditionDate = getScheduledExpeditionDate(splitted);
 		
 		Map<String, String> placeholderValues = new HashMap<>();
@@ -34,7 +36,7 @@ public class TemplateApplier {
 			placeholderValues.putAll(item.getPlaceholderValues(splitted));
 		}
 		StringSubstitutor substitutor = new StringSubstitutor(placeholderValues);
-		
+
 		String message = getMessage(substitutor);
 		String subject = getSubject(substitutor);
 
@@ -63,7 +65,7 @@ public class TemplateApplier {
 	}
 
 	private Boolean getInvalidAfterDueDate(String[] splitted) {
-		BooleanCsvItem csvItem = (BooleanCsvItem) items.get( CsvItem.Keys.EXPEDITIONDATE.toString());
+		BooleanCsvItem csvItem = (BooleanCsvItem) items.get( CsvItem.Keys.INVALIDAFTERDUEDATE.toString());
 		return csvItem != null ? csvItem.getBooleanValue(splitted) : null;
 	}
 
