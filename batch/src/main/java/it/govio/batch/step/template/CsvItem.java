@@ -40,7 +40,7 @@ public abstract class CsvItem {
 	}
 	
 	protected String getValue(String[] values) {
-		if(values.length < index)
+		if(values.length <= index)
 			throw new TemplateValidationException(String.format("Numero di valori inferiore a quanto richiesto dal template. Assente il valore {} in posizione {}", name, index));
 		return values[index];
 	}
