@@ -159,6 +159,7 @@ class UC1_GetProfileServiceTest {
 		setupRestTemplateMock(govioMessageEntity, profile);
 		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
 		assertEquals(Status.SENDER_NOT_ALLOWED, processedMessage.getStatus());
+		
 	}
 
 	@Test

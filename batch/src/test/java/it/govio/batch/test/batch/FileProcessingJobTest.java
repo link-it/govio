@@ -5,15 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -26,7 +23,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import it.govio.batch.Application;
 import it.govio.batch.entity.GovioFileEntity;
@@ -36,7 +32,6 @@ import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
-import it.pagopa.io.v1.api.impl.ApiClient;
 
 @SpringBootTest(classes = Application.class)
 @RunWith(SpringRunner.class)
@@ -109,8 +104,9 @@ class FileProcessingJobTest {
 		File file = t.newFile(i+".csv");
 		FileWriter file1writer = new FileWriter(file);
 		file1writer.write("Testata\n");
-		Random r = new Random();
-		int nextInt = r.nextInt(50);
+//		Random r = new Random();
+//		int nextInt = r.nextInt(50);
+		int nextInt = 50;
 		for(int x=0;x<nextInt+50;x++)
 			file1writer.write("XXXXXX"+i+"A00Y"+String.format("%03d", x)+"Z,2022-12-31T12:00:00,2022-12-31T12:00:00,Ufficio1\n");
 		file1writer.close();
