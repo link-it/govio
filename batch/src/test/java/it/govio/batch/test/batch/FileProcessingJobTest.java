@@ -89,9 +89,9 @@ class FileProcessingJobTest {
 		govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "03"));
 		govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "04"));
 		govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "05"));
-		
+
 		System.out.println(">>>>>>>> " + govioFilesRepository.findAll().size());
-	
+
 		initailizeJobLauncherTestUtils();
 		
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -108,7 +108,7 @@ class FileProcessingJobTest {
 //		int nextInt = r.nextInt(50);
 		int nextInt = 50;
 		for(int x=0;x<nextInt+50;x++)
-			file1writer.write("XXXXXX"+i+"A00Y"+String.format("%03d", x)+"Z,2022-12-31T12:00:00,2022-12-31T12:00:00,Ufficio1\n");
+			file1writer.write("XXXXXX"+i+"A00Y"+String.format("%03d", x)+"Z,2022-12-31T12:00:00,2022-12-31T12:00:00,2022-12-31,Ufficio1\n");
 		file1writer.close();
 		
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
