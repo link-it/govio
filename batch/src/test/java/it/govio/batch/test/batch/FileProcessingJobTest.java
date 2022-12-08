@@ -28,9 +28,7 @@ import it.govio.batch.Application;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
-import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
-import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 
 @SpringBootTest(classes = Application.class)
@@ -44,12 +42,6 @@ class FileProcessingJobTest {
 
 	@Autowired
 	private GovioFilesRepository govioFilesRepository;
-	
-	@Autowired
-	private GovioFileMessagesRepository govioFileMessagesRepository;
-	
-	@Autowired
-	private GovioMessagesRepository govioMessagesRepository;
 	
 	private JobLauncherTestUtils jobLauncherTestUtils;
 
