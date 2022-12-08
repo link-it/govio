@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +43,7 @@ import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.GovioMessageEntityBuilder;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.pagopa.io.v1.api.beans.ExternalMessageResponseWithContent;
@@ -65,6 +67,9 @@ class VerifyMessagesJobTest {
 	@Autowired
 	private GovioServiceInstancesRepository govioServiceInstancesRepository;
 
+	@Autowired
+	private GovioFilesRepository govioFilesRepository;
+	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
 	
@@ -90,6 +95,8 @@ class VerifyMessagesJobTest {
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
+		govioFilesRepository.deleteAll();
+		govioMessagesRepository.deleteAll(); 
 	}
 
 	@Test
@@ -97,11 +104,9 @@ class VerifyMessagesJobTest {
 
 		// Caricamento messaggi da inviare
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-
-		govioMessagesRepository.deleteAll();
 		
+		List<GovioMessageEntity> messages = new ArrayList<>();
 		
-
 		for(int i=0; i<100; i++) {
 			GovioMessageEntityBuilder messageBuilder = GovioMessageEntity.builder()
 					.govioServiceInstance(serviceInstanceEntity.get())
@@ -125,7 +130,7 @@ class VerifyMessagesJobTest {
 				break;
 			}
 			GovioMessageEntity message = messageBuilder.build();
-			govioMessagesRepository.save(message);
+			messages.add(govioMessagesRepository.save(message));
 		}
 		
 		Mockito

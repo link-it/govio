@@ -22,6 +22,7 @@ import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioTemplateEntity;
 import it.govio.batch.repository.GovioFilesRepository;
+import it.govio.batch.step.FinalizeFileProcessingTasklet;
 import it.govio.batch.step.GovioFileItemProcessor;
 import it.govio.batch.step.GovioFileItemWriter;
 import it.govio.batch.step.GovioFilePartitioner;
@@ -42,6 +43,9 @@ public class FileProcessingJobConfig {
 
 	@Autowired
 	private UpdateFileStatusTasklet updateFileStatusTasklet;
+	
+	@Autowired
+	private FinalizeFileProcessingTasklet finalizeProcessingFileTasklet;
 
 	@Autowired
 	@Qualifier("govioFileItemReader")
@@ -71,7 +75,7 @@ public class FileProcessingJobConfig {
 				.incrementer(new RunIdIncrementer())
 				.start(promoteProcessingFileTasklet())
 				.next(govioFileReaderMasterStep())
-				//				.next(updateFileStep())
+				.next(finalizeProcessingFileTasklet())
 				.build();
 	}
 
@@ -81,6 +85,14 @@ public class FileProcessingJobConfig {
 		updateFileStatusTasklet.setAfterStatus(Status.PROCESSING);
 		return steps.get("promoteProcessingFileTasklet")
 				.tasklet(updateFileStatusTasklet)
+				.build();
+	}
+	
+	@Bean
+	@Qualifier("finalizeProcessingFileTasklet")
+	public Step finalizeProcessingFileTasklet() {
+		return steps.get("finalizeProcessingFileTasklet")
+				.tasklet(finalizeProcessingFileTasklet)
 				.build();
 	}
 

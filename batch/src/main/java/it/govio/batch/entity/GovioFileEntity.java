@@ -2,7 +2,9 @@ package it.govio.batch.entity;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -44,6 +47,9 @@ public class GovioFileEntity {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_service_instance", nullable = false)
 	private GovioServiceInstanceEntity govioServiceInstance;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "govioFile", cascade = CascadeType.REMOVE)
+	private List<GovioFileMessageEntity> govioFileMessageEntities;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -54,12 +60,6 @@ public class GovioFileEntity {
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
-	
-	@Column(name = "status_detail")
-	private String statusDetail;
-	
-	@Column(name = "message_body")
-	private String messageBody;
 
 	@Column(name = "acquired_messages")
 	private Long acquiredMessages;

@@ -1,6 +1,6 @@
 -- Servizio di test
 
-INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment) VALUES (1,'Il Comune la informa che il ${duedate.date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment.verbose} presso {at}.','Scadenza CIE ${taxcode}',false,false);
+INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment) VALUES (1,'Il Comune la informa che il ${duedate.date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment.verbose} presso {at}.','Scadenza CIE ${taxcode}',true,false);
 ALTER SEQUENCE seq_govio_templates RESTART WITH 2;	
 
 INSERT INTO govio_service_instances(id,id_govio_service,id_govio_template,apikey) VALUES (1,'1','1','17886617e07d47e8b1ba314f2f1e3052');
