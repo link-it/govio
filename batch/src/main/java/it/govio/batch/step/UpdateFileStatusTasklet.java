@@ -1,6 +1,7 @@
 package it.govio.batch.step;
 
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -14,7 +15,7 @@ import it.govio.batch.repository.GovioFilesRepository;
 @Component
 public class UpdateFileStatusTasklet implements Tasklet {
 
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(UpdateFileStatusTasklet.class);
 	
 	@Autowired
 	private GovioFilesRepository repository;

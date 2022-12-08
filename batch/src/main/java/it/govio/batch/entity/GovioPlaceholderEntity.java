@@ -25,7 +25,7 @@ import lombok.Setter;
 @Table(name = "govio_placeholders")
 public class GovioPlaceholderEntity {
 
-	public enum Type { STRING, DATE, DATETIME };
+	public enum Type { STRING, DATE, DATETIME }
 
 	@Id
 	@SequenceGenerator(name="seq_govio_placeholders",sequenceName="seq_govio_placeholders", initialValue=1, allocationSize=1)
