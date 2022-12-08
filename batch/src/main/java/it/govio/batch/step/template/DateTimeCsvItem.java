@@ -15,9 +15,9 @@ import it.govio.batch.exception.TemplateValidationException;
 public class DateTimeCsvItem extends CsvItem{
 	
 	private Logger logger = LoggerFactory.getLogger(DateTimeCsvItem.class);
-	protected final static DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.ITALY);
-	protected final static DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("E dd M yyyy 'alle ore' HH:mm", Locale.ITALY);
-	protected final static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm", Locale.ITALY);
+	protected static final DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.ITALY);
+	protected static final DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("E dd M yyyy 'alle ore' HH:mm", Locale.ITALY);
+	protected static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm", Locale.ITALY);
 
 	public DateTimeCsvItem(int index, String name, boolean mandatory) {
 		super(index, name, mandatory);
