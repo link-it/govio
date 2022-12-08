@@ -33,7 +33,7 @@ public abstract class CsvItem {
 	protected String name;
 	protected boolean mandatory;
 	
-	public CsvItem(int index, String name, boolean mandatory) {
+	protected CsvItem(int index, String name, boolean mandatory) {
 		this.name = name;
 		this.mandatory = mandatory;
 		this.index = index;
@@ -41,13 +41,13 @@ public abstract class CsvItem {
 	
 	protected String getValue(String[] values) {
 		if(values.length <= index)
-			throw new TemplateValidationException(String.format("Numero di valori inferiore a quanto richiesto dal template. Assente il valore {} in posizione {}", name, index));
+			throw new TemplateValidationException(String.format("Numero di valori inferiore a quanto richiesto dal template. Assente il valore %s in posizione %d", name, index));
 		return values[index];
 	}
 	
 	protected void validateValue(String value) throws TemplateValidationException {
 		if(mandatory && (value == null || value.isBlank())) {
-			throw new TemplateValidationException(String.format("Il valore {} in posizione {} è obbligatorio", name, index));
+			throw new TemplateValidationException(String.format("Il valore %s in posizione %d è obbligatorio", name, index));
 		}
 	}
 	

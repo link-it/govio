@@ -29,7 +29,7 @@ public class LongCsvItem extends CsvItem{
 				Long.parseLong(value);
 			} catch (NumberFormatException e) {
 				logger.debug("Validazione del numero fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore {} del campo {} non presenta un numero valido.", value, name));
+				throw new TemplateValidationException(String.format("Il valore %s del campo %s non presenta un numero valido.", value, name));
 			}
 		}
 	}

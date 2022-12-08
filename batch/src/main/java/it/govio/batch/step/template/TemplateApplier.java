@@ -46,21 +46,18 @@ public class TemplateApplier {
 		}
 		StringSubstitutor substitutor = new StringSubstitutor(placeholderValues);
 
-		String message = getMessage(substitutor);
-		String subject = getSubject(substitutor);
-
 		return GovioMessageEntity.builder()
 				.amount(amount)
 				.creationDate(LocalDateTime.now())
 				.dueDate(dueDate)
 				.email(null)
 				.invalidAfterDueDate(invalidAfterDueDate)
-				.markdown(message)
+				.markdown(getMessage(substitutor))
 				.noticeNumber(noticeNumber)
 				.payee(payee)
 				.scheduledExpeditionDate(scheduledExpeditionDate)
 				.status(Status.SCHEDULED)
-				.subject(subject)
+				.subject(getSubject(substitutor))
 				.taxcode(taxcode)
 				.build();
 	}

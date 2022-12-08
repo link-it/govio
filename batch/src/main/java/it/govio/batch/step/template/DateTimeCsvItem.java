@@ -33,7 +33,7 @@ public class DateTimeCsvItem extends CsvItem{
 				LocalDateTime.parse(value);
 			} catch (DateTimeParseException e) {
 				logger.debug("Validazione della data con ora fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore {} del campo {} non presenta una data con ora valida.", value, name));
+				throw new TemplateValidationException(String.format("Il valore %s del campo %s non presenta una data con ora valida.", value, name));
 			}
 		}
 	}

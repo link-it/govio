@@ -20,8 +20,7 @@ public class BooleanCsvItem extends CsvItem{
 	@Override
 	public Map<String, String> getPlaceholderValues(String[] values) throws TemplateValidationException {
 		Boolean value = getBooleanValue(values);
-		
-		Map<String, String> valuesMap = new HashMap<String, String>();
+		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put(name, value.toString());
 		return valuesMap;
 	}
