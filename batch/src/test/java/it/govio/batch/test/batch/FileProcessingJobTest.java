@@ -82,8 +82,6 @@ class FileProcessingJobTest {
 		govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "04"));
 		govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "05"));
 
-		System.out.println(">>>>>>>> " + govioFilesRepository.findAll().size());
-
 		initailizeJobLauncherTestUtils();
 		
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
