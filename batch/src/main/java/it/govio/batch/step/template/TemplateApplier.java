@@ -1,10 +1,14 @@
 package it.govio.batch.step.template;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
+
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
@@ -21,8 +25,13 @@ public class TemplateApplier {
 	private Map<String, CsvItem> items;
 
 	public GovioMessageEntity buildGovioMessageEntity(String record) {
-		String[] splitted = record.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-
+		CSVParser build = new CSVParserBuilder().build();
+		String[] splitted;
+		try {
+			splitted = build.parseLine(record);
+		} catch(IOException e) {
+			throw new TemplateValidationException("Impossibile tokenizzare il record: " + e);
+		}
 		String taxcode = getTaxcode(splitted);
 		LocalDateTime dueDate = getDuedate(splitted);
 		String noticeNumber = getNoticeNumber(splitted);

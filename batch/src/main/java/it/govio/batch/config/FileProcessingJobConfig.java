@@ -33,32 +33,8 @@ import it.govio.batch.step.beans.GovioFileMessageLineMapper;
 public class FileProcessingJobConfig {
 
 	@Autowired
-	protected JobBuilderFactory jobs;
-
-	@Autowired
 	protected StepBuilderFactory steps;
 
-	@Autowired
-	private GovioFilesRepository govioFilesRepository;
-
-	@Autowired
-	private UpdateFileStatusTasklet updateFileStatusTasklet;
-	
-	@Autowired
-	private FinalizeFileProcessingTasklet finalizeProcessingFileTasklet;
-
-	@Autowired
-	@Qualifier("govioFileItemReader")
-	private FlatFileItemReader<GovioFileMessageEntity> govioFileItemReader;
-
-	@Autowired
-	@Qualifier("govioFileItemProcessor")
-	private ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor;
-
-	@Autowired
-	@Qualifier("govioFileItemWriter")
-	private ItemWriter<GovioFileMessageEntity> govioFileItemWriter;
-	
 	@Bean
 	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
@@ -70,17 +46,23 @@ public class FileProcessingJobConfig {
 	}
 
 	@Bean(name = "FileProcessingJob")
-	public Job fileProcessingJob(){
+	public Job fileProcessingJob(
+			JobBuilderFactory jobs,
+			@Qualifier("promoteProcessingFileTasklet") Step promoteProcessingFileTasklet,
+			@Qualifier("govioFileReaderMasterStep") Step govioFileReaderMasterStep,
+			@Qualifier("finalizeProcessingFileTasklet") Step finalizeProcessingFileTasklet
+			){
 		return jobs.get("FileProcessingJob")
 				.incrementer(new RunIdIncrementer())
-				.start(promoteProcessingFileTasklet())
-				.next(govioFileReaderMasterStep())
-				.next(finalizeProcessingFileTasklet())
+				.start(promoteProcessingFileTasklet)
+				.next(govioFileReaderMasterStep)
+				.next(finalizeProcessingFileTasklet)
 				.build();
 	}
 
 	@Bean
-	public Step promoteProcessingFileTasklet() {
+	@Qualifier("promoteProcessingFileTasklet")
+	public Step promoteProcessingFileTasklet(UpdateFileStatusTasklet updateFileStatusTasklet) {
 		updateFileStatusTasklet.setPreviousStatus(Status.CREATED);
 		updateFileStatusTasklet.setAfterStatus(Status.PROCESSING);
 		return steps.get("promoteProcessingFileTasklet")
@@ -90,7 +72,7 @@ public class FileProcessingJobConfig {
 	
 	@Bean
 	@Qualifier("finalizeProcessingFileTasklet")
-	public Step finalizeProcessingFileTasklet() {
+	public Step finalizeProcessingFileTasklet(FinalizeFileProcessingTasklet finalizeProcessingFileTasklet) {
 		return steps.get("finalizeProcessingFileTasklet")
 				.tasklet(finalizeProcessingFileTasklet)
 				.build();
@@ -98,10 +80,13 @@ public class FileProcessingJobConfig {
 
 	@Bean
 	@Qualifier("govioFileReaderMasterStep")
-	public Step govioFileReaderMasterStep() {
+	public Step govioFileReaderMasterStep(
+			Partitioner govioFilePartitioner,
+			@Qualifier("loadCsvFileToDbStep") Step loadCsvFileToDbStep
+			) {
 		return steps.get("govioFileReaderMasterStep")
-				.partitioner("loadCsvFileToDbStep", govioFilePartitioner())
-				.step(loadCsvFileToDbStep())
+				.partitioner("loadCsvFileToDbStep", govioFilePartitioner)
+				.step(loadCsvFileToDbStep)
 				.taskExecutor(taskExecutor())
 				.build();
 	}
@@ -111,7 +96,11 @@ public class FileProcessingJobConfig {
 	 * @return
 	 */
 	@Bean
-	public Step loadCsvFileToDbStep(){
+	@Qualifier("loadCsvFileToDbStep")
+	public Step loadCsvFileToDbStep(
+			FlatFileItemReader<GovioFileMessageEntity> govioFileItemReader,
+			ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor,
+			ItemWriter<GovioFileMessageEntity> govioFileItemWriter){
 		return steps.get("loadCsvFileToDbStep")
 				.<GovioFileMessageEntity, GovioFileMessageEntity>chunk(10)
 				.reader(govioFileItemReader)
@@ -155,7 +144,7 @@ public class FileProcessingJobConfig {
 
 	@Bean
 	@StepScope
-	public Partitioner govioFilePartitioner() {
+	public Partitioner govioFilePartitioner(GovioFilesRepository govioFilesRepository) {
 		GovioFilePartitioner partitioner = new GovioFilePartitioner();
 		partitioner.setGovioFileEntities(govioFilesRepository.findByStatus(Status.PROCESSING));
 		return partitioner;

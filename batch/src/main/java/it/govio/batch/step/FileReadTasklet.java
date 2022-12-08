@@ -43,7 +43,7 @@ public class FileReadTasklet implements Tasklet, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		
+		// Non ci sono bean settati da verificare
 	}
 
 }

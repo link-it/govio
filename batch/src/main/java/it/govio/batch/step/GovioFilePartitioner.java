@@ -18,7 +18,7 @@ public class GovioFilePartitioner implements Partitioner {
 	
 	@Override
 	public Map<String, ExecutionContext> partition(int gridSize) {
-		Map<String, ExecutionContext> result = new HashMap<String, ExecutionContext> (gridSize);
+		Map<String, ExecutionContext> result = new HashMap<> (gridSize);
 		for (GovioFileEntity file : govioFileEntities){
 			// Devo recuperare la lista dei placeholder previsti
 			ExecutionContext ex = new ExecutionContext();
