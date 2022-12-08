@@ -11,11 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.govio.batch.exception.TemplateValidationException;
-import it.govio.batch.step.FileReadTasklet;
 
 public class DateTimeCsvItem extends CsvItem{
 	
-	private Logger logger = LoggerFactory.getLogger(FileReadTasklet.class);
+	private Logger logger = LoggerFactory.getLogger(DateTimeCsvItem.class);
 	protected final static DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.ITALY);
 	protected final static DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("E dd M yyyy 'alle ore' HH:mm", Locale.ITALY);
 	protected final static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm", Locale.ITALY);

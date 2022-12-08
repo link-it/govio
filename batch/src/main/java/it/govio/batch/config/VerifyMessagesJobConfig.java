@@ -1,12 +1,20 @@
 package it.govio.batch.config;
 
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,7 +41,7 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 		Status[] statuses = {Status.SENT, Status.THROTTLED, Status.ACCEPTED};
 		return steps.get("getMessaggeStep")
 		.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
-		.reader(expiredScheduledDateMessageCursor(statuses))
+		.reader(expiredExpeditionDateMessageCursor(statuses))
 		.processor(asyncProcessor(this.getMessageProcessor))
 		.writer(asyncMessageWriter())
 		.faultTolerant()
@@ -41,5 +49,22 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 		.skipLimit(Integer.MAX_VALUE)
 		.build();
 	}
+	
+	@Value( "${govio.batch.verify-messages.delay-window:30}" )
+	protected int delayWindow;
+	
+	@Bean
+	@Qualifier("expiredExpeditionDateMessageCursor")
+	protected ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor(Status[] statuses) {
+        JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
+        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.expeditionDate < :t0");
+        itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
+        itemReader.setSaveState(true);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("statuses", Arrays.asList(statuses));
+        parameters.put("t0", LocalDateTime.now().minusMinutes(delayWindow));
+        itemReader.setParameterValues(parameters);
+        return itemReader;
+    }
 	
 }
