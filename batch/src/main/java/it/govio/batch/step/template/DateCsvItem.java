@@ -32,7 +32,7 @@ public class DateCsvItem extends CsvItem{
 				LocalDate.parse(value);
 			} catch (DateTimeParseException e) {
 				logger.debug("Validazione della data fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore {} del campo {} non presenta una data valida.", value, name));
+				throw new TemplateValidationException(String.format("Il valore %s del campo %s non presenta una data valida.", value, name));
 			}
 		}
 	}
