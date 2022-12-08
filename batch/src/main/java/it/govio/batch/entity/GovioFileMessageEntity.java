@@ -1,7 +1,5 @@
 package it.govio.batch.entity;
 
-
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +13,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.data.repository.cdi.Eager;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
@@ -39,13 +36,12 @@ public class GovioFileMessageEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_file_messages")
 	private Long id;
 
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "id_govio_message", nullable = true)
 	private GovioMessageEntity govioMessage;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_files", nullable = false)
-	
 	private GovioFileEntity govioFile;
 	
 	@Column(name = "line_record")

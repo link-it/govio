@@ -122,7 +122,8 @@ public class FileProcessingJobConfig {
 	@Bean
 	@StepScope
 	@Qualifier("govioFileItemProcessor")
-	public ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor(@Value("#{stepExecutionContext[template]}") GovioTemplateEntity template) {
+	public ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor(
+			@Value("#{stepExecutionContext[template]}") GovioTemplateEntity template) {
 		GovioFileItemProcessor processor = new GovioFileItemProcessor();
 		processor.setGovioTemplate(template);
 		return processor;
@@ -131,9 +132,12 @@ public class FileProcessingJobConfig {
 	@Bean
 	@StepScope
 	@Qualifier("govioFileItemWriter")
-	public ItemWriter<GovioFileMessageEntity> govioFileItemWriter(@Value("#{stepExecutionContext[id]}") long govioFileId){
+	public ItemWriter<GovioFileMessageEntity> govioFileItemWriter(
+			@Value("#{stepExecutionContext[id]}") long govioFileId,
+			@Value("#{stepExecutionContext[serviceInstance]}") Long serviceInstanceId){
 		GovioFileItemWriter govioFileItemWriter =  new GovioFileItemWriter();
-		govioFileItemWriter.setGovioFileEntityId(govioFileId);
+		govioFileItemWriter.setGovioFileId(govioFileId);
+		govioFileItemWriter.setGovioServiceInstanceId(serviceInstanceId);
 		return govioFileItemWriter;
 	}
 
