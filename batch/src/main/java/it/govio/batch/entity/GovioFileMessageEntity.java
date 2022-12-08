@@ -41,7 +41,7 @@ public class GovioFileMessageEntity {
 	private GovioMessageEntity govioMessage;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_files", nullable = false)
+	@JoinColumn(name = "id_govio_file", nullable = false)
 	private GovioFileEntity govioFile;
 	
 	@Column(name = "line_record")
