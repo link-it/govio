@@ -19,16 +19,16 @@ import lombok.Getter;
 @Builder
 @Getter
 public class TemplateApplier {
-
+	
 	private String message;
 	private String subject;
 	private Map<String, CsvItem> items;
 
-	public GovioMessageEntity buildGovioMessageEntity(String record) {
+	public GovioMessageEntity buildGovioMessageEntity(String csvline) {
 		CSVParser build = new CSVParserBuilder().build();
 		String[] splitted;
 		try {
-			splitted = build.parseLine(record);
+			splitted = build.parseLine(csvline);
 		} catch(IOException e) {
 			throw new TemplateValidationException("Impossibile tokenizzare il record: " + e);
 		}

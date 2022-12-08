@@ -8,6 +8,8 @@ import it.govio.batch.entity.GovioTemplatePlaceholderEntity;
 
 public class GovioTemplateApplierFactory {
 	
+	private GovioTemplateApplierFactory() { }
+	
 	public static TemplateApplier buildTemplateApplier(GovioTemplateEntity govioTemplate) {
 
 		boolean hasDueDate = govioTemplate.getHasDueDate();

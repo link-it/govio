@@ -25,6 +25,7 @@ public class StringCsvItem extends CsvItem{
 		}
 	}
 	
+	@Override
 	public String getValue(String[] values) throws TemplateValidationException {
 		String value = super.getValue(values);
 		validateValue(value);
@@ -35,7 +36,7 @@ public class StringCsvItem extends CsvItem{
 	public Map<String, String> getPlaceholderValues(String[] values) throws TemplateValidationException {
 		String value = getValue(values);
 		validateValue(value);
-		Map<String, String> valuesMap = new HashMap<String, String>();
+		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put(name, value);
 		valuesMap.put(name + ".lower", value.toLowerCase());
 		valuesMap.put(name + ".upper", value.toUpperCase());

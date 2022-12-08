@@ -48,7 +48,7 @@ public class LongCsvItem extends CsvItem{
 			    .setScale(2)
 			    .doubleValue();
 		
-		Map<String, String> valuesMap = new HashMap<String, String>();
+		Map<String, String> valuesMap = new HashMap<>();
 		NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.ITALY);
 		valuesMap.put(name, value.toString());
 		valuesMap.put(name + ".currency", formatter.format(truncatedDouble));

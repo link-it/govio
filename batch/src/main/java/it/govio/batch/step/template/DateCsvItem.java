@@ -46,7 +46,7 @@ public class DateCsvItem extends CsvItem{
 	@Override
 	public Map<String, String> getPlaceholderValues(String[] values) throws TemplateValidationException {
 		LocalDate value = getDateValue(values);
-		Map<String, String> valuesMap = new HashMap<String, String>();
+		Map<String, String> valuesMap = new HashMap<>();
 		
 		valuesMap.put(name, value.format(baseFormat));
 		valuesMap.put(name + ".verbose", value.format(longFormat));
