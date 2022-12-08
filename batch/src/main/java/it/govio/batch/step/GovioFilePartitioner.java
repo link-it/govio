@@ -25,12 +25,14 @@ public class GovioFilePartitioner implements Partitioner {
 			ex.putString("location", file.getLocation());
 			ex.putLong("id", file.getId());
 			ex.put("template", file.getGovioServiceInstance().getGovioTemplate());
+			ex.putLong("serviceInstance", file.getGovioServiceInstance().getId());
 			result.put("F"+file.getId(), ex);
-			logger.debug("ExecutionContext {} aggiunto [id:{}, location:{}, template:{}]", 
+			logger.debug("ExecutionContext {} aggiunto [id:{}, location:{}, template:{}, serviceInstance: {}]", 
 					"F"+file.getId(), 
 					file.getId(), 
 					file.getLocation(), 
-					file.getGovioServiceInstance().getGovioTemplate().getId());
+					file.getGovioServiceInstance().getGovioTemplate().getId(),
+					file.getGovioServiceInstance().getId());
 		}
 		return result;
 	}

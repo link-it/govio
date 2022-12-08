@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileMessageEntity;
+import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFileMessagesRepository;
 
 public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
@@ -20,20 +21,27 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 	@Autowired
 	GovioFileMessagesRepository repository;
 	
-	long govioFileEntityId;
+	long govioFileId;
+	long govioServiceInstanceId;
 	
 	@Override
 	public void write(List<? extends GovioFileMessageEntity> items) throws Exception {
+		GovioFileEntity govioFileReference = em.getReference(GovioFileEntity.class, govioFileId);
+		GovioServiceInstanceEntity govioServiceInstanceReference = em.getReference(GovioServiceInstanceEntity.class, govioServiceInstanceId);
 		for(GovioFileMessageEntity item : items) {
-			item.setGovioFile(em.getReference(GovioFileEntity.class, govioFileEntityId));
+			item.setGovioFile(govioFileReference);
+			if(item.getGovioMessage() != null)
+				item.getGovioMessage().setGovioServiceInstance(govioServiceInstanceReference);
 			repository.save(item);
 		}
 	}
 
-	public void setGovioFileEntityId(long govioFileEntityId) {
-		this.govioFileEntityId = govioFileEntityId;
+	public void setGovioFileId(long govioFileId) {
+		this.govioFileId = govioFileId;
 	}
 	
-	
+	public void setGovioServiceInstanceId(long govioServiceInstanceId) {
+		this.govioServiceInstanceId = govioServiceInstanceId;
+	}
 
 }
