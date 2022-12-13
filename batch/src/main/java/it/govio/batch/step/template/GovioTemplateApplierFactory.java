@@ -26,10 +26,11 @@ public class GovioTemplateApplierFactory {
 
 		CsvItem expeditionDateTime = new DateTimeCsvItem(++index, CsvItem.Keys.EXPEDITIONDATE.toString(), true);
 		items.put(CsvItem.Keys.EXPEDITIONDATE.toString(), expeditionDateTime);
-
-		CsvItem dueDateItem = new DateTimeCsvItem(++index, CsvItem.Keys.DUEDATE.toString(), hasDueDate);
-		items.put(CsvItem.Keys.DUEDATE.toString(), dueDateItem);
-
+		
+		if(hasDueDate) {
+			CsvItem dueDateItem = new DateTimeCsvItem(++index, CsvItem.Keys.DUEDATE.toString(), true);
+			items.put(CsvItem.Keys.DUEDATE.toString(), dueDateItem);
+		}
 		if(hasPayment) {
 			CsvItem noticeNumberItem = new StringCsvItem(++index, CsvItem.Keys.NOTICENUMBER.toString(), true, "^[0123][0-9]{17}$");
 			items.put(CsvItem.Keys.NOTICENUMBER.toString(), noticeNumberItem);
