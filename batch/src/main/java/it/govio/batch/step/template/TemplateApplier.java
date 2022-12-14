@@ -16,6 +16,9 @@ import it.govio.batch.exception.TemplateValidationException;
 import lombok.Builder;
 import lombok.Getter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Builder
 @Getter
 public class TemplateApplier {
@@ -23,7 +26,7 @@ public class TemplateApplier {
 	private String message;
 	private String subject;
 	private Map<String, CsvItem> items;
-
+	
 	public GovioMessageEntity buildGovioMessageEntity(String csvline) {
 		CSVParser build = new CSVParserBuilder().build();
 		String[] splitted;
@@ -91,11 +94,22 @@ public class TemplateApplier {
 	}
 
 	private String getSubject(StringSubstitutor substitutor) {
+		String subject = substitutor.replace(this.subject);
+		if (subject.length() < 10) {
+			throw new TemplateValidationException(String.format("Il subject di dimensione %d, è minore della dimensione minima ammessa.", subject.length()));
+		}
+		if  (subject.length() > 120) 
+			throw new TemplateValidationException(String.format("Il subject di dimensione %d, supera la dimensione massima ammessa.", subject.length()));
 		return substitutor.replace(subject);
 	}
 
 	private String getMessage(StringSubstitutor substitutor) {
-		return substitutor.replace(message);
+		String markdown = substitutor.replace(message);
+		if (markdown.length() > 10000)
+			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, è minore della dimensione minima ammessa.", markdown.length()));
+		if (markdown.length() < 80)
+			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, supera la dimensione massima ammessa.", markdown.length()));
+		return markdown;
 	}
 
 	private LocalDateTime getDuedate(String[] splitted) {
