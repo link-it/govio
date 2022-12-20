@@ -10,6 +10,7 @@
 	<name>GovIO</name>
 	<modules>
 		<module>batch</module>
+		<module>api</module>
 	</modules>
 </project>
 
