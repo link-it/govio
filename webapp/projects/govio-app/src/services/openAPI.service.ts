@@ -14,7 +14,7 @@ export class OpenAPIService {
 
   constructor( private http: ApiClient) 
   {
-    this.proxyPath = "/api/"
+    this.proxyPath = "/"
   }
 
   getList(name: string, options?: IRequestOptions, pageUrl: string = '') : Observable<any> {
