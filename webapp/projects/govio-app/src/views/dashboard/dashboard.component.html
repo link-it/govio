@@ -1,0 +1,38 @@
+<div id="route-section" class="">
+  <div class="alert-wrapper gp-force-block-formatting-context">
+    <ui-breadcrumb [breadcrumbs]="breadcrumbs"></ui-breadcrumb>
+  </div>
+  <section class="container-fluid container-scroller container-scroller-no-search px-0 container-scroller-no-top-area">
+    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
+    <ng-container *ngIf="!_newDashboard">
+      <div class="dashboard" *ngIf="!_spin">
+        <div class="row justify-content-center mt-5 mb-2">
+          <div class="col-lg-8 px-1 py-1 px-sm-2">
+            <mat-grid-list [cols]="gridCols" rowHeight="2:1.9" gutterSize="5px">
+              <ng-container *ngFor="let item of navItems">
+                <ng-container> <!-- *ngIf="_hasPermission(item)" -->
+                  <mat-grid-tile class="border" *ngIf="sidebarNavHelper.isMenu(item)">
+                    <div class="dashboard-box mbr-text">
+                      <div class="dashboard-box-title dashboard-box-title-button" [routerLink]="item.url">
+                        {{ item.label + '' | translate }}
+                      </div>
+                    </div>
+                  </mat-grid-tile>
+                  <ng-container *ngFor="let children of item.children">
+                    <mat-grid-tile class="border" *ngIf="sidebarNavHelper.isMenu(children)">
+                      <div class="dashboard-box mbr-text">
+                        <div class="dashboard-box-title dashboard-box-title-button" [routerLink]="children.url">
+                          {{ children.label + '' | translate }}
+                        </div>
+                      </div>
+                    </mat-grid-tile>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </mat-grid-list>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </section>
+</div>
