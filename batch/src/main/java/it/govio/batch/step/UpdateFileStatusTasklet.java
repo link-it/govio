@@ -34,7 +34,7 @@ public class UpdateFileStatusTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		int updateAllStatus = repository.updateAllStatus(previousStatus, afterStatus);
-		logger.info("Promoted {} files to PROCESSED status", updateAllStatus);
+		logger.debug("Promoted {} files to PROCESSED status", updateAllStatus);
 		return RepeatStatus.FINISHED;
 	}
 
