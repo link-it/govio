@@ -42,10 +42,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
@@ -54,7 +54,7 @@ import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 import it.pagopa.io.v1.api.beans.LimitedProfile;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
-@SpringBootTest(classes = Application.class)
+@SpringBootTest
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -73,6 +73,9 @@ class SendMessagesJobTest {
 
 	@Autowired
 	private GovioFilesRepository govioFilesRepository;
+	
+	@Autowired
+	private GovioFileMessagesRepository govioFileMessagesRepository;
 	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
@@ -109,6 +112,7 @@ class SendMessagesJobTest {
 	void setUp(){
 		 
 		MockitoAnnotations.openMocks(this);
+		govioFileMessagesRepository.deleteAll();
 		govioFilesRepository.deleteAll();
 		govioMessagesRepository.deleteAll();
 		

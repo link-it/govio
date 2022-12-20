@@ -37,7 +37,7 @@ public class Application extends SpringBootServletInitializer {
 		SpringApplication.run(Application.class, args);
 	}
 
-	@Scheduled(fixedDelay = 5, timeUnit = TimeUnit.SECONDS)
+	@Scheduled(fixedDelayString = "${scheduler.fileProcessingJob.fixedDelayString:10}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void fileProcessingJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))
@@ -45,7 +45,7 @@ public class Application extends SpringBootServletInitializer {
 		jobLauncher.run(fileProcessingJob, params);
 	}
 	
-	@Scheduled(fixedDelay = 1, timeUnit = TimeUnit.MINUTES)
+	@Scheduled(fixedDelayString = "${scheduler.sendMessageJob.fixedDelayString:60}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void sendMessageJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))
@@ -53,7 +53,7 @@ public class Application extends SpringBootServletInitializer {
 		jobLauncher.run(sendMessagesJob, params);
 	}
 	
-	@Scheduled(fixedDelay = 10, timeUnit = TimeUnit.MINUTES)
+	@Scheduled(fixedDelayString = "${scheduler.verifyMessagesJob.fixedDelayString:600}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void verifyMessagesJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))

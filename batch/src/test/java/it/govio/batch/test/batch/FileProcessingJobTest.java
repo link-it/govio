@@ -33,16 +33,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.govio.batch.Application;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 
-@SpringBootTest(classes = Application.class)
+@SpringBootTest
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -55,6 +55,9 @@ class FileProcessingJobTest {
 	@Autowired
 	private GovioFilesRepository govioFilesRepository;
 
+	@Autowired
+	private GovioFileMessagesRepository govioFileMessagesRepository;
+	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
 
@@ -86,8 +89,11 @@ class FileProcessingJobTest {
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
+		govioFileMessagesRepository.deleteAll();
 		govioFilesRepository.deleteAll();
 		govioMessagesRepository.deleteAll();
+		
+		
 	}
 
 	/**
@@ -97,6 +103,8 @@ class FileProcessingJobTest {
 	@Test
 	void csvLoadOk() throws Exception {
 
+		assertEquals(0, govioMessagesRepository.count());
+		
 		// Caricamento messaggi da inviare
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 
