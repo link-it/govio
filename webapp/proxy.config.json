@@ -1,0 +1,23 @@
+{
+  "/api/*": {
+    "target": "http://localhost:9003",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/logout": {
+    "target": "http://localhost:9003",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/profile": {
+    "target": "http://localhost:9003",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}
