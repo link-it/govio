@@ -1,0 +1,333 @@
+{
+	"APP": {
+		"BUTTON": {
+			"AddOrganization": "Add organization",
+			"AddService": "Add service",
+			"AddUser": "Add user",
+			"AlertAction": "Close",
+			"Cancel": "Cancel",
+			"Clear": "Clear",
+			"Close": "Close",
+			"CloseSidebar": "Close sidebar",
+			"Collapse": "Collapse",
+			"CollapseSidebar": "Collapse sidebar",
+			"Confirm": "Confirm",
+			"Continue": "Continue",
+			"Download": "Download",
+			"Entra": "Enter",
+			"Expand": "Expand",
+			"Go": "Go",
+			"InviaRichiesta": "Send request",
+			"Login": "Login",
+			"MoreInfo": "More info",
+			"Remove": "Remove",
+			"Report": "Report",
+			"Save": "Save",
+			"Search": "Search"
+		},
+		"ENUM": {
+			"COMPLETATO": "Completed",
+			"ELABORAZIONE": "Elaboration",
+			"NUOVO": "New",
+			"SCARTATO": "Discarded"
+		},
+		"FILTER": {
+			"All": "All",
+			"Closed": "Closed",
+			"Found": "Found",
+			"Open": "Open"
+		},
+		"HTTP": {
+			"CodeException": "Unpredictable problem. Please try again later",
+			"Default": "Service not available, please try again later.",
+			"ErrorMap": [
+				{
+					"Match": "string_to_match",
+					"Message": "[%1, %2, %3, %4] Error message"
+				}
+			],
+			"Status400": "Bad request.",
+			"Status401": "Access not authorized. Try to login again.",
+			"Status403": "Access forbidden.",
+			"Status404": "Service not found.",
+			"Status422": "Unable to complete the request.",
+			"Status500": "Internal server error.",
+			"Status504": "Gateway timeout."
+		},
+		"LABEL": {
+			"All": "All",
+			"Amount": "Amount",
+			"AnnuncementId": "Annuncement Id",
+			"AvailabilityDate": "Availability date",
+			"BankAccountNumber": "Bank account number",
+			"Competition": "Competition",
+			"Content": "Content",
+			"CreationDate": "Creation date",
+			"CreationDateFrom": "Date From",
+			"CreationDateTo": "Date To",
+			"CreditorReferenceId": "IUV",
+			"CreditorReferenceIdType": "Creditor ReferenceId Type",
+			"DataIndex": "Index",
+			"Date": "Date",
+			"DateFrom": "Date From",
+			"DateTo": "Date To",
+			"Description": "Description",
+			"DueDate": "Due date",
+			"Email": "Email",
+			"FileName": "Filename",
+			"FullName": "Fullname",
+			"Id": "ID",
+			"Index": "Index",
+			"LastUpdateDate": "Last update",
+			"LegalName": "Legal name",
+			"Logo": "Logo",
+			"LogoMiniature": "Logo thumbnail",
+			"Name": "Name",
+			"NoticeNumber": "Notice number",
+			"OfficeAddress": "Office address",
+			"OfficeAt": "Office at",
+			"OfficeEmailAddress": "Email address",
+			"OfficeMunicipality": "Municipality",
+			"OfficeProvince": "Province",
+			"OfficeZip": "Zip code",
+			"Organization": "Organization name",
+			"OrganizationLegalName": "Organization Legal Name",
+			"OrganizationTaxCode": "Organization Tax Code",
+			"Organizer": "Organizer",
+			"OutcomeCode": "Outcome code",
+			"OutcomeDate": "Outcome date",
+			"Password": "Password",
+			"PostingDate": "Posting date",
+			"PostingDateFrom": "Date From",
+			"PostingDateTo": "Date to",
+			"Principal": "Username",
+			"ReceiptId": "Receipt Id",
+			"Reference": "",
+			"ReportingFlowId": "Flow id",
+			"ServiceName": "Service name",
+			"Status": "Status",
+			"StatusCode": "Status code",
+			"StatusDescription": "Status description",
+			"TaxCode": "Tax code",
+			"Type": "Type",
+			"UsernameEmail": "Username or email"
+		},
+		"LABEL_HELP": {
+			"All": ""
+		},
+		"MENU": {
+			"Configurations": "Configurations",
+			"Dashboard": "Dashboard",
+			"DeleteOrganization": "Delete organization …",
+			"DeleteService": "Delete service …",
+			"DeleteUser": "Delete user …",
+			"DownloadReport": "Download report",
+			"ExportCSV": "Export CSV",
+			"ExportPDF": "Export PDF",
+			"Home": "Home",
+			"Logout": "Logout",
+			"Organizations": "Organizations",
+			"Reporting": "Reporting",
+			"Services": "Services",
+			"ShowReport": "Show report",
+			"Subscribers": "Subscribers",
+			"Users": "Users"
+		},
+		"MESSAGE": {
+			"AreYouSure": "Are you sure you want to delete the selected item?",
+			"ERROR": {
+				"Default": "Sorry, unpredictable problem",
+				"DefaultHelp": "Please try again later",
+				"TimeoutError": "Timeout has occurred",
+				"Unauthorized": "Unauthorized",
+				"Unprocessable Entity": "Unprocessable Entity"
+			},
+			"EsportingFile": "Exporting File…",
+			"InsertNotice": "Enter the notice number and press the search button …",
+			"LOGIN": {
+				"PasswordRequired": "Password required",
+				"UsernameRequired": "Username required",
+				"login_400": "Username o password errati. Controlla la corretta scrittura dei dati.",
+				"login_401": "Username o password errati. Controlla la corretta scrittura dei dati.",
+				"login_403": "Username o password errati. Controlla la corretta scrittura dei dati.",
+				"login_422": "Username o password errati. Oppure non sei autorizzato ad accedere.",
+				"valid_email": "Insert valid email",
+				"wrong_username_password": "Username e/o Password errati."
+			},
+			"NoAnnouncement": "No announcement",
+			"NoBankAccount": "No bank account",
+			"NoCandidacies": "No candidacies",
+			"NoData": "Sorry, the requested information was not found",
+			"NoDataHelp": "Please check your connection and try again",
+			"NoNoticeResults": "No notice was found",
+			"NoNoticeResultsHelp": "Check the number entered or fill in the payment details manually",
+			"NoPaymentsResults": "There are no payments",
+			"NoPaymentsResultsHelp": "Add a new payment",
+			"NoResults": "Sorry, your filter produced no results",
+			"NoResultsHelp": "To widen your search, change or remove filters above",
+			"Organizations_Results": {
+				"none": "No Creditor found",
+				"plural": "Found {{count}} Creditors",
+				"singular": "There is only one Creditor"
+			},
+			"PageNumber": "Page {{page}} of {{total}}",
+			"Sign_in_message": "Sign in with your account",
+			"VALIDATION": {
+				"Email": "Insert valid email",
+				"FieldRequired": "Field required",
+				"GreaterThanEqual": "The amount must have a greater or equal value than {{value}}",
+				"GreaterThanZero": "The amount must have a greater value than zero",
+				"LessThanEqual": "The amount must have a value less or equal to {{value}}",
+				"MaxAmount": "The amount can have a maximum value of {{value}}",
+				"MinAmount": "The amount must be a value greater than {{value}}",
+				"NoticeLenght": "The notice number must have {{value}} char",
+				"Number": "The value must be a number",
+				"OneOfLength": "The length must be one of the following values",
+				"OrganizationTaxCode": "The tax code must be numeric and 11 digits",
+				"Range": "The amount must have a value between {{min}} and {{max}}",
+				"Taxcode": "Wrong taxcode",
+				"TaxcodeVat": "Wrong taxcode or VAT number"
+			}
+		},
+		"ORGANIZATIONS": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**"
+			}
+		},
+		"PDF": {
+			"PAGE_NUMBER": "Page {{pageNumber}} of {{totalPages}}"
+		},
+		"PLACEHOLDER": {
+			"Amount": "0.00",
+			"BankAccount": "e.g.: IT91M0762100000000012345778",
+			"CreditorReferenceId": "e.g.: 00000000000123456",
+			"DebtorFullName": "e.g.: Name Surname",
+			"DebtorTaxcode": "e.g.: RSSMRA70A41F205Z",
+			"NoticeNumber": "Notice number",
+			"Search": "Search...",
+			"Taxonomy": "Taxonomy"
+		},
+		"SEARCH": {
+			"ClearRecentSearches": "Clear recent searches",
+			"NoRecentSearches": "You don't have any recent searches",
+			"RecentSearches": "Recent searches",
+			"View": "View"
+		},
+		"SERVICES": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**"
+			}
+		},
+		"SIDENAV": {
+			"Title": "Reconcilier"
+		},
+		"STATUS": {
+			"ACCETTATO": "Accepted",
+			"COMPLETATO": "Completed",
+			"ELABORATO": "Processed",
+			"ELABORAZIONE": "In processing",
+			"ERRORE": "Error",
+			"IN_ELABORAZIONE": "In processing",
+			"NUOVO": "New",
+			"SCARTATO": "Discarded",
+			"TRANSACTION": {
+				"ELABORATO": "Reconciled",
+				"NUOVO": "Not reconciled"
+			}
+		},
+		"TAB": {
+			"Content": "Content",
+			"Details": "Details"
+		},
+		"TABLE": {
+			"Amount": "Amount",
+			"AvailabilityDate": "Availability date",
+			"CandidacieId": "Code",
+			"CandidateFullName": "Candidate",
+			"CandidateId": "Code",
+			"CandidateTaxCode": "Candidate TaxCode",
+			"Competition": "Competition",
+			"CreditorReferenceId": "IUV",
+			"Description": "Description",
+			"Organizer": "Organizer",
+			"PostingDate": "Posting Date",
+			"ReportingFlowId": "Flow Id",
+			"Status": "Status",
+			"Summary": "Summary",
+			"Total": "Total",
+			"TotalCandidacies": "Total candidacies",
+			"Totals": "Totals",
+			"TransactionReferenceNumber": "Reference"
+		},
+		"TITLE": {
+			"Attention": "Attention",
+			"Configurations": "Configurations",
+			"Dashboard": "Dashboard",
+			"EditOrganization": "Edit organization",
+			"EditService": "Edit service",
+			"EditUser": "Edit user",
+			"GeneralInformations": "General informations",
+			"Home": "Home",
+			"Login": "Login",
+			"New": "New",
+			"NewOrganization": "New organization",
+			"NewService": "New service",
+			"NewUser": "New user",
+			"Organization": "Organization",
+			"Organizations": "Organizations",
+			"Reporting": "Reporting",
+			"Service": "Service",
+			"Services": "Services",
+			"Subscriber": "Subscriber",
+			"Subscribers": "Subscribers",
+			"User": "User",
+			"Users": "Users",
+			"Watermark": "Staging"
+		},
+		"TOOLTIP": {
+			"Add": "Add",
+			"AddPayment": "Add payment",
+			"CancelEdit": "Cancel edit",
+			"CancelNew": "Cancel add",
+			"EditOrganization": "Edit organization",
+			"EditService": "Edit service",
+			"EditUser": "Edit user",
+			"Export": "Export",
+			"ExportCSV": "Export file CSV",
+			"ExportPDF": "Export file PDF",
+			"Preview": "Preview",
+			"Remove": "Remove"
+		},
+		"TYPE": {
+			"MANUALE": "Manual"
+		},
+		"USERS": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**",
+				"ShowAuthorizations": "Authorizations",
+				"ShowAuthorizations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**"
+			}
+		}
+	}
+}
