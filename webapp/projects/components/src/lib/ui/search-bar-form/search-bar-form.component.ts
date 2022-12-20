@@ -1,9 +1,10 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
+import _ from 'lodash';
 import moment from 'moment';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
@@ -17,7 +18,7 @@ declare const $: any;
     './search-bar-form.component.scss'
   ]
 })
-export class SearchBarFormComponent implements OnInit, OnChanges {
+export class SearchBarFormComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() showHistory: boolean = true;
   @Input() historyStore: string = '';
   @Input() showSearch: boolean = true;
@@ -30,6 +31,7 @@ export class SearchBarFormComponent implements OnInit, OnChanges {
   @Input() classBlock: string = '';
   @Input() placeholder: string = 'Search or filter results...';
   @Input() formGroup: UntypedFormGroup = new UntypedFormGroup({});
+  @Input() autoPin: boolean = false;
 
   @Output() onSearch: EventEmitter<any> = new EventEmitter();
   @Output() onSort: EventEmitter<any> = new EventEmitter();
@@ -73,6 +75,12 @@ export class SearchBarFormComponent implements OnInit, OnChanges {
       this.placeholder = changes.placeholder.currentValue;
       this._placeholder = this.placeholder;
     }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.__restoreLastSearch();
+    }, 100);
   }
 
   @HostListener("click")
@@ -133,6 +141,9 @@ export class SearchBarFormComponent implements OnInit, OnChanges {
         this._addHistory(this._currentValues);
         this._history = this._getHistory();
       }
+      if (this.autoPin) {
+        this._pinLastSearch();
+      }
     }
     if (this._tokens.length > 0) { this._placeholder = ''; }
     if (this._isOpen && close) {
@@ -157,28 +168,53 @@ export class SearchBarFormComponent implements OnInit, OnChanges {
     const _tokens: any = [];
     Object.keys(_data).forEach(key => {
       if (_data[key] && _data[key] !== '') {
-        const _spiltKey: string[] = [];
-        key.split('.').map((item) => { _spiltKey.push(item[0].toUpperCase() + item.slice(1)) });
-        const _key = _spiltKey.join('');
-        const _label = this.translate.instant(`APP.LABEL.${_key}`);
+        const _field = this.__getField(key);
         const _operator = this.__getOperator(key);
         const _value = this.__formatValue(key, _data[key]);
-        _tokens.push({ key: key, label: _label, operator: _operator, value: _value });
+        _tokens.push({ key: key, label: _field.label, operator: _operator, value: _value });
       }
     });
     return _tokens;
   }
 
+  __getField(key: string) {
+    let _field = this.searchFields.find((item) => item.field === key);
+    if (!_field) {
+      const _spiltKey: string[] = [];
+      key.split('.').map((item) => { _spiltKey.push(item[0].toUpperCase() + item.slice(1)) });
+      const _key = _spiltKey.join('');
+      _field = {
+        field: key,
+        label: `APP.LABEL.${_key}`,
+        type: 'string',
+        condition: 'equal'
+      };
+    }
+    _field.label = this.translate.instant(_field.label);
+    return _field;
+  }
+
   __getOperator(key: string) {
+    const _field = this.__getField(key);
     let _operator = '⊂';
-    switch (key) {
-      case 'creationDateFrom':
-      case 'creationDateTo':
-      case 'postingDateFrom':
-      case 'postingDateTo':
-      case 'status':
-      case 'type':
+    switch (_field.condition) {
+      case 'like':
+        _operator = '⊂';
+        break;
+      case 'equal':
         _operator = '=';
+        break;
+      case 'gt':
+        _operator = '>';
+        break;
+      case 'gte':
+        _operator = '>=';
+        break;
+      case 'lt':
+        _operator = '<';
+        break;
+      case 'lte':
+        _operator = '<=';
         break;
       default:
         break;
@@ -187,13 +223,17 @@ export class SearchBarFormComponent implements OnInit, OnChanges {
   }
 
   __formatValue(key: string, value: any) {
+    const _field = this.__getField(key);
     let _value = value;
-    switch (key) {
-      case 'creationDateFrom':
-      case 'creationDateTo':
-      case 'postingDateFrom':
-      case 'postingDateTo':
-        _value = moment(value.valueOf()).format('DD/MM/YYYY');
+    switch (_field.type) {
+      case 'enum':
+        _value = this.translate.instant(_field.enumValues[value]);
+        break;
+      case 'boolean':
+        _value = value ? this.translate.instant(_field.booleanValues[0]) : this.translate.instant(_field.booleanValues[1]);
+        break;
+      case 'date':
+        _value = moment(value.valueOf()).format(_field.format);
         break;
       default:
         break;
@@ -288,6 +328,36 @@ export class SearchBarFormComponent implements OnInit, OnChanges {
     const lStorage = this.__encodeDataOptions(data);
     localStorage.setItem(`History_${this.historyStore}`, lStorage);
     return lStorage;
+  }
+
+  _isPinned() {
+    const _pin: any = localStorage.getItem(`History_Pin_${this.historyStore}`);
+    if (_pin && _pin !== 'null') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  _pinLastSearch() {
+    if (!this.__isEmptyValues(this._currentValues)) {
+      const lStorage = this.__encodeDataOptions(this._currentValues);
+      localStorage.setItem(`History_Pin_${this.historyStore}`, lStorage);
+    } else {
+      if (this.autoPin) {
+        localStorage.removeItem(`History_Pin_${this.historyStore}`);
+      }
+    }
+  }
+
+  __restoreLastSearch() {
+    const _pinned: any = localStorage.getItem(`History_Pin_${this.historyStore}`);
+    if (_pinned && _pinned !== 'null') {
+      this._restoreSearch(this.__decodeDataOptions(_pinned));
+    }
+    if (!this.autoPin) {
+      localStorage.removeItem(`History_Pin_${this.historyStore}`);
+    }
   }
 
   __decodeDataOptions(data: any): any {
