@@ -19,35 +19,35 @@
 	</logger>
 
 	<!-- Hibernate -->
-	<logger name="org.hibernate.SQL" level="ERROR"
+	<logger name="org.hibernate.SQL" level="OFF"
 		additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 
-	<logger name="org.hibernate.stat" level="ERROR"
+	<logger name="org.hibernate.stat" level="OFF"
 		additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
-	<logger name="org.hibernate.SQL_SLOW" level="ERROR"
+	<logger name="org.hibernate.SQL_SLOW" level="OFF"
 		additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
-	<logger name="org.hibernate.cache" level="ERROR"
+	<logger name="org.hibernate.cache" level="OFF"
 		additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
-	<logger name="reactor.netty.http.client" level="ERROR"
+	<logger name="reactor.netty.http.client" level="OFF"
 		additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 	<!-- Impostare questo logger a TRACE per stampare i valori delle query -->
-	<logger name="org.hibernate.type" level="ERROR"
+	<logger name="org.hibernate.type" level="OFF"
 		additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 
 
-	<root level="ERROR">
+	<root level="OFF">
 		<appender-ref ref="STDOUT" />
 	</root>
 
