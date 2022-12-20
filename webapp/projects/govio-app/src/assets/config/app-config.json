@@ -12,7 +12,7 @@
     },
 
     "GOVAPI": {
-      "HOST": "http://localhost:5202",
+      "HOST": "http://172.16.1.121/govshell-reverse-proxy/govio/",
       "LOGOUT_URL": "/logout"
     },
 

@@ -174,11 +174,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
@@ -211,7 +206,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>batch-riconciliazione-govpay</finalName>
+		<finalName>govio-batch</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
