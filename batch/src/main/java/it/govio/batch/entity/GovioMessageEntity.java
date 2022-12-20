@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.stereotype.Component;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,9 +30,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Component
 @Table(name = "govio_messages")
 public class GovioMessageEntity {
-	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED}
+	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED}
 
 	@Id
 	@SequenceGenerator(name="seq_govio_messages",sequenceName="seq_govio_messages", initialValue=1, allocationSize=1)
@@ -40,7 +43,7 @@ public class GovioMessageEntity {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_service_instance", nullable = false)
 	private GovioServiceInstanceEntity govioServiceInstance;
-
+	
 	@Column(name = "taxcode", nullable = false)
 	private String taxcode;
 
@@ -55,7 +58,7 @@ public class GovioMessageEntity {
 	private Status status;
 
 	@Column(name = "amount")
-	private Integer amount;
+	private Long amount;
 
 	@Column(name = "notice_number")
 	private String noticeNumber;
