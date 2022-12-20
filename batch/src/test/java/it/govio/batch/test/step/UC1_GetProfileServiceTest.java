@@ -134,7 +134,7 @@ class UC1_GetProfileServiceTest {
 	
 	@Test
 	@DisplayName("UC1.1: Bad request")
-	void UC_1_1_BadRequest() throws Exception {
+	void UC1_1_BadRequest() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.BAD_REQUEST));
 		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
@@ -143,7 +143,7 @@ class UC1_GetProfileServiceTest {
 
 	@Test
 	@DisplayName("UC1.2: Profile not exists")
-	void UC_1_2_ProfileNotExists() throws Exception {
+	void UC1_2_ProfileNotExists() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.NOT_FOUND));
 		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
@@ -152,18 +152,19 @@ class UC1_GetProfileServiceTest {
 
 	@Test
 	@DisplayName("UC1.3: Sender not allowed")
-	void UC_1_3_SenderNotAllowed() throws Exception {
+	void UC1_3_SenderNotAllowed() throws Exception {
 		LimitedProfile profile = new LimitedProfile();
 		profile.setSenderAllowed(false);
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, profile);
 		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
 		assertEquals(Status.SENDER_NOT_ALLOWED, processedMessage.getStatus());
+		
 	}
 
 	@Test
 	@DisplayName("UC1.4: Denied")
-	void UC_1_4_Denied() throws Exception {
+	void UC1_4_Denied() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
 		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
@@ -172,7 +173,7 @@ class UC1_GetProfileServiceTest {
 
 	@Test
 	@DisplayName("UC1.5: Forbidden")
-	void UC_1_5_Forbidden() throws Exception {
+	void UC1_5_Forbidden() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.FORBIDDEN));
 		GovioMessageEntity processedMessage = getProfileProcessor.process(govioMessageEntity);
@@ -181,7 +182,7 @@ class UC1_GetProfileServiceTest {
 
 	@Test
 	@DisplayName("UC1.6: Recipient allowed")
-	void UC_1_6_RecipientAllowed() throws Exception {
+	void UC1_6_RecipientAllowed() throws Exception {
 		LimitedProfile profile = new LimitedProfile();
 		profile.setSenderAllowed(true);
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
@@ -192,7 +193,7 @@ class UC1_GetProfileServiceTest {
 	
 	@Test
 	@DisplayName("UC1.7: Errore 4xx non previsto")
-	void UC_1_7_Errore4xxNonPrevisto() throws Exception {
+	void UC1_7_Errore4xxNonPrevisto() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpClientErrorException(HttpStatus.I_AM_A_TEAPOT));
 	    assertThrows(HttpClientErrorException.class, () -> {
@@ -202,7 +203,7 @@ class UC1_GetProfileServiceTest {
 	
 	@Test
 	@DisplayName("UC1.8: Errore 5xx")
-	void UC_1_8_Errore5xx() throws Exception {
+	void UC1_8_Errore5xx() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 	    assertThrows(HttpServerErrorException.class, () -> {
@@ -212,7 +213,7 @@ class UC1_GetProfileServiceTest {
 	
 	@Test
 	@DisplayName("UC1.9: Errore interno")
-	void UC_1_9_ErroreInterno() throws Exception {
+	void UC1_9_ErroreInterno() throws Exception {
 		GovioMessageEntity govioMessageEntity = buildGovioMessageEntity();
 		setupRestTemplateMock(govioMessageEntity, new RestClientException("Exception"));
 	    assertThrows(BackendioRuntimeException.class, () -> {
