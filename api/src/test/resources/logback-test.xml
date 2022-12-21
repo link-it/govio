@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration status="WARN" monitorInterval="30">
+
+	<Property name="LOG_PATTERN" value="%d{ISO8601} %-5level [%t] %C{1.}: %msg%n%throwable" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%white(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1.}): %msg%n%throwable</Pattern>
+		</encoder>
+	</appender>
+	
+		<logger name="it.govhub" level="OFF" additivity="false">
+			<appender-ref ref="STDOUT" />
+		</logger>
+		
+		<!--  Hibernate -->
+    <logger name="org.hibernate.SQL" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    
+    <logger name="org.hibernate.stat" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.SQL_SLOW" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.hibernate.cache" level="ERROR" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+	  <logger name="reactor.netty.http.client" level="ERROR" additivity="false">
+	      <appender-ref ref="STDOUT" />
+    </logger>	 
+    <!-- Impostare questo logger a TRACE per stampare i valori delle query -->
+     <logger name="org.hibernate.type" level="ERROR" additivity="false">
+	      <appender-ref ref="STDOUT" />
+    </logger>
+
+    
+
+	<root level="ERROR">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
