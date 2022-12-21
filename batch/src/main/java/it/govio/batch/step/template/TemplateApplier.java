@@ -16,9 +16,6 @@ import it.govio.batch.exception.TemplateValidationException;
 import lombok.Builder;
 import lombok.Getter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Builder
 @Getter
 public class TemplateApplier {
@@ -94,12 +91,12 @@ public class TemplateApplier {
 	}
 
 	private String getSubject(StringSubstitutor substitutor) {
-		String subject = substitutor.replace(this.subject);
-		if (subject.length() < 10) {
-			throw new TemplateValidationException(String.format("Il subject di dimensione %d, è minore della dimensione minima ammessa.", subject.length()));
+		String subjectString = substitutor.replace(subject);
+		if (subjectString.length() < 10) {
+			throw new TemplateValidationException(String.format("Il subject di dimensione %d, è minore della dimensione minima ammessa.", subjectString.length()));
 		}
-		if  (subject.length() > 120) 
-			throw new TemplateValidationException(String.format("Il subject di dimensione %d, supera la dimensione massima ammessa.", subject.length()));
+		if  (subjectString.length() > 120) 
+			throw new TemplateValidationException(String.format("Il subject di dimensione %d, supera la dimensione massima ammessa.", subjectString.length()));
 		return substitutor.replace(subject);
 	}
 
