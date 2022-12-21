@@ -325,5 +325,5 @@
 			<id>linkit-private-snapshot</id>
 			<url>https://maven.link.it/content/repositories/private_snapshots/</url>
 		</repository>
-	</repositories#>	
+	</repositories>
 </project>
