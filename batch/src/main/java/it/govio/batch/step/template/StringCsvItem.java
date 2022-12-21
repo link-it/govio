@@ -18,7 +18,6 @@ public class StringCsvItem extends CsvItem{
 	@Override
 	protected void validateValue(String value) throws TemplateValidationException {
 		super.validateValue(value);
-		
 		// Se c'e' un pattern ed un valore, controllo che sia compatibile.
 		if(pattern != null && value != null && !value.isBlank() && !Pattern.matches(pattern, value)) {
 			throw new TemplateValidationException(String.format("Il valore %s del campo %s non rispetta il pattern %s", value, name, pattern));

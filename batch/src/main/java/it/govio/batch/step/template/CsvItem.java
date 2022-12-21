@@ -46,7 +46,7 @@ public abstract class CsvItem {
 	}
 	
 	protected void validateValue(String value) throws TemplateValidationException {
-		if(mandatory && (value == null)) {
+		if(mandatory && (value == null || value.isBlank())) {
 			throw new TemplateValidationException(String.format("Il valore %s in posizione %d è obbligatorio", name, index));
 		}
 	}

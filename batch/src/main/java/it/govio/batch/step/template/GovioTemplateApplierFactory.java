@@ -38,7 +38,7 @@ public class GovioTemplateApplierFactory {
 			CsvItem amountItem = new LongCsvItem(++index, CsvItem.Keys.AMOUNT.toString(), true);
 			items.put(CsvItem.Keys.AMOUNT.toString(), amountItem);
 
-			CsvItem invalidAfterDueDateItem = new BooleanCsvItem(++index, CsvItem.Keys.INVALIDAFTERDUEDATE.toString(), true);
+			CsvItem invalidAfterDueDateItem = new BooleanCsvItem(++index, CsvItem.Keys.INVALIDAFTERDUEDATE.toString(), false);
 			items.put(CsvItem.Keys.INVALIDAFTERDUEDATE.toString(), invalidAfterDueDateItem);
 
 			CsvItem payeeItem = new StringCsvItem(++index, CsvItem.Keys.PAYEE.toString(), false, "^[0-9]{11}$");

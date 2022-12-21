@@ -43,6 +43,45 @@ class UC4_AcquisizioneMessaggiTest {
 		    	templateApplier.buildGovioMessageEntity("");
 		    });
 			}
+		
+		@Test
+		@DisplayName("template senza ScheduledExpeditionDate")
+		void Test2(){
+			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
+			GovioTemplateEntity govioTemplate = GovioTemplateEntity
+					.builder()
+					.hasDueDate(false)
+					.hasPayment(false)
+					.name("no ScheduledExpeditionDate")
+					.messageBody("Il Comune di Empoli le dice hello, il markdown deve essere di almeno 80 caratteri")
+					.subject("hello, il subject deve essere almeno dieci caratteri")
+					.govioTemplatePlaceholders(govioTemplatePlaceholders)
+					.build();
+			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
+			
+		    assertThrows(TemplateValidationException.class, () -> {
+		    	templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A");
+		    });
+			}
+		
+		@Test
+		@DisplayName("template senza ScheduledExpeditionDate")
+		void Test3(){
+			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
+			GovioTemplateEntity govioTemplate = GovioTemplateEntity
+					.builder()
+					.hasDueDate(false)
+					.hasPayment(false)
+					.name("no taxCode")
+					.messageBody("Il Comune di Empoli le dice hello, il markdown deve essere di almeno 80 caratteri ${taxcode}")
+					.subject("hello, il subject deve essere almeno dieci caratteri")
+					.govioTemplatePlaceholders(govioTemplatePlaceholders)
+					.build();
+			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
+		    assertThrows(TemplateValidationException.class, () -> {
+		    	templateApplier.buildGovioMessageEntity(",2007-12-03T10:15:30");
+		    });
+		}
 				
 		@Test
 		@DisplayName("Messaggio senza due date, senza payment, senza placeholder")
@@ -53,14 +92,14 @@ class UC4_AcquisizioneMessaggiTest {
 					.hasDueDate(false)
 					.hasPayment(false)
 					.name("Messaggio senza due date, senza payment, senza placeholder")
-					.messageBody("il comune di Empoli avvisa il signor ${taxcode}, , il markdown deve essere di almeno 80 caratteri")
+					.messageBody("il comune di Empoli avvisa il signor ${taxcode},,il markdown deve essere di almeno 80 caratteri")
 					.subject("hello, il subject deve essere almeno dieci caratteri")
 					.govioTemplatePlaceholders(govioTemplatePlaceholders)
 					.build();
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30");
-			assertEquals("il comune di Empoli avvisa il signor RSSMRO00A00A000A, , il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
+			assertEquals("il comune di Empoli avvisa il signor RSSMRO00A00A000A,,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 		}
 
 		@Test
