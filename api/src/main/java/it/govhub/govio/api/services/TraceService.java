@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
 
+import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovIOFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
+import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.security.services.SecurityService;
 
@@ -39,7 +41,7 @@ public class TraceService {
 	
 	Logger logger = LoggerFactory.getLogger(TraceService.class);
 	
-	public void uploadCSV(ServiceInstanceEntity instance, String sourceFilename, InputStream stream) {
+	public void uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
 		this.securityService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
 		this.securityService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
@@ -59,20 +61,20 @@ public class TraceService {
     	destDir.mkdirs();
     	
     	if (!destDir.isDirectory()) {
-    		logger.error("Impossibile creare la directory per conservare i files: {}", destDir.toString());
+    		logger.error("Impossibile creare la directory per conservare i files: {}", destDir);
     		throw new RuntimeException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
     	Path destFile =  destPath
     				.resolve(sourceFilename);
     	
-    	logger.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile.toString());
+    	logger.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
     
-    	try {
+    	try(InputStream stream=itemStream.openStream()){
 			Files.copy(stream, destFile, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			throw new RuntimeException(e);	
-		}
+			throw new InternalException(e);	
+		} 
     	
     	GovIOFileEntity file = GovIOFileEntity.builder()
     		.creationDate(OffsetDateTime.now())
