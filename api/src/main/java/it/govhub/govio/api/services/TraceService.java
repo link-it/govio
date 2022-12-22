@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
 
+import javax.transaction.Transactional;
+
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +23,9 @@ import it.govhub.govio.api.repository.GovIOFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govregistry.commons.exception.InternalException;
+import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
+import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
 @Service
@@ -37,14 +41,15 @@ public class TraceService {
 	ServiceInstanceEntityRepository serviceRepo;
 	
 	@Autowired
-	SecurityService securityService;
+	SecurityService authService;
 	
 	Logger logger = LoggerFactory.getLogger(TraceService.class);
 	
-	public void uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
+	@Transactional
+	public GovIOFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
-		this.securityService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
-		this.securityService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
 		
 		if (instance.getTemplate() == null) {
 			throw new SemanticValidationException("L'istanza del servizio non ha un template di messaggio associato");
@@ -69,9 +74,10 @@ public class TraceService {
     				.resolve(sourceFilename);
     	
     	logger.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
-    
+    	
+    	long size;
     	try(InputStream stream=itemStream.openStream()){
-			Files.copy(stream, destFile, StandardCopyOption.REPLACE_EXISTING);
+			size = Files.copy(stream, destFile, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			throw new InternalException(e);	
 		} 
@@ -83,8 +89,17 @@ public class TraceService {
     		.name(sourceFilename)
     		.serviceInstance(instance)
     		.status("CREATED")
+    		.size(size)
     		.build();
     	
-    	this.fileRepo.save(file);
+    	return this.fileRepo.save(file);
 	}
+	
+	public GovIOFileEntity readFile(Long id) {
+		
+		return this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+	}
+	
+	
 }
