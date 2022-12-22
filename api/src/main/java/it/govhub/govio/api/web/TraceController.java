@@ -1,4 +1,4 @@
-package it.govhub.govio.api.security.web;
+package it.govhub.govio.api.web;
 
 import java.io.InputStream;
 
