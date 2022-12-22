@@ -3,6 +3,7 @@ package it.govhub.govio.api.test.controller.trace;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 
 import javax.json.Json;
@@ -32,7 +33,7 @@ import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-@DisplayName("Test di censimento Utenti")
+@DisplayName("Test di caricamento csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 
 class Trace_UC_1_UploadCsvTracesTest {
@@ -45,11 +46,11 @@ class Trace_UC_1_UploadCsvTracesTest {
 	
 	@Test
 	void UC_1_01_UploadCsvFileOk() throws Exception {
+		String fileName = "csv-test";
+		InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName);
 		String name = "user-file";
-		String fileName = "test1.csv";
 		String contentType = "text/csv";
-		String content = "test-data";
-		MockMultipartFile mockMultipartFile = new MockMultipartFile(name, fileName, contentType, content.getBytes());
+		MockMultipartFile mockMultipartFile = new MockMultipartFile(name, fileName, contentType, resourceAsStream);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.PARAMETRO_SERVICE_ID, "1");
