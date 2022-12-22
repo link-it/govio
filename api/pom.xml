@@ -204,7 +204,7 @@
 			<version>${jsonpatch.version}</version>
 		</dependency>
 
-		<!--  Streaming Contenuto Multipart  -->
+		<!-- Streaming Contenuto Multipart -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -239,10 +239,18 @@
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
 							<importMappings>
 								<importMapping>Direction=org.springframework.data.domain.Sort.Direction</importMapping>
-								<importMapping>PageInfo=it.govhub.govregistry.commons.beans.PageInfo</importMapping>
-								<importMapping>Problem=it.govhub.govregistry.commons.beans.Problem</importMapping>
-								<importMapping>PatchOp=it.govhub.govregistry.commons.beans.PatchOp</importMapping>
-								<importMapping>Authorization=it.govhub.commons.profile.api.beans.Authorization</importMapping>
+								<importMapping>PageInfo=it.govhub.govregistry.commons.api.beans.PageInfo</importMapping>
+								<importMapping>Problem=it.govhub.govregistry.commons.api.beans.Problem</importMapping>
+								<importMapping>PatchOp=it.govhub.govregistry.commons.api.beans.PatchOp</importMapping>
+								<importMapping>Authorization=it.govhub.govregistry.commons.api.beans.Authorization</importMapping>
+								<importMapping>AuthorizationList=it.govhub.govregistry.commons.api.beans.AuthorizationList</importMapping>
+								<importMapping>AuthorizationOrdering=it.govhub.govregistry.commons.api.beans.AuthorizationOrdering</importMapping>
+								<importMapping>User=it.govhub.govregistry.commons.api.beans.User</importMapping>
+								<importMapping>UserCreate=it.govhub.govregistry.commons.api.beans.UserCreate</importMapping>
+								<importMapping>Organization=it.govhub.govregistry.commons.api.beans.Organization</importMapping>
+								<importMapping>OrganizationCreate=it.govhub.govregistry.commons.api.beans.OrganizationCreate</importMapping>
+								<importMapping>Service=it.govhub.govregistry.commons.api.beans.Service</importMapping>
+								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
 							</importMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
