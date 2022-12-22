@@ -1,9 +1,6 @@
 package it.govhub.govio.api.web;
 
-import java.io.InputStream;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
@@ -25,6 +22,7 @@ import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.services.TraceService;
 import it.govhub.govio.api.spec.TraceApi;
 import it.govhub.govregistry.commons.exception.BadRequestException;
+import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 
 @RestController
@@ -50,7 +48,7 @@ public class TraceController implements TraceApi {
 		
 		// Leggo il body multipart ed estraggo nomeFile e stream di input
 		String sourceFilename = null;
-		InputStream sourceStream = null;
+		FileItemStream itemStream = null;
 		
 		try {
 			FileItemIterator iterStream = new ServletFileUpload().getItemIterator(request);
@@ -62,17 +60,16 @@ public class TraceController implements TraceApi {
 			// senza chiamare iterStream.hasNext
 			
 			while (sourceFilename == null && iterStream.hasNext()) {
-			    FileItemStream item = iterStream.next();
+			    itemStream = iterStream.next();
 			    
-			    if (item.isFormField()) {
-			    	logger.debug("Skipping multipart form field {}", item.getFieldName());
+			    if (itemStream.isFormField()) {
+			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
 			    } else {
-			    	sourceStream = item.openStream();
-				    sourceFilename = readFilenameFromHeaders(item.getHeaders());
+				    sourceFilename = readFilenameFromHeaders(itemStream.getHeaders());
 			    }
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new InternalException(e);
 		}
 		
     	if (StringUtils.isEmpty(sourceFilename)) {
@@ -82,8 +79,8 @@ public class TraceController implements TraceApi {
     	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
-    	this.traceService.uploadCSV(serviceInstance, sourceFilename, sourceStream);
-		
+    	this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
+    	
 		return ResponseEntity.ok(new GovIOFile());
 	}
 	

@@ -30,7 +30,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "govio_files")
-public class GovIOFileEntity implements Serializable {
+public class GovIOFileEntity  {
 
 	private static final long serialVersionUID = 1L;
 	
