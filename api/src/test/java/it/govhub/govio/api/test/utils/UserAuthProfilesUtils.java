@@ -21,28 +21,8 @@ public class UserAuthProfilesUtils {
 		return utenzaPrincipal("amministratore");
 	}
 
-	public RequestPostProcessor utenzaUserViewer() {
-	    return utenzaPrincipal("user_viewer"); 
-	}
-
-	public RequestPostProcessor utenzaUserEditor() {
-	    return utenzaPrincipal("user_editor"); 
-	}
-	
-	public RequestPostProcessor utenzaOrganizationViewer() {
-	    return utenzaPrincipal("org_viewer"); 
-	}
-
-	public RequestPostProcessor utenzaOrganizationEditor() {
-	    return utenzaPrincipal("org_editor"); 
-	}
-	
-	public RequestPostProcessor utenzaServiceViewer() {
-	    return utenzaPrincipal("service_viewer"); 
-	}
-
-	public RequestPostProcessor utenzaServiceEditor() {
-	    return utenzaPrincipal("service_editor"); 
+	public RequestPostProcessor utenzaGovIOSender() {
+	    return utenzaPrincipal("govio_sender"); 
 	}
 
 	public RequestPostProcessor utenzaOspite() {
