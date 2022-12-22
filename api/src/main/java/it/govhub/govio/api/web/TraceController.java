@@ -1,8 +1,17 @@
 package it.govhub.govio.api.web;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
@@ -12,24 +21,38 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovIOFile;
+import it.govhub.govio.api.entity.GovIOFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
+import it.govhub.govio.api.repository.GovIOFileFilters;
+import it.govhub.govio.api.repository.GovIOFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
+import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govio.api.services.TraceService;
 import it.govhub.govio.api.spec.TraceApi;
 import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
+import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
+import it.govhub.govregistry.commons.utils.ListaUtils;
+import it.govhub.security.config.GovregistryRoles;
+import it.govhub.security.services.SecurityService;
 
 @RestController
 public class TraceController implements TraceApi {
@@ -40,6 +63,15 @@ public class TraceController implements TraceApi {
 	@Autowired
 	TraceService traceService;
 	
+	@Autowired
+	FileAssembler fileAssembler;
+	
+	@Autowired
+	SecurityService authService;
+	
+	@Autowired
+	GovIOFileRepository fileRepo;
+	
 	Logger logger = LoggerFactory.getLogger(TraceController.class);
 	
 	/**
@@ -48,7 +80,7 @@ public class TraceController implements TraceApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovIOFile> uploadCsvTrace(Long serviceId, Long organizationId, String name, MultipartFile file) {
+	public ResponseEntity<GovIOFile> uploadCsvTrace(Long serviceId, Long organizationId, MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -85,9 +117,9 @@ public class TraceController implements TraceApi {
     	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
-    	this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
+    	GovIOFileEntity created = this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
-		return ResponseEntity.ok(new GovIOFile());
+		return ResponseEntity.ok(this.fileAssembler.toModel(created));
 	}
 	
 	
@@ -115,23 +147,93 @@ public class TraceController implements TraceApi {
 
 
 	@Override
-	public ResponseEntity<FileList> listCsvTrace(Long userId,Long serviceId,Long organizationId, Direction sortDirection, Integer limit, Long offset, String q) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<FileList> listCsvTrace(
+				Direction sortDirection, 
+				Integer limit, 
+				Long offset, 
+				String q,
+				 Long userId,
+				 Long serviceId,
+				 Long organizationId, 
+				 OffsetDateTime creationDateFrom, 
+				 OffsetDateTime creationDateTo) {
+		
+		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
+		
+		Specification<GovIOFileEntity> spec = GovIOFileFilters.empty();
+		
+		if (userId != null) {
+			spec = spec.and(GovIOFileFilters.byUser(userId));
+		}
+		if (serviceId != null) {
+			spec = spec.and(GovIOFileFilters.byService(serviceId));
+		}
+		if (organizationId != null) {
+			spec = spec.and(GovIOFileFilters.byOrganization(organizationId));
+		}
+		if (q != null) {
+			spec = spec.and(GovIOFileFilters.likeFileName(q));
+		}
+		if(creationDateFrom != null) {
+			spec = spec.and(GovIOFileFilters.fromCreationDate(creationDateFrom));
+		}
+		if(creationDateTo != null) {
+			spec = spec.and(GovIOFileFilters.untilCreationDate(creationDateTo));
+		}
+		
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovIOFileFilters.sort(sortDirection));
+		
+		Page<GovIOFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
+		
+		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
+				.currentRequestAttributes()).getRequest();
+		
+		FileList ret = ListaUtils.costruisciListaPaginata(files, pageRequest.limit, curRequest, new FileList());
+		
+		for (GovIOFileEntity file : files) {
+			ret.addItemsItem(this.fileAssembler.toModel(file));
+		}
+		
+		return ResponseEntity.ok(ret);
 	}
 
 
 	@Override
 	public ResponseEntity<GovIOFile> readCsvTrace(Long traceId) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO: Come popolo errorMessages e aquiredMessages?
+		// AquiredMessages sarà il numero di govio_file_messages collegata a una govio_files
+		//  ErrorMessages sarà il numero in cui GovioFileMessageEntity collegati al govio_file_messages per cui error è a null
+
+		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
+				
+		return ResponseEntity.ok(
+				this.fileAssembler.toModel(this.traceService.readFile(traceId)));
 	}
 
 
 	@Override
 	public ResponseEntity<Resource> readCsvFileContent(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	
+    	this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
+		
+		GovIOFileEntity file = this.traceService.readFile(id);
+		
+		Path path = file.getLocation();
+		
+		FileInputStream stream;
+		try {
+			stream = new FileInputStream(path.toFile());
+		} catch (FileNotFoundException e) {
+			throw new InternalException(e);
+		}
+
+		InputStreamResource fileStream = new InputStreamResource(stream);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentLength(file.getSize());
+		ResponseEntity<Resource> ret =   new ResponseEntity<>(fileStream, headers, HttpStatus.OK); 
+		
+		return ret;
 	}
 
 
@@ -140,5 +242,5 @@ public class TraceController implements TraceApi {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 }

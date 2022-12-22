@@ -43,8 +43,6 @@ paths:
                schema:
                  type: object
                  properties: # Request parts
-                   name:
-                     type: string
                    file:
                      type: string
                      format: binary
@@ -83,10 +81,12 @@ paths:
             - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
             - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
             - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
-            - $ref: "#/components/parameters/user_id_query"
-            - $ref: "#/components/parameters/service_id_query"
-            - $ref: "#/components/parameters/organization_id_query"
+            - $ref: "#/components/parameters/user_id_query_optional"
+            - $ref: "#/components/parameters/service_id_query_optional"
+            - $ref: "#/components/parameters/organization_id_query_optional"
             - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
+            - $ref: "#/components/parameters/creation_date_from"
+            - $ref: "#/components/parameters/creation_date_to"
          responses:
            '200':
              description: Successful operation.
@@ -213,6 +213,22 @@ components:
 
    parameters:
    
+      creation_date_from:
+         name: creation_date_from
+         in: query
+         required: false
+         schema:
+            type: string
+            format: date-time
+            
+      creation_date_to:
+         name: creation_date_to
+         in: query
+         required: false
+         schema:
+            type: string
+            format: date-time            
+   
       organization_id_query:
          name: organization_id
          in: query
@@ -220,17 +236,31 @@ components:
          schema:
            $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationId"
    
+      organization_id_query_optional:
+         name: organization_id
+         in: query
+         required: false
+         schema:
+           $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationId"      
+      
       service_id_query:
          name: service_id
          in: query
          required: true
          schema:
+           $ref: "govhub-api-commons.yaml#/components/schemas/ServiceId"
+           
+      service_id_query_optional:
+         name: service_id
+         in: query
+         required: false
+         schema:
            $ref: "govhub-api-commons.yaml#/components/schemas/ServiceId"   
            
-      user_id_query:
+      user_id_query_optional:
          name: user_id
          in: query
-         required: true
+         required: false
          schema:
            $ref: "govhub-api-commons.yaml#/components/schemas/UserId"
            
@@ -251,7 +281,7 @@ components:
          properties:
            id:
               $ref: "#/components/schemas/GovIOFileId"
-           name:
+           filename:
               type: string
               pattern: .*
               maxLength: 256

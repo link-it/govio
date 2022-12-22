@@ -32,8 +32,6 @@ import lombok.ToString;
 @Table(name = "govio_files")
 public class GovIOFileEntity  {
 
-	private static final long serialVersionUID = 1L;
-	
 	@Id
 	@SequenceGenerator(name = "seq_govio_files", sequenceName = "seq_govio_files", initialValue = 1, allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_files")
@@ -65,5 +63,7 @@ public class GovIOFileEntity  {
 	@Convert(converter = JpaPathConverter.class)
 	@Column(name = "location",  length = 1024)
 	private Path location;
-
+	
+	@Column(name = "size")
+	private long size;
 }
