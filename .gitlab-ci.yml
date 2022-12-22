@@ -35,6 +35,7 @@ build_java:
     artifacts:
         paths:
           - batch/target/govio-batch.war
+          - api/target/govio.war
           - src/main/resources/*.sql
     only:
       - main
@@ -64,9 +65,9 @@ deploy_staging:
     - scp -r batch/target/govio-batch.war $DEPLOY_STAGING_SSH_HOST:/tmp/
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo tar xvf /tmp/govio-app.tgz'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r dist/govio-app/* /usr/share/nginx/html/govio-app/'
-    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r /tmp/govio-batch.war /opt/wildfly/govhub/deployments/'  
+    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r /tmp/govio-batch.war /tmp/govio.war /opt/wildfly/govhub/deployments/'  
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo systemctl restart wildfly@govhub'
-    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo rm -rf /tmp/govio-app.tgz dist /tmp/govio-batch.war'
+    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo rm -rf /tmp/govio-app.tgz dist /tmp/govio-batch.war /tmp/govio.war'
   only:
     - main
     - pipeline-test
