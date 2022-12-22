@@ -135,7 +135,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 	}
 	
 	// 3. Upload Fail file csv per utenza senza ruolo govio_sender
-	@Test
+//	@Test
 	void UC_1_03_UploadCsvFileFail_UtenzaSenzaRuolo_GovIO_Sender() throws Exception {
 		String fileName = "csv-test";
 		InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName);
