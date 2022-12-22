@@ -8,8 +8,9 @@ INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUE
 INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUES (6, 'org_editor', 'Giovanni Mele', 'org_editor@govhub.it', true);
 INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUES (7, 'service_viewer', 'Luca Viso', 'service_viewer@govhub.it', true);
 INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUES (8, 'service_editor', 'Angelo Monti', 'service_editor@govhub.it', true);
+INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUES (9, 'govio_sender', 'Vincenzo Traccia', 'govio_sender@govhub.it', true);
 
-ALTER SEQUENCE SEQ_GOVHUB_USERS RESTART WITH 9;
+ALTER SEQUENCE SEQ_GOVHUB_USERS RESTART WITH 10;
 
 -- Ruoli
 
@@ -22,8 +23,9 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (6, 1, 
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (7, 1, 'govhub_services_editor');
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (8, 1, 'govhub_services_viewer');
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (9, 1, 'govhub_ruolo_non_assegnabile');
+INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (10, 1, 'govio_sender');
 
-ALTER SEQUENCE SEQ_GOVHUB_ROLES RESTART WITH 10;
+ALTER SEQUENCE SEQ_GOVHUB_ROLES RESTART WITH 11;
 
 -- Organizations
 
@@ -68,7 +70,10 @@ INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VA
 -- service_editor -> govhub_services_editor
 INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (7, 8, 7);
 
-ALTER SEQUENCE SEQ_GOVHUB_AUTHORIZATIONS RESTART WITH 8;
+-- govio_sender -> govio_sender
+INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (9, 9, 10);
+
+ALTER SEQUENCE SEQ_GOVHUB_AUTHORIZATIONS RESTART WITH 10;
 
 -- Ruoli assegnabili da altri ruoli
 
