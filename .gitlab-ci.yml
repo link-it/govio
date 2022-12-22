@@ -63,6 +63,7 @@ deploy_staging:
     - cp -r /tmp/ssh/ ~/.ssh
     - scp -r webapp/govio-app.tgz $DEPLOY_STAGING_SSH_HOST:/tmp/
     - scp -r batch/target/govio-batch.war $DEPLOY_STAGING_SSH_HOST:/tmp/
+    - scp -r api/target/govio.war $DEPLOY_STAGING_SSH_HOST:/tmp/
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo tar xvf /tmp/govio-app.tgz'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r dist/govio-app/* /usr/share/nginx/html/govio-app/'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r /tmp/govio-batch.war /tmp/govio.war /opt/wildfly/govhub/deployments/'  
