@@ -1,6 +1,8 @@
 package it.govhub.govio.api.web;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
@@ -10,12 +12,16 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import it.govhub.govio.api.beans.FileList;
+import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovIOFile;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
@@ -105,6 +111,34 @@ public class TraceController implements TraceApi {
     	}
     	
     	return filename;
+	}
+
+
+	@Override
+	public ResponseEntity<FileList> listCsvTrace(Long userId,Long serviceId,Long organizationId, Direction sortDirection, Integer limit, Long offset, String q) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public ResponseEntity<GovIOFile> readCsvTrace(Long traceId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public ResponseEntity<Resource> readCsvFileContent(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public ResponseEntity<FileMessageList> readFileMessages(Long id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

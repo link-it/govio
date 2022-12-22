@@ -251,6 +251,7 @@
 								<importMapping>OrganizationCreate=it.govhub.govregistry.commons.api.beans.OrganizationCreate</importMapping>
 								<importMapping>Service=it.govhub.govregistry.commons.api.beans.Service</importMapping>
 								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
+								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
 							</importMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
