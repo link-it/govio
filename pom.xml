@@ -22,6 +22,7 @@
 		<commons-fileupload.version>1.4</commons-fileupload.version>
 		<exec.maven.plugin.versione>1.6.0</exec.maven.plugin.versione>
 		<glassfish.version>1.1.4</glassfish.version>
+		<govregistry.version>0.1.0-SNAPSHOT</govregistry.version>
 		<jackson.databind.nullable.version>0.2.1</jackson.databind.nullable.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<java.version>11</java.version>
@@ -73,5 +74,17 @@
 			</extension>
 		</extensions>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>linkit-private</id>
+			<url>https://maven.link.it/content/repositories/private/</url>
+		</repository>
+		<repository>
+			<id>linkit-private-snapshot</id>
+			<url>https://maven.link.it/content/repositories/private-snapshots/</url>
+		</repository>
+	</repositories>
+
 </project>
 
