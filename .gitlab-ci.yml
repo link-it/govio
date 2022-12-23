@@ -20,7 +20,7 @@ default:
 test:
     stage: test
     script:
-      - mvn verify sonar:sonar
+      - mvn verify sonar:sonar -U
     rules:
       - if: $CI_COMMIT_BRANCH == "staging"
         allow_failure: true
@@ -34,7 +34,7 @@ test:
 build_java:
     stage: build
     script:
-      - mvn package -Pwar -DskipTests=true 
+      - mvn package -Pwar -DskipTests=true -U
     artifacts:
         paths:
           - batch/target/govio-batch.war
