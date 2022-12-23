@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
 
+import javax.transaction.Transactional;
+
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import it.govhub.govio.api.entity.GovIOFileEntity;
+import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
-import it.govhub.govio.api.repository.GovIOFileRepository;
+import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govregistry.commons.exception.InternalException;
+import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.security.services.SecurityService;
 
@@ -31,20 +34,21 @@ public class TraceService {
 	Path fileRepositoryPath;
 	
 	@Autowired
-	GovIOFileRepository fileRepo;
+	GovioFileRepository fileRepo;
 
 	@Autowired
 	ServiceInstanceEntityRepository serviceRepo;
 	
 	@Autowired
-	SecurityService securityService;
+	SecurityService authService;
 	
 	Logger logger = LoggerFactory.getLogger(TraceService.class);
 	
-	public void uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
+	@Transactional
+	public GovioFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
-		this.securityService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
-		this.securityService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
 		
 		if (instance.getTemplate() == null) {
 			throw new SemanticValidationException("L'istanza del servizio non ha un template di messaggio associato");
@@ -69,22 +73,32 @@ public class TraceService {
     				.resolve(sourceFilename);
     	
     	logger.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
-    
+    	
+    	long size;
     	try(InputStream stream=itemStream.openStream()){
-			Files.copy(stream, destFile, StandardCopyOption.REPLACE_EXISTING);
+			size = Files.copy(stream, destFile, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			throw new InternalException(e);	
-		} 
+		}
     	
-    	GovIOFileEntity file = GovIOFileEntity.builder()
+    	GovioFileEntity file = GovioFileEntity.builder()
     		.creationDate(OffsetDateTime.now())
     		.govauthUser(SecurityService.getPrincipal())
     		.location(destFile)
     		.name(sourceFilename)
     		.serviceInstance(instance)
-    		.status("CREATED")
+    		.status(GovioFileEntity.Status.CREATED)
+    		.size(size)
     		.build();
     	
-    	this.fileRepo.save(file);
+    	return this.fileRepo.save(file);
 	}
+	
+	public GovioFileEntity readFile(Long id) {
+		
+		return this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+	}
+	
+	
 }
