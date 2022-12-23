@@ -17,15 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import it.govhub.govio.api.entity.GovIOFileEntity;
+import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
-import it.govhub.govio.api.repository.GovIOFileRepository;
+import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
-import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
 @Service
@@ -35,7 +34,7 @@ public class TraceService {
 	Path fileRepositoryPath;
 	
 	@Autowired
-	GovIOFileRepository fileRepo;
+	GovioFileRepository fileRepo;
 
 	@Autowired
 	ServiceInstanceEntityRepository serviceRepo;
@@ -46,7 +45,7 @@ public class TraceService {
 	Logger logger = LoggerFactory.getLogger(TraceService.class);
 	
 	@Transactional
-	public GovIOFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
+	public GovioFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
@@ -80,22 +79,22 @@ public class TraceService {
 			size = Files.copy(stream, destFile, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			throw new InternalException(e);	
-		} 
+		}
     	
-    	GovIOFileEntity file = GovIOFileEntity.builder()
+    	GovioFileEntity file = GovioFileEntity.builder()
     		.creationDate(OffsetDateTime.now())
     		.govauthUser(SecurityService.getPrincipal())
     		.location(destFile)
     		.name(sourceFilename)
     		.serviceInstance(instance)
-    		.status("CREATED")
+    		.status(GovioFileEntity.Status.CREATED)
     		.size(size)
     		.build();
     	
     	return this.fileRepo.save(file);
 	}
 	
-	public GovIOFileEntity readFile(Long id) {
+	public GovioFileEntity readFile(Long id) {
 		
 		return this.fileRepo.findById(id)
 				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));

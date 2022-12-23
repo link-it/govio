@@ -62,6 +62,12 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>it.govio</groupId>
+			<artifactId>msg-batch</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>it.govhub.govregistry</groupId>
 			<artifactId>commons</artifactId>
 			<version>1.0.0</version>
@@ -238,6 +244,7 @@
 							<generatorName>spring</generatorName>
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
 							<importMappings>
+								<!--  IMPORT MAPPINGS DI GOVHUB-COMMONS  -->
 								<importMapping>Direction=org.springframework.data.domain.Sort.Direction</importMapping>
 								<importMapping>PageInfo=it.govhub.govregistry.commons.api.beans.PageInfo</importMapping>
 								<importMapping>Problem=it.govhub.govregistry.commons.api.beans.Problem</importMapping>
@@ -253,7 +260,13 @@
 								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
 								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
 								<importMapping>OrganizationAuthItem=it.govhub.govregistry.commons.api.beans.OrganizationAuthItem</importMapping>
+								
+								<!--  IMPORT MAPPINGS SPECIFICI DI GOVIO -->
+								<importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping>
 							</importMappings>
+							<typeMappings>
+								<typeMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</typeMapping>
+							</typeMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
 								<library>spring-boot</library>

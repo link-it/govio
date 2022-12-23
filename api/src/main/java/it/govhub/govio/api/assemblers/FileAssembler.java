@@ -9,13 +9,13 @@ import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSuppor
 import org.springframework.stereotype.Component;
 
 import it.govhub.govio.api.beans.GovIOFile;
-import it.govhub.govio.api.entity.GovIOFileEntity;
+import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.web.TraceController;
 import it.govhub.govregistry.commons.assemblers.OrganizationAuthItemAssembler;
 import it.govhub.govregistry.commons.assemblers.ServiceAuthItemAssembler;
 
 @Component
-public class FileAssembler  extends RepresentationModelAssemblerSupport<GovIOFileEntity, GovIOFile> {
+public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFileEntity, GovIOFile> {
 	
 	@Autowired
 	FileUserItemAssembler userAssembler;
@@ -32,16 +32,22 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovIOFil
 	}
 
 	@Override
-	public GovIOFile  toModel(GovIOFileEntity src) {
+	public GovIOFile  toModel(GovioFileEntity src) {
 		GovIOFile ret = instantiateModel(src);
 		
         BeanUtils.copyProperties(src, ret);
         
-        ret.acquiredMessages(null)
-        	.errorMessages(null)
+        long errorMessages = src.getFileMessages()
+        		.stream()
+        		.filter( msg -> msg.getError() != null)
+        		.count();
+        
+        ret.acquiredMessages((long) src.getFileMessages().size())
+        	.errorMessages(errorMessages)
         	.organization(this.orgAssembler.toModel(src.getServiceInstance().getOrganization()))
         	.service(this.serviceAssembler.toModel(src.getServiceInstance().getService()))
             .user(this.userAssembler.toModel(src.getGovauthUser()))
+            .status(src.getStatus())
             .filename(src.getName());
 
 		ret.add(linkTo(

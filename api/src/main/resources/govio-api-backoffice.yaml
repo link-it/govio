@@ -293,10 +293,7 @@ components:
            service:
               $ref: "govhub-api-commons.yaml#/components/schemas/ServiceAuthItem"
            status:
-              type: string
-              pattern: .*
-              maxLength: 256
-              example: PROCESSED
+              $ref: "#/components/schemas/FileStatus"
            creation_date:
               type: string
               format: date-time
@@ -340,6 +337,31 @@ components:
          example: 1
          description: GovIO Message Id.
          
+      FileStatus:
+         type: string
+         enum:
+            - created
+            - processing
+            - processed
+            
+# 12:18:10 | Lackluster - Joseph Auer (Lackluster Pitchmix) 
+            
+      FileMessageStatus:
+         type: string
+         enum:
+            - accepted
+            - throttled
+            - scheduled
+            - recipient_allowed
+            - profile_not_exists
+            - sender_not_allowed
+            - denied
+            - sent
+            - bad_request
+            - forbidden
+            - processed
+            - created
+            
       FileUserItem:
          type: object
          additionalProperties: false
