@@ -6,12 +6,6 @@ import java.nio.file.Path;
 import java.time.OffsetDateTime;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
@@ -38,10 +32,10 @@ import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovIOFile;
-import it.govhub.govio.api.entity.GovIOFileEntity;
+import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
-import it.govhub.govio.api.repository.GovIOFileFilters;
-import it.govhub.govio.api.repository.GovIOFileRepository;
+import it.govhub.govio.api.repository.GovioFileFilters;
+import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govio.api.services.TraceService;
@@ -70,7 +64,7 @@ public class TraceController implements TraceApi {
 	SecurityService authService;
 	
 	@Autowired
-	GovIOFileRepository fileRepo;
+	GovioFileRepository fileRepo;
 	
 	Logger logger = LoggerFactory.getLogger(TraceController.class);
 	
@@ -117,7 +111,7 @@ public class TraceController implements TraceApi {
     	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
-    	GovIOFileEntity created = this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
+    	GovioFileEntity created = this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
 		return ResponseEntity.ok(this.fileAssembler.toModel(created));
 	}
@@ -160,37 +154,37 @@ public class TraceController implements TraceApi {
 		
 		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
 		
-		Specification<GovIOFileEntity> spec = GovIOFileFilters.empty();
+		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
 		
 		if (userId != null) {
-			spec = spec.and(GovIOFileFilters.byUser(userId));
+			spec = spec.and(GovioFileFilters.byUser(userId));
 		}
 		if (serviceId != null) {
-			spec = spec.and(GovIOFileFilters.byService(serviceId));
+			spec = spec.and(GovioFileFilters.byService(serviceId));
 		}
 		if (organizationId != null) {
-			spec = spec.and(GovIOFileFilters.byOrganization(organizationId));
+			spec = spec.and(GovioFileFilters.byOrganization(organizationId));
 		}
 		if (q != null) {
-			spec = spec.and(GovIOFileFilters.likeFileName(q));
+			spec = spec.and(GovioFileFilters.likeFileName(q));
 		}
 		if(creationDateFrom != null) {
-			spec = spec.and(GovIOFileFilters.fromCreationDate(creationDateFrom));
+			spec = spec.and(GovioFileFilters.fromCreationDate(creationDateFrom));
 		}
 		if(creationDateTo != null) {
-			spec = spec.and(GovIOFileFilters.untilCreationDate(creationDateTo));
+			spec = spec.and(GovioFileFilters.untilCreationDate(creationDateTo));
 		}
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovIOFileFilters.sort(sortDirection));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
 		
-		Page<GovIOFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
+		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
 		
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 		
 		FileList ret = ListaUtils.costruisciListaPaginata(files, pageRequest.limit, curRequest, new FileList());
 		
-		for (GovIOFileEntity file : files) {
+		for (GovioFileEntity file : files) {
 			ret.addItemsItem(this.fileAssembler.toModel(file));
 		}
 		
@@ -216,7 +210,7 @@ public class TraceController implements TraceApi {
 	
     	this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
 		
-		GovIOFileEntity file = this.traceService.readFile(id);
+		GovioFileEntity file = this.traceService.readFile(id);
 		
 		Path path = file.getLocation();
 		
