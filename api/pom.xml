@@ -47,13 +47,13 @@
 		<dependency>
 			<groupId>it.govhub.govregistry</groupId>
 			<artifactId>commons</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>${govregistry.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>it.govhub.security</groupId>
+			<groupId>it.govhub.govregistry</groupId>
 			<artifactId>security</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>${govregistry.version}</version>
 		</dependency>
 
 		<dependency>
@@ -81,6 +81,7 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
+
 		<!-- SpringDoc per generazione OpenAPI e SwaggerUI -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -98,6 +99,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -150,8 +152,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
-
 		<!-- Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -199,7 +199,6 @@
 	<build>
 		<finalName>govio</finalName>
 		<plugins>
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -221,6 +220,7 @@
 							<generatorName>spring</generatorName>
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
 							<importMappings>
+								<!--  IMPORT MAPPINGS DI GOVHUB-COMMONS  -->
 								<importMapping>Direction=org.springframework.data.domain.Sort.Direction</importMapping>
 								<importMapping>PageInfo=it.govhub.govregistry.commons.api.beans.PageInfo</importMapping>
 								<importMapping>Problem=it.govhub.govregistry.commons.api.beans.Problem</importMapping>
@@ -234,7 +234,15 @@
 								<importMapping>OrganizationCreate=it.govhub.govregistry.commons.api.beans.OrganizationCreate</importMapping>
 								<importMapping>Service=it.govhub.govregistry.commons.api.beans.Service</importMapping>
 								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
+								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
+								<importMapping>OrganizationAuthItem=it.govhub.govregistry.commons.api.beans.OrganizationAuthItem</importMapping>
+								
+								<!--  IMPORT MAPPINGS SPECIFICI DI GOVIO -->
+								<importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping>
 							</importMappings>
+							<typeMappings>
+								<typeMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</typeMapping>
+							</typeMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
 								<library>spring-boot</library>
@@ -315,5 +323,4 @@
 			</extension>
 		</extensions>
 	</build>
-
 </project>
