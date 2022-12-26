@@ -161,7 +161,7 @@ class FileProcessingJobTest {
 		TemporaryFolder testFolder = new TemporaryFolder();
 		testFolder.create();
 
-		// Inserisco 5 file con 100 record ciascuna
+		// Inserisco 1 file con 100 record
 		List<GovioFileEntity> files = new ArrayList<>();
 		files.add(govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "01")));
 	
@@ -177,9 +177,9 @@ class FileProcessingJobTest {
 			assertEquals(100, fileEntity.getAcquiredMessages());
 			assertEquals(0, fileEntity.getErrorMessages());
 
-			GovioMessageEntity messageEntity = govioMessagesRepository.findAll().get(0);
-			assertEquals(GovioMessageEntity.Status.SCHEDULED, messageEntity.getStatus());
-
+			for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
+				assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
+			}
 
 	}
 }
