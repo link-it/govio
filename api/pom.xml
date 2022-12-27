@@ -52,6 +52,12 @@
 
 		<dependency>
 			<groupId>it.govhub.govregistry</groupId>
+			<artifactId>readops</artifactId>
+			<version>${govregistry.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.govhub.govregistry</groupId>
 			<artifactId>security</artifactId>
 			<version>${govregistry.version}</version>
 		</dependency>
@@ -220,7 +226,7 @@
 							<generatorName>spring</generatorName>
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
 							<importMappings>
-								<!--  IMPORT MAPPINGS DI GOVHUB-COMMONS  -->
+								<!-- IMPORT MAPPINGS DI GOVHUB-COMMONS -->
 								<importMapping>Direction=org.springframework.data.domain.Sort.Direction</importMapping>
 								<importMapping>PageInfo=it.govhub.govregistry.commons.api.beans.PageInfo</importMapping>
 								<importMapping>Problem=it.govhub.govregistry.commons.api.beans.Problem</importMapping>
@@ -236,8 +242,8 @@
 								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
 								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
 								<importMapping>OrganizationAuthItem=it.govhub.govregistry.commons.api.beans.OrganizationAuthItem</importMapping>
-								
-								<!--  IMPORT MAPPINGS SPECIFICI DI GOVIO -->
+
+								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
 								<importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping>
 							</importMappings>
 							<typeMappings>
