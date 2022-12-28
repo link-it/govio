@@ -8,8 +8,8 @@ import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSuppor
 import org.springframework.stereotype.Component;
 
 import it.govhub.govio.api.beans.FileUserItem;
-import it.govhub.govregistry.commons.api.spec.UserApi;
 import it.govhub.govregistry.commons.entity.UserEntity;
+import it.govhub.govregistry.readops.api.spec.UserApi;
 
 @Component
 public class FileUserItemAssembler extends RepresentationModelAssemblerSupport<UserEntity, FileUserItem> {
