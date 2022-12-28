@@ -5,14 +5,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.json.Json;
-import javax.json.JsonReader;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -37,9 +32,8 @@ import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
 import it.govhub.govregistry.commons.entity.ServiceEntity;
-import it.govhub.govregistry.commons.entity.UserEntity;
-import it.govhub.govregistry.commons.repository.OrganizationRepository;
-import it.govhub.govregistry.commons.repository.ServiceRepository;
+import it.govhub.govregistry.readops.api.repository.OrganizationRepository;
+import it.govhub.govregistry.readops.api.repository.ServiceRepository;
 
 
 @SpringBootTest(classes = Application.class)
