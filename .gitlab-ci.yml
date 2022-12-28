@@ -20,7 +20,10 @@ default:
 test:
     stage: test
     script:
-      - mvn verify sonar:sonar
+      - mvn verify sonar:sonar -U
+    rules:
+      - if: $CI_COMMIT_BRANCH == "staging"
+        allow_failure: true
     artifacts:
         untracked: false
         name: test_and_coverage_report
@@ -31,7 +34,7 @@ test:
 build_java:
     stage: build
     script:
-      - mvn package -Pwar -DskipTests=true 
+      - mvn package -Pwar -DskipTests=true -U
     artifacts:
         paths:
           - batch/target/govio-batch.war
@@ -39,7 +42,7 @@ build_java:
           - src/main/resources/*.sql
     only:
       - main
-      - pipeline-test
+      - staging
 
 build_angular:
     stage: build
@@ -54,7 +57,7 @@ build_angular:
           - webapp/govio-app.tgz
     only:
       - main
-      - pipeline-test
+      - staging
 
 deploy_staging:
   stage: deploy
@@ -70,5 +73,4 @@ deploy_staging:
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo systemctl restart wildfly@govhub'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo rm -rf /tmp/govio-app.tgz dist /tmp/govio-batch.war /tmp/govio.war'
   only:
-    - main
-    - pipeline-test
+    - staging

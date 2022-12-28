@@ -6,33 +6,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<groupId>it.govhub.govio</groupId>
+		<artifactId>bom</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>it.govhub.govio</groupId>
 	<artifactId>api</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<version>1.0.0</version>
 	<name>GovIO - API</name>
 	<description>API per il backoffice di spedizione messaggi GovHub</description>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>11</java.version>
-		<openapi.tool.codegen.version>6.0.0</openapi.tool.codegen.version>
-		<jackson.databind.nullable.version>0.2.1</jackson.databind.nullable.version>
-		<swagger-annotations.version>1.6.2</swagger-annotations.version>
-		<jsonpatch.version>1.13</jsonpatch.version>
-		<jsr305.version>3.0.2</jsr305.version>
-		<springdoc.version>1.6.4</springdoc.version>
-		<glassfish.version>1.1.4</glassfish.version>
-		<jacoco.version>0.8.8</jacoco.version>
-		<maven-processor.version>4.5</maven-processor.version>
-		<commons-fileupload.version>1.4</commons-fileupload.version>
-	</properties>
 
 	<profiles>
 		<profile>
@@ -64,13 +47,19 @@
 		<dependency>
 			<groupId>it.govhub.govregistry</groupId>
 			<artifactId>commons</artifactId>
-			<version>1.0.0</version>
+			<version>${govregistry.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>it.govhub.security</groupId>
+			<groupId>it.govhub.govregistry</groupId>
+			<artifactId>readops</artifactId>
+			<version>${govregistry.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.govhub.govregistry</groupId>
 			<artifactId>security</artifactId>
-			<version>1.0.0</version>
+			<version>${govregistry.version}</version>
 		</dependency>
 
 		<dependency>
@@ -98,6 +87,7 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
+
 		<!-- SpringDoc per generazione OpenAPI e SwaggerUI -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -115,6 +105,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -167,8 +158,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
-
 		<!-- Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -216,7 +205,6 @@
 	<build>
 		<finalName>govio</finalName>
 		<plugins>
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -238,6 +226,7 @@
 							<generatorName>spring</generatorName>
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
 							<importMappings>
+								<!-- IMPORT MAPPINGS DI GOVHUB-COMMONS -->
 								<importMapping>Direction=org.springframework.data.domain.Sort.Direction</importMapping>
 								<importMapping>PageInfo=it.govhub.govregistry.commons.api.beans.PageInfo</importMapping>
 								<importMapping>Problem=it.govhub.govregistry.commons.api.beans.Problem</importMapping>
@@ -252,7 +241,14 @@
 								<importMapping>Service=it.govhub.govregistry.commons.api.beans.Service</importMapping>
 								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
 								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
+								<importMapping>OrganizationAuthItem=it.govhub.govregistry.commons.api.beans.OrganizationAuthItem</importMapping>
+
+								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
+								<importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping>
 							</importMappings>
+							<typeMappings>
+								<typeMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</typeMapping>
+							</typeMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
 								<library>spring-boot</library>
@@ -324,15 +320,13 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<extensions>
+			<!-- Enabling the use of SSH -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>${wagon-ssh-external.version}</version>
+			</extension>
+		</extensions>
 	</build>
-	<repositories>
-		<repository>
-			<id>linkit-private</id>
-			<url>https://maven.link.it/content/repositories/private/</url>
-		</repository>
-		<repository>
-			<id>linkit-private-snapshot</id>
-			<url>https://maven.link.it/content/repositories/private_snapshots/</url>
-		</repository>
-	</repositories>
 </project>
