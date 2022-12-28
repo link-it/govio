@@ -31,8 +31,8 @@ import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
 import it.govhub.govregistry.commons.entity.ServiceEntity;
-import it.govhub.govregistry.commons.repository.OrganizationRepository;
-import it.govhub.govregistry.commons.repository.ServiceRepository;
+import it.govhub.govregistry.readops.api.repository.OrganizationRepository;
+import it.govhub.govregistry.readops.api.repository.ServiceRepository;
 
 
 @SpringBootTest(classes = Application.class)
