@@ -24,6 +24,8 @@ test:
     rules:
       - if: $CI_COMMIT_BRANCH == "staging"
         allow_failure: true
+      - if: $CI_COMMIT_BRANCH != "staging"
+        allow_failure: false
     artifacts:
         untracked: false
         name: test_and_coverage_report
