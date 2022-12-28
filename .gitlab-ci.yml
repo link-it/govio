@@ -34,7 +34,10 @@ test:
 build_java:
     stage: build
     script:
-      - mvn package -Pwar -DskipTests=true -U
+      - mkdir ~/.ssh
+      - chmod 700 ~/.ssh 
+      - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+      - mvn -s /tmp/maven_settings/settings-repo_linkit.xml -U deploy -Pwar -DskipTests=true 
     artifacts:
         paths:
           - batch/target/govio-batch.war
@@ -68,9 +71,10 @@ deploy_staging:
     - scp -r batch/target/govio-batch.war $DEPLOY_STAGING_SSH_HOST:/tmp/
     - scp -r api/target/govio.war $DEPLOY_STAGING_SSH_HOST:/tmp/
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo tar xvf /tmp/govio-app.tgz'
+    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo systemctl stop tomcat'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r dist/govio-app/* /usr/share/nginx/html/govio-app/'
-    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r /tmp/govio-batch.war /tmp/govio.war /opt/wildfly/govhub/deployments/'  
-    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo systemctl restart wildfly@govhub'
+    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r /tmp/govio-batch.war /tmp/govio.war /opt/apache-tomcat-9.0.70/webapps/'  
+    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo systemctl start tomcat'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo rm -rf /tmp/govio-app.tgz dist /tmp/govio-batch.war /tmp/govio.war'
   only:
     - staging
