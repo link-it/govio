@@ -11,8 +11,9 @@ import org.springframework.stereotype.Component;
 import it.govhub.govio.api.beans.GovIOFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.web.TraceController;
-import it.govhub.govregistry.commons.assemblers.OrganizationAuthItemAssembler;
-import it.govhub.govregistry.commons.assemblers.ServiceAuthItemAssembler;
+import it.govhub.govregistry.readops.api.assemblers.OrganizationAuthItemAssembler;
+import it.govhub.govregistry.readops.api.assemblers.ServiceAuthItemAssembler;
+
 
 @Component
 public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFileEntity, GovIOFile> {
