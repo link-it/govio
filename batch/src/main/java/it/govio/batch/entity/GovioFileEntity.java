@@ -19,6 +19,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.stereotype.Component;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,10 +46,10 @@ public class GovioFileEntity {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_service_instance", nullable = false)
 	private GovioServiceInstanceEntity govioServiceInstance;
-	/*
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "govioFile", cascade = CascadeType.REMOVE)
-	private List<GovioFileMessageEntity> govioFileMessage;
-*/
+	private List<GovioFileMessageEntity> govioFileMessageEntities;
+
 	@Column(name = "name", nullable = false)
 	private String name;
 	

@@ -3,7 +3,6 @@ package it.govio.batch.entity;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,7 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -38,11 +36,6 @@ public class GovioMessageEntity {
 	@SequenceGenerator(name="seq_govio_messages",sequenceName="seq_govio_messages", initialValue=1, allocationSize=1)
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_messages")
 	private Long id;
-	
-    @OneToOne(mappedBy = "govioMessage", cascade = {CascadeType.REMOVE,CascadeType.PERSIST})
-//	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-//	@JoinColumn(name = "id_govio_file_messages", nullable = true)
-	private GovioFileMessageEntity govioFileMessage;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_service_instance", nullable = false)

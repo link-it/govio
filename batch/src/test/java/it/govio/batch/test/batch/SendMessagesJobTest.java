@@ -46,6 +46,7 @@ import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
@@ -55,7 +56,7 @@ import it.pagopa.io.v1.api.beans.LimitedProfile;
 import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
-@SpringBootTest(classes = Application.class)
+@SpringBootTest
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -74,6 +75,9 @@ class SendMessagesJobTest {
 
 	@Autowired
 	private GovioFilesRepository govioFilesRepository;
+	
+	@Autowired
+	private GovioFileMessagesRepository govioFileMessagesRepository;
 	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
@@ -114,9 +118,10 @@ class SendMessagesJobTest {
 	void setUp(){
 		 
 		MockitoAnnotations.openMocks(this);
-		govioMessagesRepository.deleteAll();
+		govioFileMessagesRepository.deleteAll();
 		govioFilesRepository.deleteAll();
-
+		govioMessagesRepository.deleteAll();
+		
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 
 		for(int i=0; i<100; i++) {

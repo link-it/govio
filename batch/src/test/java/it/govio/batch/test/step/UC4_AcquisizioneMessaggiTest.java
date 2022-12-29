@@ -18,7 +18,7 @@ import java.util.HashSet;
 	import it.govio.batch.entity.GovioTemplateEntity;
 	import it.govio.batch.entity.GovioTemplatePlaceholderEntity;
 	import it.govio.batch.step.template.TemplateApplier;
-import it.govio.batch.step.template.GovioTemplateApplierFactory;
+	import it.govio.batch.step.template.GovioTemplateApplierFactory;
 	import it.govio.batch.exception.TemplateValidationException;
 
 
