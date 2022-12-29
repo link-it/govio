@@ -56,6 +56,9 @@ class FileProcessingJobTest {
 	private GovioFilesRepository govioFilesRepository;
 
 	@Autowired
+	private GovioFilesRepository govioFileMessagesRepository;
+	
+	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
 
 	private JobLauncherTestUtils jobLauncherTestUtils;
@@ -86,8 +89,8 @@ class FileProcessingJobTest {
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
-		govioFilesRepository.deleteAll();
 		govioMessagesRepository.deleteAll();
+		govioFilesRepository.deleteAll();
 	}
 
 	/**
@@ -129,7 +132,6 @@ class FileProcessingJobTest {
 		for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
 			assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
 		}
-
 	}
 
 	private GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i) throws IOException {
@@ -164,7 +166,7 @@ class FileProcessingJobTest {
 		// Inserisco 1 file con 100 record
 		List<GovioFileEntity> files = new ArrayList<>();
 		files.add(govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "01")));
-	
+
 		initailizeJobLauncherTestUtils();
 
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
@@ -180,6 +182,5 @@ class FileProcessingJobTest {
 			for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
 				assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
 			}
-
 	}
 }
