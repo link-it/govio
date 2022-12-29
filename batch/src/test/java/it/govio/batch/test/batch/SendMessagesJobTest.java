@@ -114,9 +114,9 @@ class SendMessagesJobTest {
 	void setUp(){
 		 
 		MockitoAnnotations.openMocks(this);
-		govioFilesRepository.deleteAll();
 		govioMessagesRepository.deleteAll();
-		
+		govioFilesRepository.deleteAll();
+
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 
 		for(int i=0; i<100; i++) {

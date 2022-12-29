@@ -95,8 +95,8 @@ class VerifyMessagesJobTest {
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
-		govioFilesRepository.deleteAll();
 		govioMessagesRepository.deleteAll(); 
+		govioFilesRepository.deleteAll();
 	}
 
 	@Test

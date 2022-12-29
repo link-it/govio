@@ -13,8 +13,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.stereotype.Component;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,8 +25,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Component
-@Table(name = "govio_files_messages")
+@Table(name = "govio_file_messages")
 public class GovioFileMessageEntity {
 
 	@Id
@@ -36,10 +33,20 @@ public class GovioFileMessageEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_file_messages")
 	private Long id;
 
+	/*
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "id_govio_message", nullable = true)
 	private GovioMessageEntity govioMessage;
 
+    @OneToOne(mappedBy = "govioMessage", cascade = CascadeType.PERSIST)
+//	@JoinColumn(name = "id_govio_message", nullable = true)
+	private GovioMessageEntity govioMessage;
+	*/
+	
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_govio_message", nullable = true)
+    private GovioMessageEntity govioMessage;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_file", nullable = false)
 	private GovioFileEntity govioFile;

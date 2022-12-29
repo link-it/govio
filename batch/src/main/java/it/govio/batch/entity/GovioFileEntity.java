@@ -19,8 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.stereotype.Component;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +32,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "govio_files")
-@Component("govioFileEntity")
 public class GovioFileEntity {
 
 	public enum Status {CREATED, PROCESSING, PROCESSED}
@@ -47,10 +44,10 @@ public class GovioFileEntity {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_service_instance", nullable = false)
 	private GovioServiceInstanceEntity govioServiceInstance;
-	
+	/*
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "govioFile", cascade = CascadeType.REMOVE)
-	private List<GovioFileMessageEntity> govioFileMessageEntities;
-
+	private List<GovioFileMessageEntity> govioFileMessage;
+*/
 	@Column(name = "name", nullable = false)
 	private String name;
 	

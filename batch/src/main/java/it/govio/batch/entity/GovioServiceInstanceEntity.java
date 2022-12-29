@@ -1,5 +1,6 @@
 package it.govio.batch.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -32,10 +34,12 @@ public class GovioServiceInstanceEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
+//	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "id_govio_service", nullable = false)
 	private GovioServiceEntity idGovioService;
 
 	@ManyToOne(fetch = FetchType.EAGER)
+//	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "id_govio_template", nullable = true)
 	private GovioTemplateEntity govioTemplate;
 
