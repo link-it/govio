@@ -33,20 +33,10 @@ public class GovioFileMessageEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_file_messages")
 	private Long id;
 
-	/*
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "id_govio_message", nullable = true)
 	private GovioMessageEntity govioMessage;
 
-    @OneToOne(mappedBy = "govioMessage", cascade = CascadeType.PERSIST)
-//	@JoinColumn(name = "id_govio_message", nullable = true)
-	private GovioMessageEntity govioMessage;
-	*/
-	
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_govio_message", nullable = true)
-    private GovioMessageEntity govioMessage;
-	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_file", nullable = false)
 	private GovioFileEntity govioFile;

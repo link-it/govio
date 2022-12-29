@@ -24,9 +24,11 @@ public class GovioFilePartitioner implements Partitioner {
 			ExecutionContext ex = new ExecutionContext();
 			ex.putString("location", file.getLocation());
 			ex.putLong("id", file.getId());
+			// Se il service_instance non presenta un template, recupero il default dal service
 			if (file.getGovioServiceInstance().getGovioTemplate() == null) 
 				ex.put("template", file.getGovioServiceInstance().getIdGovioService().getGovioTemplate());
-			else ex.put("template", file.getGovioServiceInstance().getGovioTemplate());
+			else 
+				ex.put("template", file.getGovioServiceInstance().getGovioTemplate());
 			ex.putLong("serviceInstance", file.getGovioServiceInstance().getId());
 			result.put("F"+file.getId(), ex);
 			logger.debug("ExecutionContext {} aggiunto [id:{}, location:{}, template:{}, serviceInstance: {}]", 

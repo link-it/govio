@@ -89,8 +89,11 @@ class FileProcessingJobTest {
 	@BeforeEach
 	void setUp(){
 		MockitoAnnotations.openMocks(this);
-		govioMessagesRepository.deleteAll();
+		govioFileMessagesRepository.deleteAll();
 		govioFilesRepository.deleteAll();
+		govioMessagesRepository.deleteAll();
+		
+		
 	}
 
 	/**
@@ -100,6 +103,8 @@ class FileProcessingJobTest {
 	@Test
 	void csvLoadOk() throws Exception {
 
+		assertEquals(0, govioMessagesRepository.count());
+		
 		// Caricamento messaggi da inviare
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 
@@ -132,6 +137,7 @@ class FileProcessingJobTest {
 		for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
 			assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
 		}
+
 	}
 
 	private GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i) throws IOException {

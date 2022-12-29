@@ -12,7 +12,6 @@ import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFileMessagesRepository;
-import it.govio.batch.repository.GovioMessagesRepository;
 
 public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 
@@ -20,9 +19,7 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 	EntityManager em;
 	
 	@Autowired
-	GovioMessagesRepository repository;
-	@Autowired
-	GovioFileMessagesRepository repositoryRelation;
+	GovioFileMessagesRepository repository;
 	
 	long govioFileId;
 	long govioServiceInstanceId;
@@ -33,12 +30,9 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 		GovioServiceInstanceEntity govioServiceInstanceReference = em.getReference(GovioServiceInstanceEntity.class, govioServiceInstanceId);
 		for(GovioFileMessageEntity item : items) {
 			item.setGovioFile(govioFileReference);
-			if(item.getGovioMessage() != null) {
+			if(item.getGovioMessage() != null)
 				item.getGovioMessage().setGovioServiceInstance(govioServiceInstanceReference);
-				item.getGovioMessage().setGovioFileMessage(item);
-			}
-			repository.save(item.getGovioMessage());
-			repositoryRelation.save(item);
+			repository.save(item);
 		}
 	}
 
