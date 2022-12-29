@@ -61,8 +61,6 @@ CREATE SEQUENCE public.batch_job_execution_seq
     NO MAXVALUE
     CACHE 1;
 
-
-
 CREATE SEQUENCE public.batch_job_seq
     START WITH 1
     INCREMENT BY 1
@@ -113,35 +111,5 @@ CREATE SEQUENCE public.batch_step_execution_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
