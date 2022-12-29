@@ -12,7 +12,6 @@ CREATE SEQUENCE seq_govio_templates START 1 INCREMENT 1;
 
 CREATE SEQUENCE seq_govio_services START 1 INCREMENT 1;
 
-
 CREATE TABLE govio_templates
   (
      id           BIGINT DEFAULT nextval('seq_govio_templates') NOT NULL,
@@ -97,10 +96,13 @@ CREATE TABLE govio_files
      id                        BIGINT DEFAULT nextval('seq_govio_files') NOT NULL,
      acquired_messages         BIGINT,
      creation_date             TIMESTAMP NOT NULL,
+     processing_date           TIMESTAMP NOT NULL,
      error_messages            BIGINT,
      location                  VARCHAR(255) NOT NULL,
      name                      VARCHAR(255) NOT NULL,
      status                    VARCHAR(255) NOT NULL,
+     status_detail             TEXT NOT NULL,
+     size                      BIGINT NOT NULL,
      id_govio_service_instance BIGINT NOT NULL,
      id_govhub_user            BIGINT NOT NULL,
      PRIMARY KEY (id)

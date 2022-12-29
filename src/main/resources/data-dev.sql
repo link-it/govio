@@ -1,10 +1,15 @@
 -- Utenti
 
-INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'user_govio_sender', 'Antonio Messaggio', 'sender@govio.it', true);
-INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'user_govio_viewer', 'Giuseppe Venti', 'viewer@govio.it', true);
-
+INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'user_govio_sender', 'Lorenzo Nardi', 'nardi@link.it', true);
 
 -- Ruoli
+
+WITH govhub_user AS (
+    SELECT *
+    FROM govhub_users
+    WHERE principal = 'user_govio_sender'
+);
+
 
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), 2, 'govio_sender');
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), 2, 'govio_viewer');
