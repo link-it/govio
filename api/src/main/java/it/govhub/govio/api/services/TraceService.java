@@ -30,7 +30,6 @@ import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
-import it.govhub.govio.api.web.TraceController;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
@@ -41,7 +40,7 @@ import it.govhub.security.services.SecurityService;
 @Service
 public class TraceService {
 
-	@Value("${govio.filerepository.path}")
+	@Value("${govio.filerepository.path:/var/govio/csv}")
 	Path fileRepositoryPath;
 	
 	@Autowired

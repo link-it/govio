@@ -33,7 +33,7 @@ import it.govhub.security.services.GovhubUserDetailService;
 @EnableWebSecurity
 public class SecurityConfig{
 
-    @Value("${govshell.auth.header}")
+    @Value("${govshell.auth.header:Govhub-Consumer-Principal}")
     private String headerAuthentication;
 
 	@Bean
