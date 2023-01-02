@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -66,7 +67,6 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);
-
 		message.setFiscalCode(item.getTaxcode());
 		// spedizione del messaggio
 		try {

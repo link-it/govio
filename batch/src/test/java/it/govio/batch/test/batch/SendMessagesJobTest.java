@@ -302,8 +302,6 @@ class SendMessagesJobTest {
 		.thenAnswer(new Answer<ResponseEntity<LimitedProfile>>() {
 			@Override
 			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws Exception{
-				@SuppressWarnings("unchecked")
-				String fiscalCode = ((RequestEntity<FiscalCodePayload>) invocation.getArgument(0)).getBody().getFiscalCode();
 //				// Simulazione ritardo chiamata http
 //				Thread.sleep(nextInt+100);
 				LimitedProfile profile = new LimitedProfile();
