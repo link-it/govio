@@ -13,8 +13,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.stereotype.Component;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,8 +25,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Component
-@Table(name = "govio_files_messages")
+@Table(name = "govio_file_messages")
 public class GovioFileMessageEntity {
 
 	@Id

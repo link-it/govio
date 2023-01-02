@@ -34,7 +34,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "govio_files")
-@Component("govioFileEntity")
 public class GovioFileEntity {
 
 	public enum Status {CREATED, PROCESSING, PROCESSED}
