@@ -55,7 +55,7 @@ public class GovioFileEntity  {
 	@Column(name = "name", nullable = false, length = 256)
 	private String name;
 	
-	@Column(name = "expiration_date", nullable = false)
+	@Column(name = "creation_date", nullable = false)
 	private OffsetDateTime creationDate;
 	
 	@Column(name = "processing_date")
