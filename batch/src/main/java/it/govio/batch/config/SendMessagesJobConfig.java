@@ -16,6 +16,8 @@ import it.govio.batch.exception.BackendioRuntimeException;
 import it.govio.batch.step.GetProfileProcessor;
 import it.govio.batch.step.NewMessageProcessor;
 
+import it.govio.batch.listener.StepItemProcessListener;
+
 @Configuration
 public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 
@@ -53,6 +55,7 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 				.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(1)
 				.reader(expiredScheduledDateMessageCursor(statuses))
 				.processor(asyncProcessor(this.newMessageProcessor))
+				.listener(new StepItemProcessListener())
 				.writer(asyncMessageWriter())
 				.faultTolerant()
 				.retry(BackendioRuntimeException.class)
