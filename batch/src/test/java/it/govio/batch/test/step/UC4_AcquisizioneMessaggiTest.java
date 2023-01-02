@@ -26,7 +26,7 @@ import java.util.HashSet;
 class UC4_AcquisizioneMessaggiTest {
 		@Test
 		@DisplayName("template senza placeholders")
-		void Test1(){
+		void UC_4_1_NO_PLACEHOLDERS(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
 					.builder()
@@ -43,49 +43,68 @@ class UC4_AcquisizioneMessaggiTest {
 		    	templateApplier.buildGovioMessageEntity("");
 		    });
 			}
-				
-		/*
+		
 		@Test
-		@DisplayName("messaggio assente")
-		void Test3(){
+		@DisplayName("template senza ScheduledExpeditionDate")
+		void UC_4_2_ScheduledExpeditionDateNull(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
 					.builder()
 					.hasDueDate(false)
 					.hasPayment(false)
-					.name("messaggio assente")
-					.messageBody(null)
-					.subject("hello")
+					.name("no ScheduledExpeditionDate")
+					.messageBody("Il Comune di Empoli le dice hello, il markdown deve essere di almeno 80 caratteri")
+					.subject("hello, il subject deve essere almeno dieci caratteri")
 					.govioTemplatePlaceholders(govioTemplatePlaceholders)
 					.build();
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
-		    assertThrows(.class, () -> {
-		    	templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30");		    });
-		}
-		 */
+			
+		    assertThrows(TemplateValidationException.class, () -> {
+		    	templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A");
+		    });
+			}
 		
 		@Test
+		@DisplayName("template con Taxcode blank")
+		void UC_4_3_TaxcodeBlank(){
+			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
+			GovioTemplateEntity govioTemplate = GovioTemplateEntity
+					.builder()
+					.hasDueDate(false)
+					.hasPayment(false)
+					.name("no taxCode")
+					.messageBody("Il Comune di Empoli le dice hello, il markdown deve essere di almeno 80 caratteri ${taxcode}")
+					.subject("hello, il subject deve essere almeno dieci caratteri")
+					.govioTemplatePlaceholders(govioTemplatePlaceholders)
+					.build();
+			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
+		    assertThrows(TemplateValidationException.class, () -> {
+		    	templateApplier.buildGovioMessageEntity(",2007-12-03T10:15:30");
+		    });
+		}
+				
+		@Test
 		@DisplayName("Messaggio senza due date, senza payment, senza placeholder")
-		void Test4(){
+		void UC_4_4_OnlyTaxcodeExpeditionDate(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
 					.builder()
 					.hasDueDate(false)
 					.hasPayment(false)
 					.name("Messaggio senza due date, senza payment, senza placeholder")
-					.messageBody("il comune di Empoli avvisa il signor ${taxcode}, , il markdown deve essere di almeno 80 caratteri")
+					.messageBody("il comune di Empoli avvisa il signor ${taxcode},,il markdown deve essere di almeno 80 caratteri")
 					.subject("hello, il subject deve essere almeno dieci caratteri")
 					.govioTemplatePlaceholders(govioTemplatePlaceholders)
 					.build();
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30");
-			assertEquals(messaggio.getMarkdown(),"il comune di Empoli avvisa il signor RSSMRO00A00A000A, , il markdown deve essere di almeno 80 caratteri");
+			assertEquals("il comune di Empoli avvisa il signor RSSMRO00A00A000A,,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 		}
 
 		@Test
 		@DisplayName("template con due_date e data valida")
-		void Test5(){
+		void UC_4_5_DueDateValido(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -100,11 +119,12 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30");
-			assertEquals(messaggio.getMarkdown(),"il comune di Empoli lo avvisa che la data di scadenza è 03/12/2007 alle 10:15,il markdown deve essere di almeno 80 caratteri");
+			assertEquals("il comune di Empoli lo avvisa che la data di scadenza è 03/12/2007 alle 10:15,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 		}
+		
 		@Test
 		@DisplayName("template con due_date e data non valida")
-		void Test6(){
+		void UC_4_6_DueDateNonValido(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -125,7 +145,7 @@ class UC4_AcquisizioneMessaggiTest {
 
 		@Test
 		@DisplayName("Template con due date e data assente")
-		void Test7(){
+		void UC_4_7_DueDateNull(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -146,7 +166,7 @@ class UC4_AcquisizioneMessaggiTest {
 
 		@Test
 		@DisplayName("template con payment valido")
-		void Test8(){
+		void UC_4_8_PaymentValido(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -162,12 +182,12 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30,200000000000000000,100000000000000000,false,12345678901");
 
-			assertEquals(messaggio.getMarkdown(),"il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15");
+			assertEquals("il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15",messaggio.getMarkdown());
 		}
 		
 		@Test
 		@DisplayName("Template con payment ed uno o piu' parametri non validi o assenti")
-		void Test9(){
+		void UC_4_9_PaymentNonValido(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -188,7 +208,7 @@ class UC4_AcquisizioneMessaggiTest {
 		
 		@Test
 		@DisplayName("template con due date e payment e invalid_after_due_date true")
-		void Test10(){
+		void UC_4_10_DueDatePaymentInvalidAfterDueDateTrue(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -204,14 +224,14 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30,200000000000000000,100000000000000000,true,12345678901");
 
-			assertEquals(messaggio.getMarkdown(),"il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15");
-			assertEquals(messaggio.getInvalidAfterDueDate(), true);
+			assertEquals("il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15",messaggio.getMarkdown());
+			assertEquals(true,messaggio.getInvalidAfterDueDate());
 		}
 
 		
 		@Test
 		@DisplayName("template con due date e payment e invalid_after_due_date false")
-		void Test11(){
+		void UC_4_12_DueDatePaymentInvalidAfterDueDateFalse(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -227,13 +247,13 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30,200000000000000000,100000000000000000,false,12345678901");
 
-			assertEquals(messaggio.getMarkdown(),"il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15");
-			assertEquals(messaggio.getInvalidAfterDueDate(), false);
+			assertEquals("il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15",messaggio.getMarkdown());
+			assertEquals(false,messaggio.getInvalidAfterDueDate());
 		}
 		
 		@Test
 		@DisplayName("template con due date e payment e invalid_after_due_date assente")
-		void Test12(){
+		void UC_4_13_DueDatePaymentInvalidAfterDueDateAssente(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -249,13 +269,13 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30,200000000000000000,100000000000000000,,12345678901");
 
-			assertEquals(messaggio.getMarkdown(),"il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15");
-			assertEquals(messaggio.getInvalidAfterDueDate(), false);
+			assertEquals("il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15",messaggio.getMarkdown());
+			assertEquals(false,messaggio.getInvalidAfterDueDate());
 		}
 		
 		@Test
 		@DisplayName("template con due date e payment e invalid_after_due_date non valido")
-		void Test13(){
+		void UC_4_14_DueDatePaymentValidiInvalidAfterDueDateKO(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			
 			GovioTemplateEntity govioTemplate = GovioTemplateEntity
@@ -269,17 +289,17 @@ class UC4_AcquisizioneMessaggiTest {
 					.build();
 			
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
-			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30,200000000000000000,100000000000000000,due_date_non_valido,12345678901");
 
-			assertEquals(messaggio.getMarkdown(),"il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15");
-			assertEquals(messaggio.getInvalidAfterDueDate(), false);
+		    assertThrows(TemplateValidationException.class, () -> {
+		    	templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30,200000000000000000,100000000000000000,due_date_non_valido,12345678901");
+		    	});
 
 		}
 		
 
 		@Test
 		@DisplayName("template con placeholder stringa senza pattern")
-		void Test14(){
+		void UC_4_15_PlaceholderStringaSenzaPattern(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioPlaceholderEntity placeHolder = GovioPlaceholderEntity
 			.builder()
@@ -310,18 +330,18 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,PlaceHolderDiProva");
 
-			assertEquals(messaggio.getMarkdown(),"messaggio semplice con un placeholder senza pattern :  PlaceHolderDiProva,il markdown deve essere di almeno 80 caratteri");
+			assertEquals("messaggio semplice con un placeholder senza pattern :  PlaceHolderDiProva,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 		}
 		
 		
 		
 		@Test
 		@DisplayName("Template con placeholder stringa con pattern rispettato")
-		void Test15(){
+		void UC_4_16_PlaceholderStringaConPatternOK(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioPlaceholderEntity placeHolder = GovioPlaceholderEntity
 			.builder()
-			.name("placeholder_senza_pattern")
+			.name("placeholder_con_pattern")
 			.type(Type.STRING)
 			.pattern("^[0123][0-9]")
 			.build();
@@ -340,7 +360,7 @@ class UC4_AcquisizioneMessaggiTest {
 					.hasDueDate(false)
 					.hasPayment(false)
 					.name("Template con placeholder stringa con pattern rispettato")
-					.messageBody("messaggio semplice con un placeholder stringa con pattern rispettato :  ${placeholder_senza_pattern},il markdown deve essere di almeno 80 caratteri")
+					.messageBody("messaggio semplice con un placeholder stringa con pattern rispettato :  ${placeholder_con_pattern},il markdown deve essere di almeno 80 caratteri")
 					.subject("hello, il subject deve essere almeno dieci caratteri")
 					.govioTemplatePlaceholders(govioTemplatePlaceholders)
 					.build();
@@ -348,16 +368,16 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,11");
 
-			assertEquals(messaggio.getMarkdown(),"messaggio semplice con un placeholder stringa con pattern rispettato :  11,il markdown deve essere di almeno 80 caratteri");
+			assertEquals("messaggio semplice con un placeholder stringa con pattern rispettato :  11,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 		}
 
 		@Test
 		@DisplayName("Template con placeholder stringa con pattern non rispettato")
-		void Test16(){
+		void UC_4_17_PlaceholderStringaConPatternKO(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioPlaceholderEntity placeHolder = GovioPlaceholderEntity
 			.builder()
-			.name("placeholder_senza_pattern")
+			.name("placeholder_con_pattern")
 			.type(Type.STRING)
 			.pattern("^[0123][0-9]")
 			.build();
@@ -376,7 +396,7 @@ class UC4_AcquisizioneMessaggiTest {
 					.hasDueDate(false)
 					.hasPayment(false)
 					.name("Template con placeholder stringa con pattern non rispettato")
-					.messageBody("messaggio semplice con un placeholder senza pattern :  ${placeholder_senza_pattern}")
+					.messageBody("messaggio semplice con un placeholder senza pattern :  ${placeholder_con_pattern}")
 					.subject("hello, il subject deve essere almeno dieci caratteri")
 					.govioTemplatePlaceholders(govioTemplatePlaceholders)
 					.build();
@@ -390,7 +410,7 @@ class UC4_AcquisizioneMessaggiTest {
 		
 		@Test
 		@DisplayName("template con placeholder data valida")
-		void Test17(){
+		void UC_4_18_PlaceholderDate(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioPlaceholderEntity placeHolder = GovioPlaceholderEntity
 			.builder()
@@ -421,13 +441,13 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03");
 
-			assertEquals(messaggio.getMarkdown(),"messaggio semplice con un placeholder con data :  03/12/2007,il markdown deve essere di almeno 80 caratteri");
+			assertEquals("messaggio semplice con un placeholder con data :  03/12/2007,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 		}
 
 		
 		@Test
 		@DisplayName("template con placeholder data non valida")
-		void Test18(){
+		void UC_4_19_PlaceholderDateKO(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioPlaceholderEntity placeHolder = GovioPlaceholderEntity
 			.builder()
@@ -463,7 +483,7 @@ class UC4_AcquisizioneMessaggiTest {
 		
 		@Test
 		@DisplayName("template con placeholder data verbosa")
-		void Test19(){
+		void UC_4_20_PlaceholderDateVerbosa(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioPlaceholderEntity placeHolder = GovioPlaceholderEntity
 			.builder()
@@ -494,12 +514,12 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-12");
 				
-				assertEquals(messaggio.getMarkdown(),"messaggio semplice con un placeholder con data :  mer 12 12 2007,il markdown deve essere di almeno 80 caratteri");
+				assertEquals("messaggio semplice con un placeholder con data :  mer 12 12 2007,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 		}
 		
 		@Test
 		@DisplayName("template con placeholder date time in tutti i formati")
-		void Test20(){
+		void UC_4_21_PlaceholderEveryDateTime(){
 			Set<GovioTemplatePlaceholderEntity>	govioTemplatePlaceholders = new HashSet<> ();
 			GovioPlaceholderEntity placeHolder = GovioPlaceholderEntity
 			.builder()
@@ -530,8 +550,6 @@ class UC4_AcquisizioneMessaggiTest {
 			TemplateApplier templateApplier = GovioTemplateApplierFactory.buildTemplateApplier(govioTemplate);
 			GovioMessageEntity messaggio = templateApplier.buildGovioMessageEntity("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30");
 				
-				assertEquals(messaggio.getMarkdown(),"messaggio semplice con un placeholder con date time :  03/12/2007 10:15, 03/12/2007, lun 03 12 2007, 10:15, lun 03 12 2007 alle ore 10:15");
+				assertEquals("messaggio semplice con un placeholder con date time :  03/12/2007 10:15, 03/12/2007, lun 03 12 2007, 10:15, lun 03 12 2007 alle ore 10:15",messaggio.getMarkdown());
 		}
-
-
 	}

@@ -1,6 +1,5 @@
 package it.govio.batch.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,22 +22,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "govio_service_instances")
-public class GovioServiceInstanceEntity {
-
+@Table(name = "govio_services")
+public class GovioServiceEntity {
+	
 	@Id
-	@SequenceGenerator(name="seq_govio_service_instances",sequenceName="seq_govio_service_instances", initialValue=1, allocationSize=1)
-	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_service_instances")
+	@SequenceGenerator(name="seq_govio_services",sequenceName="seq_govio_services", initialValue=1, allocationSize=1)
+	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_services")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_service", nullable = false)
-	private GovioServiceEntity idGovioService;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_template", nullable = true)
+	@JoinColumn(name = "id_govio_template", nullable = false)
 	private GovioTemplateEntity govioTemplate;
 
-	@Column(name = "apikey", nullable = false)
-	private String apikey;
 }

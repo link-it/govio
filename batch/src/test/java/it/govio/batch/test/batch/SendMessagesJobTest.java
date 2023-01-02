@@ -42,6 +42,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
@@ -52,6 +53,7 @@ import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.FiscalCodePayload;
 import it.pagopa.io.v1.api.beans.LimitedProfile;
+import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
 @SpringBootTest
@@ -91,6 +93,10 @@ class SendMessagesJobTest {
 
 	@Autowired
 	private JobRepository jobRepository;
+	
+	// variabili usate nel test sendMessagesFailThenOk
+	static int nextInt = 0;
+	static int tryLeft= 4;
 
 	private void initailizeJobLauncherTestUtils() throws Exception { 
 	    this.jobLauncherTestUtils = new JobLauncherTestUtils();
@@ -213,7 +219,7 @@ class SendMessagesJobTest {
 //				Thread.sleep(nextInt+100);
 				
 				// Nel 10% dei casi lancio una eccezione, se il codice fiscale non è già stato oggetto di eccezioni.
-				if(nextInt < 40 && failedTaxCodes.contains(fiscalCode)) { 
+				if(nextInt < 40 && failedTaxCodes.contains(fiscalCode)) {
 					failedTaxCodes.add(fiscalCode);
 					throw new IOException();
 				}
@@ -239,6 +245,98 @@ class SendMessagesJobTest {
 		Mockito
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
+		initailizeJobLauncherTestUtils();
+		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
+
+		//Controllo che tutti i messaggi siano spediti con successo e aggiornati conseguentemente.
+
+		List<GovioMessageEntity> findAll = govioMessagesRepository.findAll();
+		for(GovioMessageEntity entity : findAll) {
+			Assert.assertNotNull(entity.getExpeditionDate());
+			Assert.assertNotNull(entity.getLastUpdateStatus());
+			Assert.assertEquals(Status.SENT, entity.getStatus());
+			Assert.assertNotNull(entity.getAppioMessageId());
+		}
+	}
+
+	@Test
+	void getProfileFail() throws Exception {
+		Mockito
+		.when(restTemplate.exchange(any(), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
+		.thenAnswer(new Answer<ResponseEntity<LimitedProfile>>() {
+			@Override
+			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws Exception{
+//				// Simulazione ritardo chiamata http
+//				Thread.sleep(nextInt+100);
+					throw new IOException();
+			}
+		});
+		
+		Mockito
+		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+
+		
+		initailizeJobLauncherTestUtils();
+		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
+
+		//Controllo che nessuno dei messaggi sia stato spedito
+		List<GovioMessageEntity> findAll = govioMessagesRepository.findAll();
+		for(GovioMessageEntity entity : findAll) {
+			Assert.assertNull(entity.getExpeditionDate());
+			Assert.assertNull(entity.getLastUpdateStatus());
+			Assert.assertEquals(Status.SCHEDULED, entity.getStatus());
+			Assert.assertNull(entity.getAppioMessageId());
+		}
+	}
+	
+	
+	@Test
+	void sendMessagesFailThenOk() throws Exception {
+		Set<String> failedId = new HashSet<>();
+		Mockito
+		.when(restTemplate.exchange(any(), eq(new ParameterizedTypeReference<LimitedProfile>() {})))
+		.thenAnswer(new Answer<ResponseEntity<LimitedProfile>>() {
+			@Override
+			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws Exception{
+				@SuppressWarnings("unchecked")
+				String fiscalCode = ((RequestEntity<FiscalCodePayload>) invocation.getArgument(0)).getBody().getFiscalCode();
+//				// Simulazione ritardo chiamata http
+//				Thread.sleep(nextInt+100);
+				LimitedProfile profile = new LimitedProfile();
+				profile.setSenderAllowed(true);
+				return new ResponseEntity<LimitedProfile>(profile, HttpStatus.OK);
+			}
+		});
+		
+		Mockito
+		.when(restTemplate.exchange(any(), eq(new ParameterizedTypeReference<CreatedMessage>() {})))
+		.thenAnswer(new Answer<ResponseEntity<CreatedMessage>>() {
+			@Override
+			public ResponseEntity<CreatedMessage> answer(InvocationOnMock invocation) throws InterruptedException, IOException{
+//				// Simulazione ritardo chiamata http
+//				Thread.sleep(r.nextInt(400)+100);
+				nextInt++ ;
+				
+				@SuppressWarnings("unchecked")
+				String fiscalCode = ((RequestEntity<NewMessage>) invocation.getArgument(0)).getBody().getFiscalCode();
+				if ((nextInt == 50) || (failedId.contains(fiscalCode) && (tryLeft > 0))) {
+					failedId.add(fiscalCode);
+					tryLeft--;
+					throw new IOException();
+				}
+				CreatedMessage createdMessage = new CreatedMessage();
+				createdMessage.setId(UUID.randomUUID().toString());
+				return new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED);
+			}
+		});
+		Mockito
+		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+
+		
 		initailizeJobLauncherTestUtils();
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
