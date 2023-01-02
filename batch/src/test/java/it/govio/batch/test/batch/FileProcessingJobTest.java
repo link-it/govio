@@ -33,16 +33,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.govio.batch.Application;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
-import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 
-@SpringBootTest
+@SpringBootTest(classes = Application.class)
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -56,7 +56,7 @@ class FileProcessingJobTest {
 	private GovioFilesRepository govioFilesRepository;
 
 	@Autowired
-	private GovioFileMessagesRepository govioFileMessagesRepository;
+	private GovioFilesRepository govioFileMessagesRepository;
 	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
@@ -158,6 +158,35 @@ class FileProcessingJobTest {
 
 		return govioFile1;
 	}
+	
+	
+	@Test
+	void defaultTemplateOk() throws Exception {
 
+		// Caricamento messaggi da inviare
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 
+		TemporaryFolder testFolder = new TemporaryFolder();
+		testFolder.create();
+
+		// Inserisco 1 file con 100 record
+		List<GovioFileEntity> files = new ArrayList<>();
+		files.add(govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "01")));
+
+		initailizeJobLauncherTestUtils();
+
+		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
+
+		GovioFileEntity fileEntity = govioFilesRepository.findAll().get(0);
+			// Controllo lo stato di elaborazione
+			assertEquals(Status.PROCESSED, fileEntity.getStatus());
+			assertEquals(100, fileEntity.getAcquiredMessages());
+			assertEquals(0, fileEntity.getErrorMessages());
+
+			for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
+				assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
+			}
+	}
 }

@@ -11,6 +11,12 @@ public class BooleanCsvItem extends CsvItem{
 		super(index, name, mandatory);
 	}
 	
+	protected void validateValue(String value) throws TemplateValidationException {
+		super.validateValue(value);
+		if (!value.equals("true") && !value.equals("false") && !value.isBlank())
+			throw new TemplateValidationException(String.format("Il valore %s del campo %s non è un booleano", value, name));
+	}
+	
 	public Boolean getBooleanValue(String[] values) throws TemplateValidationException {
 		String value = getValue(values);
 		validateValue(value);

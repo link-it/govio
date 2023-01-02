@@ -21,8 +21,8 @@ public interface GovioFilesRepository extends JpaRepositoryImplementation<GovioF
     @Modifying
     @Query(value = "UPDATE govio_files "
     		+ "SET status='PROCESSED', "
-    		+ "acquired_messages = (SELECT count(*) FROM govio_files_messages WHERE id_govio_file=govio_files.id and id_govio_message is not null), "
-    		+ "error_messages = (SELECT count(*) FROM govio_files_messages WHERE id_govio_file=govio_files.id and id_govio_message is null) "
+    		+ "acquired_messages = (SELECT count(*) FROM govio_file_messages WHERE id_govio_file=govio_files.id and id_govio_message is not null), "
+    		+ "error_messages = (SELECT count(*) FROM govio_file_messages WHERE id_govio_file=govio_files.id and id_govio_message is null) "
     		+ "where status='PROCESSING'",
 		 nativeQuery = true)
 	void updateProcessedFiles();
