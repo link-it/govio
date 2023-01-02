@@ -38,8 +38,8 @@ import it.govhub.govio.api.test.utils.MultipartUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
 import it.govhub.govregistry.commons.entity.ServiceEntity;
-import it.govhub.govregistry.readops.api.repository.OrganizationRepository;
-import it.govhub.govregistry.readops.api.repository.ServiceRepository;
+import it.govhub.govregistry.readops.api.repository.ReadOrganizationRepository;
+import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 
 
 @SpringBootTest(classes = Application.class)
@@ -56,10 +56,10 @@ class Trace_UC_1_UploadCsvTracesTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Autowired
-	private OrganizationRepository organizationRepository;
+	private ReadOrganizationRepository organizationRepository;
 	
 	@Autowired
-	private ServiceRepository serviceRepository;
+	private ReadServiceRepository serviceRepository;
 	
 	@Autowired
 	private GovioFileRepository govioFileRepository;

@@ -24,7 +24,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
-import it.govhub.govio.api.beans.GovIOFile;
+import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileRepository;
@@ -109,7 +109,7 @@ public class TraceService {
 	
 
 	@Transactional
-	public GovIOFile readFile(Long id) {
+	public GovioFile readFile(Long id) {
 		return this.fileRepo.findById(id)
 				.map( f -> this.fileAssembler.toModel(f))
 				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
