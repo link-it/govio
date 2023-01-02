@@ -104,7 +104,7 @@ public class TraceController implements TraceApi {
 		}
 		
     	if (StringUtils.isEmpty(sourceFilename)) {
-    		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"pom.xml\"] ");
+    		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
     	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
@@ -121,6 +121,7 @@ public class TraceController implements TraceApi {
     	String filename = null;
     	try {
 	    	String contentDisposition = headers.getHeader("Content-Disposition");
+	    	logger.debug("Content Disposition Header: {}", contentDisposition);
 	    	
 	    	String[] headerDirectives = contentDisposition.split(";");
 	    	
