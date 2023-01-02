@@ -35,6 +35,9 @@ public class SecurityConfig{
 
     @Value("${govshell.auth.header:Govhub-Consumer-Principal}")
     private String headerAuthentication;
+    
+    @Value("${govhub.csp.policy:default-src 'self'}")
+    String cspPolicy;
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
@@ -52,15 +55,26 @@ public class SecurityConfig{
 		filter.setExceptionIfHeaderMissing(false);
 		filter.setAuthenticationManager(manager);
 		
-		applyAuthRules(http).csrf().disable()																												// Disabilita csrf perchè abbiamo solo richieste pre-autenticate con header
-		.addFilterBefore(filter, filter.getClass())																											// Autenticazione per header
+		// Disabilita csrf perchè abbiamo solo richieste pre-autenticate con header
+		applyAuthRules(http).csrf().disable()		
+		// Autenticazione per header
+		.addFilterBefore(filter, filter.getClass())																											
 		.addFilterBefore(preAuthenticatedExceptionHandler, LogoutFilter.class)
 		.exceptionHandling()
-				.accessDeniedHandler(accessDeniedHandler)																		// Gestisci accessDenied in modo da restituire un problem ben formato
-				.authenticationEntryPoint(new ProblemHttp403ForbiddenEntryPoint(jsonMapper))				// Gestisci la mancata autenticazione con un problem ben formato
+				// Gestisci accessDenied in modo da restituire un problem ben formato
+				.accessDeniedHandler(accessDeniedHandler)																	
+				// Gestisci la mancata autenticazione con un problem ben formato
+				.authenticationEntryPoint(new ProblemHttp403ForbiddenEntryPoint(jsonMapper))	
 		.and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)  									// Le applicazioni di govhub non usano una sessione, nè fanno login. Arrivano solo richieste autenticate.
-		;
+				// Le applicazioni di govhub non usano una sessione, nè fanno login. Arrivano solo richieste autenticate.
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+		.and()
+			.headers()
+			.xssProtection()
+            .and()
+         // Politica di CSP più restrittiva. https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+         // Anche le immagini dal gravatar
+        .contentSecurityPolicy(this.cspPolicy);
 		return http.build();
 	}
 
