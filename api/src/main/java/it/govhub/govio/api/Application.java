@@ -34,7 +34,7 @@ import it.govhub.security.config.SecurityExportedBeans;
 @EntityScan("it.govhub.govio.api.entity")
 public class Application extends SpringBootServletInitializer {
 	
-	@Value("${govhub.time-zone}")
+	@Value("${govhub.time-zone:Europe/Rome}")
 	String timeZone;
 
 	public static void main(String[] args) {
