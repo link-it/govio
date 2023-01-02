@@ -89,9 +89,10 @@ public class TraceController implements TraceApi {
 			// quando viene chiamato iterStream.hasNext.
 			// Per lo short-circuit dell'&&, una volta trovato l'elemento multipart necessario, usciamo dal while
 			// senza chiamare iterStream.hasNext
-			
+			logger.debug("Reading Multipart Elements..");
 			while (sourceFilename == null && iterStream.hasNext()) {
 			    itemStream = iterStream.next();
+			    logger.debug("Found element: {}", itemStream.getFieldName());
 			    
 			    if (itemStream.isFormField()) {
 			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
@@ -133,6 +134,7 @@ public class TraceController implements TraceApi {
 	    		}
 	    	}
     	} catch (Exception e) {
+    		logger.error("Exception while reading header: {}", e);
     		filename = null;
     	}
     	
