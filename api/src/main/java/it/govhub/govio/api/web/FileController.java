@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
-import it.govhub.govio.api.beans.GovIOFile;
+import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileFilters;
@@ -38,7 +38,7 @@ import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govio.api.services.TraceService;
-import it.govhub.govio.api.spec.TraceApi;
+import it.govhub.govio.api.spec.FileApi;
 import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
@@ -48,7 +48,7 @@ import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
 @RestController
-public class TraceController implements TraceApi {
+public class FileController implements FileApi {
 	
 	@Autowired
 	ServiceInstanceEntityRepository serviceRepo;
@@ -65,7 +65,7 @@ public class TraceController implements TraceApi {
 	@Autowired
 	GovioFileRepository fileRepo;
 	
-	Logger logger = LoggerFactory.getLogger(TraceController.class);
+	Logger logger = LoggerFactory.getLogger(FileController.class);
 	
 	/**
 	 * I parametri argomento vengono ignorati e sono null. Abbiamo disabilitato la gestione del multipart di spring 
@@ -73,7 +73,7 @@ public class TraceController implements TraceApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovIOFile> uploadCsvTrace(Long serviceId, Long organizationId, MultipartFile file) {
+	public ResponseEntity<GovioFile> uploadFile(Long serviceId, Long organizationId, MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -143,7 +143,7 @@ public class TraceController implements TraceApi {
 
 
 	@Override
-	public ResponseEntity<FileList> listCsvTrace(
+	public ResponseEntity<FileList> listFiles(
 				Direction sortDirection, 
 				Integer limit, 
 				Long offset, 
@@ -186,7 +186,7 @@ public class TraceController implements TraceApi {
 
 
 	@Override
-	public ResponseEntity<GovIOFile> readCsvTrace(Long traceId) {
+	public ResponseEntity<GovioFile> readFile(Long traceId) {
 		// TODO: Come popolo errorMessages e aquiredMessages?
 		// AquiredMessages sarà il numero di govio_file_messages collegata a una govio_files
 		//  ErrorMessages sarà il numero in cui GovioFileMessageEntity collegati al govio_file_messages per cui error è a null
@@ -198,7 +198,7 @@ public class TraceController implements TraceApi {
 
 
 	@Override
-	public ResponseEntity<Resource> readCsvFileContent(Long id) {
+	public ResponseEntity<Resource> readFileContent(Long id) {
 	
     	this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
     	
