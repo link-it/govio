@@ -39,6 +39,7 @@ import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govio.api.services.TraceService;
 import it.govhub.govio.api.spec.FileApi;
+import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
@@ -47,7 +48,7 @@ import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
-@RestController
+@V1RestController
 public class FileController implements FileApi {
 	
 	@Autowired
