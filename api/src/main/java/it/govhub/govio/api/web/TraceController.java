@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
@@ -42,9 +41,9 @@ import it.govhub.govio.api.services.TraceService;
 import it.govhub.govio.api.spec.TraceApi;
 import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.InternalException;
+import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
-import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
@@ -90,9 +89,10 @@ public class TraceController implements TraceApi {
 			// quando viene chiamato iterStream.hasNext.
 			// Per lo short-circuit dell'&&, una volta trovato l'elemento multipart necessario, usciamo dal while
 			// senza chiamare iterStream.hasNext
-			
+			logger.debug("Reading Multipart Elements..");
 			while (sourceFilename == null && iterStream.hasNext()) {
 			    itemStream = iterStream.next();
+			    logger.debug("Found element: {}", itemStream.getFieldName());
 			    
 			    if (itemStream.isFormField()) {
 			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
@@ -105,7 +105,7 @@ public class TraceController implements TraceApi {
 		}
 		
     	if (StringUtils.isEmpty(sourceFilename)) {
-    		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"pom.xml\"] ");
+    		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
     	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
@@ -122,6 +122,7 @@ public class TraceController implements TraceApi {
     	String filename = null;
     	try {
 	    	String contentDisposition = headers.getHeader("Content-Disposition");
+	    	logger.debug("Content Disposition Header: {}", contentDisposition);
 	    	
 	    	String[] headerDirectives = contentDisposition.split(";");
 	    	
@@ -133,6 +134,7 @@ public class TraceController implements TraceApi {
 	    		}
 	    	}
     	} catch (Exception e) {
+    		logger.error("Exception while reading header: {}", e);
     		filename = null;
     	}
     	
@@ -177,16 +179,7 @@ public class TraceController implements TraceApi {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
 		
-		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
-		
-		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
-				.currentRequestAttributes()).getRequest();
-		
-		FileList ret = ListaUtils.costruisciListaPaginata(files, pageRequest.limit, curRequest, new FileList());
-		
-		for (GovioFileEntity file : files) {
-			ret.addItemsItem(this.fileAssembler.toModel(file));
-		}
+		FileList ret = traceService.listFiles(spec, pageRequest);
 		
 		return ResponseEntity.ok(ret);
 	}
@@ -200,8 +193,7 @@ public class TraceController implements TraceApi {
 
 		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
 				
-		return ResponseEntity.ok(
-				this.fileAssembler.toModel(this.traceService.readFile(traceId)));
+		return ResponseEntity.ok(	this.traceService.readFile(traceId));
 	}
 
 
@@ -209,8 +201,9 @@ public class TraceController implements TraceApi {
 	public ResponseEntity<Resource> readCsvFileContent(Long id) {
 	
     	this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
-		
-		GovioFileEntity file = this.traceService.readFile(id);
+    	
+    	GovioFileEntity file = this.fileRepo.findById(id)
+    			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
 		
 		Path path = file.getLocation();
 		
