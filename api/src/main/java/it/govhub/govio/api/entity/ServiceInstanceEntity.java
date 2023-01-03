@@ -44,8 +44,8 @@ public class ServiceInstanceEntity implements Serializable {
 
 	@EqualsAndHashCode.Include
 	@ManyToOne
-	@JoinColumn(name = "id_govhub_service", nullable = false)
-	private ServiceEntity service;
+	@JoinColumn(name = "id_govio_service", nullable = false)
+	private GovioServiceEntity service;
 	
 	@EqualsAndHashCode.Include
 	@ManyToOne
