@@ -40,7 +40,7 @@ public class GovioTemplatePlaceholderEntity {
 	@JoinColumn(name = "id_govio_template", nullable = false)
 	private GovioTemplateEntity govioTemplate;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne()
 	@MapsId("GovioPlaceholderId")
 	@JoinColumn(name = "id_govio_placeholder", nullable = false)
 	private GovioPlaceholderEntity govioPlaceholder;
