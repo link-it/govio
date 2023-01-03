@@ -146,7 +146,7 @@ class Files_UC_4_GetFileContentTest {
 		
 		this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.accept(MediaType.APPLICATION_OCTET_STREAM))
+				.accept(MediaType.APPLICATION_OCTET_STREAM_VALUE, "application/problem+json"))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.status", is(404)))
 				.andExpect(jsonPath("$.title", is("Not Found")))
@@ -162,7 +162,7 @@ class Files_UC_4_GetFileContentTest {
 		
 		this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.accept(MediaType.APPLICATION_OCTET_STREAM))
+				.accept(MediaType.APPLICATION_OCTET_STREAM_VALUE, "application/problem+json"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status", is(400)))
 				.andExpect(jsonPath("$.title", is("Bad Request")))
@@ -207,7 +207,7 @@ class Files_UC_4_GetFileContentTest {
 
 		this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.accept(MediaType.APPLICATION_OCTET_STREAM))
+				.accept(MediaType.APPLICATION_OCTET_STREAM_VALUE, "application/problem+json"))
 				.andExpect(status().isInternalServerError())
 				.andExpect(jsonPath("$.status", is(500)))
 				.andExpect(jsonPath("$.title", is("Internal Server Error")))
