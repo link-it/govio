@@ -38,7 +38,7 @@ import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.security.services.SecurityService;
 
 @Service
-public class TraceService {
+public class FileService {
 
 	@Value("${govio.filerepository.path:/var/govio/csv}")
 	Path fileRepositoryPath;
@@ -55,7 +55,7 @@ public class TraceService {
 	@Autowired
 	FileAssembler fileAssembler;
 	
-	Logger logger = LoggerFactory.getLogger(TraceService.class);
+	Logger logger = LoggerFactory.getLogger(FileService.class);
 	
 	@Transactional
 	public GovioFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
@@ -63,9 +63,6 @@ public class TraceService {
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
 		
-		if (instance.getTemplate() == null) {
-			throw new SemanticValidationException("L'istanza del servizio non ha un template di messaggio associato");
-		}
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
 			throw new SemanticValidationException("Un file con lo stesso nome è già presente");
 		}
