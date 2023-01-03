@@ -31,7 +31,7 @@ import lombok.ToString;
 @Entity
 @Table(
 		name = "govio_service_instances", 
-		uniqueConstraints = { @UniqueConstraint( columnNames = { "id_govhub_service", "id_govhub_organization" }) }
+		uniqueConstraints = { @UniqueConstraint( columnNames = { "id_govio_service", "id_govhub_organization" }) }
 	)
 public class ServiceInstanceEntity implements Serializable {
 	

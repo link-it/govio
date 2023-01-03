@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import it.govhub.govregistry.commons.entity.ServiceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,5 +33,8 @@ public class GovioServiceEntity {
 	@ManyToOne
 	@JoinColumn(name = "id_govio_template", nullable = false)
 	private TemplateEntity govioTemplate;
-
+	
+	@ManyToOne
+	@JoinColumn(name = "id_govhub_service", nullable = false)
+	private ServiceEntity govhubService;
 }

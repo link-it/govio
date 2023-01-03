@@ -124,7 +124,7 @@ class Files_UC_3_GetFileTest {
 		assertEquals(item.getString("filename"), govioFileEntity.getName());
 		assertEquals(item.getJsonObject("user").getString("full_name"), govioFileEntity.getGovauthUser().getFullName());
 		assertEquals(item.getJsonObject("organization").getString("tax_code"), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(item.getJsonObject("service").getString("service_name"), govioFileEntity.getServiceInstance().getService().getName());
+		assertEquals(item.getJsonObject("service").getString("service_name"), govioFileEntity.getServiceInstance().getService().getGovhubService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 	}
 	
