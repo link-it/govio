@@ -33,7 +33,7 @@ public class GovioServiceInstanceEntity {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_service", nullable = false)
-	private GovioServiceEntity idGovioService;
+	private GovioServiceEntity govioService;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_template", nullable = true)
