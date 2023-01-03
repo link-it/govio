@@ -75,7 +75,7 @@ CREATE TABLE govio_service_instances
      apikey                   VARCHAR(255) NOT NULL,
      id_govio_service         BIGINT NOT NULL,
      id_govhub_organization   BIGINT NOT NULL,
-     id_govio_template        BIGINT NOT NULL,
+     id_govio_template        BIGINT,
      PRIMARY KEY (id)
   );
 
