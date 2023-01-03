@@ -1,4 +1,4 @@
-package it.govhub.govio.api.test.controller.trace;
+package it.govhub.govio.api.test.controller.files;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,8 +38,8 @@ import it.govhub.govio.api.test.utils.MultipartUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
 import it.govhub.govregistry.commons.entity.ServiceEntity;
-import it.govhub.govregistry.readops.api.repository.OrganizationRepository;
-import it.govhub.govregistry.readops.api.repository.ServiceRepository;
+import it.govhub.govregistry.readops.api.repository.ReadOrganizationRepository;
+import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 
 
 @SpringBootTest(classes = Application.class)
@@ -47,7 +47,9 @@ import it.govhub.govregistry.readops.api.repository.ServiceRepository;
 @DisplayName("Test di caricamento csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
-class Trace_UC_1_UploadCsvTracesTest {
+class Files_UC_1_UploadFileTest {
+
+	private static final String FILES_BASE_PATH = "/v1/files";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -56,10 +58,10 @@ class Trace_UC_1_UploadCsvTracesTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Autowired
-	private OrganizationRepository organizationRepository;
+	private ReadOrganizationRepository organizationRepository;
 	
 	@Autowired
-	private ServiceRepository serviceRepository;
+	private ReadServiceRepository serviceRepository;
 	
 	@Autowired
 	private GovioFileRepository govioFileRepository;
@@ -89,7 +91,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		MvcResult result = this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
             	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 				.params(params)
 				.contentType("multipart/form-data; boundary=" + boundary)
@@ -117,7 +119,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("amministratore", govioFileEntity.getGovauthUser().getPrincipal());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
+		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getGovhubService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 	}
 	
@@ -136,7 +138,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		MvcResult result = this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
             	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 				.params(params)
 				.contentType("multipart/form-data; boundary=" + boundary)
@@ -157,13 +159,12 @@ class Trace_UC_1_UploadCsvTracesTest {
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("govio_sender", govioFileEntity.getGovauthUser().getPrincipal());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
+		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getGovhubService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 	}
 	
 	// 3. Upload Fail file csv per utenza senza ruolo govio_sender
-	// TODO riabilitare
-//	@Test
+	@Test
 	void UC_1_03_UploadCsvFileFail_UtenzaSenzaRuolo_GovIO_Sender() throws Exception {
 		String fileName = "csv-test-UC103";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
@@ -177,12 +178,12 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
 					.characterEncoding("UTF-8")
-					.with(this.userAuthProfilesUtils.utenzaAdmin())
+					.with(this.userAuthProfilesUtils.utenzaOspite())
 					.with(csrf())
 					.accept(MediaType.APPLICATION_JSON)
 					)
@@ -196,8 +197,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 	}
 	
 	// 4. Upload Fail file csv con parametro service_id non presente
-	// TODO riabilitare
-//	@Test
+	@Test
 	void UC_1_04_UploadCsvFileFail_MissingServiceID() throws Exception {
 		String fileName = "csv-test-UC104";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
@@ -209,7 +209,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -228,8 +228,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 	}
 	
 	// 5. Upload Fail file csv con parametro organization_id non presente
-	// TODO riabilitare
-//	@Test
+	@Test
 	void UC_1_05_UploadCsvFileFail_MissingOrganizationID() throws Exception {
 		String fileName = "csv-test-UC105";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
@@ -241,7 +240,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -274,7 +273,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -307,7 +306,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -340,7 +339,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		MvcResult result = this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
             	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 				.params(params)
 				.contentType("multipart/form-data; boundary=" + boundary)
@@ -361,11 +360,11 @@ class Trace_UC_1_UploadCsvTracesTest {
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("amministratore", govioFileEntity.getGovauthUser().getPrincipal());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
+		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getGovhubService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -397,7 +396,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -415,4 +414,36 @@ class Trace_UC_1_UploadCsvTracesTest {
 		
 	}
 		
+	// 10. Upload Fail file filename vuoto.
+	@Test
+	void UC_1_10_UploadCsvFileFail_MissingFilename() throws Exception {
+		String fileName = "";
+		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
+		String boundary = MultipartUtils.generateBoundary();
+		
+		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
+		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
+		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
+		
+		this.mockMvc.perform(
+				multipart(FILES_BASE_PATH)
+                	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
+					.params(params)
+					.contentType("multipart/form-data; boundary=" + boundary)
+					.characterEncoding("UTF-8")
+					.with(this.userAuthProfilesUtils.utenzaAdmin())
+					.with(csrf())
+					.accept(MediaType.APPLICATION_JSON)
+					)
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
 }
