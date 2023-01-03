@@ -22,7 +22,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -109,7 +108,7 @@ public class FileController implements FileApi {
     		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
-    	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
+    	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
     	GovioFileEntity created = this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
