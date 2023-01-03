@@ -146,7 +146,7 @@ class Files_UC_4_GetFileContentTest {
 		
 		this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.accept(MediaType.APPLICATION_JSON))
+				.accept(MediaType.APPLICATION_JSON_VALUE, "application/problem+json"))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.status", is(404)))
 				.andExpect(jsonPath("$.title", is("Not Found")))
@@ -162,7 +162,7 @@ class Files_UC_4_GetFileContentTest {
 		
 		this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.accept(MediaType.APPLICATION_JSON))
+				.accept(MediaType.APPLICATION_JSON_VALUE, "application/problem+json"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status", is(400)))
 				.andExpect(jsonPath("$.title", is("Bad Request")))
