@@ -47,7 +47,7 @@ import it.govhub.security.services.GovhubUserDetailService;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-@DisplayName("Test di caricamento csv tracciati")
+@DisplayName("Test di lettura csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class Files_UC_2_FindFilesTest {
 
