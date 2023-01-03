@@ -417,10 +417,10 @@ class Files_UC_1_UploadFileTest {
 		
 	}
 		
-	// 10. Upload Fail file csv riferisce serviceinstance non presente
+	// 10. Upload Fail file filename vuoto.
 	@Test
 	void UC_1_10_UploadCsvFileFail_MissingFilename() throws Exception {
-		String fileName = "csv-test-UC109";
+		String fileName = "";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
 		String boundary = MultipartUtils.generateBoundary();
 		
@@ -433,7 +433,7 @@ class Files_UC_1_UploadFileTest {
 		
 		this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
-                	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, ""))
+                	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
 					.characterEncoding("UTF-8")
