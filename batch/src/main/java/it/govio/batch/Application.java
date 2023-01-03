@@ -1,7 +1,5 @@
 package it.govio.batch;
 
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
