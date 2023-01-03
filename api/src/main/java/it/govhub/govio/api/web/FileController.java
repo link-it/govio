@@ -17,13 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
-import it.govhub.govio.api.beans.GovIOFile;
+import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileFilters;
@@ -39,17 +37,18 @@ import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
 import it.govhub.govio.api.services.TraceService;
-import it.govhub.govio.api.spec.TraceApi;
+import it.govhub.govio.api.spec.FileApi;
+import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.InternalException;
+import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
-import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
-@RestController
-public class TraceController implements TraceApi {
+@V1RestController
+public class FileController implements FileApi {
 	
 	@Autowired
 	ServiceInstanceEntityRepository serviceRepo;
@@ -66,7 +65,7 @@ public class TraceController implements TraceApi {
 	@Autowired
 	GovioFileRepository fileRepo;
 	
-	Logger logger = LoggerFactory.getLogger(TraceController.class);
+	Logger logger = LoggerFactory.getLogger(FileController.class);
 	
 	/**
 	 * I parametri argomento vengono ignorati e sono null. Abbiamo disabilitato la gestione del multipart di spring 
@@ -74,7 +73,7 @@ public class TraceController implements TraceApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovIOFile> uploadCsvTrace(Long serviceId, Long organizationId, MultipartFile file) {
+	public ResponseEntity<GovioFile> uploadFile(Long serviceId, Long organizationId, MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -90,9 +89,10 @@ public class TraceController implements TraceApi {
 			// quando viene chiamato iterStream.hasNext.
 			// Per lo short-circuit dell'&&, una volta trovato l'elemento multipart necessario, usciamo dal while
 			// senza chiamare iterStream.hasNext
-			
+			logger.debug("Reading Multipart Elements..");
 			while (sourceFilename == null && iterStream.hasNext()) {
 			    itemStream = iterStream.next();
+			    logger.debug("Found element: {}", itemStream.getFieldName());
 			    
 			    if (itemStream.isFormField()) {
 			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
@@ -105,10 +105,10 @@ public class TraceController implements TraceApi {
 		}
 		
     	if (StringUtils.isEmpty(sourceFilename)) {
-    		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"pom.xml\"] ");
+    		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
-    	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
+    	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
     	GovioFileEntity created = this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
@@ -122,6 +122,7 @@ public class TraceController implements TraceApi {
     	String filename = null;
     	try {
 	    	String contentDisposition = headers.getHeader("Content-Disposition");
+	    	logger.debug("Content Disposition Header: {}", contentDisposition);
 	    	
 	    	String[] headerDirectives = contentDisposition.split(";");
 	    	
@@ -133,6 +134,7 @@ public class TraceController implements TraceApi {
 	    		}
 	    	}
     	} catch (Exception e) {
+    		logger.error("Exception while reading header: {}", e);
     		filename = null;
     	}
     	
@@ -141,7 +143,7 @@ public class TraceController implements TraceApi {
 
 
 	@Override
-	public ResponseEntity<FileList> listCsvTrace(
+	public ResponseEntity<FileList> listFiles(
 				Direction sortDirection, 
 				Integer limit, 
 				Long offset, 
@@ -177,40 +179,31 @@ public class TraceController implements TraceApi {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
 		
-		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
-		
-		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
-				.currentRequestAttributes()).getRequest();
-		
-		FileList ret = ListaUtils.costruisciListaPaginata(files, pageRequest.limit, curRequest, new FileList());
-		
-		for (GovioFileEntity file : files) {
-			ret.addItemsItem(this.fileAssembler.toModel(file));
-		}
+		FileList ret = traceService.listFiles(spec, pageRequest);
 		
 		return ResponseEntity.ok(ret);
 	}
 
 
 	@Override
-	public ResponseEntity<GovIOFile> readCsvTrace(Long traceId) {
+	public ResponseEntity<GovioFile> readFile(Long traceId) {
 		// TODO: Come popolo errorMessages e aquiredMessages?
 		// AquiredMessages sarà il numero di govio_file_messages collegata a una govio_files
 		//  ErrorMessages sarà il numero in cui GovioFileMessageEntity collegati al govio_file_messages per cui error è a null
 
 		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
 				
-		return ResponseEntity.ok(
-				this.fileAssembler.toModel(this.traceService.readFile(traceId)));
+		return ResponseEntity.ok(	this.traceService.readFile(traceId));
 	}
 
 
 	@Override
-	public ResponseEntity<Resource> readCsvFileContent(Long id) {
+	public ResponseEntity<Resource> readFileContent(Long id) {
 	
     	this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
-		
-		GovioFileEntity file = this.traceService.readFile(id);
+    	
+    	GovioFileEntity file = this.fileRepo.findById(id)
+    			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
 		
 		Path path = file.getLocation();
 		

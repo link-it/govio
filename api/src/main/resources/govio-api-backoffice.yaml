@@ -16,8 +16,8 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html 
   
 tags:
-  - name: trace
-    description: File Trace Operations
+  - name: file
+    description: File Operations
     
 servers:
   - url: http://localhost:10001
@@ -30,10 +30,10 @@ paths:
     /files:
        post:
          tags:
-           - trace
+           - file
          summary: Upload a new csv trace.
          description: Allows to upload a csv trace for a GovIO service.
-         operationId: uploadCsvTrace
+         operationId: uploadFile
          parameters:
             - $ref: "#/components/parameters/service_id_query"
             - $ref: "#/components/parameters/organization_id_query"
@@ -55,7 +55,7 @@ paths:
              content:
                application/json:
                  schema:
-                   $ref: '#/components/schemas/GovIOFile'          
+                   $ref: '#/components/schemas/GovioFile'          
            '400':
              $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
            '401':
@@ -73,10 +73,10 @@ paths:
 
        get:
          tags:
-            - trace
+            - file
          summary: Retrieve the uploaded csv traces
          description: Retrieve the csv traces
-         operationId: listCsvTrace
+         operationId: listFiles
          parameters:
             - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
             - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
@@ -112,17 +112,17 @@ paths:
         - $ref: "#/components/parameters/file_id"
      get:
          tags:
-            - trace
+            - file
          summary: Retrieve the uploaded csv trace.
          description: Retrieve the csv trace.
-         operationId: readCsvTrace
+         operationId: readFile
          responses:
            '200':
              description: Successful operation.
              content:
                application/json:
                  schema:
-                    $ref: "#/components/schemas/GovIOFile"
+                    $ref: "#/components/schemas/GovioFile"
            '400':
              $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
            '401':
@@ -143,10 +143,10 @@ paths:
         - $ref: "#/components/parameters/file_id"
      get:
          tags:
-            - trace
+            - file
          summary: Retrieve the file content of the uploaded csv trace.
          description: Retrieve the file content
-         operationId: readCsvFileContent
+         operationId: readFileContent
          responses:
            '200':
              description: Successful operation.
@@ -175,7 +175,7 @@ paths:
         - $ref: "#/components/parameters/file_id"
      get:
          tags:
-            - trace
+            - file
          summary: Retrieve the file processing messages.
          description: Retrieve the file messages.
          operationId: readFileMessages
@@ -269,18 +269,18 @@ components:
          in: path
          required: true
          schema:
-            $ref: "#/components/schemas/GovIOFileId"
+            $ref: "#/components/schemas/GovioFileId"
            
         
 
    schemas:
    
-      GovIOFile:
+      GovioFile:
          type: object
          additionalProperties: false
          properties:
            id:
-              $ref: "#/components/schemas/GovIOFileId"
+              $ref: "#/components/schemas/GovioFileId"
            filename:
               type: string
               pattern: .*
@@ -313,13 +313,13 @@ components:
               maximum: 9223372036854775807
               example: 9999   
    
-      GovIOFileId:
+      GovioFileId:
          type: integer
          format: int64
          minimum: 0
          maximum: 9223372036854775807
          example: 1
-         description: GovIOFile Id.
+         description: GovioFile Id.
          
       FileMessageId:
          type: integer
@@ -382,7 +382,7 @@ components:
                  items:
                     type: array
                     items:
-                       $ref: "#/components/schemas/GovIOFile"
+                       $ref: "#/components/schemas/GovioFile"
                     minItems: 0
                     maxItems: 2147483647
               required:

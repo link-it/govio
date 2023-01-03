@@ -37,7 +37,7 @@ public class GovioFileMessageEntity {
 	@JoinColumn(name = "id_govio_message", nullable = true)
 	private GovioMessageEntity govioMessage;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne()
 	@JoinColumn(name = "id_govio_file", nullable = false)
 	private GovioFileEntity govioFile;
 	
