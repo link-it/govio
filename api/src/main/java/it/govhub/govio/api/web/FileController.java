@@ -36,7 +36,7 @@ import it.govhub.govio.api.repository.GovioFileFilters;
 import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
 import it.govhub.govio.api.security.GovIORoles;
-import it.govhub.govio.api.services.TraceService;
+import it.govhub.govio.api.services.FileService;
 import it.govhub.govio.api.spec.FileApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.BadRequestException;
@@ -54,7 +54,7 @@ public class FileController implements FileApi {
 	ServiceInstanceEntityRepository serviceRepo;
 	
 	@Autowired
-	TraceService traceService;
+	FileService traceService;
 	
 	@Autowired
 	FileAssembler fileAssembler;
