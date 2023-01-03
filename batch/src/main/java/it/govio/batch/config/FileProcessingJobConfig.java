@@ -26,7 +26,7 @@ import it.govio.batch.step.FinalizeFileProcessingTasklet;
 import it.govio.batch.step.GovioFileItemProcessor;
 import it.govio.batch.step.GovioFileItemWriter;
 import it.govio.batch.step.GovioFilePartitioner;
-import it.govio.batch.step.UpdateFileStatusTasklet;
+import it.govio.batch.step.PromoteToProcessingTasklet;
 import it.govio.batch.step.beans.GovioFileMessageLineMapper;
 
 @Configuration
@@ -55,16 +55,19 @@ public class FileProcessingJobConfig {
 		return jobs.get("FileProcessingJob")
 				.incrementer(new RunIdIncrementer())
 				.start(promoteProcessingFileTasklet)
-				.next(govioFileReaderMasterStep)
+				.on("NEW_FILES_NOT_FOUND")
+				.end()
+				.from(promoteProcessingFileTasklet)
+				.on("NEW_FILES_FOUND")
+				.to(govioFileReaderMasterStep)
 				.next(finalizeProcessingFileTasklet)
+				.end()
 				.build();
 	}
 
 	@Bean
 	@Qualifier("promoteProcessingFileTasklet")
-	public Step promoteProcessingFileTasklet(UpdateFileStatusTasklet updateFileStatusTasklet) {
-		updateFileStatusTasklet.setPreviousStatus(Status.CREATED);
-		updateFileStatusTasklet.setAfterStatus(Status.PROCESSING);
+	public Step promoteProcessingFileTasklet(PromoteToProcessingTasklet updateFileStatusTasklet) {
 		return steps.get("promoteProcessingFileTasklet")
 				.tasklet(updateFileStatusTasklet)
 				.build();
