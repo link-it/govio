@@ -1,55 +1,64 @@
-
 # GovIO - Batch di spedizione messaggi
 
 Engine di spedizione dei messaggi al BackendIO.
 
 # Formato dei CSV
 
-## Senza avviso
+I CSV prevedono una serie di parametri standard seguiti da quelli opzionali definiti dal template associato al servizio. Sono previste due serie di parametri standard nel caso in cui il template preveda o meno un avviso di pagamento associato.
+
+## Base
+
+| # | Nome | Obb. | Descrizione | Esempio |
+| --- | --- | --- | --- | --- |
+| 1 | taxcode | si | Codice fiscale destinatario | RSSMRO00A00A000A |
+| 2 | expedition_date | si | Data di spedizione della notifica | 2027-12-03T10:15:30 |
+| 3 | due_date | no | Data scadenza | 2027-12-03T10:15:30 |
+
+## Con avviso di pagamento
 
 | # | Nome | Descrizione | Esempio |
 | --- | --- | --- | --- |
-| 1 | taxcode | Codice fiscale destinatario | RSSMRO00A00A000A |
-| 2 | expedition_date | Data di notifica | 2027-12-03T10:15:30 |
-| 3 | due_date | Data scadenza | 2027-12-03T10:15:30 |
-| 4 | appointment | Data dell'appuntamento | 2100-12-31 |
-| 5 | at | Luogo dell'appuntamento | Ufficio numero 1 |
+| 1 | taxcode | si | Codice fiscale destinatario | RSSMRO00A00A000A |
+| 2 | expedition_date | si | Data di spedizione della notifica | 2027-12-03T10:15:30 |
+| 3 | due_date | no | Data di scadenza dell'avviso | 2027-12-03T10:15:30 |
+| 4 | notice_number | si | Numero dell'avviso di pagamento | 200000000000000000 |
+| 5 | amount | si | Importo in centesimi | 1000000000000 |
+| 6 | invalid_afted_due_date | no | Se true, avviso non valido dopo la data di scadenza | false |
+| 7 | payee_taxcode | no | Codice fiscale dell'ente creditore | 12345678901 |
 
-## Con avviso
-| # | Nome | Descrizione | Esempio |
-| --- | --- | --- | --- |
-| 1 | taxcode | Codice fiscale destinatario | RSSMRO00A00A000A |
-| 2 | expedition_date | Data di notifica | 2027-12-03T10:15:30 |
-| 3 | due_date | Data scadenza | 2027-12-03T10:15:30 |
-| 4 | notice_number | Creditore | 200000000000000000 |
-| 5 | amount | Importo in centesimi | 1000000000000 |
-| 6 | invalid_afted_due_date | Se true, avviso non valido dopo la data di scadenza | false |
-| 7 | payee_taxcode | Creditore | 12345678901 |
-| 8 | appointment | Data dell'appuntamento | 2100-12-31 |
-| 9 | at | Luogo dell'appuntamento | Ufficio numero 1 |
 
-TBD
 
 # Placeholders
 
+All'interno del messaggio o dell'oggetto è possibile inserire dei placeholder che GovIO sostituisce con i valori dei parametri forniti in precedenza all'atto della spedizione. I placeholder ammessi dipendono dal tipo del parametro:
+
+## Placeholder di date
+
 | Nome | Descrizione | Esempio |
 |  --- | --- | --- |
-| taxcode | Codice fiscale destinatario | RSSMRO00A00A000A |
-| expedition_date | Data di notifica | 2027-12-03 10:15 |
-| expedition_date.date | Data di notifica senza orario | 2027-12-03 |
-| expedition_date.date.verbose | Data di notifica senza orario con giorno della settimana | mer 12 12 2007 |
-| expedition_date.time | Orario di notifica senza data  | 10:15  |
-| expedition_date.verbose | Data di notifica con giorno della settimana e orario | lun 03 12 2007 alle ore 10:15 |
-| due_date | Data scadenza | 2027-12-03 10:15:30 |
-| duedate.date | Data scadenza senza orario | 12/12/2022 |
-| duedate.date.verbose | Orario scadenza senza data | mer 12 12 2007 |
-| duedate.time | Orario scadenza senza data | 10:15 |
-| duedate.verbose | Data scadenza con giorno della settimana | mer 12 12 2007 alle ore 10:15 |
-| notice_number | Creditore | 200000000000000000 |
-| amount | Importo in centesimi | 1000000000000 |
-| amount.currency | Importo in euro | 10.000.000.000,00 |
-| invalid_afted_due_date | Se true, avviso non valido dopo la data di scadenza | false |
-| payee_taxcode | Creditore | 12345678901 |
-| appointment | Data dell'appuntamento | 03/12/2007 10:15 |
-| appointment.verbose | Data dell'appuntamento con giorno della settimana | mer 31 12 2022 |
-| at | Luogo dell'appuntamento | Ufficio numero 1  |
+| `${nome_parametro}` | Standard | 03/12/2027 10:15 |
+| `${nome_parametro}.date` | Data senza orario | 03/12/2027 |
+| `${nome_parametro}.date.verbose` | Data con giorno senza orario | Mercoledì 03/12/2027 |
+| `${nome_parametro}.verbose` | Data con giorno e orario | Mercoledì 03/12/2027 alle ore 10:15 |
+| `${nome_parametro}.time` | Orario senza data | 10:15  |
+
+## Placeholder di stringhe
+
+| Nome | Descrizione | Esempio |
+|  --- | --- | --- |
+| `${nome_parametro}` | Standard | Lorem Ipsum |
+| `${nome_parametro}.lower` | Convertito in lowercase | lorem ipsum |
+| `${nome_parametro}.upper` | Convertito in uppercase | LOREM IPSUM |
+
+## Placeholder di numeri
+
+| Nome | Descrizione | Esempio |
+|  --- | --- | --- |
+| `${nome_parametro}` | Standard | 123456 |
+| `${nome_parametro}.currency` | Serializzato come importo | 1.234,56 |
+
+## Placeholder di boolean
+
+| Nome | Descrizione | Esempio |
+|  --- | --- | --- |
+| `${nome_parametro}` | Standard | `True` o `False` |
