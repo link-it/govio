@@ -417,4 +417,36 @@ class Files_UC_1_UploadFileTest {
 		
 	}
 		
+	// 10. Upload Fail file csv riferisce serviceinstance non presente
+	@Test
+	void UC_1_10_UploadCsvFileFail_MissingFilename() throws Exception {
+		String fileName = "csv-test-UC109";
+		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
+		String boundary = MultipartUtils.generateBoundary();
+		
+		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
+		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
+		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
+		
+		this.mockMvc.perform(
+				multipart(FILES_BASE_PATH)
+                	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, ""))
+					.params(params)
+					.contentType("multipart/form-data; boundary=" + boundary)
+					.characterEncoding("UTF-8")
+					.with(this.userAuthProfilesUtils.utenzaAdmin())
+					.with(csrf())
+					.accept(MediaType.APPLICATION_JSON)
+					)
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
 }
