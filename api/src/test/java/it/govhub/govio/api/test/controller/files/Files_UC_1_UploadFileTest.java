@@ -183,7 +183,7 @@ class Files_UC_1_UploadFileTest {
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
 					.characterEncoding("UTF-8")
-					.with(this.userAuthProfilesUtils.utenzaAdmin())
+					.with(this.userAuthProfilesUtils.utenzaOspite())
 					.with(csrf())
 					.accept(MediaType.APPLICATION_JSON)
 					)
