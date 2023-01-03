@@ -28,7 +28,7 @@ CREATE TABLE govio_services
   (
      id                 BIGINT DEFAULT nextval('seq_govio_services') NOT NULL,
      id_govio_template  BIGINT NOT NULL,
-     id_govhub_services BIGINT NOT NULL,
+     id_govhub_service  BIGINT NOT NULL,
      primary key (id)
   );
   
@@ -37,7 +37,7 @@ ALTER TABLE govio_services
   REFERENCES govio_templates; 
   
 ALTER TABLE govio_services
-  ADD CONSTRAINT fk_govioserv_hubserv FOREIGN KEY (id_govhub_services)
+  ADD CONSTRAINT fk_govioserv_hubserv FOREIGN KEY (id_govhub_service)
   REFERENCES govhub_services;    
   
 
