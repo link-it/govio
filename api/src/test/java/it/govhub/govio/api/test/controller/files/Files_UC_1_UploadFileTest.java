@@ -164,8 +164,7 @@ class Files_UC_1_UploadFileTest {
 	}
 	
 	// 3. Upload Fail file csv per utenza senza ruolo govio_sender
-	// TODO riabilitare
-//	@Test
+	@Test
 	void UC_1_03_UploadCsvFileFail_UtenzaSenzaRuolo_GovIO_Sender() throws Exception {
 		String fileName = "csv-test-UC103";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
@@ -198,8 +197,7 @@ class Files_UC_1_UploadFileTest {
 	}
 	
 	// 4. Upload Fail file csv con parametro service_id non presente
-	// TODO riabilitare
-//	@Test
+	@Test
 	void UC_1_04_UploadCsvFileFail_MissingServiceID() throws Exception {
 		String fileName = "csv-test-UC104";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
@@ -230,8 +228,7 @@ class Files_UC_1_UploadFileTest {
 	}
 	
 	// 5. Upload Fail file csv con parametro organization_id non presente
-	// TODO riabilitare
-//	@Test
+	@Test
 	void UC_1_05_UploadCsvFileFail_MissingOrganizationID() throws Exception {
 		String fileName = "csv-test-UC105";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());

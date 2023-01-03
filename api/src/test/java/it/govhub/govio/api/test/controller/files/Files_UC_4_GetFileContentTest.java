@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
@@ -139,7 +140,7 @@ class Files_UC_4_GetFileContentTest {
 	}
 	
 	// 2. getNotFound
-//	@Test
+	@Test
 	void UC_4_02_GetFile_NotFound() throws Exception {
 		int idFile = 10000;
 		
@@ -155,7 +156,7 @@ class Files_UC_4_GetFileContentTest {
 	}
 	
 	// 3. getInvalidID
-//	@Test
+	@Test
 	void UC_4_03_GetFile_InvalidID() throws Exception {
 		String idFile = "XXX";
 		
@@ -170,4 +171,49 @@ class Files_UC_4_GetFileContentTest {
 				.andReturn();
 	}
 	
+	// 4. getFile Fail file eliminato dal server 
+	@Test
+	void UC_4_04_GetFile_FileNotFoundOnFileSystem() throws Exception {
+		MvcResult result = this.mockMvc.perform(get(FILES_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+		
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(2, page.getInt("total"));
+		
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(2, items.size());
+		
+		
+		JsonObject item1 = items.getJsonObject(0);
+		int idFile = item1.getInt("id");
+		
+		GovioFileEntity govioFileEntity = this.govioFilesRepository.findById((long) idFile).get();
+		
+		
+		File contenutoFileDaEliminare = govioFileEntity.getLocation().toFile();
+		if(contenutoFileDaEliminare.exists()) {
+			contenutoFileDaEliminare.delete();
+		}
+
+		this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_OCTET_STREAM))
+				.andExpect(status().isInternalServerError())
+				.andExpect(jsonPath("$.status", is(500)))
+				.andExpect(jsonPath("$.title", is("Internal Server Error")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
 }
