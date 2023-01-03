@@ -31,11 +31,16 @@ public class Costanti {
 	public static final String QUERY_PARAM_SORT_DIRECTION_ASC = "asc";
 	public static final String QUERY_PARAM_SORT_DIRECTION_DESC = "desc";
 	
-	
 	public static final String SERVICE_NAME_SERVIZIO_GENERICO = "Servizio Generico";
 	public static final String SERVICE_DESCRIPTION_SERVIZIO_GENERICO = "Esempio di servizio";
 	
 	public static final String SERVICE_NAME_TARI = "TARI";
+	
+	public static final String FILES_QUERY_PARAM_CREATION_DATE_FROM = "creation_date_from";
+	public static final String FILES_QUERY_PARAM_CREATION_DATE_TO = "creation_date_to";
+	public static final String FILES_QUERY_PARAM_USER_ID = "user_id";
+	public static final String FILES_QUERY_PARAM_SERVICE_ID = "service_id";
+	public static final String FILES_QUERY_PARAM_ORGANIZATION_ID = "organization_id";
 	
 	/* ORGANIZATIONS */
 	
