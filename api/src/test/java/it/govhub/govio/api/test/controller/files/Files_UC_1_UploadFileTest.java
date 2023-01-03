@@ -1,4 +1,4 @@
-package it.govhub.govio.api.test.controller.trace;
+package it.govhub.govio.api.test.controller.files;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +47,9 @@ import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 @DisplayName("Test di caricamento csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
-class Trace_UC_1_UploadCsvTracesTest {
+class Files_UC_1_UploadFileTest {
+
+	private static final String FILES_BASE_PATH = "/v1/files";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -89,7 +91,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		MvcResult result = this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
             	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 				.params(params)
 				.contentType("multipart/form-data; boundary=" + boundary)
@@ -136,7 +138,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		MvcResult result = this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
             	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 				.params(params)
 				.contentType("multipart/form-data; boundary=" + boundary)
@@ -177,7 +179,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -209,7 +211,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -241,7 +243,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -274,7 +276,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -307,7 +309,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -340,7 +342,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		MvcResult result = this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
             	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 				.params(params)
 				.contentType("multipart/form-data; boundary=" + boundary)
@@ -365,7 +367,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
@@ -397,7 +399,7 @@ class Trace_UC_1_UploadCsvTracesTest {
 		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
-				multipart("/files")
+				multipart(FILES_BASE_PATH)
                 	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
 					.params(params)
 					.contentType("multipart/form-data; boundary=" + boundary)
