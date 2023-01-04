@@ -8,27 +8,24 @@ import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.servi
 import * as _ from 'lodash';
 
 export const AUTH_CONST: any = {
-  storageSession: 'GORE_SESSION'
+  storageSession: 'GOIO_SESSION'
 };
 
 export const PERMISSIONS: any = {
   govio_r: [
     { name: 'DASHBOARD', view: true, edit: false, create: false, delete: false },
-    { name: 'USERS', view: true, edit: false, create: false, delete: false },
-    { name: 'ORGANIZATIONS', view: true, edit: false, create: false, delete: false },
-    { name: 'SERVICES', view: true, edit: false, create: false, delete: false },
+    { name: 'FILES', view: true, edit: false, create: false, delete: false },
+    { name: 'MESSAGES', view: true, edit: false, create: false, delete: false },
   ],
   govio_rw: [
     { name: 'DASHBOARD', view: true, edit: true, create: true, delete: true },
-    { name: 'USERS', view: true, edit: true, create: true, delete: true },
-    { name: 'ORGANIZATIONS', view: true, edit: true, create: true, delete: true },
-    { name: 'SERVICES', view: true, edit: true, create: true, delete: true }
+    { name: 'FILES', view: true, edit: true, create: true, delete: true },
+    { name: 'MESSAGES', view: true, edit: true, create: true, delete: true },
   ],
   govio_adm: [
     { name: 'DASHBOARD', view: true, edit: true, create: true, delete: true },
-    { name: 'USERS', view: true, edit: true, create: true, delete: true },
-    { name: 'ORGANIZATIONS', view: true, edit: true, create: true, delete: true },
-    { name: 'SERVICES', view: true, edit: true, create: true, delete: true }
+    { name: 'FILES', view: true, edit: true, create: true, delete: true },
+    { name: 'MESSAGES', view: true, edit: true, create: true, delete: true },
   ],
 };
 
