@@ -2,6 +2,7 @@ package it.govio.batch.step;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -13,36 +14,22 @@ import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.repository.GovioFilesRepository;
 
 @Component
-public class UpdateFileStatusTasklet implements Tasklet {
+public class PromoteToProcessingTasklet implements Tasklet {
 
-	private Logger logger = LoggerFactory.getLogger(UpdateFileStatusTasklet.class);
+	private Logger logger = LoggerFactory.getLogger(PromoteToProcessingTasklet.class);
 	
 	@Autowired
 	private GovioFilesRepository repository;
 	
-	private Status previousStatus;
-	private Status afterStatus;
-	
-	public void setPreviousStatus(Status previousStatus) {
-		this.previousStatus = previousStatus;
-	}
-
-	public void setAfterStatus(Status afterStatus) {
-		this.afterStatus = afterStatus;
-	}
-	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-		int updateAllStatus = repository.updateAllStatus(previousStatus, afterStatus);
-		if(updateAllStatus>0)
-			logger.info("Promoted {} files from {} to {} status", updateAllStatus, previousStatus.name(), afterStatus.name());
-		else 
-			logger.debug("Promoted {} files from {} to {} status", updateAllStatus, previousStatus.name(), afterStatus.name());
+		int updateAllStatus = repository.updateAllStatus(Status.CREATED, Status.PROCESSING);
+		if(updateAllStatus>0) {
+			logger.info("Promoted {} files to PROCESSING status", updateAllStatus);
+			contribution.setExitStatus(new ExitStatus("NEW_FILES_FOUND"));  
+		} else {
+			contribution.setExitStatus(new ExitStatus("NEW_FILES_NOT_FOUND"));  
+		}
 		return RepeatStatus.FINISHED;
 	}
-
-
-	
-	
-	
 }

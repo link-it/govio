@@ -119,9 +119,9 @@ ALTER TABLE govio_files
 CREATE TABLE govio_file_messages
   (
      id               BIGINT DEFAULT nextval('seq_govio_file_messages') NOT NULL,
-     error            VARCHAR(255),
+     error            TEXT,
      line_number      BIGINT,
-     line_record      VARCHAR(255),
+     line_record      TEXT,
      id_govio_file    BIGINT NOT NULL,
      id_govio_message BIGINT,
      PRIMARY KEY (id)
