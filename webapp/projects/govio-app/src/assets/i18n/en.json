@@ -1,9 +1,7 @@
 {
 	"APP": {
 		"BUTTON": {
-			"AddOrganization": "Add organization",
-			"AddService": "Add service",
-			"AddUser": "Add user",
+			"AddFile": "Add file",
 			"AlertAction": "Close",
 			"Cancel": "Cancel",
 			"Clear": "Clear",
@@ -17,19 +15,35 @@
 			"Entra": "Enter",
 			"Expand": "Expand",
 			"Go": "Go",
-			"InviaRichiesta": "Send request",
 			"Login": "Login",
 			"MoreInfo": "More info",
 			"Remove": "Remove",
 			"Report": "Report",
 			"Save": "Save",
-			"Search": "Search"
+			"Search": "Search",
+			"UploadFile": "Upload file"
 		},
 		"ENUM": {
 			"COMPLETATO": "Completed",
 			"ELABORAZIONE": "Elaboration",
 			"NUOVO": "New",
 			"SCARTATO": "Discarded"
+		},
+		"FILES": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"ContentFile": "Content",
+				"ContentFile_sub": "",
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": "",
+				"ShowMessages": "Messages",
+				"ShowMessages_sub": ""
+			}
 		},
 		"FILTER": {
 			"All": "All",
@@ -56,82 +70,47 @@
 		},
 		"LABEL": {
 			"All": "All",
-			"Amount": "Amount",
-			"AnnuncementId": "Annuncement Id",
 			"AvailabilityDate": "Availability date",
-			"BankAccountNumber": "Bank account number",
-			"Competition": "Competition",
 			"Content": "Content",
 			"CreationDate": "Creation date",
 			"CreationDateFrom": "Date From",
 			"CreationDateTo": "Date To",
-			"CreditorReferenceId": "IUV",
-			"CreditorReferenceIdType": "Creditor ReferenceId Type",
-			"DataIndex": "Index",
 			"Date": "Date",
 			"DateFrom": "Date From",
 			"DateTo": "Date To",
 			"Description": "Description",
 			"DueDate": "Due date",
 			"Email": "Email",
+			"File": "File",
 			"FileName": "Filename",
+			"Filename": "Filename",
 			"FullName": "Fullname",
 			"Id": "ID",
 			"Index": "Index",
 			"LastUpdateDate": "Last update",
 			"LegalName": "Legal name",
 			"Logo": "Logo",
-			"LogoMiniature": "Logo thumbnail",
 			"Name": "Name",
-			"NoticeNumber": "Notice number",
-			"OfficeAddress": "Office address",
-			"OfficeAt": "Office at",
-			"OfficeEmailAddress": "Email address",
-			"OfficeMunicipality": "Municipality",
-			"OfficeProvince": "Province",
-			"OfficeZip": "Zip code",
 			"Organization": "Organization name",
-			"OrganizationLegalName": "Organization Legal Name",
-			"OrganizationTaxCode": "Organization Tax Code",
-			"Organizer": "Organizer",
-			"OutcomeCode": "Outcome code",
-			"OutcomeDate": "Outcome date",
 			"Password": "Password",
-			"PostingDate": "Posting date",
-			"PostingDateFrom": "Date From",
-			"PostingDateTo": "Date to",
 			"Principal": "Username",
-			"ReceiptId": "Receipt Id",
-			"Reference": "",
-			"ReportingFlowId": "Flow id",
-			"ServiceName": "Service name",
+			"Service": "Service",
 			"Status": "Status",
-			"StatusCode": "Status code",
-			"StatusDescription": "Status description",
-			"TaxCode": "Tax code",
 			"Type": "Type",
-			"UsernameEmail": "Username or email"
+			"UserFullName": "User fullname"
 		},
 		"LABEL_HELP": {
 			"All": ""
 		},
 		"MENU": {
-			"Configurations": "Configurations",
 			"Dashboard": "Dashboard",
-			"DeleteOrganization": "Delete organization …",
-			"DeleteService": "Delete service …",
-			"DeleteUser": "Delete user …",
-			"DownloadReport": "Download report",
+			"DeleteFile": "Delete file …",
 			"ExportCSV": "Export CSV",
 			"ExportPDF": "Export PDF",
+			"Files": "Files",
 			"Home": "Home",
 			"Logout": "Logout",
-			"Organizations": "Organizations",
-			"Reporting": "Reporting",
-			"Services": "Services",
-			"ShowReport": "Show report",
-			"Subscribers": "Subscribers",
-			"Users": "Users"
+			"Messages": "Messages"
 		},
 		"MESSAGE": {
 			"AreYouSure": "Are you sure you want to delete the selected item?",
@@ -143,6 +122,11 @@
 				"Unprocessable Entity": "Unprocessable Entity"
 			},
 			"EsportingFile": "Exporting File…",
+			"Files_Results": {
+				"none": "No files found",
+				"plural": "Found {{count}} files",
+				"singular": "There is only one file"
+			},
 			"InsertNotice": "Enter the notice number and press the search button …",
 			"LOGIN": {
 				"PasswordRequired": "Password required",
@@ -154,24 +138,15 @@
 				"valid_email": "Insert valid email",
 				"wrong_username_password": "Username e/o Password errati."
 			},
-			"NoAnnouncement": "No announcement",
-			"NoBankAccount": "No bank account",
-			"NoCandidacies": "No candidacies",
 			"NoData": "Sorry, the requested information was not found",
 			"NoDataHelp": "Please check your connection and try again",
-			"NoNoticeResults": "No notice was found",
-			"NoNoticeResultsHelp": "Check the number entered or fill in the payment details manually",
-			"NoPaymentsResults": "There are no payments",
-			"NoPaymentsResultsHelp": "Add a new payment",
+			"NoResponse": "No Response",
+			"NoResponseUnimplemented": "No Response or Unimplemented yet",
 			"NoResults": "Sorry, your filter produced no results",
 			"NoResultsHelp": "To widen your search, change or remove filters above",
-			"Organizations_Results": {
-				"none": "No Creditor found",
-				"plural": "Found {{count}} Creditors",
-				"singular": "There is only one Creditor"
-			},
 			"PageNumber": "Page {{page}} of {{total}}",
 			"Sign_in_message": "Sign in with your account",
+			"Unimplemented": "Unimplemented yet",
 			"VALIDATION": {
 				"Email": "Insert valid email",
 				"FieldRequired": "Field required",
@@ -189,7 +164,7 @@
 				"TaxcodeVat": "Wrong taxcode or VAT number"
 			}
 		},
-		"ORGANIZATIONS": {
+		"MESSAGES": {
 			"FILTER": {
 				"All": "All",
 				"Closed": "Closed",
@@ -198,21 +173,16 @@
 			},
 			"TITLE": {
 				"GeneralInformations": "General informations",
-				"GeneralInformations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**"
+				"GeneralInformations_sub": ""
 			}
 		},
 		"PDF": {
 			"PAGE_NUMBER": "Page {{pageNumber}} of {{totalPages}}"
 		},
 		"PLACEHOLDER": {
-			"Amount": "0.00",
-			"BankAccount": "e.g.: IT91M0762100000000012345778",
-			"CreditorReferenceId": "e.g.: 00000000000123456",
-			"DebtorFullName": "e.g.: Name Surname",
-			"DebtorTaxcode": "e.g.: RSSMRA70A41F205Z",
-			"NoticeNumber": "Notice number",
 			"Search": "Search...",
-			"Taxonomy": "Taxonomy"
+			"SelectOrganization": "Select a organization",
+			"SelectService": "Select a service"
 		},
 		"SEARCH": {
 			"ClearRecentSearches": "Clear recent searches",
@@ -220,29 +190,17 @@
 			"RecentSearches": "Recent searches",
 			"View": "View"
 		},
-		"SERVICES": {
-			"FILTER": {
-				"All": "All",
-				"Closed": "Closed",
-				"Found": "Found",
-				"Open": "Open"
-			},
-			"TITLE": {
-				"GeneralInformations": "General informations",
-				"GeneralInformations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**"
-			}
-		},
 		"SIDENAV": {
-			"Title": "Reconcilier"
+			"Title": "GovIO"
 		},
 		"STATUS": {
 			"ACCETTATO": "Accepted",
 			"COMPLETATO": "Completed",
-			"ELABORATO": "Processed",
 			"ELABORAZIONE": "In processing",
 			"ERRORE": "Error",
-			"IN_ELABORAZIONE": "In processing",
 			"NUOVO": "New",
+			"PROCESSED": "Processed",
+			"PROCESSING": "Processing",
 			"SCARTATO": "Discarded",
 			"TRANSACTION": {
 				"ELABORATO": "Reconciled",
@@ -254,58 +212,31 @@
 			"Details": "Details"
 		},
 		"TABLE": {
-			"Amount": "Amount",
-			"AvailabilityDate": "Availability date",
-			"CandidacieId": "Code",
-			"CandidateFullName": "Candidate",
-			"CandidateId": "Code",
-			"CandidateTaxCode": "Candidate TaxCode",
-			"Competition": "Competition",
-			"CreditorReferenceId": "IUV",
 			"Description": "Description",
-			"Organizer": "Organizer",
-			"PostingDate": "Posting Date",
-			"ReportingFlowId": "Flow Id",
-			"Status": "Status",
-			"Summary": "Summary",
-			"Total": "Total",
-			"TotalCandidacies": "Total candidacies",
-			"Totals": "Totals",
-			"TransactionReferenceNumber": "Reference"
+			"Status": "Status"
 		},
 		"TITLE": {
 			"Attention": "Attention",
 			"Configurations": "Configurations",
 			"Dashboard": "Dashboard",
-			"EditOrganization": "Edit organization",
-			"EditService": "Edit service",
-			"EditUser": "Edit user",
+			"EditFiles": "Edit file",
+			"File": "File",
+			"Files": "Files",
 			"GeneralInformations": "General informations",
 			"Home": "Home",
 			"Login": "Login",
+			"Messages": "Messages",
 			"New": "New",
-			"NewOrganization": "New organization",
-			"NewService": "New service",
-			"NewUser": "New user",
+			"NewFile": "New file",
 			"Organization": "Organization",
-			"Organizations": "Organizations",
-			"Reporting": "Reporting",
 			"Service": "Service",
-			"Services": "Services",
-			"Subscriber": "Subscriber",
-			"Subscribers": "Subscribers",
-			"User": "User",
-			"Users": "Users",
 			"Watermark": "Staging"
 		},
 		"TOOLTIP": {
 			"Add": "Add",
-			"AddPayment": "Add payment",
 			"CancelEdit": "Cancel edit",
 			"CancelNew": "Cancel add",
-			"EditOrganization": "Edit organization",
-			"EditService": "Edit service",
-			"EditUser": "Edit user",
+			"EditFile": "Edit file",
 			"Export": "Export",
 			"ExportCSV": "Export file CSV",
 			"ExportPDF": "Export file PDF",
@@ -314,20 +245,6 @@
 		},
 		"TYPE": {
 			"MANUALE": "Manual"
-		},
-		"USERS": {
-			"FILTER": {
-				"All": "All",
-				"Closed": "Closed",
-				"Found": "Found",
-				"Open": "Open"
-			},
-			"TITLE": {
-				"GeneralInformations": "General informations",
-				"GeneralInformations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**",
-				"ShowAuthorizations": "Authorizations",
-				"ShowAuthorizations_sub": "Lorem ipsum dolor sit amet consectetur adipisicing elit. **Markdown**"
-			}
 		}
 	}
 }
