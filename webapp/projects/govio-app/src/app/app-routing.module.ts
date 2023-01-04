@@ -30,6 +30,14 @@ const routes: Routes = [
         path: 'dashboard',
         loadChildren: () => import('../views/dashboard/dashboard.module').then(m => m.DashboardModule)
       },
+      {
+        path: 'files',
+        loadChildren: () => import('../views/files/files.module').then(m => m.FilesModule)
+      },
+      {
+        path: 'messages',
+        loadChildren: () => import('../views/messages/messages.module').then(m => m.MessagesModule)
+      },
     ]
   },
   { path: '**', redirectTo: 'dashboard' }
