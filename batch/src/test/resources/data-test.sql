@@ -7,7 +7,8 @@ INSERT INTO govio_services(id,id_govio_template) VALUES (1,'1');
 ALTER SEQUENCE seq_govio_service_instances RESTART WITH 2;
 
 INSERT INTO govio_service_instances(id,id_govio_service,id_govio_template,apikey) VALUES (1,'1','1','17886617e07d47e8b1ba314f2f1e3052');
-ALTER SEQUENCE seq_govio_service_instances RESTART WITH 2;
+INSERT INTO govio_service_instances(id,id_govio_service,id_govio_template,apikey) VALUES (2,'1',NULL,'17886617e07d47e8b1ba314f2f1e3052');
+ALTER SEQUENCE seq_govio_service_instances RESTART WITH 3;
 
 INSERT INTO govio_placeholders(id,name,type,example) VALUES (1,'appointment','DATE','2100-12-31T12:00');
 INSERT INTO govio_placeholders(id,name,type,example) VALUES (2,'at','STRING','Ufficio numero 1');
