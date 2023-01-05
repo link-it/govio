@@ -11,6 +11,7 @@ public class BooleanCsvItem extends CsvItem{
 		super(index, name, mandatory);
 	}
 	
+	@Override
 	protected void validateValue(String value) throws TemplateValidationException {
 		super.validateValue(value);
 		if (!value.equals("true") && !value.equals("false") && !value.isBlank())
