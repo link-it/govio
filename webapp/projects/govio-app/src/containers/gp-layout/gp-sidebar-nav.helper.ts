@@ -30,5 +30,6 @@ export class GpSidebarNavHelper {
   // public isMenu = (item: INavData) => !(Boolean(item.title) || Boolean(item.divider));
   public isMenu = (item: INavData) => !(Boolean(item.divider) || this.hasChildren(item));
   public hasIcon = (item: INavData) => Boolean(item.icon);
+  public hasIconBs = (item: INavData) => Boolean(item.iconBs);
   public hasChildren = (item: INavData) => Boolean(item.children && item.children.length);
 }
