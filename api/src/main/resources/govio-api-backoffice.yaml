@@ -176,6 +176,11 @@ paths:
      get:
          tags:
             - file
+         parameters:
+            - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+            - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+            - $ref: "#/components/parameters/file_message_status_query"
+            - $ref: "#/components/parameters/line_number_from_query" 
          summary: Retrieve the file processing messages.
          description: Retrieve the file messages.
          operationId: readFileMessages
@@ -271,7 +276,22 @@ components:
          schema:
             $ref: "#/components/schemas/GovioFileId"
            
-        
+      file_message_status_query:
+         name: file_message_status
+         in: query
+         required: true
+         schema:
+            $ref: "#/components/schemas/FileMessageStatusEnum"
+
+      line_number_from_query:
+        name: line_number_from
+        in: query
+        required: false
+        schema:
+           type: integer
+           format: int64
+           minimum: 0
+           maximum:          
 
    schemas:
    
@@ -311,7 +331,15 @@ components:
               format: int64
               minimum: 0
               maximum: 9223372036854775807
-              example: 9999   
+              example: 9999
+         required:
+              - creation_date
+              - status
+              - user
+              - service
+              - organization
+              - id
+           
    
       GovioFileId:
          type: integer
@@ -344,9 +372,16 @@ components:
             - processing
             - processed
             
-# 12:18:10 | Lackluster - Joseph Auer (Lackluster Pitchmix) 
+      FileMessageStatusEnum:
+         type: string
+         enum:
+            - acquired
+            - error
+            - any
+         default: any
+   
             
-      FileMessageStatus:
+      GovioMessageStatus:
          type: string
          enum:
             - accepted
@@ -373,6 +408,10 @@ components:
                maxLength: 255               
                pattern: ^.*$
                example: Antonio Giscardi
+         required:
+            - id
+            - full_name
+               
             
       FileList:
          allOf:
@@ -421,17 +460,23 @@ components:
                type: string
                pattern: .*
                maxLength:  20000000
+            message:
+               $ref: "#/components/schemas/GovioMessageItem"
             status:
-               type: string
-               pattern: .*
-               maxLength: 256
+               $ref: "#/components/schemas/FileMessageStatusEnum"
+         required:
+            - id
+            - status
                
       GovioMessageItem:
          type: object
          additionalProperties: false
          properties:
             id:
-                $ref: "#/components/schemas/MessageId" 
+                $ref: "#/components/schemas/MessageId"
+         required:
+            - id 
+                 
             
                
                

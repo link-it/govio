@@ -23,10 +23,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.FileAssembler;
+import it.govhub.govio.api.assemblers.FileMessageAssembler;
 import it.govhub.govio.api.beans.FileList;
+import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
+import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
+import it.govhub.govio.api.repository.GovioFileMessageRepository;
 import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
@@ -54,6 +58,12 @@ public class FileService {
 	
 	@Autowired
 	FileAssembler fileAssembler;
+	
+	@Autowired
+	GovioFileMessageRepository fileMessageRepo;
+	
+	@Autowired
+	FileMessageAssembler fileMessageAssembler;
 	
 	Logger logger = LoggerFactory.getLogger(FileService.class);
 	
@@ -125,6 +135,28 @@ public class FileService {
 		for (GovioFileEntity file : files) {
 			ret.addItemsItem(this.fileAssembler.toModel(file));
 		}
+		return ret;
+	}
+	
+	@Transactional
+	public FileMessageList listFileMessages(Specification<GovioFileMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
+		
+		// TODO: Qui ho bisogno di un'entity graph che di ogni fileEntity mi peschi anche i
+		// fileMessages, altrimenti pago altre
+		// N query quando vado a convertire i files
+		
+		Page<GovioFileMessageEntity> fileMessages = this.fileMessageRepo.findAll(spec, pageRequest.pageable);
+
+		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+				.getRequest();
+
+		FileMessageList ret = ListaUtils.costruisciListaPaginata(fileMessages, pageRequest.limit, curRequest,
+				new FileMessageList());
+
+		for (GovioFileMessageEntity fileMessage : fileMessages) {
+			ret.addItemsItem(this.fileMessageAssembler.toModel(fileMessage));
+		}
+		
 		return ret;
 	}
 	

@@ -29,10 +29,13 @@ import org.springframework.web.multipart.MultipartFile;
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
+import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
+import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileFilters;
+import it.govhub.govio.api.repository.GovioFileMessageFilters;
 import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
@@ -54,7 +57,7 @@ public class FileController implements FileApi {
 	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
-	FileService traceService;
+	FileService fileService;
 	
 	@Autowired
 	FileAssembler fileAssembler;
@@ -111,37 +114,12 @@ public class FileController implements FileApi {
     	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
-    	GovioFileEntity created = this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
+    	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
 		return ResponseEntity.ok(this.fileAssembler.toModel(created));
 	}
 	
 	
-	private String readFilenameFromHeaders(FileItemHeaders headers) {
-		
-    	String filename = null;
-    	try {
-	    	String contentDisposition = headers.getHeader("Content-Disposition");
-	    	logger.debug("Content Disposition Header: {}", contentDisposition);
-	    	
-	    	String[] headerDirectives = contentDisposition.split(";");
-	    	
-	    	for(String directive : headerDirectives) {
-	    		String[] keyValue = directive.split("=");
-	    		if (StringUtils.equalsIgnoreCase(keyValue[0].trim(), "filename")) {
-	    			// Rimuovo i doppi apici
-	    			filename = keyValue[1].trim().substring(1, keyValue[1].length()-1);
-	    		}
-	    	}
-    	} catch (Exception e) {
-    		logger.error("Exception while reading header: {}", e);
-    		filename = null;
-    	}
-    	
-    	return filename;
-	}
-
-
 	@Override
 	public ResponseEntity<FileList> listFiles(
 				Direction sortDirection, 
@@ -179,7 +157,7 @@ public class FileController implements FileApi {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
 		
-		FileList ret = traceService.listFiles(spec, pageRequest);
+		FileList ret = fileService.listFiles(spec, pageRequest);
 		
 		return ResponseEntity.ok(ret);
 	}
@@ -187,13 +165,9 @@ public class FileController implements FileApi {
 
 	@Override
 	public ResponseEntity<GovioFile> readFile(Long traceId) {
-		// TODO: Come popolo errorMessages e aquiredMessages?
-		// AquiredMessages sarà il numero di govio_file_messages collegata a una govio_files
-		//  ErrorMessages sarà il numero in cui GovioFileMessageEntity collegati al govio_file_messages per cui error è a null
-
 		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 				
-		return ResponseEntity.ok(	this.traceService.readFile(traceId));
+		return ResponseEntity.ok(	this.fileService.readFile(traceId));
 	}
 
 
@@ -225,9 +199,63 @@ public class FileController implements FileApi {
 
 
 	@Override
-	public ResponseEntity<FileMessageList> readFileMessages(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<FileMessageList> readFileMessages(
+			Long id,
+            FileMessageStatusEnum status,
+            Integer limit,
+            Long offset, 
+            Long lineNumberFrom) {
+		
+		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("File di Id [" + id + "] non trovato"));
+
+		Specification<GovioFileMessageEntity> spec = GovioFileMessageFilters.ofFile(file.getId());
+
+		if (lineNumberFrom != null) {
+			spec = spec.and(GovioFileMessageFilters.fromLineNumber(lineNumberFrom));
+		}
+
+		if (status == FileMessageStatusEnum.ACQUIRED) {
+			spec = spec.and(GovioFileMessageFilters.acquired());
+		} else if (status == FileMessageStatusEnum.ERROR) {
+			spec = spec.and(GovioFileMessageFilters.error());
+		}
+
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit,
+				GovioFileMessageFilters.sortByLineNumber());
+
+		FileMessageList ret = this.fileService.listFileMessages(spec, pageRequest);
+		
+		return ResponseEntity.ok(ret);
 	}
+	
+	
+	
+	private String readFilenameFromHeaders(FileItemHeaders headers) {
+		
+    	String filename = null;
+    	try {
+	    	String contentDisposition = headers.getHeader("Content-Disposition");
+	    	logger.debug("Content Disposition Header: {}", contentDisposition);
+	    	
+	    	String[] headerDirectives = contentDisposition.split(";");
+	    	
+	    	for(String directive : headerDirectives) {
+	    		String[] keyValue = directive.split("=");
+	    		if (StringUtils.equalsIgnoreCase(keyValue[0].trim(), "filename")) {
+	    			// Rimuovo i doppi apici
+	    			filename = keyValue[1].trim().substring(1, keyValue[1].length()-1);
+	    		}
+	    	}
+    	} catch (Exception e) {
+    		logger.error("Exception while reading header: {}", e);
+    		filename = null;
+    	}
+    	
+    	return filename;
+	}
+
 
 }
