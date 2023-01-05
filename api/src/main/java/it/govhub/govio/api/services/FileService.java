@@ -28,8 +28,8 @@ import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
-import it.govhub.govio.api.security.GovIORoles;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
@@ -47,7 +47,7 @@ public class FileService {
 	GovioFileRepository fileRepo;
 
 	@Autowired
-	ServiceInstanceEntityRepository serviceRepo;
+	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	SecurityService authService;
@@ -60,8 +60,8 @@ public class FileService {
 	@Transactional
 	public GovioFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovIORoles.RUOLO_GOVIO_SENDER);
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER);
 		
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
 			throw new SemanticValidationException("Un file con lo stesso nome è già presente");
