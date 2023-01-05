@@ -206,6 +206,37 @@ paths:
            default:
              $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                           
              
+    /messages/{id}:
+       parameters:
+          - $ref: "#/components/parameters/message_id"
+       get:
+         tags:
+            - file
+         summary: Reads a Govio Message
+         description: Read the message with the provided id.
+         operationId: readMessage
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/json:
+                 schema:
+                    $ref: "#/components/schemas/GovioMessage"
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"          
+                
              
 components:
 
@@ -293,8 +324,82 @@ components:
            minimum: 0
            maximum:          
 
+      message_id:
+         name: id
+         in: path
+         required: true
+         schema:
+            $ref: "#/components/schemas/MessageId"
+   
+           
+
    schemas:
    
+      CodiceFiscaleLax:
+         type: string
+         maxLength: 64
+         pattern: ^[a-zA-Z0-9]+$
+   
+      GovioMessage:
+         type: object
+         additionalProperties: false
+         required:
+            - id
+            - taxcode
+            - subject
+            - markdown
+            - status
+         properties:
+            id:
+               $ref: "#/components/schemas/MessageId"
+            taxcode:   
+               $ref: "#/components/schemas/CodiceFiscaleLax"
+            subject:
+               type: string
+               maxLength: 1024
+            markdown: 
+               type: string
+               maxLength: 2000000
+            status:
+               $ref: "#/components/schemas/GovioMessageStatus"
+            amount:
+               type: integer
+               format: int64
+               minimum: 0
+               maximum: 9223372036854775807
+            notice_number:  
+               type: string
+               pattern: .*
+               maxLength: 256
+            invalid_after_due_date:
+               type: boolean
+            payee:
+               type: string
+               pattern: .*
+               maxLength: 1024
+            email:
+               type: string
+               format: email
+            appio_message_id:
+               type: string
+               pattern: .*
+               maxLength: 1024
+            creation_date:
+               type: string
+               format: date-time
+            scheduled_expedition_date:
+               type: string
+               format: date-time
+            expedition_date:
+               type: string
+               format: date-time
+            due_date:
+               type: string
+               format: date-time
+            last_update_status:
+               type: string
+               format: date-time         
+
       GovioFile:
          type: object
          additionalProperties: false
@@ -380,7 +485,6 @@ components:
             - any
          default: any
    
-            
       GovioMessageStatus:
          type: string
          enum:

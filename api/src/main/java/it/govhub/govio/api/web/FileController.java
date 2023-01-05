@@ -31,8 +31,10 @@ import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.GovioFile;
+import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
+import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileFilters;
 import it.govhub.govio.api.repository.GovioFileMessageFilters;
@@ -256,6 +258,15 @@ public class FileController implements FileApi {
     	
     	return filename;
 	}
+	
+	
+	@Override
+	public ResponseEntity<GovioMessage> readMessage(Long id) {
+		
+		return ResponseEntity.ok(this.fileService.readMessage(id));
+	}
+	
+
 
 
 }

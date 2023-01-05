@@ -24,14 +24,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.assemblers.FileMessageAssembler;
+import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovioFile;
+import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
+import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileMessageRepository;
 import it.govhub.govio.api.repository.GovioFileRepository;
+import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govregistry.commons.exception.InternalException;
@@ -64,6 +68,12 @@ public class FileService {
 	
 	@Autowired
 	FileMessageAssembler fileMessageAssembler;
+	
+	@Autowired
+	MessageRepository messageRepo;
+	
+	@Autowired
+	MessageAssembler messageAssembler;
 	
 	Logger logger = LoggerFactory.getLogger(FileService.class);
 	
@@ -120,6 +130,15 @@ public class FileService {
 		return this.fileRepo.findById(id)
 				.map( f -> this.fileAssembler.toModel(f))
 				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+	}
+	
+	@Transactional
+	public GovioMessage readMessage(Long id) {
+		
+		GovioMessageEntity message = this.messageRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Messaggio di id [" + id + "] non trovato."));
+
+		return this.messageAssembler.toModel(message);
 	}
 
 	
