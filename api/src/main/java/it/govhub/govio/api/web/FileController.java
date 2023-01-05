@@ -34,8 +34,8 @@ import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileFilters;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
-import it.govhub.govio.api.security.GovIORoles;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govio.api.services.FileService;
 import it.govhub.govio.api.spec.FileApi;
 import it.govhub.govregistry.commons.config.V1RestController;
@@ -51,7 +51,7 @@ import it.govhub.security.services.SecurityService;
 public class FileController implements FileApi {
 	
 	@Autowired
-	ServiceInstanceEntityRepository serviceRepo;
+	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	FileService traceService;
@@ -154,7 +154,7 @@ public class FileController implements FileApi {
 				 OffsetDateTime creationDateFrom, 
 				 OffsetDateTime creationDateTo) {
 		
-		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
+		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		
 		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
 		
@@ -191,7 +191,7 @@ public class FileController implements FileApi {
 		// AquiredMessages sarà il numero di govio_file_messages collegata a una govio_files
 		//  ErrorMessages sarà il numero in cui GovioFileMessageEntity collegati al govio_file_messages per cui error è a null
 
-		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
+		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 				
 		return ResponseEntity.ok(	this.traceService.readFile(traceId));
 	}
@@ -200,7 +200,7 @@ public class FileController implements FileApi {
 	@Override
 	public ResponseEntity<Resource> readFileContent(Long id) {
 	
-    	this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
+    	this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
     	
     	GovioFileEntity file = this.fileRepo.findById(id)
     			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
