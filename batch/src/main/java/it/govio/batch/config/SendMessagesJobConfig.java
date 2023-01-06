@@ -59,5 +59,4 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 				.retryLimit(5)
 				.build();
 	}
-	
 }

@@ -10,6 +10,7 @@ import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 
 import it.govio.batch.entity.GovioFileEntity;
+import it.govio.batch.entity.GovioTemplateEntity;
 
 public class GovioFilePartitioner implements Partitioner {
 
@@ -25,18 +26,20 @@ public class GovioFilePartitioner implements Partitioner {
 			ex.putString("location", file.getLocation());
 			ex.putLong("id", file.getId());
 			// Se il service_instance non presenta un template, recupero il default dal service
+			GovioTemplateEntity govioTemplate = null;
 			if (file.getGovioServiceInstance().getGovioTemplate() == null) 
-				ex.put("template", file.getGovioServiceInstance().getIdGovioService().getGovioTemplate());
+				govioTemplate = file.getGovioServiceInstance().getGovioService().getGovioTemplate();
 			else 
-				ex.put("template", file.getGovioServiceInstance().getGovioTemplate());
+				govioTemplate = file.getGovioServiceInstance().getGovioTemplate();
+			ex.put("template", govioTemplate);
 			ex.putLong("serviceInstance", file.getGovioServiceInstance().getId());
 			result.put("F"+file.getId(), ex);
 			logger.debug("ExecutionContext {} aggiunto [id:{}, location:{}, template:{}, serviceInstance: {}]", 
 					"F"+file.getId(), 
-					file.getId(), 
-					file.getLocation(), 
-					file.getGovioServiceInstance().getGovioTemplate().getId(),
-					file.getGovioServiceInstance().getId());
+					ex.getLong("id"), 
+					ex.getString("location"), 
+					govioTemplate.getId(),
+					ex.getLong("serviceInstance"));
 		}
 		return result;
 	}
