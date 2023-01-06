@@ -35,7 +35,7 @@ import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileMessageRepository;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.MessageRepository;
+import it.govhub.govio.api.repository.GovioMessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govregistry.commons.exception.InternalException;
@@ -70,7 +70,7 @@ public class FileService {
 	FileMessageAssembler fileMessageAssembler;
 	
 	@Autowired
-	MessageRepository messageRepo;
+	GovioMessageRepository messageRepo;
 	
 	@Autowired
 	MessageAssembler messageAssembler;
@@ -131,15 +131,6 @@ public class FileService {
 				.map( f -> this.fileAssembler.toModel(f))
 				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
 	}
-	
-	@Transactional
-	public GovioMessage readMessage(Long id) {
-		
-		GovioMessageEntity message = this.messageRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Messaggio di id [" + id + "] non trovato."));
-
-		return this.messageAssembler.toModel(message);
-	}
 
 	
 	@Transactional
@@ -156,6 +147,7 @@ public class FileService {
 		}
 		return ret;
 	}
+	
 	
 	@Transactional
 	public FileMessageList listFileMessages(Specification<GovioFileMessageEntity> spec, LimitOffsetPageRequest pageRequest) {

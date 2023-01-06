@@ -1,6 +1,6 @@
 package it.govhub.govio.api.entity;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,11 +9,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
+import it.govhub.govregistry.commons.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +40,14 @@ public class GovioMessageEntity {
 	@SequenceGenerator(name = "seq_govio_messages", sequenceName = "seq_govio_messages", initialValue = 1, allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_messages")
 	private Long id;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_govio_service_instance", nullable = false)
+	private ServiceInstanceEntity govioServiceInstance;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_govhub_user", nullable = false)
+	private UserEntity sender; 
 
 	@Column(name = "taxcode", nullable = false)
 	private String taxcode;
@@ -61,7 +72,7 @@ public class GovioMessageEntity {
 	private Boolean invalidAfterDueDate;
 
 	@Column(name = "payee")
-	private String payee;
+	private String payeeTaxcode;
 
 	@Column(name = "email")
 	private String email;
@@ -70,18 +81,18 @@ public class GovioMessageEntity {
 	private String appioMessageId;
 
 	@Column(name = "creation_date", nullable = false)
-	private LocalDateTime creationDate;
+	private OffsetDateTime creationDate;
 
 	@Column(name = "scheduled_expedition_date", nullable = false)
-	private LocalDateTime scheduledExpeditionDate;
+	private OffsetDateTime scheduledExpeditionDate;
 
 	@Column(name = "expedition_date")
-	private LocalDateTime expeditionDate;
+	private OffsetDateTime expeditionDate;
 
 	@Column(name = "due_date")
-	private LocalDateTime dueDate;
+	private OffsetDateTime dueDate;
 
 	@Column(name = "last_update_status")
-	private LocalDateTime lastUpdateStatus;
+	private OffsetDateTime lastUpdateStatus;
 
 }

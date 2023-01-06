@@ -14,7 +14,7 @@ import it.govhub.govio.api.web.FileController;
 public class FileMessageAssembler extends RepresentationModelAssemblerSupport<GovioFileMessageEntity, FileMessage>{
        
        @Autowired
-       GovioMessageItemAssembler msgItemAssembler;
+       MessageItemAssembler msgItemAssembler;
 
        public FileMessageAssembler() {
                super(FileController.class, FileMessage.class);

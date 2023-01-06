@@ -17,7 +17,9 @@ info:
   
 tags:
   - name: file
-    description: File Operations
+    description: File Operations.
+  - name: message
+    description: Message operations.
     
 servers:
   - url: http://localhost:10001
@@ -204,14 +206,51 @@ paths:
            '503':
              $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
            default:
-             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                           
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
              
+    /messages:
+       get:
+          tags:
+             - message
+          parameters:
+             - $ref: "#/components/parameters/scheduled_expedition_date_from_query"
+             - $ref: "#/components/parameters/scheduled_expedition_date_to_query"
+             - $ref: "#/components/parameters/expedition_date_from_query"
+             - $ref: "#/components/parameters/expedition_date_to_query"
+             - $ref: "#/components/parameters/tax_code_query"
+             - $ref: "#/components/parameters/service_id_query_optional"
+             - $ref: "#/components/parameters/organization_id_query_optional"
+             - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+             - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+          summary: List Govio Messages
+          description: Read and Filter the Govio Messages.
+          operationId: listMessages
+          responses:
+              '200':
+                description: Successful operation.
+                content:
+                  application/json:
+                    schema:
+                       $ref: "#/components/schemas/GovioMessageList"
+              '400':
+                $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+              '401':
+                $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+              '403':
+                $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+              '429':
+                $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+              '503':
+                $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+              default:
+                $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"  
+          
     /messages/{id}:
        parameters:
           - $ref: "#/components/parameters/message_id"
        get:
          tags:
-            - file
+            - message
          summary: Reads a Govio Message
          description: Read the message with the provided id.
          operationId: readMessage
@@ -331,8 +370,44 @@ components:
          schema:
             $ref: "#/components/schemas/MessageId"
    
-           
+      tax_code_query:
+         name: tax_code
+         in: query
+         required: false
+         schema:
+            $ref: "govhub-api-commons.yaml#/components/schemas/TaxCode"          
 
+      expedition_date_to_query:
+         name: expedition_date_to
+         in: query
+         required: false
+         schema:
+            type: string
+            format: date-time
+
+      expedition_date_from_query:
+         name: expedition_date_from
+         in: query
+         required: false
+         schema:
+            type: string
+            format: date-time            
+            
+      scheduled_expedition_date_to_query:
+         name: scheduled_expedition_date_to
+         in: query
+         required: false
+         schema:
+            type: string
+            format: date-time
+
+      scheduled_expedition_date_from_query:
+         name: scheduled_expedition_date_from
+         in: query
+         required: false
+         schema:
+            type: string
+            format: date-time              
    schemas:
    
       CodiceFiscaleLax:
@@ -360,23 +435,14 @@ components:
             markdown: 
                type: string
                maxLength: 2000000
+            payment:
+               $ref: "#/components/schemas/GovioMessagePaymentItem"
             status:
                $ref: "#/components/schemas/GovioMessageStatus"
-            amount:
-               type: integer
-               format: int64
-               minimum: 0
-               maximum: 9223372036854775807
-            notice_number:  
+            status_detail:
                type: string
                pattern: .*
-               maxLength: 256
-            invalid_after_due_date:
-               type: boolean
-            payee:
-               type: string
-               pattern: .*
-               maxLength: 1024
+               maxLength: 2000000 
             email:
                type: string
                format: email
@@ -398,8 +464,34 @@ components:
                format: date-time
             last_update_status:
                type: string
-               format: date-time         
-
+               format: date-time
+            user:
+               $ref: "#/components/schemas/FileUserItem"
+            organization:
+               $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem"
+            service:
+              $ref: "govhub-api-commons.yaml#/components/schemas/ServiceAuthItem"
+   
+      GovioMessagePaymentItem:
+         type: object
+         additionalProperties: false
+         properties:
+            amount:
+               type: integer
+               format: int64
+               minimum: 0
+               maximum: 9223372036854775807
+            notice_number:  
+               type: string
+               pattern: .*
+               maxLength: 256
+            invalid_after_due_date:
+               type: boolean
+            payee_taxcode:
+               type: string
+               pattern: .*
+               maxLength: 1024            
+         
       GovioFile:
          type: object
          additionalProperties: false
@@ -532,6 +624,20 @@ components:
                  - items 
               additionalProperties: false
               
+      GovioMessageList:
+         allOf:
+            - $ref: "govhub-api-commons.yaml#/components/schemas/List"
+            - type: object
+              properties:              
+                 items:
+                    type: array
+                    items:
+                       $ref: "#/components/schemas/GovioMessage"
+                    minItems: 0
+                    maxItems: 2147483647
+              required:
+                 - items 
+              additionalProperties: false     
               
       FileMessageList:
          allOf:
