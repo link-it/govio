@@ -259,14 +259,4 @@ public class FileController implements FileApi {
     	return filename;
 	}
 	
-	
-	@Override
-	public ResponseEntity<GovioMessage> readMessage(Long id) {
-		
-		return ResponseEntity.ok(this.fileService.readMessage(id));
-	}
-	
-
-
-
 }

@@ -8,10 +8,10 @@ import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.web.FileController;
 
 @Component
-public class GovioMessageItemAssembler
+public class MessageItemAssembler
 		extends RepresentationModelAssemblerSupport<GovioMessageEntity, GovioMessageItem> {
 
-	public GovioMessageItemAssembler() {
+	public MessageItemAssembler() {
 		super(FileController.class, GovioMessageItem.class);
 	}
 
