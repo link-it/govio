@@ -14,6 +14,7 @@ import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.exception.BackendioRuntimeException;
 
+
 @Component
 public abstract class GovioMessageAbstractProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
 

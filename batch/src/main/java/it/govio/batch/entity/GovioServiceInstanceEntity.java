@@ -31,9 +31,9 @@ public class GovioServiceInstanceEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_service_instances")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne()
 	@JoinColumn(name = "id_govio_service", nullable = false)
-	private GovioServiceEntity idGovioService;
+	private GovioServiceEntity govioService;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_template", nullable = true)

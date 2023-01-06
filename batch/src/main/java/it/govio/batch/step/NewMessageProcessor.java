@@ -66,7 +66,6 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);
-
 		message.setFiscalCode(item.getTaxcode());
 		// spedizione del messaggio
 		try {

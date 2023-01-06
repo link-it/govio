@@ -30,7 +30,7 @@ export class SearchBarComponent implements OnInit {
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer
   ) {
-    this._addIconsSvg();
+    // this._addIconsSvg();
   }
 
   ngOnInit() {

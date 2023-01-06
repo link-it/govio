@@ -1,0 +1,26 @@
+{
+  "simpleItem": {
+    "primaryText": [
+      { "field": "full_name", "type": "text" }
+    ],
+    "secondaryText": [
+      { "field": "principal", "type": "text" }
+    ],
+    "metadata": {
+      "text": [
+        { "field": "email", "type": "text" }
+      ],
+      "label": []
+    },
+    "secondaryMetadata": [
+      { "field": "enabled", "type": "text" }
+    ]
+  },
+
+  "details": [
+    { "label": "APP.LABEL.FullName", "field": "full_name", "type": "text" },
+    { "label": "APP.LABEL.Principal", "field": "principal", "type": "text" },
+    { "label": "APP.LABEL.Email", "field": "email", "type": "text" }
+  ]
+}
+

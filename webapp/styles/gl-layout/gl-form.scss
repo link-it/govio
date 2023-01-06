@@ -30,6 +30,12 @@
   border: 1px solid #dd2b0e;
 }
 
+.gl-show-field-errors .gl-field-error-outline-select {
+  .ng-select-container {
+    border: 1px solid #dd2b0e;
+  }
+}
+
 // .form-control.ng-invalid {
 //   border: 1px solid #dd2b0e;
 // }

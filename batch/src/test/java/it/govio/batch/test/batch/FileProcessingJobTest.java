@@ -164,18 +164,18 @@ class FileProcessingJobTest {
 	void defaultTemplateOk() throws Exception {
 
 		// Caricamento messaggi da inviare
-		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(2L);
 
 		TemporaryFolder testFolder = new TemporaryFolder();
 		testFolder.create();
 
 		// Inserisco 1 file con 100 record
-		List<GovioFileEntity> files = new ArrayList<>();
-		files.add(govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "01")));
-
+		GovioFileEntity file = govioFilesRepository.save(buildFile(testFolder, serviceInstanceEntity.get(), "01"));
 		initailizeJobLauncherTestUtils();
 
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+		assertEquals(1, file.getGovioServiceInstance().getGovioService().getGovioTemplate().getId());
+		assertEquals(null, file.getGovioServiceInstance().getGovioTemplate());
 
 		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
 
