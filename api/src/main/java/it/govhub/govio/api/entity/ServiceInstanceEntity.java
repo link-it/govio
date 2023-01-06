@@ -14,7 +14,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
-import it.govhub.govregistry.commons.entity.ServiceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
