@@ -20,7 +20,9 @@ tags:
     description: File Operations.
   - name: message
     description: Message operations.
-    
+  - name: service
+    description: Service operations.
+        
 servers:
   - url: http://localhost:10001
     description: Sample Deployment URL (Not Actual)
@@ -276,7 +278,38 @@ paths:
            default:
              $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"          
                 
-             
+    /service-instances:
+       get:
+          tags:
+             - service
+          parameters:
+             - $ref: "#/components/parameters/service_id_query_optional"
+             - $ref: "#/components/parameters/organization_id_query_optional"
+             - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+             - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+          summary: List Govio Service Instances
+          description: Read and Filter the Govio Service Instanes
+          operationId: listServiceInstances
+          responses:
+              '200':
+                description: Successful operation.
+                content:
+                  application/json:
+                    schema:
+                       $ref: "#/components/schemas/GovioServiceInstanceList"
+              '400':
+                $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+              '401':
+                $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+              '403':
+                $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+              '429':
+                $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+              '503':
+                $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+              default:
+                $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"      
+                   
 components:
 
    # SECURITY    ---------------
@@ -608,6 +641,14 @@ components:
             - id
             - full_name
                
+      GovioServiceInstance:
+         type: object
+         additionalProperties: false
+         properties:
+            service:
+               $ref: "govhub-api-commons.yaml#/components/schemas/ServiceAuthItem"
+            organization:
+               $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem"               
             
       FileList:
          allOf:
@@ -623,6 +664,21 @@ components:
               required:
                  - items 
               additionalProperties: false
+
+      GovioServiceInstanceList:
+         allOf:
+            - $ref: "govhub-api-commons.yaml#/components/schemas/List"
+            - type: object
+              properties:              
+                 items:
+                    type: array
+                    items:
+                       $ref: "#/components/schemas/GovioServiceInstance"
+                    minItems: 0
+                    maxItems: 2147483647
+              required:
+                 - items 
+              additionalProperties: false    
               
       GovioMessageList:
          allOf:

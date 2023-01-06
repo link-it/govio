@@ -15,6 +15,11 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextva
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), 2, 'govio_service_instance_viewer');
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), 2, 'govio_service_instance_editor');
 
+-- amministratore -> govio_sysadmin
+
+INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='amministratore'), (SELECT id FROM public.govhub_roles WHERE name='govio_sysadmin'));
+
+
 -- govio_sysadmin -> govio_sysadmin
 
 INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='govio_sysadmin'), (SELECT id FROM public.govhub_roles WHERE name='govio_sysadmin'));
