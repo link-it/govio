@@ -13,14 +13,15 @@ import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.repository.GovioMessageFilters;
 import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
+import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 
+@V1RestController
 public class MessageController implements MessageApi {
 	
 	@Autowired
 	MessageService messageService;
 
-	
 	@Override
 	public ResponseEntity<GovioMessageList> listMessages(
 			OffsetDateTime scheduledExpeditionDateFrom,
