@@ -29,13 +29,18 @@ import org.springframework.web.multipart.MultipartFile;
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
+import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.GovioFile;
+import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.entity.GovioFileEntity;
+import it.govhub.govio.api.entity.GovioFileMessageEntity;
+import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileFilters;
+import it.govhub.govio.api.repository.GovioFileMessageFilters;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
-import it.govhub.govio.api.security.GovIORoles;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govio.api.services.FileService;
 import it.govhub.govio.api.spec.FileApi;
 import it.govhub.govregistry.commons.config.V1RestController;
@@ -51,10 +56,10 @@ import it.govhub.security.services.SecurityService;
 public class FileController implements FileApi {
 	
 	@Autowired
-	ServiceInstanceEntityRepository serviceRepo;
+	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
-	FileService traceService;
+	FileService fileService;
 	
 	@Autowired
 	FileAssembler fileAssembler;
@@ -111,10 +116,123 @@ public class FileController implements FileApi {
     	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
-    	GovioFileEntity created = this.traceService.uploadCSV(serviceInstance, sourceFilename, itemStream);
+    	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
 		return ResponseEntity.ok(this.fileAssembler.toModel(created));
 	}
+	
+	
+	@Override
+	public ResponseEntity<FileList> listFiles(
+				Direction sortDirection, 
+				Integer limit, 
+				Long offset, 
+				String q,
+				 Long userId,
+				 Long serviceId,
+				 Long organizationId, 
+				 OffsetDateTime creationDateFrom, 
+				 OffsetDateTime creationDateTo) {
+		
+		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+		
+		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
+		
+		if (userId != null) {
+			spec = spec.and(GovioFileFilters.byUser(userId));
+		}
+		if (serviceId != null) {
+			spec = spec.and(GovioFileFilters.byService(serviceId));
+		}
+		if (organizationId != null) {
+			spec = spec.and(GovioFileFilters.byOrganization(organizationId));
+		}
+		if (q != null) {
+			spec = spec.and(GovioFileFilters.likeFileName(q));
+		}
+		if(creationDateFrom != null) {
+			spec = spec.and(GovioFileFilters.fromCreationDate(creationDateFrom));
+		}
+		if(creationDateTo != null) {
+			spec = spec.and(GovioFileFilters.untilCreationDate(creationDateTo));
+		}
+		
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
+		
+		FileList ret = fileService.listFiles(spec, pageRequest);
+		
+		return ResponseEntity.ok(ret);
+	}
+
+
+	@Override
+	public ResponseEntity<GovioFile> readFile(Long traceId) {
+		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+				
+		return ResponseEntity.ok(	this.fileService.readFile(traceId));
+	}
+
+
+	@Override
+	public ResponseEntity<Resource> readFileContent(Long id) {
+	
+    	this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+    	
+    	GovioFileEntity file = this.fileRepo.findById(id)
+    			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+		
+		Path path = file.getLocation();
+		
+		FileInputStream stream;
+		try {
+			stream = new FileInputStream(path.toFile());
+		} catch (FileNotFoundException e) {
+			throw new InternalException(e);
+		}
+
+		InputStreamResource fileStream = new InputStreamResource(stream);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentLength(file.getSize());
+		ResponseEntity<Resource> ret =   new ResponseEntity<>(fileStream, headers, HttpStatus.OK); 
+		
+		return ret;
+	}
+
+
+	@Override
+	public ResponseEntity<FileMessageList> readFileMessages(
+			Long id,
+            FileMessageStatusEnum status,
+            Integer limit,
+            Long offset, 
+            Long lineNumberFrom) {
+		
+		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("File di Id [" + id + "] non trovato"));
+
+		Specification<GovioFileMessageEntity> spec = GovioFileMessageFilters.ofFile(file.getId());
+
+		if (lineNumberFrom != null) {
+			spec = spec.and(GovioFileMessageFilters.fromLineNumber(lineNumberFrom));
+		}
+
+		if (status == FileMessageStatusEnum.ACQUIRED) {
+			spec = spec.and(GovioFileMessageFilters.acquired());
+		} else if (status == FileMessageStatusEnum.ERROR) {
+			spec = spec.and(GovioFileMessageFilters.error());
+		}
+
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit,
+				GovioFileMessageFilters.sortByLineNumber());
+
+		FileMessageList ret = this.fileService.listFileMessages(spec, pageRequest);
+		
+		return ResponseEntity.ok(ret);
+	}
+	
 	
 	
 	private String readFilenameFromHeaders(FileItemHeaders headers) {
@@ -140,94 +258,5 @@ public class FileController implements FileApi {
     	
     	return filename;
 	}
-
-
-	@Override
-	public ResponseEntity<FileList> listFiles(
-				Direction sortDirection, 
-				Integer limit, 
-				Long offset, 
-				String q,
-				 Long userId,
-				 Long serviceId,
-				 Long organizationId, 
-				 OffsetDateTime creationDateFrom, 
-				 OffsetDateTime creationDateTo) {
-		
-		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
-		
-		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
-		
-		if (userId != null) {
-			spec = spec.and(GovioFileFilters.byUser(userId));
-		}
-		if (serviceId != null) {
-			spec = spec.and(GovioFileFilters.byService(serviceId));
-		}
-		if (organizationId != null) {
-			spec = spec.and(GovioFileFilters.byOrganization(organizationId));
-		}
-		if (q != null) {
-			spec = spec.and(GovioFileFilters.likeFileName(q));
-		}
-		if(creationDateFrom != null) {
-			spec = spec.and(GovioFileFilters.fromCreationDate(creationDateFrom));
-		}
-		if(creationDateTo != null) {
-			spec = spec.and(GovioFileFilters.untilCreationDate(creationDateTo));
-		}
-		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
-		
-		FileList ret = traceService.listFiles(spec, pageRequest);
-		
-		return ResponseEntity.ok(ret);
-	}
-
-
-	@Override
-	public ResponseEntity<GovioFile> readFile(Long traceId) {
-		// TODO: Come popolo errorMessages e aquiredMessages?
-		// AquiredMessages sarà il numero di govio_file_messages collegata a una govio_files
-		//  ErrorMessages sarà il numero in cui GovioFileMessageEntity collegati al govio_file_messages per cui error è a null
-
-		this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
-				
-		return ResponseEntity.ok(	this.traceService.readFile(traceId));
-	}
-
-
-	@Override
-	public ResponseEntity<Resource> readFileContent(Long id) {
 	
-    	this.authService.expectAnyRole(GovregistryRoles.RUOLO_GOVHUB_SYSADMIN, GovIORoles.RUOLO_GOVIO_SENDER, GovIORoles.RUOLO_GOVIO_VIEWER);
-    	
-    	GovioFileEntity file = this.fileRepo.findById(id)
-    			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
-		
-		Path path = file.getLocation();
-		
-		FileInputStream stream;
-		try {
-			stream = new FileInputStream(path.toFile());
-		} catch (FileNotFoundException e) {
-			throw new InternalException(e);
-		}
-
-		InputStreamResource fileStream = new InputStreamResource(stream);
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentLength(file.getSize());
-		ResponseEntity<Resource> ret =   new ResponseEntity<>(fileStream, headers, HttpStatus.OK); 
-		
-		return ret;
-	}
-
-
-	@Override
-	public ResponseEntity<FileMessageList> readFileMessages(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

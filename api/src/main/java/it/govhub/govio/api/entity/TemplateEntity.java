@@ -2,6 +2,7 @@ package it.govhub.govio.api.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,5 +31,24 @@ public class TemplateEntity implements Serializable {
 	@SequenceGenerator(name = "seq_govio_templates", sequenceName = "seq_govio_templates", initialValue = 1, allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_templates")
 	private Long id;
+	
+	
+	@Column(name = "name")
+	private String name;
+	
+	@Column(name = "description")
+	private String description;
+	
+	@Column(name = "subject", nullable = false)
+	private String subject;
+	
+	@Column(name = "message_body", nullable = false)
+	private String messageBody;
+
+	@Column(name = "has_due_date", nullable = false)
+	private Boolean hasDueDate;
+
+	@Column(name = "has_payment", nullable = false)
+	private Boolean hasPayment;
 
 }

@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryImplementati
 
 import it.govhub.govio.api.entity.TemplateEntity;
 
-public interface TemplateEntityRepository extends JpaRepositoryImplementation<TemplateEntity, Long>{
+public interface TemplateRepository extends JpaRepositoryImplementation<TemplateEntity, Long>{
 
 }
