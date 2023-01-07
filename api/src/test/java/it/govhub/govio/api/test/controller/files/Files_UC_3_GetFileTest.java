@@ -35,7 +35,7 @@ import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.ServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioFileEntity.Status;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceEntityRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.GovioFileUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -65,7 +65,7 @@ class Files_UC_3_GetFileTest {
 	private GovioFileRepository govioFilesRepository;
 	
 	@Autowired
-	private ServiceInstanceEntityRepository govioServiceInstancesRepository;
+	private ServiceInstanceRepository govioServiceInstancesRepository;
 	
 	@Autowired
 	private GovhubUserDetailService userDetailService;
