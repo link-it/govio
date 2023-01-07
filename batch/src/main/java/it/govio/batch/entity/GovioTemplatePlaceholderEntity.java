@@ -45,7 +45,7 @@ public class GovioTemplatePlaceholderEntity {
 	@JoinColumn(name = "id_govio_placeholder", nullable = false)
 	private GovioPlaceholderEntity govioPlaceholder;
 
-	@Column(name = "index", nullable = false)
+	@Column(name = "\"index\"", nullable = false)
 	private int index;
 
 	@Column(name = "mandatory", nullable = false)
