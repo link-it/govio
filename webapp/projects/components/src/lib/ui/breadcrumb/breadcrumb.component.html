@@ -24,6 +24,9 @@
               <span class="avatar-tile" *ngIf="item.icon">
                 <mat-icon fontSet="material-icons-outlined">{{ item.icon }}</mat-icon>
               </span>
+              <span class="avatar-tile" *ngIf="item.iconBs">
+                <i class="bi bi-{{ item.iconBs }}"></i>
+              </span>
               {{ item.label | translate }}
             </a>
             <span class="breadcrumbs-list-angle" *ngIf="!last">
