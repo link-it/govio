@@ -12,4 +12,4 @@ ALTER SEQUENCE seq_govio_service_instances RESTART WITH 2;
 INSERT INTO govio_placeholders(id,name,type,example) VALUES (1,'cie','STRING','CA000000AA');
 ALTER SEQUENCE seq_govio_placeholders RESTART WITH 2;
 
-INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, index) VALUES ('1','1', true, 1);
+INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('1','1', true, 1);
