@@ -13,9 +13,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.ServiceInstanceAssembler;
 import it.govhub.govio.api.beans.GovioServiceInstanceList;
-import it.govhub.govio.api.entity.ServiceInstanceEntity;
-import it.govhub.govio.api.repository.ServiceInstanceFilters;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
+import it.govhub.govio.api.repository.GovioServiceInstanceFilters;
+import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.spec.ServiceApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
@@ -25,7 +25,7 @@ import it.govhub.govregistry.commons.utils.ListaUtils;
 public class ServiceInstanceController implements ServiceApi {
 	
 	@Autowired
-	ServiceInstanceRepository serviceInstanceRepo;
+	GovioServiceInstanceRepository serviceInstanceRepo;
 	
 	@Autowired
 	ServiceInstanceAssembler serviceInstanceAssembler;
@@ -40,15 +40,15 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.unsorted());	// TODO: Sort
 		
-		Specification<ServiceInstanceEntity> spec = ServiceInstanceFilters.empty();
+		Specification<GovioServiceInstanceEntity> spec = GovioServiceInstanceFilters.empty();
 		if (serviceId != null) {
-			spec = spec.and(ServiceInstanceFilters.byServiceId(serviceId));
+			spec = spec.and(GovioServiceInstanceFilters.byServiceId(serviceId));
 		}
 		if (organizationId != null) {
-			spec = spec.and(ServiceInstanceFilters.byOrganizationId(organizationId));
+			spec = spec.and(GovioServiceInstanceFilters.byOrganizationId(organizationId));
 		}
 		
-		Page<ServiceInstanceEntity> instances = this.serviceInstanceRepo.findAll(spec, pageRequest.pageable);
+		Page<GovioServiceInstanceEntity> instances = this.serviceInstanceRepo.findAll(spec, pageRequest.pageable);
 		
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();

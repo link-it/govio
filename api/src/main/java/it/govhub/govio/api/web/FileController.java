@@ -33,11 +33,11 @@ import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
-import it.govhub.govio.api.entity.ServiceInstanceEntity;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileFilters;
 import it.govhub.govio.api.repository.GovioFileMessageFilters;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govio.api.services.FileService;
 import it.govhub.govio.api.spec.FileApi;
@@ -54,7 +54,7 @@ import it.govhub.security.services.SecurityService;
 public class FileController implements FileApi {
 	
 	@Autowired
-	ServiceInstanceRepository serviceRepo;
+	GovioServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	FileService fileService;
@@ -111,7 +111,7 @@ public class FileController implements FileApi {
     		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
-    	ServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
+    	GovioServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);

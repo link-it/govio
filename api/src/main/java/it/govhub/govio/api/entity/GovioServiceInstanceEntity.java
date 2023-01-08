@@ -32,7 +32,7 @@ import lombok.ToString;
 		name = "govio_service_instances", 
 		uniqueConstraints = { @UniqueConstraint( columnNames = { "id_govio_service", "id_govhub_organization" }) }
 	)
-public class ServiceInstanceEntity implements Serializable {
+public class GovioServiceInstanceEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -53,7 +53,7 @@ public class ServiceInstanceEntity implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "id_govio_template")
-	private TemplateEntity template;
+	private GovioTemplateEntity template;
 	
 	@Column(name = "apikey")
 	private String apiKey;

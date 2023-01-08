@@ -32,7 +32,7 @@ public class GovioServiceEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "id_govio_template", nullable = false)
-	private TemplateEntity govioTemplate;
+	private GovioTemplateEntity govioTemplate;
 	
 	@ManyToOne
 	@JoinColumn(name = "id_govhub_service", nullable = false)
