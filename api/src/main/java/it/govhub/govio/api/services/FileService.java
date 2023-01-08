@@ -30,11 +30,11 @@ import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
-import it.govhub.govio.api.entity.ServiceInstanceEntity;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileMessageRepository;
 import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.GovioMessageRepository;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
@@ -53,7 +53,7 @@ public class FileService {
 	GovioFileRepository fileRepo;
 
 	@Autowired
-	ServiceInstanceRepository serviceRepo;
+	GovioServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	SecurityService authService;
@@ -76,7 +76,7 @@ public class FileService {
 	Logger logger = LoggerFactory.getLogger(FileService.class);
 	
 	@Transactional
-	public GovioFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
+	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER);

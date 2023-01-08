@@ -41,7 +41,7 @@ public class GovioTemplateEntity  {
 	@Column(name = "subject", nullable = false)
 	private String subject;
 	
-	@Column(name = "message_body", nullable = false)
+	@Column(name = "message_body", nullable = false, columnDefinition = "TEXT")
 	private String messageBody;
 
 	@Column(name = "has_due_date", nullable = false)

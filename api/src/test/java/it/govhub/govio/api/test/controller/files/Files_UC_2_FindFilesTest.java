@@ -34,9 +34,9 @@ import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioFileEntity;
-import it.govhub.govio.api.entity.ServiceInstanceEntity;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.GovioFileUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -66,7 +66,7 @@ class Files_UC_2_FindFilesTest {
 	private GovioFileRepository govioFilesRepository;
 	
 	@Autowired
-	private ServiceInstanceRepository govioServiceInstancesRepository;
+	private GovioServiceInstanceRepository govioServiceInstancesRepository;
 	
 	@Autowired
 	private GovhubUserDetailService userDetailService;
@@ -77,7 +77,7 @@ class Files_UC_2_FindFilesTest {
 	void setUp() throws Exception{
 		govioFilesRepository.deleteAll();
 		
-		Optional<ServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		
 		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
 		
@@ -368,7 +368,7 @@ class Files_UC_2_FindFilesTest {
 	// 10. findAllOk filtro service id presente
 	@Test
 	void UC_2_10_FindAllOk_ServiceID() throws Exception {
-		Optional<ServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.FILES_QUERY_PARAM_SERVICE_ID, serviceInstanceEntity.get().getService().getId()+"");
 		
@@ -402,7 +402,7 @@ class Files_UC_2_FindFilesTest {
 	// 11. findAllOk filtro service id senza csv = zero risultati
 	@Test
 	void UC_2_11_FindAllOk_ServiceIDNoFiles() throws Exception {
-		Optional<ServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(2L);
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(2L);
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.FILES_QUERY_PARAM_SERVICE_ID, serviceInstanceEntity.get().getService().getId()+"");
 		
@@ -429,7 +429,7 @@ class Files_UC_2_FindFilesTest {
 	// 12. findAllOk filtro organization id presente
 	@Test
 	void UC_2_12_FindAllOk_OrganizationID() throws Exception {
-		Optional<ServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.FILES_QUERY_PARAM_ORGANIZATION_ID, serviceInstanceEntity.get().getOrganization().getId()+"");
 		
@@ -463,7 +463,7 @@ class Files_UC_2_FindFilesTest {
 	// 13. findAllOk filtro organization id senza csv = zero risultati
 	@Test
 	void UC_2_13_FindAllOk_OrganizationIDNoFiles() throws Exception {
-		Optional<ServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(2L);
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(2L);
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.FILES_QUERY_PARAM_ORGANIZATION_ID, serviceInstanceEntity.get().getOrganization().getId()+"");
 		
