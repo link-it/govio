@@ -41,6 +41,9 @@ public class GovioMessageEntity {
 	@JoinColumn(name = "id_govio_service_instance", nullable = false)
 	private GovioServiceInstanceEntity govioServiceInstance;
 	
+	@Column(name = "id_govhub_user", nullable = false)
+	private Long govhubUserId;
+	
 	@Column(name = "taxcode", nullable = false)
 	private String taxcode;
 

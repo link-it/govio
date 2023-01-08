@@ -138,10 +138,12 @@ public class FileProcessingJobConfig {
 	@Qualifier("govioFileItemWriter")
 	public ItemWriter<GovioFileMessageEntity> govioFileItemWriter(
 			@Value("#{stepExecutionContext[id]}") long govioFileId,
-			@Value("#{stepExecutionContext[serviceInstance]}") Long serviceInstanceId){
+			@Value("#{stepExecutionContext[serviceInstance]}") Long serviceInstanceId,
+			@Value("#{stepExecutionContext[govhubUserId]}") Long govhubUserId){
 		GovioFileItemWriter govioFileItemWriter =  new GovioFileItemWriter();
 		govioFileItemWriter.setGovioFileId(govioFileId);
 		govioFileItemWriter.setGovioServiceInstanceId(serviceInstanceId);
+		govioFileItemWriter.setGovhubUserId(govhubUserId);
 		return govioFileItemWriter;
 	}
 

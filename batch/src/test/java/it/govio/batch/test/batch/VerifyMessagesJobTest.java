@@ -114,6 +114,7 @@ class VerifyMessagesJobTest {
 		for(int i=0; i<100; i++) {
 			GovioMessageEntityBuilder messageBuilder = GovioMessageEntity.builder()
 					.govioServiceInstance(serviceInstanceEntity.get())
+					.govhubUserId(1l)
 					.markdown("Lorem Ipsum")
 					.subject("Subject")
 					.taxcode(String.format("%03d", i) + "AAA00A00A000A")

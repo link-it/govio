@@ -23,6 +23,7 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 	
 	long govioFileId;
 	long govioServiceInstanceId;
+	long govhubUserId;
 	
 	@Override
 	public void write(List<? extends GovioFileMessageEntity> items) throws Exception {
@@ -30,8 +31,10 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 		GovioServiceInstanceEntity govioServiceInstanceReference = em.getReference(GovioServiceInstanceEntity.class, govioServiceInstanceId);
 		for(GovioFileMessageEntity item : items) {
 			item.setGovioFile(govioFileReference);
-			if(item.getGovioMessage() != null)
+			if(item.getGovioMessage() != null) {
 				item.getGovioMessage().setGovioServiceInstance(govioServiceInstanceReference);
+				item.getGovioMessage().setGovhubUserId(govhubUserId);
+			}
 			repository.save(item);
 		}
 	}
@@ -44,4 +47,7 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 		this.govioServiceInstanceId = govioServiceInstanceId;
 	}
 
+	public void setGovhubUserId(long govhubUserId) {
+		this.govhubUserId = govhubUserId;
+	}
 }
