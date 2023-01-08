@@ -47,7 +47,7 @@ public class GovioMessageEntity {
 	@Column(name = "subject", nullable = false)
 	private String subject;
 
-	@Column(name = "markdown", nullable = false)
+	@Column(name = "markdown", nullable = false, columnDefinition = "TEXT")
 	private String markdown;
 
 	@Column(name = "status", nullable = false)
