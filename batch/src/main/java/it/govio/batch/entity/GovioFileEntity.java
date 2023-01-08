@@ -47,6 +47,9 @@ public class GovioFileEntity {
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "govioFile", cascade = CascadeType.REMOVE)
 	private List<GovioFileMessageEntity> govioFileMessageEntities;
+	
+	@Column(name = "id_govhub_user", nullable = false)
+	private Long govhubUserId;
 
 	@Column(name = "name", nullable = false)
 	private String name;

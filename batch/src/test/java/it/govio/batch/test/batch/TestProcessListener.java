@@ -3,41 +3,22 @@ package it.govio.batch.test.batch;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.util.DefaultUriBuilderFactory;
-
-import it.govio.batch.entity.GovioMessageEntity;
-import it.govio.batch.entity.GovioServiceInstanceEntity;
-import it.govio.batch.entity.GovioMessageEntity.Status;
-import it.pagopa.io.v1.api.beans.CreatedMessage;
-import it.pagopa.io.v1.api.beans.FiscalCodePayload;
-import it.pagopa.io.v1.api.beans.LimitedProfile;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.test.JobLauncherTestUtils;
@@ -46,13 +27,23 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+
+import it.govio.batch.entity.GovioMessageEntity;
+import it.govio.batch.entity.GovioMessageEntity.Status;
+import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
+import it.pagopa.io.v1.api.beans.CreatedMessage;
+import it.pagopa.io.v1.api.beans.LimitedProfile;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
 @SpringBootTest
@@ -113,6 +104,7 @@ public class TestProcessListener {
 		for(int i=0; i<100; i++) {
 			GovioMessageEntity message = GovioMessageEntity.builder()
 					.govioServiceInstance(serviceInstanceEntity.get())
+					.govhubUserId(1l)
 					.markdown("Lorem Ipsum")
 					.subject("Subject")
 					.taxcode(String.format("%03d", i) + "AAA00A00A000A")
