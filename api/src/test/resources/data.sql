@@ -102,6 +102,6 @@ ALTER SEQUENCE seq_govio_service_instances RESTART WITH 3;
 -- INSERT INTO govio_placeholders(id,name,type,example) VALUES (2,'at','STRING','Ufficio numero 1');
 -- ALTER SEQUENCE seq_govio_placeholders RESTART WITH 3;
 
--- INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, index) VALUES ('1','1', true, 1);
--- INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, index) VALUES ('1','2', true, 2);
+-- INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('1','1', true, 1);
+-- INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('1','2', true, 2);
 
