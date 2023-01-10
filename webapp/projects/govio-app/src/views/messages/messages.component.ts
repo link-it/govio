@@ -9,11 +9,10 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
+import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
 
 import { SearchBarFormComponent } from 'projects/components/src/lib/ui/search-bar-form/search-bar-form.component';
-
-import moment from 'moment';
 
 @Component({
   selector: 'app-messages',
@@ -44,7 +43,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
   _preventMultiCall: boolean = false;
 
-  _spin: boolean = false;
+  _spin: boolean = true;
   desktop: boolean = false;
 
   _useRoute : boolean = true;
@@ -69,16 +68,14 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   searchFields: any[] = [
     { field: 'creationDateFrom', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
     { field: 'creationDateTo', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
-    { field: 'messageName', label: 'APP.LABEL.MessageName', type: 'string', condition: 'like' },
-    { field: 'status', label: 'APP.LABEL.Status', type: 'enum', condition: 'equal', enumValues: { 'NUOVO': 'APP.STATUS.NUOVO', 'ELABORAZIONE': 'APP.STATUS.ELABORAZIONE', 'COMPLETATO': 'APP.STATUS.COMPLETATO', 'SCARTATO': 'APP.STATUS.SCARTATO' } },
-    { field: 'type', label: 'APP.LABEL.Type', type: 'enum', condition: 'equal', enumValues: { 'CBI': 'CBI' } }
+    { field: 'taxcode', label: 'APP.LABEL.Taxcode', type: 'string', condition: 'like' },
+    { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
+    { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
   ];
 
   breadcrumbs: any[] = [
-    { label: 'APP.TITLE.Messages', url: '', type: 'title', icon: 'send' }
+    { label: 'APP.TITLE.Messages', url: '', type: 'title', iconBs: 'send' }
   ];
-
-  _unimplemented: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -87,6 +84,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     private configService: ConfigService,
     public tools: Tools,
     private eventsManagerService: EventsManagerService,
+    private pageloaderService: PageloaderService,
     public apiService: OpenAPIService
   ) {
     this.config = this.configService.getConfiguration();
@@ -101,17 +99,19 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      setTimeout(() => {
-        Tools.WaitForResponse(false);
-      }, this.config.AppConfig.DELAY || 0);
+      // language
     });
 
-    Tools.WaitForResponse(true, false, false);
+    this.pageloaderService.resetLoader();
+    this.pageloaderService.isLoading.subscribe({
+      next: (x) => { this._spin = x; },
+      error: (e: any) => { console.log('loader error', e); }
+    });
+
     this.configService.getConfig('messages').subscribe(
       (config: any) => {
         this.messagesConfig = config;
         this._translateConfig();
-        Tools.WaitForResponse(false);
       }
     );
   }
@@ -127,7 +127,6 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   }
 
   ngAfterContentChecked(): void {
-    this._spin = this.tools.getSpinner() && !this.tools.isSpinnerGlobal();
     this.desktop = (window.innerWidth >= 992);
   }
 
@@ -161,9 +160,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     this._formGroup = new UntypedFormGroup({
       creationDateFrom: new UntypedFormControl(''),
       creationDateTo: new UntypedFormControl(''),
-      messageName: new UntypedFormControl(''),
-      status: new UntypedFormControl(''),
-      type: new UntypedFormControl(''),
+      taxcode: new UntypedFormControl(''),
+      'organization.legal_name': new UntypedFormControl(''),
+      'service.service_name': new UntypedFormControl(''),
     });
   }
 
@@ -172,33 +171,28 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     if (!url) { this.messages = []; }
     this.apiService.getList(this.model, query, url).subscribe({
       next: (response: any) => {
-        if (response === null) {
-          this._unimplemented = true;
-        } else {
+        this.page = response.page;
+        this._links = response._links;
 
-          this.page = response.page;
-          this._links = response._links;
-
-          if (response.items) {
-            const _list: any = response.items.map((message: any) => {
-              const metadataText = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.text, message, this.messagesConfig.simpleItem.options || null);
-              const metadataLabel = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.label, message, this.messagesConfig.simpleItem.options || null);
-              const element = {
-                id: message.id,
-                primaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.primaryText, message, this.messagesConfig.simpleItem.options || null),
-                secondaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryText, message, this.messagesConfig.simpleItem.options || null),
-                metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-                secondaryMetadata: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryMetadata, message, this.messagesConfig.simpleItem.options || null),
-                editMode: false,
-                source: { ...message }
-              };
-              return element;
-            });
-            this.messages = (url) ? [...this.messages, ..._list] : [..._list];
-            this._preventMultiCall = false;
-          }
-          Tools.ScrollTo(0);
+        if (response.items) {
+          const _list: any = response.items.map((message: any) => {
+            const metadataText = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.text, message, this.messagesConfig.options || null);
+            const metadataLabel = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.label, message, this.messagesConfig.options || null);
+            const element = {
+              id: message.id,
+              primaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.primaryText, message, this.messagesConfig.options || null, ' '),
+              secondaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryText, message, this.messagesConfig.options || null, ' '),
+              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
+              secondaryMetadata: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryMetadata, message, this.messagesConfig.options || null, ' '),
+              editMode: false,
+              source: { ...message }
+            };
+            return element;
+          });
+          this.messages = (url) ? [...this.messages, ..._list] : [..._list];
+          this._preventMultiCall = false;
         }
+        Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorMessages(true);
@@ -209,7 +203,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   }
 
   __loadMoreData() {
-    if (this._links.next && !this._preventMultiCall) {
+    if (this._links && this._links.next && !this._preventMultiCall) {
       this._preventMultiCall = true;
       this._loadMessages(null, this._links.next.href);
     }
