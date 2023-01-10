@@ -9,6 +9,7 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
+import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
 
 import { SearchBarFormComponent } from 'projects/components/src/lib/ui/search-bar-form/search-bar-form.component';
@@ -78,8 +79,6 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
     { label: 'APP.TITLE.Files', url: '', type: 'title', icon: 'topic' }
   ];
 
-  _unimplemented: boolean = false;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -87,6 +86,7 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
     private configService: ConfigService,
     public tools: Tools,
     private eventsManagerService: EventsManagerService,
+    private pageloaderService: PageloaderService,
     public apiService: OpenAPIService
   ) {
     this.config = this.configService.getConfiguration();
@@ -101,17 +101,19 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      setTimeout(() => {
-        Tools.WaitForResponse(false);
-      }, this.config.AppConfig.DELAY || 0);
+      // language
     });
 
-    Tools.WaitForResponse(true, false, false);
+    this.pageloaderService.resetLoader();
+    this.pageloaderService.isLoading.subscribe({
+      next: (x) => { this._spin = x; },
+      error: (e: any) => { console.log('loader error', e); }
+    });
+
     this.configService.getConfig('files').subscribe(
       (config: any) => {
         this.filesConfig = config;
         this._translateConfig();
-        Tools.WaitForResponse(false);
       }
     );
   }
@@ -127,7 +129,6 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
   }
 
   ngAfterContentChecked(): void {
-    this._spin = this.tools.getSpinner() && !this.tools.isSpinnerGlobal();
     this.desktop = (window.innerWidth >= 992);
   }
 
@@ -172,33 +173,28 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
     if (!url) { this.files = []; }
     this.apiService.getList(this.model, query, url).subscribe({
       next: (response: any) => {
-        if (response === null) {
-          this._unimplemented = true;
-        } else {
+        this.page = response.page;
+        this._links = response._links;
 
-          this.page = response.page;
-          this._links = response._links;
-
-          if (response.items) {
-            const _list: any = response.items.map((file: any) => {
-              const metadataText = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.text, file, this.filesConfig.options || null);
-              const metadataLabel = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.label, file, this.filesConfig.options || null);
-              const element = {
-                id: file.id,
-                primaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.primaryText, file, this.filesConfig.options || null),
-                secondaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryText, file, this.filesConfig.options || null),
-                metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-                secondaryMetadata: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryMetadata, file, this.filesConfig.options || null),
-                editMode: false,
-                source: { ...file }
-              };
-              return element;
-            });
-            this.files = (url) ? [...this.files, ..._list] : [..._list];
-            this._preventMultiCall = false;
-          }
-          Tools.ScrollTo(0);
+        if (response.items) {
+          const _list: any = response.items.map((file: any) => {
+            const metadataText = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.text, file, this.filesConfig.options || null);
+            const metadataLabel = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.label, file, this.filesConfig.options || null);
+            const element = {
+              id: file.id,
+              primaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.primaryText, file, this.filesConfig.options || null),
+              secondaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryText, file, this.filesConfig.options || null, ' '),
+              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
+              secondaryMetadata: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryMetadata, file, this.filesConfig.options || null, ' '),
+              editMode: false,
+              source: { ...file }
+            };
+            return element;
+          });
+          this.files = (url) ? [...this.files, ..._list] : [..._list];
+          this._preventMultiCall = false;
         }
+        Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorMessages(true);
@@ -209,7 +205,7 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
   }
 
   __loadMoreData() {
-    if (this._links.next && !this._preventMultiCall) {
+    if (this._links && this._links.next && !this._preventMultiCall) {
       this._preventMultiCall = true;
       this._loadFiles(null, this._links.next.href);
     }

@@ -20,6 +20,7 @@ export class HeadBarComponent implements OnInit {
   @Input() loggedIn: boolean = false;
   @Input('menu-action-list') _menuActions: MenuAction[] = [];
   @Input('menu-app-action-list') _menuAppActions: MenuAction[] = [];
+  @Input('menu-shell-action') _menuShellActions: MenuAction = new MenuAction();
 
   @Input('show-language-menu') _showLanguageMenu: boolean = true;
   @Input('language-list') _translations: Language[] = [];
@@ -28,8 +29,6 @@ export class HeadBarComponent implements OnInit {
   @Output('on-change-language') _changeLang: EventEmitter<any> = new EventEmitter();
   @Output('on-menu-action') _menuAction: EventEmitter<any> = new EventEmitter();
   @Output('on-menu-app-action') _menuAppAction: EventEmitter<any> = new EventEmitter();
-
-  // Tools = Tools;
 
   constructor() { }
 
