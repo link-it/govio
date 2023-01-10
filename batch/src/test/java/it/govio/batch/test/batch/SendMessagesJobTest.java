@@ -42,7 +42,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import it.govio.batch.Application;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
@@ -127,6 +126,7 @@ class SendMessagesJobTest {
 		for(int i=0; i<100; i++) {
 			GovioMessageEntity message = GovioMessageEntity.builder()
 					.govioServiceInstance(serviceInstanceEntity.get())
+					.govhubUserId(1l)
 					.markdown("Lorem Ipsum")
 					.subject("Subject")
 					.taxcode(String.format("%03d", i) + "AAA00A00A000A")
@@ -302,8 +302,6 @@ class SendMessagesJobTest {
 		.thenAnswer(new Answer<ResponseEntity<LimitedProfile>>() {
 			@Override
 			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws Exception{
-				@SuppressWarnings("unchecked")
-				String fiscalCode = ((RequestEntity<FiscalCodePayload>) invocation.getArgument(0)).getBody().getFiscalCode();
 //				// Simulazione ritardo chiamata http
 //				Thread.sleep(nextInt+100);
 				LimitedProfile profile = new LimitedProfile();

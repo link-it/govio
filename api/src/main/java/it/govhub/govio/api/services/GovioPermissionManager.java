@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govregistry.commons.entity.UserEntity;
 import it.govhub.govregistry.readops.api.services.PermissionManager;
@@ -19,7 +19,7 @@ public class GovioPermissionManager implements PermissionManager {
 	SecurityService authService;
 	
 	@Autowired
-	ServiceInstanceRepository serviceInstanceRepo;
+	GovioServiceInstanceRepository serviceInstanceRepo;
 	
 	@Override
 	public Set<Long> listReadableOrganizations(UserEntity user) {

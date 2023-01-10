@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioMessageEntity_;
 import it.govhub.govio.api.entity.GovioServiceEntity_;
-import it.govhub.govio.api.entity.ServiceInstanceEntity_;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
 
@@ -57,7 +57,7 @@ public class GovioMessageFilters {
 		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
 			cb.equal(
 					root.get(GovioMessageEntity_.govioServiceInstance)
-							.get(ServiceInstanceEntity_.service)
+							.get(GovioServiceInstanceEntity_.service)
 							.get(GovioServiceEntity_.govhubService)
 							.get(ServiceEntity_.id),
 					serviceId);
@@ -68,7 +68,7 @@ public class GovioMessageFilters {
 		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
 			cb.equal(
 					root.get(GovioMessageEntity_.govioServiceInstance)
-							.get(ServiceInstanceEntity_.organization)
+							.get(GovioServiceInstanceEntity_.organization)
 							.get(OrganizationEntity_.id),
 					organizationId);
 	}

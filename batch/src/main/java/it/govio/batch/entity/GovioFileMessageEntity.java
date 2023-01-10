@@ -41,13 +41,13 @@ public class GovioFileMessageEntity {
 	@JoinColumn(name = "id_govio_file", nullable = false)
 	private GovioFileEntity govioFile;
 	
-	@Column(name = "line_record")
+	@Column(name = "error", columnDefinition = "TEXT")
+	private String error;
+
+	@Column(name = "line_record", columnDefinition = "TEXT")
 	private String lineRecord;
-	
+
 	@Column(name = "line_number")
 	private Long lineNumber;
-
-	@Column(name = "error")
-	private String error;
 
 }

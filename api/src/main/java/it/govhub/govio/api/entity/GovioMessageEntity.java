@@ -43,7 +43,7 @@ public class GovioMessageEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "id_govio_service_instance", nullable = false)
-	private ServiceInstanceEntity govioServiceInstance;
+	private GovioServiceInstanceEntity govioServiceInstance;
 	
 	@ManyToOne
 	@JoinColumn(name = "id_govhub_user", nullable = false)
@@ -55,7 +55,7 @@ public class GovioMessageEntity {
 	@Column(name = "subject", nullable = false)
 	private String subject;
 
-	@Column(name = "markdown", nullable = false)
+	@Column(name = "markdown", nullable = false, columnDefinition = "TEXT")
 	private String markdown;
 
 	@Column(name = "status", nullable = false)

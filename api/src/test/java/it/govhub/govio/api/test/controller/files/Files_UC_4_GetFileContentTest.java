@@ -37,9 +37,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioFileEntity;
-import it.govhub.govio.api.entity.ServiceInstanceEntity;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.GovioFileUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -70,7 +70,7 @@ class Files_UC_4_GetFileContentTest {
 	private GovioFileRepository govioFilesRepository;
 	
 	@Autowired
-	private ServiceInstanceRepository govioServiceInstancesRepository;
+	private GovioServiceInstanceRepository govioServiceInstancesRepository;
 	
 	@Autowired
 	private GovhubUserDetailService userDetailService;
@@ -79,7 +79,7 @@ class Files_UC_4_GetFileContentTest {
 	void setUp() throws Exception{
 		govioFilesRepository.deleteAll();
 		
-		Optional<ServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		
 		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
 		

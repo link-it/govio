@@ -50,7 +50,7 @@ public class GovioFileEntity  {
 	
 	@ManyToOne
     @JoinColumn(name = "id_govio_service_instance", nullable=false)
-	private ServiceInstanceEntity serviceInstance;
+	private GovioServiceInstanceEntity serviceInstance;
 	
 	@Column(name = "name", nullable = false, length = 256)
 	private String name;

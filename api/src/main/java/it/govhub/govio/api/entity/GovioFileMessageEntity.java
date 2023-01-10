@@ -2,33 +2,32 @@ package it.govhub.govio.api.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import it.govhub.govregistry.commons.entity.listeners.EntityUpdateBlocker;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Setter
-@Getter
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "govio_files_messages")
-@EntityListeners(EntityUpdateBlocker.class)
+@Table(name = "govio_file_messages")
 public class GovioFileMessageEntity {
 
 	@Id
 	private Long id;
 
-	@Column(name = "error")
+	@Column(name = "error", columnDefinition = "TEXT")
 	private String error;
 
-	@Column(name = "line_record")
+	@Column(name = "line_record", columnDefinition = "TEXT")
 	private String lineRecord;
 
 	@Column(name = "line_number")
