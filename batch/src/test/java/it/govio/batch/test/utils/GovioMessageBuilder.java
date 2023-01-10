@@ -15,6 +15,7 @@ public class GovioMessageBuilder {
 	public GovioMessageEntity buildGovioMessageEntity(GovioServiceInstanceEntity serviceInstanceEntity, Status status, boolean due_date, Long amount, String noticeNumber, boolean invalidAfterDueDate, Payee payee, String email) throws URISyntaxException {
 		GovioMessageEntityBuilder messageEntity = GovioMessageEntity.builder()
 				.govioServiceInstance(serviceInstanceEntity)
+				.govhubUserId(1l)
 				.markdown("Lorem Ipsum")
 				.subject("Subject")
 				.taxcode("AAAAAA00A00A000A")

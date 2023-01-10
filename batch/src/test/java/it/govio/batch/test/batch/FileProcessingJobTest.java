@@ -151,6 +151,7 @@ class FileProcessingJobTest {
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
 				.creationDate(LocalDateTime.now())
 				.govioServiceInstance(instanceService)
+				.govhubUserId(1l)
 				.location(file.toPath().toString())
 				.name(file.getName())
 				.status(Status.CREATED)

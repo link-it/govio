@@ -56,7 +56,7 @@ CREATE TABLE govio_template_placeholders
   (
      id_govio_placeholder BIGINT NOT NULL,
      id_govio_template    BIGINT NOT NULL,
-     index                BIGINT NOT NULL,
+     position             BIGINT NOT NULL,
      mandatory            BOOLEAN NOT NULL,
      PRIMARY KEY (id_govio_placeholder, id_govio_template)
   );

@@ -102,9 +102,9 @@ public class TemplateApplier {
 
 	private String getMessage(StringSubstitutor substitutor) {
 		String markdown = substitutor.replace(message);
-		if (markdown.length() > 10000)
-			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, è minore della dimensione minima ammessa.", markdown.length()));
 		if (markdown.length() < 80)
+			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, è minore della dimensione minima ammessa.", markdown.length()));
+		if (markdown.length() > 10000)
 			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, supera la dimensione massima ammessa.", markdown.length()));
 		return markdown;
 	}

@@ -50,19 +50,19 @@ public class GovioTemplateApplierFactory {
 			switch(placeholder.getGovioPlaceholder().getType()) {
 			case DATE:
 			{
-				CsvItem item = new DateCsvItem(placeholder.getIndex() + index, placeholder.getGovioPlaceholder().getName(), placeholder.isMandatory());
+				CsvItem item = new DateCsvItem(placeholder.getPosition() + index, placeholder.getGovioPlaceholder().getName(), placeholder.isMandatory());
 				items.put(item.getName(), item);
 			}
 			break;
 			case DATETIME:
 			{
-				CsvItem item = new DateTimeCsvItem(placeholder.getIndex() + index, placeholder.getGovioPlaceholder().getName(), placeholder.isMandatory());
+				CsvItem item = new DateTimeCsvItem(placeholder.getPosition() + index, placeholder.getGovioPlaceholder().getName(), placeholder.isMandatory());
 				items.put(item.getName(), item);
 			}
 			break;
 			case STRING:
 			{
-				CsvItem item = new StringCsvItem(placeholder.getIndex() + index, placeholder.getGovioPlaceholder().getName(), placeholder.isMandatory(), placeholder.getGovioPlaceholder().getPattern());
+				CsvItem item = new StringCsvItem(placeholder.getPosition() + index, placeholder.getGovioPlaceholder().getName(), placeholder.isMandatory(), placeholder.getGovioPlaceholder().getPattern());
 				items.put(item.getName(), item);
 			}
 			break;

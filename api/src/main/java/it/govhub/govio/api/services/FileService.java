@@ -28,15 +28,13 @@ import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovioFile;
-import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
-import it.govhub.govio.api.entity.GovioMessageEntity;
-import it.govhub.govio.api.entity.ServiceInstanceEntity;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioFileMessageRepository;
 import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.GovioMessageRepository;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
@@ -55,7 +53,7 @@ public class FileService {
 	GovioFileRepository fileRepo;
 
 	@Autowired
-	ServiceInstanceRepository serviceRepo;
+	GovioServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	SecurityService authService;
@@ -78,7 +76,7 @@ public class FileService {
 	Logger logger = LoggerFactory.getLogger(FileService.class);
 	
 	@Transactional
-	public GovioFileEntity uploadCSV(ServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
+	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER);
@@ -140,7 +138,7 @@ public class FileService {
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 		
-		FileList ret = ListaUtils.costruisciListaPaginata(files, pageRequest.limit, curRequest, new FileList());
+		FileList ret = ListaUtils.buildPaginatedList(files, pageRequest.limit, curRequest, new FileList());
 		
 		for (GovioFileEntity file : files) {
 			ret.addItemsItem(this.fileAssembler.toModel(file));
@@ -161,7 +159,7 @@ public class FileService {
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 				.getRequest();
 
-		FileMessageList ret = ListaUtils.costruisciListaPaginata(fileMessages, pageRequest.limit, curRequest,
+		FileMessageList ret = ListaUtils.buildPaginatedList(fileMessages, pageRequest.limit, curRequest,
 				new FileMessageList());
 
 		for (GovioFileMessageEntity fileMessage : fileMessages) {

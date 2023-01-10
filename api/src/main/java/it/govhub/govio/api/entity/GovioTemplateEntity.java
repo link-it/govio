@@ -23,15 +23,14 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "govio_templates")
-public class TemplateEntity implements Serializable {
+public class GovioTemplateEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@SequenceGenerator(name = "seq_govio_templates", sequenceName = "seq_govio_templates", initialValue = 1, allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_templates")
+	@SequenceGenerator(name="seq_govio_templates",sequenceName="seq_govio_templates", initialValue=1, allocationSize=1)
+	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_templates")
 	private Long id;
-	
 	
 	@Column(name = "name")
 	private String name;
@@ -42,7 +41,7 @@ public class TemplateEntity implements Serializable {
 	@Column(name = "subject", nullable = false)
 	private String subject;
 	
-	@Column(name = "message_body", nullable = false)
+	@Column(name = "message_body", nullable = false, columnDefinition = "TEXT")
 	private String messageBody;
 
 	@Column(name = "has_due_date", nullable = false)

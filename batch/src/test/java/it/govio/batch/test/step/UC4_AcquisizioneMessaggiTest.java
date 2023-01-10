@@ -310,7 +310,7 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			GovioTemplatePlaceholderEntity placeHolderEntity = GovioTemplatePlaceholderEntity
 					.builder()
-					.index(1)
+					.position(1)
 					.mandatory(true)
 					.govioPlaceholder(placeHolder)
 					.govioTemplate(null)
@@ -348,7 +348,7 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			GovioTemplatePlaceholderEntity placeHolderEntity = GovioTemplatePlaceholderEntity
 					.builder()
-					.index(1)
+					.position(1)
 					.mandatory(false)
 					.govioPlaceholder(placeHolder)
 					.govioTemplate(null)
@@ -384,7 +384,7 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			GovioTemplatePlaceholderEntity placeHolderEntity = GovioTemplatePlaceholderEntity
 					.builder()
-					.index(1)
+					.position(1)
 					.mandatory(true)
 					.govioPlaceholder(placeHolder)
 					.govioTemplate(null)
@@ -421,7 +421,7 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			GovioTemplatePlaceholderEntity placeHolderEntity = GovioTemplatePlaceholderEntity
 					.builder()
-					.index(1)
+					.position(1)
 					.mandatory(true)
 					.govioPlaceholder(placeHolder)
 					.govioTemplate(null)
@@ -458,7 +458,7 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			GovioTemplatePlaceholderEntity placeHolderEntity = GovioTemplatePlaceholderEntity
 					.builder()
-					.index(1)
+					.position(1)
 					.mandatory(false)
 					.govioPlaceholder(placeHolder)
 					.govioTemplate(null)
@@ -494,7 +494,7 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			GovioTemplatePlaceholderEntity placeHolderEntity = GovioTemplatePlaceholderEntity
 					.builder()
-					.index(1)
+					.position(1)
 					.mandatory(false)
 					.govioPlaceholder(placeHolder)
 					.govioTemplate(null)
@@ -530,7 +530,7 @@ class UC4_AcquisizioneMessaggiTest {
 			
 			GovioTemplatePlaceholderEntity placeHolderEntity = GovioTemplatePlaceholderEntity
 					.builder()
-					.index(1)
+					.position(1)
 					.mandatory(false)
 					.govioPlaceholder(placeHolder)
 					.govioTemplate(null)

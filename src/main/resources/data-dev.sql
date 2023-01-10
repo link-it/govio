@@ -62,4 +62,4 @@ INSERT INTO govio_service_instances(id, id_govio_service, id_govhub_organization
 
 INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'), 'cie', 'STRING', 'CA000000AA');
 
-INSERT INTO govio_template_placeholders(id_govio_template, id_govio_placeholder, mandatory, index) VALUES (nextval('public.seq_govio_template_placeholders'), '1', true, 1);
+INSERT INTO govio_template_placeholders(id_govio_template, id_govio_placeholder, mandatory, position) VALUES (nextval('public.seq_govio_template_placeholders'), '1', true, 1);

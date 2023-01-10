@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessagePaymentItem;
+import it.govhub.govio.api.beans.GovioMessageStatus;
 import it.govhub.govio.api.entity.GovioMessageEntity;
-import it.govhub.govio.api.web.FileController;
 import it.govhub.govio.api.web.MessageController;
 import it.govhub.govregistry.readops.api.assemblers.OrganizationAuthItemAssembler;
 import it.govhub.govregistry.readops.api.assemblers.ServiceAuthItemAssembler;
@@ -29,7 +29,7 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 	ServiceAuthItemAssembler serviceItemAssembler;
 	
 	public MessageAssembler() {
-		super(FileController.class, GovioMessage.class);
+		super(MessageController.class, GovioMessage.class);
 	}
 
 	@Override
@@ -37,17 +37,21 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 		GovioMessage ret = instantiateModel(src);
 
 		BeanUtils.copyProperties(src, ret);
+		ret.setStatus(GovioMessageStatus.valueOf(src.getStatus().toString()));
 		
-		GovioMessagePaymentItem payment = new GovioMessagePaymentItem();
-		payment.amount(src.getAmount())
-			.noticeNumber(src.getNoticeNumber())
-			.invalidAfterDueDate(src.getInvalidAfterDueDate())
-			.payeeTaxcode(src.getPayeeTaxcode());
-		
-		ret.user(this.userItemAssembler.toModel(src.getSender()))
-			.organization(this.orgItemAssembler.toModel(src.getGovioServiceInstance().getOrganization()))
-			.service(this.serviceItemAssembler.toModel(src.getGovioServiceInstance().getService().getGovhubService()))
-			.payment(payment);
+		if(src.getNoticeNumber() != null) {
+			GovioMessagePaymentItem payment = new GovioMessagePaymentItem();
+			payment.amount(src.getAmount())
+				.noticeNumber(src.getNoticeNumber())
+				.invalidAfterDueDate(src.getInvalidAfterDueDate())
+				.payeeTaxcode(src.getPayeeTaxcode());
+			ret.setPayment(payment);
+		}
+
+		// TODO: risolvere java.lang.IllegalArgumentException: Source must not be null
+		ret.user(this.userItemAssembler.toModel(src.getSender()));
+		ret.organization(this.orgItemAssembler.toModel(src.getGovioServiceInstance().getOrganization()));
+		ret.service(this.serviceItemAssembler.toModel(src.getGovioServiceInstance().getService().getGovhubService()));
 		
 		ret.add(linkTo(methodOn(MessageController.class).readMessage(src.getId())).withSelfRel());
 		
