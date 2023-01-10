@@ -144,7 +144,8 @@ export class Tools {
       const value = Tools.getObjectValue(data, field.field); // data[field.field]
       switch (field.type) {
         case 'number':
-          results.push(GridFormatters.numberFormatter({ value: value }, false));
+          const _tooltip = null; // field.tooltip ? this.translate.instant(field.tooltip) : null;
+          results.push(GridFormatters.numberFormatter({ value: value, icon: field.icon, hideZero: field.hideZero, tooltip: _tooltip }, true));
           break;
         case 'currency':
           results.push(GridFormatters.currencyFormatter({ value: value }, false));
@@ -183,9 +184,9 @@ export class Tools {
       if (field.type === 'download') {
         _list.push(new FieldClass({ label: 'APP.LABEL.Content', value: field.field, download: true, icon: 'download', json: data }));
       } else {
-        const value = Tools.getObjectValue(data, field.field); // data[field.field]
-        if (value) {
-          _list.push(new FieldClass({ label: field.label, value: Tools.formatValue(value, field, false, options), json: data }));
+        const value = Tools.getObjectValue(data, field.field);
+        if (value || (field.type === 'number')) {
+          _list.push(new FieldClass({ label: field.label, value: Tools.formatValue(value, field, true, options), json: data }));
         } else {
           if (empty) {
             _list.push(new FieldClass({ label: field.label, value: empty, json: data }));
