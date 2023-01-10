@@ -24,7 +24,7 @@ export const navItemsMainMenu: INavData[] = [
     label: 'APP.MENU.Messages',
     path: 'messages',
     url: '/messages',
-    icon: 'send',
+    iconBs: 'send',
     permission: 'MESSAGES',
     attributes: { disabled: false }
   }

@@ -49,6 +49,24 @@
 // Application Dropdown
 .ui-menu {
   &.app-switcher-menu {
+    .app-switcher-wide-item {
+      grid-column-start: 1;
+      grid-column-end: 5;
+    }
+
+    .ui-menu-item,
+    a {
+      position: relative;
+      padding: 5px;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+      color: #000;
+    }
+
     .ui-menu-item {
       &.app-switcher-grid-cell {
         width: 78px;
@@ -61,12 +79,36 @@
         padding-top: 10px;
         padding-left: 10px;
         padding-right: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        border-block-end: 0;
+        cursor: default;
+        padding-inline: 10px;
+        padding-block-start: 10px;
 
         &:not(:first-child) {
           padding-block: 10px;
           padding-top: 10px;
           padding-bottom: 10px;
         }
+      }
+
+      &:not(.app-switcher-heading) {
+        &:not(.menu-disabled) {
+          &:hover {
+            background-color: rgba(170,170,174,.2);
+          }
+        }
+      }
+
+      &.menu-disabled {
+        opacity: .5;
+        cursor: default;
+      }
+
+      &.is-highlighted,
+      a.is-highlighted {
+        background-color: rgba(170,170,174,.2);
       }
     }
 
@@ -76,10 +118,11 @@
       overflow-x: hidden;
       max-block-size: 100%;
       scroll-behavior: smooth;
-      grid-template-columns: repeat(4,minmax(78px,1fr));
+      grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
       background-color: #fff;
       height: auto;
       max-height: 420px;
+      padding: 5px;
 
       &:hover {
         &::-webkit-scrollbar-thumb {
@@ -92,6 +135,16 @@
       margin-top: 6px;
       margin-left: -10px;
       margin-right: -10px;
+      color: #58585a;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      margin-block-start: 6px;
+      margin-inline: -10px;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     &.other-menu {
@@ -105,6 +158,9 @@
     }
 
     .other-menu-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
       padding-left: 5px;
       padding-top: 3px;
       padding-bottom: 3px;
@@ -125,56 +181,6 @@
         margin-right: 6px;
       }
     }
-  }
-}
-
-.ui-menu {
-  &.app-switcher-menu {
-    .app-switcher-wide-item {
-      grid-column-start: 1;
-      grid-column-end: 5;
-    }
-
-    .app-switcher-app-name {
-      color: #58585a;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 16px;
-      margin-block-start: 6px;
-      margin-inline: -10px;
-      text-align: center;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .ui-menu-item {
-      &.app-switcher-heading {
-        border-bottom: 0;
-        padding-top: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        border-block-end: 0;
-        cursor: default;
-        padding-inline: 10px;
-        padding-block-start: 10px;
-      }
-
-      &:not(.app-switcher-heading) {
-        &:not(.menu-disabled) {
-          &:hover {
-            background-color: rgba(170,170,174,.2);
-          }
-        }
-      }
-
-      &.menu-disabled {
-        opacity: .5;
-        cursor: default;
-      }
-    }
 
     .app-icon {
       display: inline-block;
@@ -187,7 +193,7 @@
       .app-icon-image {
         width: 54px;
         height: 54px;
-        border-radius: .7rem;
+        border-radius: .3rem;
         background-color: #f1f1f1;
 
         i {
@@ -196,44 +202,4 @@
       }
     }
   }
-
-  .ui-menu a,
-  .ui-menu-item {
-    position: relative;
-    padding: 5px;
-    border-radius: 10px;
-    cursor: pointer;
-    user-select: none;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-    color: #000;
-  }
-
-  .ui-menu-item {
-    &.is-highlighted,
-    a.is-highlighted {
-      background-color: rgba(170,170,174,.2);
-    }
-  }
-
-  .ui-menu-scroll-container {
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-  }
 }
-
-.other-menu-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-// .ui-popover-content {
-//   // top: 0;
-//   // left: 0;
-//   box-sizing: border-box;
-//   width: 322px;
-//   height: 438px;
-// }

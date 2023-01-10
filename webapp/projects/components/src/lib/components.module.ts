@@ -27,6 +27,7 @@ import { SearchBarModule } from './ui/search-bar/search-bar.module';
 import { SearchBarFormModule } from './ui/search-bar-form/search-bar-form.module';
 import { SimpleItemModule } from './ui/simple-item/simple-item.module';
 import { CollapseItemModule } from './ui/collapse-item/collapse-item.module';
+import { ItemRowModule } from './ui/item-row/item-row.module';
 import { InputHelpModule } from './ui/input-help/input-help.module';
 import { AddEditValueModule } from './ui/add-edit-value/add-edit-value.module';
 import { AppSwitcherModule } from './ui/app-switcher/app-switcher.module';
@@ -67,6 +68,7 @@ import { CountUpeModule } from './directives/count-up.module';
     SearchBarFormModule,
     SimpleItemModule,
     CollapseItemModule,
+    ItemRowModule,
     InputHelpModule,
     AddEditValueModule,
     AppSwitcherModule,
@@ -116,6 +118,7 @@ import { CountUpeModule } from './directives/count-up.module';
     SearchBarFormModule,
     SimpleItemModule,
     CollapseItemModule,
+    ItemRowModule,
     InputHelpModule,
     AddEditValueModule,
     AppSwitcherModule,
