@@ -1,0 +1,29 @@
+<ng-container [ngSwitch]="_config.type">
+  <ng-container *ngSwitchCase="'text'">
+    <span>{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'number'">
+    <span>{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'message'">
+    <span>{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'date'">
+    <span>{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'label'">
+    <span class="">{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'status'">
+    <span class="">{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'cardinal'">
+    <span class="">#{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'currency'">
+    <span class="">€{{ _config.type }}</span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'progress'">
+    <span class="progress">{{ _config.type }}</span>
+  </ng-container>
+</ng-container>

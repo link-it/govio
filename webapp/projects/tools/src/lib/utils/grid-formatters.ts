@@ -25,7 +25,19 @@ export class GridFormatters {
     const cssClass = '';
     const _number = this.formatNumber(params.value);
     if (html) {
-      return '<span class="' + cssClass + '">' + _number + '</span>';
+      if (!!params.hideZero) {
+        return '';
+      } else {
+        let _icon = '';
+        if (params.icon) {
+          _icon = `<i class="bi bi-${params.icon} ms-2 me-1"></i>`;
+        }
+        let _tooltip = '';
+        if (params.tooltip) {
+          _tooltip = `title="${params.tooltip}" data-bs-toggle="tooltip"`;
+        }
+        return `<div class="d-inline-block" ${_tooltip}>${_icon}<span class="${cssClass}">${_number}</span></div`;
+      } 
     } else {
       return _number;
     }

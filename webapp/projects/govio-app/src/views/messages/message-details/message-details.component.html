@@ -3,279 +3,36 @@
     <ui-breadcrumb [breadcrumbs]="breadcrumbs" [classContainer]="'limit-container-width'" (onClick)="onBreadcrumb($event)"></ui-breadcrumb>
   </div>
   <div class="top-area container-fluid container-limited limit-container-width px-0">
-    <h3 class="page-title" *ngIf="_isEdit && !_isNew">{{ 'APP.TITLE.EditMessage' | translate }}</h3>
-    <h3 class="page-title" *ngIf="_isEdit && _isNew">{{ 'APP.TITLE.NewMessage' | translate }}</h3>
     <div class="d-flex flex-grow-1">&nbsp;</div>
     <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'edit'"> -->
       <div class="nav-controls">
-        <div class="position-relative" *ngIf="!_isEdit && !_spin">
-          <button aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-icon" [tooltip]="'APP.TOOLTIP.EditMessage' | translate" (click)="_editMessage()">
-            <i class="bi bi-pencil"></i>
-          </button>
-        </div>
-        <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'delete'"> -->
-          <div role="group" class="btn-group- ms-1" *ngIf="!_isEdit && !_spin">
-            <div class="dropdown b-dropdown gl-new-dropdown btn-group" id="actions">
-              <button aria-haspopup="true" aria-expanded="false" type="button" class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret" data-bs-toggle="dropdown" data-bs-display="static" id="other_actions">
-                <i class="bi bi-three-dots-vertical"></i>
-              </button>
-              <ul role="menu" tabindex="-1" class="dropdown-menu dropdown-menu-end" aria-labelledby="sort_toggle">
-                <div class="gl-new-dropdown-inner">
-                  <div class="gl-new-dropdown-contents">
-                    <li role="presentation" class="gl-new-dropdown-item">
-                      <button role="menuitem" type="button" class="dropdown-item" (click)="_deleteMessage()">
-                        <div class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start">
-                          <i class="bi bi-trash text-danger"></i>
-                        </div>
-                        <div class="gl-new-dropdown-item-text-wrapper">
-                          <p class="gl-new-dropdown-item-text-primary">{{ 'APP.MENU.DeleteMessage' | translate }}</p>
-                        </div>
-                      </button>
-                    </li>
-                  </div>
-                </div>
-              </ul>
-            </div>
-          </div>
-        <!-- </ng-template> -->
-        <div role="group" class="gl-w-full btn-group-" *ngIf="_isEdit && !_spin">
-          <button aria-haspopup="true" aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-default-tertiary ms-2" [tooltip]="(_isNew ? 'APP.TOOLTIP.CancelNew' : 'APP.TOOLTIP.CancelEdit') | translate" (click)="_onCancelEdit()">
-            <i class="bi bi-x-lg"></i>
-          </button>
-        </div>
       </div>
     <!-- </ng-template> -->
   </div>
   <section class="container-fluid container-limited limit-container-width container-scroller container-scroller-no-search">
-    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin && !_isNew"></ui-box-spinner>
-    <ui-box-message *ngIf="!message && !_spin && !_isNew"
+    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
+    <ui-box-message *ngIf="!message && !_spin"
       [image]="'./assets/images/illustrations/no-data.svg'"
       [message]="'APP.MESSAGE.NoData' | translate"
       [subMessage]="'APP.MESSAGE.NoDataHelp' | translate">
     </ui-box-message>
 
-    <div class="settings" *ngIf="(message && !_spin) || _isNew">
-      <div class="settings-header d-none">
-        <h4 class="settings-title">{{ 'APP.MESSAGES.TITLE.GeneralInformations' | translate }}</h4>
-        <ng-template [appHasPermission]="'SETTINGS'" [action]="'edit'">
-          <button aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-icon" [tooltip]="'APP.TOOLTIP.EditMessage' | translate" (click)="_editMessage()" *ngIf="!_isEdit && !_spin">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <div role="group" class="gl-w-full btn-group-" *ngIf="_isEdit && !_spin">
-            <button aria-haspopup="true" aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-default-tertiary ms-2 btn-icon" [tooltip]="(_isNew ? 'APP.TOOLTIP.CancelNew' : 'APP.TOOLTIP.CancelEdit') | translate" (click)="_onCancelEdit()">
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-        </ng-template>
-        <p markdown>{{ 'APP.MESSAGES.TITLE.GeneralInformations_sub' | translate }}</p>
-      </div>
+    <div class="settings" *ngIf="(message && !_spin)">
       <div class="settings-content">
-        <div class="gl-alert gl-alert-danger col-md-12 mb-5" *ngIf="!_isEdit && _error">
-          {{ _errorMsg }}
-        </div>
-        <div class="edit-form">
-          <form novalidate class="issue-form common-note-form mt-3 gl-show-field-errors gfm-form" [class.form-readonly]="!_isEdit" [formGroup]="_formGroup" (submit)="_onSubmit(_formGroup.value)">
-            <div class="row gl-mt-3">
-              <div class="col-lg-4">
-                <h4 class="gl-mt-0 text-break">{{ 'APP.MESSAGES.TITLE.GeneralInformations' | translate }}</h4>
-                <div class="text-break" markdown>{{ 'APP.MESSAGES.TITLE.GeneralInformations_sub' | translate }}</div>
-              </div>
-              <div class="col-lg-8">
-                <!-- <div class="row">
-                  <div class="col-lg-6"> -->
-                    <div class="form-group legal_name">
-                      <label class="label-bold" for="legal_name">{{ 'APP.LABEL.LegalName' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('legal_name')" type="text" name="legal_nameg" id="legal_name" formControlName="legal_name">
-                        <p *ngIf="f['legal_name'].invalid && (f['legal_name'].dirty || f['legal_name'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['legal_name'].errors && f['legal_name'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="legal_name" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="legal_name" [value]="message.legal_name">
-                      </div>
-                    </div>
-                  <!-- </div>
-                  <div class="col-lg-6"> -->
-                    <div class="form-group tax_code">
-                      <label class="label-bold" for="tax_code">{{ 'APP.LABEL.TaxCode' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('tax_code')" type="text" name="tax_code" id="tax_code" formControlName="tax_code">
-                        <p *ngIf="f['tax_code'].invalid && (f['tax_code'].dirty || f['tax_code'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['tax_code'].errors && f['tax_code'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                          <span *ngIf="f['tax_code'].errors && f['tax_code'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Messagetax_code' | translate }}</span>
-                        </p>
-                        <ui-input-help field="tax_code" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="tax_code" [value]="message.tax_code">
-                      </div>
-                    </div>
-                  <!-- </div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-6"> -->
-                    <div class="form-group office_address">
-                      <label class="label-bold" for="office_address">{{ 'APP.LABEL.OfficeAddress' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('office_address')" type="text" name="office_address" id="office_address" formControlName="office_address">
-                        <p *ngIf="f['office_address'].invalid && (f['office_address'].dirty || f['office_address'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['office_address'].errors && f['office_address'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                          <span *ngIf="f['office_address'].errors && f['office_address'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Messageoffice_address' | translate }}</span>
-                        </p>
-                        <ui-input-help field="office_address" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="office_address" [value]="message.office_address">
-                      </div>
-                    </div>
-                  <!-- </div>
-                  <div class="col-lg-6"> -->
-                    <div class="form-group office_at">
-                      <label class="label-bold" for="office_at">{{ 'APP.LABEL.OfficeAt' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('office_at')" type="text" name="office_at" id="office_at" formControlName="office_at">
-                        <p *ngIf="f['office_at'].invalid && (f['office_at'].dirty || f['office_at'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['office_at'].errors && f['office_at'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                          <span *ngIf="f['office_at'].errors && f['office_at'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Messageoffice_at' | translate }}</span>
-                        </p>
-                        <ui-input-help field="office_at" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="office_at" [value]="message.office_at">
-                      </div>
-                    </div>
-                  <!-- </div>
-                </div> -->
-                <div class="row">
-                  <div class="col-md-3">
-                    <div class="form-group office_zip">
-                      <label class="label-bold" for="office_zip">{{ 'APP.LABEL.OfficeZip' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('office_zip')" type="text" name="office_zip" id="office_zip" formControlName="office_zip">
-                        <p *ngIf="f['office_zip'].invalid && (f['office_zip'].dirty || f['office_zip'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['office_zip'].errors && f['office_zip'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="office_zip" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="office_zip" [value]="message.office_zip || '-'">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group office_municipality">
-                      <label class="label-bold" for="office_municipality">{{ 'APP.LABEL.OfficeMunicipality' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('office_municipality')" type="text" name="office_municipality" id="office_municipality" formControlName="office_municipality">
-                        <p *ngIf="f['office_municipality'].invalid && (f['office_municipality'].dirty || f['office_municipality'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['office_municipality'].errors && f['office_municipality'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="office_municipality" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="office_municipality" [value]="message.office_municipality || '-'">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="form-group office_province">
-                      <label class="label-bold" for="office_province">{{ 'APP.LABEL.OfficeProvince' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('office_province')" type="text" name="office_province" id="office_province" formControlName="office_province">
-                        <p *ngIf="f['office_province'].invalid && (f['office_province'].dirty || f['office_province'].touched)"
-                          class="form-text text-danger">
-                          <span *ngIf="f['office_province'].errors && f['office_province'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="office_province" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="office_province" [value]="message.office_province || '-'">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- <div class="row">
-                  <div class="col-lg-6"> -->
-                    <div class="form-group office_email_address">
-                      <label class="label-bold" for="office_email_address">{{ 'APP.LABEL.OfficeEmailAddress' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('office_email_address')" type="text" name="office_email_address" id="office_email_address" formControlName="office_email_address">
-                        <p *ngIf="f['office_email_address'].invalid && (f['office_email_address'].dirty || f['office_email_address'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['office_email_address'].errors && f['office_email_address'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                          <span *ngIf="f['office_email_address'].errors && f['office_email_address'].errors['email']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Email' | translate }}</span>
-                        </p>
-                        <ui-input-help field="office_email_address" context="MESSAGE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="office_email_address" [value]="message.office_email_address">
-                      </div>
-                    </div>
-                  <!-- </div>
-                </div> -->
-
-                <div class="row">
-                  <div class="col-6">
-                    <div class="form-group logo">
-                      <label class="label-bold" for="logo">{{ 'APP.LABEL.Logo' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <app-photo-base64
-                          [boxWidth]="'175px'"
-                          [boxHeight]="'auto'"
-                          [maxSize]="20971520"
-                          [placeHolder]="_imagePlaceHolder"
-                          [imageSaved]="message?.logo | mapper: _decodeImage"
-                          [isImageSaved]="message?.logo"
-                          [removeLabel]="'APP.BUTTON.Remove' | translate"
-                          (imageLoaded)="_onImageLoaded($event, 'logo')">
-                        </app-photo-base64>
-                      </div>
-                      <div class="mt-2" *ngIf="!_isEdit">
-                        <img class="img-space" style="width: 175px;height: auto;" [src]="message?.logo | mapper: _decodeImage" />
-                      </div>
-                    </div>
-                  </div>
-                <!-- </div>
-                <div class="row"> -->
-                  <div class="col-6">
-                    <div class="form-group logo_miniature">
-                      <label class="label-bold" for="logo_miniature">{{ 'APP.LABEL.LogoMiniature' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <app-photo-base64
-                          [boxWidth]="'90px'"
-                          [boxHeight]="'auto'"
-                          [maxSize]="50000"
-                          [placeHolder]="_imagePlaceHolder"
-                          [imageSaved]="message?.logo_miniature | mapper: _decodeImage"
-                          [isImageSaved]="message?.logo_miniature"
-                          [removeLabel]="'APP.BUTTON.Remove' | translate"
-                          (imageLoaded)="_onImageLoaded($event, 'logo_miniature')">
-                        </app-photo-base64>
-                      </div>
-                      <div class="mt-2" *ngIf="!_isEdit">
-                        <img class="img-space" style="width: 90px;height: auto;" [src]="message?.logo_miniature | mapper: _decodeImage" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="gl-alert gl-alert-danger col-md-12 mt-3" *ngIf="_isEdit && _error">
-              {{ _errorMsg }}
-            </div>
-
-            <div class="row-content-block footer-block" *ngIf="_isEdit">
-              <button aria-label="Save" type="submit" class="gl-button btn btn-confirm gl-mr-2" [disabled]="_formGroup.invalid || _spin">
-                {{ 'APP.BUTTON.Save' | translate }}
-              </button>
-              <button aria-label="Cancel" type="button" class="btn gl-button btn-default" (click)="_onCancelEdit()">
-                {{ 'APP.BUTTON.Cancel' | translate }}
-              </button>
-            </div>
-          </form>
+        <div class="row gl-mt-3">
+          <div class="col-lg-12">
+            <ui-box-collapse
+              [opened]="true"
+              [showCollapse]="appConfig.AppConfig?.Layout?.Details?.Collapsible?.informations"
+              [id]="'general-informations'"
+              [title]="'APP.MESSAGES.TITLE.GeneralInformations' | translate"
+              [subTitle]="'APP.MESSAGES.TITLE.GeneralInformations_sub' | translate">
+              <ui-form-readonly
+                [fields]="_informazioni"
+                [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6">
+              </ui-form-readonly>
+            </ui-box-collapse>
+          </div>
         </div>
       </div>
     </div>
