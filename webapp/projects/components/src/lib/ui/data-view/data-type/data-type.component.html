@@ -3,7 +3,7 @@
     <span class="{{ _elem.class || '' }}">{{ _value }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'markdown'">
-    <span markdown class="{{ _elem.class || '' }}">{{ _value }}</span>
+    <span markdown class="text-break {{ _elem.class || '' }}">{{ _value }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'number'">
     <div class="d-inline-block" *ngIf="!(_elem.hideZero && _value == 0)">

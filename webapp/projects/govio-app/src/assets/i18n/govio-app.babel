@@ -2801,6 +2801,22 @@
 											</translation>
 										</translations>
 									</concept_node>
+									<concept_node>
+										<name>SCHEDULED</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
 									<folder_node>
 										<name>TRANSACTION</name>
 										<children>
@@ -3163,6 +3179,22 @@
 								<name>TOOLTIP</name>
 								<children>
 									<concept_node>
+										<name>AcquiredMessages</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
 										<name>Add</name>
 										<description/>
 										<comment/>
@@ -3212,6 +3244,22 @@
 									</concept_node>
 									<concept_node>
 										<name>EditFile</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>ErrorMessages</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -3292,6 +3340,22 @@
 									</concept_node>
 									<concept_node>
 										<name>Remove</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>ScheduledExpeditionDate</name>
 										<description/>
 										<comment/>
 										<default_text/>

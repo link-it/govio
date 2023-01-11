@@ -215,6 +215,7 @@
 			"PROCESSED": "Elaborato",
 			"PROCESSING": "In elaborazione",
 			"SCARTATO": "Scartato",
+			"SCHEDULED": "Scedulato",
 			"TRANSACTION": {
 				"ELABORATO": "Riconciliato",
 				"NUOVO": "Non riconciliato"
@@ -246,15 +247,18 @@
 			"Watermark": "Staging"
 		},
 		"TOOLTIP": {
+			"AcquiredMessages": "Messaggi acquisiti",
 			"Add": "Aggiungi",
 			"CancelEdit": "Annulla modifica",
 			"CancelNew": "Annulla inserimento",
 			"EditFile": "Modifica tracciato",
+			"ErrorMessages": "Messaggi di errore",
 			"Export": "Esporta",
 			"ExportCSV": "Esporta documento CSV",
 			"ExportPDF": "Esporta documento PDF",
 			"Preview": "Anteprima",
-			"Remove": "Rimuovi"
+			"Remove": "Rimuovi",
+			"ScheduledExpeditionDate": "Data di spedizione pianificata"
 		},
 		"TYPE": {
 			"MANUALE": "Manuale"
