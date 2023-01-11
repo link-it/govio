@@ -19,6 +19,7 @@ export interface INavData {
   url?: string | any[];
   href?: string;
   icon?: string;
+  iconBs?: string;
   image?: string;
   title?: boolean;
   divider?: boolean;

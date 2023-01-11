@@ -120,12 +120,18 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
         this._initBreadcrumb();
         // this._loadAnagrafiche();
 
-        if (this._isEdit) {
-          this._loadRegistry();
-          this._initForm({ ...this._file });
-        } else {
-          this._loadAll();
-        }
+        this.configService.getConfig(this.model).subscribe(
+          (config: any) => {
+            this.config = config;
+            this._translateConfig();
+            if (this._isEdit) {
+              this._loadRegistry();
+              this._initForm({ ...this._file });
+            } else {
+              this._loadAll();
+            }
+          }
+        );
       }
 
     });
@@ -197,11 +203,14 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     this.apiService.upload(url, formData)
       .subscribe({
         next: (response: any) => {
+          this.id = response.id;
           this.file = response; // new File({ ...response });
           this._file = response; // new File({ ...response });
+          this._isNew = false;
 
+          this._initBreadcrumb();
           this.__initInformazioni();
-          this._isEdit = false;
+          this._onCancelEdit();
         },
         error: (error: any) => {
           this._error = true;
@@ -293,6 +302,15 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
         Tools.OnError(error);
       }
     });
+
+    // this.apiService.getList('service-instances').subscribe({
+    //   next: (response: any) => {
+    //     this._services = response.items;
+    //   },
+    //   error: (error: any) => {
+    //     Tools.OnError(error);
+    //   }
+    // });
   }
 
   _downloadAction(event: any) {
@@ -335,7 +353,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
 
   __initInformazioni() {
     if (this.file) {
-      this._informazioni = Tools.generateFields(this.config.details, this.file, false, this.config.options).map((field: FieldClass) => {
+      this._informazioni = Tools.generateFields(this.config.details, this.file, true, this.config.options).map((field: FieldClass) => {
         field.label = this.translate.instant(field.label);
         return field;
       });
@@ -410,4 +428,26 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       this._onClose();
     }
   }
+
+  _orgLogo = (item: any): string => {
+    let logoUrl = this._organizationLogoPlaceholder;
+    if (item._links && item._links.logo_small) {
+      logoUrl = item._links.logo_small.href;
+    }
+    return logoUrl;
+  };
+
+  _orgLogoBackground = (item: any): string => {
+    let logoUrl = this._organizationLogoPlaceholder;
+    if (item._links && item._links.logo_small && false) {
+      // logoUrl = 'http://172.16.1.121:8083/govio/api/v1/organizations/16/logo_miniature';
+      logoUrl = item._links.logo_small.href;
+    }
+    return `url(${logoUrl})`;
+  };
+
+  _serviceLogoBackground = (item: any): string => {
+    const logoUrl = item.logo || this._serviceLogoPlaceholder;
+    return `url(${logoUrl})`;
+  };
 }

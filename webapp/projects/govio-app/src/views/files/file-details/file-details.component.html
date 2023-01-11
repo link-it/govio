@@ -98,12 +98,18 @@
                           [loadingText]="'APP.MESSAGE.LoadingText' | translate"
                           formControlName="organization_id">
                             <ng-template ng-label-tmp let-item="item">
-                              <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" />
-                              <span class="ms-3">{{item.legal_name}}</span>
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
+                              </div>
                             </ng-template>
                             <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                              <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" />
-                              <span class="ms-3">{{item.legal_name}}</span>
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
+                              </div>
                             </ng-template>
                         </ng-select>
                         <!-- <select class="form-select" [class.gl-field-error-outline]="_hasControlError('organization_id')" aria-label="organization_id" formControlName="organization_id">
@@ -134,12 +140,18 @@
                           [loadingText]="'APP.MESSAGE.LoadingText' | translate"
                           formControlName="service_id">
                             <ng-template ng-label-tmp let-item="item">
-                              <img height="25" width="25" [src]="item.logo || _serviceLogoPlaceholder" />
-                              <span class="ms-3">{{item.service_name}}</span>
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _serviceLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.service_name}}</span>
+                              </div>
                             </ng-template>
                             <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                              <img height="25" width="25" [src]="item.logo || _serviceLogoPlaceholder" />
-                              <span class="ms-3">{{item.service_name}}</span>
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _serviceLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.service_name}}</span>
+                              </div>
                             </ng-template>
                         </ng-select>
                         <!-- <select class="form-select" [class.gl-field-error-outline]="_hasControlError('service_id')" aria-label="service_id" formControlName="service_id">
