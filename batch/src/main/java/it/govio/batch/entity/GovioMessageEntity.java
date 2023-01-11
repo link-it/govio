@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
-@Getter	
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,7 +39,7 @@ public class GovioMessageEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_service_instance", nullable = false)
+	@JoinColumn(name = "id_govio_service_instance", nullable = false, foreignKey = @ForeignKey(name = "GovioMessage_GovioServiceInstance"))
 	private GovioServiceInstanceEntity govioServiceInstance;
 	
 	@Column(name = "id_govhub_user", nullable = false)
@@ -77,16 +78,16 @@ public class GovioMessageEntity {
 
 	@Column(name = "creation_date", nullable = false)
 	private LocalDateTime creationDate;
-	
+
 	@Column(name = "scheduled_expedition_date", nullable = false)
 	private LocalDateTime scheduledExpeditionDate;
 
 	@Column(name = "expedition_date")
 	private LocalDateTime expeditionDate;
-	
+
 	@Column(name = "due_date")
 	private LocalDateTime dueDate;
-	
+
 	@Column(name = "last_update_status")
 	private LocalDateTime lastUpdateStatus;
 

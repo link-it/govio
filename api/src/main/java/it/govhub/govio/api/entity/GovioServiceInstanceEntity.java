@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,19 +44,18 @@ public class GovioServiceInstanceEntity implements Serializable {
 
 	@EqualsAndHashCode.Include
 	@ManyToOne
-	@JoinColumn(name = "id_govio_service", nullable = false)
+	@JoinColumn(name = "id_govio_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioService"))
 	private GovioServiceEntity service;
+
+	@ManyToOne
+	@JoinColumn(name = "id_govio_template", nullable = true, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))
+	private GovioTemplateEntity template;
 	
 	@EqualsAndHashCode.Include
 	@ManyToOne
-	@JoinColumn(name = "id_govhub_organization", nullable = false)
+	@JoinColumn(name = "id_govhub_organization", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovhubOrganization"))
 	private OrganizationEntity organization;
-	
-	@ManyToOne
-	@JoinColumn(name = "id_govio_template")
-	private GovioTemplateEntity template;
-	
-	@Column(name = "apikey")
-	private String apiKey;
 
+	@Column(name = "apikey", nullable = false)
+	private String apikey;
 }

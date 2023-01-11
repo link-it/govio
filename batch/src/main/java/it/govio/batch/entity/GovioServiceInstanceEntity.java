@@ -3,6 +3,7 @@ package it.govio.batch.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,12 +32,12 @@ public class GovioServiceInstanceEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_service_instances")
 	private Long id;
 
-	@ManyToOne()
-	@JoinColumn(name = "id_govio_service", nullable = false)
+	@ManyToOne
+	@JoinColumn(name = "id_govio_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioService"))
 	private GovioServiceEntity govioService;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_template", nullable = true)
+	@JoinColumn(name = "id_govio_template", nullable = true, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))
 	private GovioTemplateEntity govioTemplate;
 
 	@Column(name = "apikey", nullable = false)
