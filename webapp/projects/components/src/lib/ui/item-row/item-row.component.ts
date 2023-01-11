@@ -32,7 +32,7 @@ export class ItemRowComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this._itemRowConfig = this._config.simpleItem;
+    this._itemRowConfig = this._config.itemRow || this._config.simpleItem;
   }
 
   ngAfterViewInit(): void {
@@ -43,6 +43,6 @@ export class ItemRowComponent implements OnInit, AfterViewInit {
   }
 
   __itemClick(event: any, activeItem: any) {
-    this.itemClick.emit(event);
+    this.itemClick.emit(this._data);
   }
 }

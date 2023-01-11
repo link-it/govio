@@ -27,10 +27,15 @@
               [id]="'general-informations'"
               [title]="'APP.MESSAGES.TITLE.GeneralInformations' | translate"
               [subTitle]="'APP.MESSAGES.TITLE.GeneralInformations_sub' | translate">
-              <ui-form-readonly
+              <!-- <ui-form-readonly
                 [fields]="_informazioni"
                 [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6">
-              </ui-form-readonly>
+              </ui-form-readonly> -->
+              <ui-data-view
+                [data]="message"
+                [config]="config"
+                [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6">
+              </ui-data-view>
             </ui-box-collapse>
           </div>
         </div>

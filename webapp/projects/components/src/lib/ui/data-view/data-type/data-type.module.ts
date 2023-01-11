@@ -7,11 +7,11 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { MarkdownModule } from 'ngx-markdown';
 import { GravatarModule } from 'ngx-gravatar';
 
-import { ItemTypeComponent } from './item-type.component';
+import { DataTypeComponent } from './data-type.component';
 
 @NgModule({
   declarations: [
-    ItemTypeComponent
+    DataTypeComponent
   ],
   imports: [
     CommonModule,
@@ -21,7 +21,7 @@ import { ItemTypeComponent } from './item-type.component';
     GravatarModule
   ],
   exports: [
-    ItemTypeComponent
+    DataTypeComponent
   ]
 })
-export class ItemTypeModule { }
+export class DataTypeModule { }

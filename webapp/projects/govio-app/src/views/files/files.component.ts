@@ -1,6 +1,7 @@
 import { AfterContentChecked, AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
@@ -170,8 +171,13 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
 
   _loadFiles(query: any = null, url: string = '') {
     this._setErrorMessages(false);
+
     if (!url) { this.files = []; }
-    this.apiService.getList(this.model, query, url).subscribe({
+    
+    let aux: any;
+    if (query)  aux = { params: this._queryToHttpParams(query) };
+
+    this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         this.page = response.page;
         this._links = response._links;
@@ -202,6 +208,28 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
         // Tools.OnError(error);
       }
     });
+  }
+
+  _queryToHttpParams(query: any) : HttpParams {
+    let httpParams = new HttpParams();
+
+    Object.keys(query).forEach(key => {
+      if (query[key]) {
+        let _dateTime = '';
+        switch (key)
+        {
+          case 'data_inizio':
+          case 'data_fine':
+            _dateTime = moment(query[key]).format('YYYY-MM-DD');
+            httpParams = httpParams.set(key, _dateTime);
+            break;
+          default:
+            httpParams = httpParams.set(key, query[key]);
+        }
+      }
+    });
+    
+    return httpParams; 
   }
 
   __loadMoreData() {

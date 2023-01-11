@@ -24,6 +24,31 @@
     ]
   },
 
+  "itemRow": {
+    "primaryText": [
+      { "field": "filename", "type": "text" }
+    ],
+    "secondaryText": [
+      { "field": "user.full_name", "type": "avatar", "tooltip": "user.full_name", "blockSpace": true },
+      { "field": "acquired_messages", "type": "number", "icon": "send", "hideZero": false, "tooltip": "APP.TOOLTIP.AcquiredMessages", "blockSpace": true },
+      { "field": "error_messages", "type": "number", "icon": "exclamation-triangle", "iconClass": "text-danger", "hideZero": true, "tooltip": "APP.TOOLTIP.ErrorMessages" }
+    ],
+    "metadata": {
+      "text": [
+        { "field": "id", "type": "cardinal", "class": "" },
+        { "field": "service.service_name", "type": "text" },
+        { "field": "organization.legal_name", "type": "text" }
+      ],
+      "label": [
+        { "field": "status", "type": "label", "options": "status" }
+      ]
+    },
+    "secondaryMetadata": [
+      { "field": "Caricato il", "type": "message", "class": "", "emptySpace": true },
+      { "field": "creation_date", "type": "date", "format": "DD-MM-YYYY", "class": "" }
+    ]
+  },
+
   "details": [
     { "label": "APP.LABEL.Filename", "field": "filename", "type": "text" },
     { "label": "APP.LABEL.Status", "field": "status", "type": "tag", "options": "status", "badged": true },
