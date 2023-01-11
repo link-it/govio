@@ -1,6 +1,7 @@
 package it.govhub.govio.api.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,10 +32,10 @@ public class GovioServiceEntity {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "id_govio_template", nullable = false)
+	@JoinColumn(name = "id_govio_template", nullable = false, foreignKey = @ForeignKey(name = "GovioService_GovioTemplate"))
 	private GovioTemplateEntity govioTemplate;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_govhub_service", nullable = false)
+	@JoinColumn(name = "id_govhub_service", nullable = false, foreignKey = @ForeignKey(name = "GovioService_GovhubService"))
 	private ServiceEntity govhubService;
 }

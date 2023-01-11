@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,12 +22,10 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
-@Getter	
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,25 +40,31 @@ public class GovioFileEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_files")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_service_instance", nullable = false)
-	private GovioServiceInstanceEntity govioServiceInstance;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "govioFile", cascade = CascadeType.REMOVE)
-	private List<GovioFileMessageEntity> govioFileMessageEntities;
-	
 	@Column(name = "id_govhub_user", nullable = false)
 	private Long govhubUserId;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_govio_service_instance", nullable = false, foreignKey = @ForeignKey(name = "GovioFile_GovioServiceInstance"))
+	private GovioServiceInstanceEntity govioServiceInstance;
+	
 	@Column(name = "name", nullable = false)
 	private String name;
+
+	@Column(name = "creation_date", nullable = false)
+	private LocalDateTime creationDate;
 	
-	@Column(name = "location", nullable = false)
+	@Column(name = "processing_date")
+	private LocalDateTime processingDate;
+	
+	@Column(name = "location", nullable = false,  length = 1024)
 	private String location;
 
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
+	
+	@Column(name = "status_detail",  length = 1024)
+	private String statusDetail;
 
 	@Column(name = "acquired_messages")
 	private Long acquiredMessages;
@@ -67,7 +72,8 @@ public class GovioFileEntity {
 	@Column(name = "error_messages")
 	private Long errorMessages;
 	
-	@Column(name = "creation_date", nullable = false)
-	private LocalDateTime creationDate;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "govioFile", cascade = CascadeType.REMOVE)
+	private List<GovioFileMessageEntity> govioFileMessageEntities;
+	
 	
 }

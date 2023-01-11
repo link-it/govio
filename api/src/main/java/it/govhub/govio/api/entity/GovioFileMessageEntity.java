@@ -2,6 +2,8 @@ package it.govhub.govio.api.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -34,11 +36,11 @@ public class GovioFileMessageEntity {
 	private Long lineNumber;
 
 	@ManyToOne
-	@JoinColumn(name = "id_govio_file", nullable = false)
+	@JoinColumn(name = "id_govio_file", nullable = false, foreignKey = @ForeignKey(name = "GovioFileMessage_GovioFile"))
 	private GovioFileEntity govioFile;
 
 	@OneToOne
-	@JoinColumn(name = "id_govio_message")
+	@JoinColumn(name = "id_govio_message", nullable = true, foreignKey = @ForeignKey(name = "GovioFileMessage_GovioMessage"))
 	private GovioMessageEntity govioMessage;
 
 }

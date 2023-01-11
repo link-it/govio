@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,9 +33,7 @@ import lombok.Setter;
 @Component
 @Table(name = "govio_messages")
 public class GovioMessageEntity {
-	public enum Status {	ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT,
-		BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED
-	}
+	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED}
 
 	@Id
 	@SequenceGenerator(name = "seq_govio_messages", sequenceName = "seq_govio_messages", initialValue = 1, allocationSize = 1)
@@ -42,7 +41,7 @@ public class GovioMessageEntity {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_govio_service_instance", nullable = false)
+	@JoinColumn(name = "id_govio_service_instance", nullable = false, foreignKey = @ForeignKey(name = "GovioMessage_GovioServiceInstance"))
 	private GovioServiceInstanceEntity govioServiceInstance;
 	
 	@ManyToOne
