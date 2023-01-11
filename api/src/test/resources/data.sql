@@ -1,3 +1,7 @@
+-- Applicazioni
+
+INSERT INTO public.govhub_applications (id, application_id) values (1, 'govio');
+
 -- Utenze
 
 INSERT INTO public.govhub_users (id, principal, full_name, email, enabled) VALUES (1, 'amministratore', 'Amministratore Vanguard', 'admin@govhub.it', true);

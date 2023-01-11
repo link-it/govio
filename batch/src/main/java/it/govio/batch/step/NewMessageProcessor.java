@@ -2,7 +2,6 @@ package it.govio.batch.step;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +61,7 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		
 		// setto i dati rimanenti del content
 		if(item.getDueDate() != null)
-			mc.setDueDate(new Timestamp(item.getDueDate().toEpochSecond(ZoneOffset.UTC)));
+			mc.setDueDate(Timestamp.valueOf(item.getDueDate()));
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);

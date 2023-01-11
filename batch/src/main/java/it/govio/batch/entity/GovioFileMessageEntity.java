@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,12 +16,10 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
-@Getter	
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,14 +32,6 @@ public class GovioFileMessageEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_file_messages")
 	private Long id;
 
-	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-	@JoinColumn(name = "id_govio_message", nullable = true)
-	private GovioMessageEntity govioMessage;
-
-	@ManyToOne()
-	@JoinColumn(name = "id_govio_file", nullable = false)
-	private GovioFileEntity govioFile;
-	
 	@Column(name = "error", columnDefinition = "TEXT")
 	private String error;
 
@@ -49,5 +40,13 @@ public class GovioFileMessageEntity {
 
 	@Column(name = "line_number")
 	private Long lineNumber;
+
+	@ManyToOne
+	@JoinColumn(name = "id_govio_file", nullable = false, foreignKey = @ForeignKey(name = "GovioFileMessage_GovioFile"))
+	private GovioFileEntity govioFile;
+
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "id_govio_message", nullable = true, foreignKey = @ForeignKey(name = "GovioFileMessage_GovioMessage"))
+	private GovioMessageEntity govioMessage;
 
 }
