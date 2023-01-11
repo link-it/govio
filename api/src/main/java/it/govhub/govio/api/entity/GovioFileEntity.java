@@ -9,6 +9,8 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -45,32 +47,32 @@ public class GovioFileEntity  {
 	private Long id;
 
 	@ManyToOne
-    @JoinColumn(name = "id_govhub_user", nullable=false)
+ 	@JoinColumn(name = "id_govhub_user", nullable=false)
 	private UserEntity govauthUser;
 	
-	@ManyToOne
-    @JoinColumn(name = "id_govio_service_instance", nullable=false)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_govio_service_instance", nullable = false, foreignKey = @ForeignKey(name = "GovioFile_GovioServiceInstance"))
 	private GovioServiceInstanceEntity serviceInstance;
 	
-	@Column(name = "name", nullable = false, length = 256)
+	@Column(name = "name", nullable = false)
 	private String name;
-	
+
 	@Column(name = "creation_date", nullable = false)
 	private OffsetDateTime creationDate;
 	
 	@Column(name = "processing_date")
 	private OffsetDateTime processingDate;
 	
-	@Column(name = "status",  length = 256, nullable = false)
+	@Convert(converter = JpaPathConverter.class)
+	@Column(name = "location",  length = 1024, nullable = false)
+	private Path location;
+
+	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Status status;
 	
 	@Column(name = "status_detail",  length = 1024)
 	private String statusDetail;
-	
-	@Convert(converter = JpaPathConverter.class)
-	@Column(name = "location",  length = 1024, nullable = false)
-	private Path location;
 	
 	@Column(name = "size")
 	private long size;
