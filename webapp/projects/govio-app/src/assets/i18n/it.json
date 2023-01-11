@@ -215,7 +215,7 @@
 			"PROCESSED": "Elaborato",
 			"PROCESSING": "In elaborazione",
 			"SCARTATO": "Scartato",
-			"SCHEDULED": "Scedulato",
+			"SCHEDULED": "Schedulato",
 			"TRANSACTION": {
 				"ELABORATO": "Riconciliato",
 				"NUOVO": "Non riconciliato"
