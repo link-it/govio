@@ -22,6 +22,7 @@ import { BreadcrumbModule } from './ui/breadcrumb/breadcrumb.module';
 import { BoxMessageModule } from './ui/box-message/box-message.module';
 import { BoxSpinnerModule } from './ui/box-spinner/box-spinner.module';
 import { FormReadonlyModule } from './ui/form-readonly/form-readonly.module';
+import { DataViewModule } from './ui/data-view/data-view.module';
 import { BoxCollapseModule } from './ui/box-collapse/box-collapse.module';
 import { SearchBarModule } from './ui/search-bar/search-bar.module';
 import { SearchBarFormModule } from './ui/search-bar-form/search-bar-form.module';
@@ -63,6 +64,7 @@ import { CountUpeModule } from './directives/count-up.module';
     BoxMessageModule,
     BoxSpinnerModule,
     FormReadonlyModule,
+    DataViewModule,
     BoxCollapseModule,
     SearchBarModule,
     SearchBarFormModule,
@@ -113,6 +115,7 @@ import { CountUpeModule } from './directives/count-up.module';
     BoxMessageModule,
     BoxSpinnerModule,
     FormReadonlyModule,
+    DataViewModule,
     BoxCollapseModule,
     SearchBarModule,
     SearchBarFormModule,

@@ -1,6 +1,6 @@
 -- Applicazioni
 
-INSERT INTO public.govhub_applications (id, application_id) values (1, 'govio');
+INSERT INTO public.govhub_applications (id, application_id, name, deployed_uri) VALUES (1, 'govio', 'GovIO', 'http://localhost/govio');
 
 -- Utenze
 

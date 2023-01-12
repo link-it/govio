@@ -215,6 +215,7 @@
 			"PROCESSED": "Processed",
 			"PROCESSING": "Processing",
 			"SCARTATO": "Discarded",
+			"SCHEDULED": "Scheduled",
 			"TRANSACTION": {
 				"ELABORATO": "Reconciled",
 				"NUOVO": "Not reconciled"
@@ -246,15 +247,18 @@
 			"Watermark": "Staging"
 		},
 		"TOOLTIP": {
+			"AcquiredMessages": "Acquired messages",
 			"Add": "Add",
 			"CancelEdit": "Cancel edit",
 			"CancelNew": "Cancel add",
 			"EditFile": "Edit file",
+			"ErrorMessages": "Error messages",
 			"Export": "Export",
 			"ExportCSV": "Export file CSV",
 			"ExportPDF": "Export file PDF",
 			"Preview": "Preview",
-			"Remove": "Remove"
+			"Remove": "Remove",
+			"ScheduledExpeditionDate": "Scheduled expedition date"
 		},
 		"TYPE": {
 			"MANUALE": "Manual"
