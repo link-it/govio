@@ -205,21 +205,21 @@
 			"Title": "GovIO"
 		},
 		"STATUS": {
-			"ACCETTATO": "Accepted",
-			"BADREQUEST": "Bad request",
-			"COMPLETATO": "Completed",
+			"ACCEPTED": "Accepted",
+			"BAD_REQUEST": "Bad request",
 			"CREATED": "Created",
-			"ELABORAZIONE": "In processing",
+			"DENIED": "Denied",
 			"ERRORE": "Error",
-			"NUOVO": "New",
+			"FORBIDDEN": "Forbidden",
 			"PROCESSED": "Processed",
 			"PROCESSING": "Processing",
-			"SCARTATO": "Discarded",
+			"PROFILE_NOT_EXISTS": "Profile not exists",
+			"RECIPIENT_ALLOWED": "Recipient allowed",
+			"REJECTED": "Rejected",
 			"SCHEDULED": "Scheduled",
-			"TRANSACTION": {
-				"ELABORATO": "Reconciled",
-				"NUOVO": "Not reconciled"
-			}
+			"SENDER_NOT_ALLOWED": "Sender not allowed",
+			"SENT": "Sent",
+			"THROTTLED": "Throttled"
 		},
 		"TAB": {
 			"Content": "Content",
