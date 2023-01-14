@@ -37,15 +37,8 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFil
 		GovioFile ret = instantiateModel(src);
 		
         BeanUtils.copyProperties(src, ret);
-        
-        long errorMessages = src.getFileMessages()
-        		.stream()
-        		.filter( msg -> msg.getError() != null)
-        		.count();
-        
-        ret.acquiredMessages((long) src.getFileMessages().size())
-        	.errorMessages(errorMessages)
-        	.organization(this.orgAssembler.toModel(src.getServiceInstance().getOrganization()))
+
+        ret.organization(this.orgAssembler.toModel(src.getServiceInstance().getOrganization()))
         	.service(this.serviceAssembler.toModel(src.getServiceInstance().getService().getGovhubService()))
             .user(this.userAssembler.toModel(src.getGovauthUser()))
             .status(src.getStatus())

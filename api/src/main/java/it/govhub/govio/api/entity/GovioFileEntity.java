@@ -37,13 +37,11 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "govio_files")
-public class GovioFileEntity  {
-	
+public class GovioFileEntity {
+
 	public enum Status {CREATED, PROCESSING, PROCESSED}
 
-	@Id
-	@SequenceGenerator(name = "seq_govio_files", sequenceName = "seq_govio_files", initialValue = 1, allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_files")
+	@Id @GeneratedValue
 	private Long id;
 
 	@ManyToOne
@@ -76,9 +74,16 @@ public class GovioFileEntity  {
 	
 	@Column(name = "size")
 	private long size;
+
+	@Column(name = "acquired_messages")
+	private Long acquiredMessages;
+
+	@Column(name = "error_messages")
+	private Long errorMessages;
 	
-	// L'entita collegata è readonly, non abbiamo cascade quindi possiamo salvare il GovioFileEntity senza problemi
-	@OneToMany(mappedBy = "govioFile")
-	@Builder.Default
-	private List<GovioFileMessageEntity> fileMessages = new ArrayList<>();
+	//TODO Da verificare!! Lorenzo vs Francesco
+//	// L'entita collegata è readonly, non abbiamo cascade quindi possiamo salvare il GovioFileEntity senza problemi
+//	@OneToMany(mappedBy = "govioFile")
+//	@Builder.Default
+//	private List<GovioFileMessageEntity> fileMessages = new ArrayList<>();
 }
