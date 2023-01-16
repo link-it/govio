@@ -2642,7 +2642,7 @@
 								<name>STATUS</name>
 								<children>
 									<concept_node>
-										<name>ACCETTATO</name>
+										<name>ACCEPTED</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -2658,23 +2658,7 @@
 										</translations>
 									</concept_node>
 									<concept_node>
-										<name>BADREQUEST</name>
-										<description/>
-										<comment/>
-										<default_text/>
-										<translations>
-											<translation>
-												<language>en-US</language>
-												<approved>false</approved>
-											</translation>
-											<translation>
-												<language>it-IT</language>
-												<approved>false</approved>
-											</translation>
-										</translations>
-									</concept_node>
-									<concept_node>
-										<name>COMPLETATO</name>
+										<name>BAD_REQUEST</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -2706,7 +2690,7 @@
 										</translations>
 									</concept_node>
 									<concept_node>
-										<name>ELABORAZIONE</name>
+										<name>DENIED</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -2738,7 +2722,7 @@
 										</translations>
 									</concept_node>
 									<concept_node>
-										<name>NUOVO</name>
+										<name>FORBIDDEN</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -2786,7 +2770,39 @@
 										</translations>
 									</concept_node>
 									<concept_node>
-										<name>SCARTATO</name>
+										<name>PROFILE_NOT_EXISTS</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>RECIPIENT_ALLOWED</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>REJECTED</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -2817,43 +2833,54 @@
 											</translation>
 										</translations>
 									</concept_node>
-									<folder_node>
-										<name>TRANSACTION</name>
-										<children>
-											<concept_node>
-												<name>ELABORATO</name>
-												<description/>
-												<comment/>
-												<default_text/>
-												<translations>
-													<translation>
-														<language>en-US</language>
-														<approved>false</approved>
-													</translation>
-													<translation>
-														<language>it-IT</language>
-														<approved>false</approved>
-													</translation>
-												</translations>
-											</concept_node>
-											<concept_node>
-												<name>NUOVO</name>
-												<description/>
-												<comment/>
-												<default_text/>
-												<translations>
-													<translation>
-														<language>en-US</language>
-														<approved>false</approved>
-													</translation>
-													<translation>
-														<language>it-IT</language>
-														<approved>false</approved>
-													</translation>
-												</translations>
-											</concept_node>
-										</children>
-									</folder_node>
+									<concept_node>
+										<name>SENDER_NOT_ALLOWED</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>SENT</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>THROTTLED</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
 								</children>
 							</folder_node>
 							<folder_node>
