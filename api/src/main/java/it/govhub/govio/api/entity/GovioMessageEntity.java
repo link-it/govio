@@ -33,7 +33,7 @@ import lombok.Setter;
 @Component
 @Table(name = "govio_messages")
 public class GovioMessageEntity {
-	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED}
+	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED, REJECTED}
 
 	@Id
 	@SequenceGenerator(name = "seq_govio_messages", sequenceName = "seq_govio_messages", initialValue = 1, allocationSize = 1)
