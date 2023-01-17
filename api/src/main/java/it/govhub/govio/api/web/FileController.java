@@ -132,7 +132,7 @@ public class FileController implements FileApi {
 				 OffsetDateTime creationDateFrom, 
 				 OffsetDateTime creationDateTo) {
 		
-		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		
 		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
 		
@@ -165,7 +165,7 @@ public class FileController implements FileApi {
 
 	@Override
 	public ResponseEntity<GovioFile> readFile(Long traceId) {
-		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 				
 		return ResponseEntity.ok(	this.fileService.readFile(traceId));
 	}
@@ -174,7 +174,7 @@ public class FileController implements FileApi {
 	@Override
 	public ResponseEntity<Resource> readFileContent(Long id) {
 	
-    	this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+    	this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
     	
     	GovioFileEntity file = this.fileRepo.findById(id)
     			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));

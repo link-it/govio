@@ -78,8 +78,8 @@ public class FileService {
 	@Transactional
 	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER);
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
 			throw new SemanticValidationException("Un file con lo stesso nome è già presente");

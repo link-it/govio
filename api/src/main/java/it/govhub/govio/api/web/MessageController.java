@@ -59,6 +59,7 @@ public class MessageController implements MessageApi {
 			spec = spec.and(GovioMessageFilters.byOrganizationId(organizationId));
 		}
 		
+		// TODO: Autorizzazioni
 		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest);
 		return ResponseEntity.ok(ret);
 	}
@@ -67,6 +68,7 @@ public class MessageController implements MessageApi {
 	@Override
 	public ResponseEntity<GovioMessage> readMessage(Long id) {
 		
+		// TODO: Autorizzazioni
 		return ResponseEntity.ok(this.messageService.readMessage(id));
 	}
 

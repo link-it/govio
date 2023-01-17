@@ -248,6 +248,8 @@
 								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
 								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
 								<importMapping>OrganizationAuthItem=it.govhub.govregistry.commons.api.beans.OrganizationAuthItem</importMapping>
+								<importMapping>OrganizationList=it.govhub.govregistry.commons.api.beans.OrganizationList</importMapping>
+								<importMapping>OrganizationOrdering=it.govhub.govregistry.commons.api.beans.OrganizationOrdering</importMapping>
 
 								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
 								<importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping>
