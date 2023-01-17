@@ -53,7 +53,7 @@ public class ServiceInstanceController implements ServiceApi {
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 		
-		GovioServiceInstanceList ret = ListaUtils.costruisciListaPaginata(instances, pageRequest.limit, curRequest, new GovioServiceInstanceList());
+		GovioServiceInstanceList ret = ListaUtils.buildPaginatedList(instances, pageRequest.limit, curRequest, new GovioServiceInstanceList());
 		
 		for (var inst : instances) {
 			ret.addItemsItem(this.serviceInstanceAssembler.toModel(inst));

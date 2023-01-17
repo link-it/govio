@@ -45,7 +45,7 @@ public class MessageService {
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 		
-		GovioMessageList ret = ListaUtils.costruisciListaPaginata(messages, pageRequest.limit, curRequest, new GovioMessageList());
+		GovioMessageList ret = ListaUtils.buildPaginatedList(messages, pageRequest.limit, curRequest, new GovioMessageList());
 		
 		for (var message: messages) {
 			ret.addItemsItem(this.messageAssembler.toModel(message));

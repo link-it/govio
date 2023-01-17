@@ -30,7 +30,43 @@ servers:
 security:
    - header-principal: []
 
-paths:  
+paths:
+
+    /organizations:
+       get:
+         tags:
+            - organization
+         summary: Retrieve the organization list.
+         description: Retrieve the organization list.
+         operationId: listOrganizations
+         parameters:
+            - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+            - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+            - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
+            - $ref: "govhub-api-commons.yaml#/components/parameters/organization_ordering_query"
+            - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
+            - $ref: "govhub-api-commons.yaml#/components/parameters/with_roles"
+            - $ref: "#/components/parameters/with_service_instance"
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/json:
+                 schema:
+                    $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationList"
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"        
+  
     /files:
        post:
          tags:
@@ -441,6 +477,14 @@ components:
          schema:
             type: string
             format: date-time              
+            
+      with_service_instance:
+         name: with_service_instance
+         in: query
+         required: false
+         schema:
+            type: boolean
+                     
    schemas:
    
       CodiceFiscaleLax:

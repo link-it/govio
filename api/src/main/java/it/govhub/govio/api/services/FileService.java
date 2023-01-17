@@ -78,8 +78,8 @@ public class FileService {
 	@Transactional
 	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
 		
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER);
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
 			throw new SemanticValidationException("Un file con lo stesso nome è già presente");
@@ -138,7 +138,7 @@ public class FileService {
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 		
-		FileList ret = ListaUtils.costruisciListaPaginata(files, pageRequest.limit, curRequest, new FileList());
+		FileList ret = ListaUtils.buildPaginatedList(files, pageRequest.limit, curRequest, new FileList());
 		
 		for (GovioFileEntity file : files) {
 			ret.addItemsItem(this.fileAssembler.toModel(file));
@@ -159,7 +159,7 @@ public class FileService {
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 				.getRequest();
 
-		FileMessageList ret = ListaUtils.costruisciListaPaginata(fileMessages, pageRequest.limit, curRequest,
+		FileMessageList ret = ListaUtils.buildPaginatedList(fileMessages, pageRequest.limit, curRequest,
 				new FileMessageList());
 
 		for (GovioFileMessageEntity fileMessage : fileMessages) {
