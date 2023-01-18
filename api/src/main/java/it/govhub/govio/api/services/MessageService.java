@@ -38,6 +38,7 @@ public class MessageService {
 	}
 
 
+	
 	@Transactional
 	public GovioMessageList listMessages(Specification<GovioMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
 		Page<GovioMessageEntity> messages = this.messageRepo.findAll(spec, pageRequest.pageable);

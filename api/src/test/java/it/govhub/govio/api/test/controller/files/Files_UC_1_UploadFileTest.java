@@ -87,8 +87,7 @@ class Files_UC_1_UploadFileTest {
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1 +"");
 		
 		MvcResult result = this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -134,8 +133,7 @@ class Files_UC_1_UploadFileTest {
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1 +"");
 		
 		MvcResult result = this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -174,8 +172,7 @@ class Files_UC_1_UploadFileTest {
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1 +"");
 		
 		this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -198,7 +195,7 @@ class Files_UC_1_UploadFileTest {
 	
 	// 4. Upload Fail file csv con parametro service_id non presente
 	@Test
-	void UC_1_04_UploadCsvFileFail_MissingServiceID() throws Exception {
+	void UC_1_04_UploadCsvFileFail_MissingServiceInstanceID() throws Exception {
 		String fileName = "csv-test-UC104";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
 		String boundary = MultipartUtils.generateBoundary();
@@ -206,7 +203,6 @@ class Files_UC_1_UploadFileTest {
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
 		
 		this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -227,38 +223,8 @@ class Files_UC_1_UploadFileTest {
 		
 	}
 	
-	// 5. Upload Fail file csv con parametro organization_id non presente
-	@Test
-	void UC_1_05_UploadCsvFileFail_MissingOrganizationID() throws Exception {
-		String fileName = "csv-test-UC105";
-		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
-		String boundary = MultipartUtils.generateBoundary();
-		
-		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
-		
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		
-		this.mockMvc.perform(
-				multipart(FILES_BASE_PATH)
-                	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
-					.params(params)
-					.contentType("multipart/form-data; boundary=" + boundary)
-					.characterEncoding("UTF-8")
-					.with(this.userAuthProfilesUtils.utenzaAdmin())
-					.with(csrf())
-					.accept(MediaType.APPLICATION_JSON)
-					)
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status", is(400)))
-				.andExpect(jsonPath("$.title", is("Bad Request")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-		
-	}
 	
-	// 6. Upload Fail file csv con service_id non presente nel db
+	// 6. Upload Fail file csv con service_instance_id non presente nel db
 	@Test
 	void UC_1_06_UploadCsvFileFail_ServiceID_NonRegistrato() throws Exception {
 		String fileName = "csv-test-UC106";
@@ -269,8 +235,7 @@ class Files_UC_1_UploadFileTest {
 		int idNonPresente = 10000;
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, idNonPresente +"");
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, idNonPresente +"");
 		
 		this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -291,38 +256,6 @@ class Files_UC_1_UploadFileTest {
 		
 	}
 	
-	// 7. Upload Fail file csv con organization_id non presente nel db
-	@Test
-	void UC_1_07_UploadCsvFileFail_OrganizationID_NonRegistrato() throws Exception {
-		String fileName = "csv-test-UC107";
-		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
-		String boundary = MultipartUtils.generateBoundary();
-		
-		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
-		int idNonPresente = 10000;
-		
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, idNonPresente + "");
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		
-		this.mockMvc.perform(
-				multipart(FILES_BASE_PATH)
-                	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
-					.params(params)
-					.contentType("multipart/form-data; boundary=" + boundary)
-					.characterEncoding("UTF-8")
-					.with(this.userAuthProfilesUtils.utenzaAdmin())
-					.with(csrf())
-					.accept(MediaType.APPLICATION_JSON)
-					)
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-		
-	}
 	
 	// 8. Upload Fail file csv caricato gia' presente con stesso nome per service_id
 	@Test
@@ -335,9 +268,8 @@ class Files_UC_1_UploadFileTest {
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
-		
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1+"");
+
 		MvcResult result = this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
             	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
@@ -381,39 +313,6 @@ class Files_UC_1_UploadFileTest {
 				.andReturn();
 	}
 	
-	// 9. Upload Fail file csv riferisce serviceinstance non presente
-	@Test
-	void UC_1_09_UploadCsvFileFail_ServiceInstance_NonRegistrato() throws Exception {
-		String fileName = "csv-test-UC109";
-		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
-		String boundary = MultipartUtils.generateBoundary();
-		
-		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
-		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
-		
-		this.mockMvc.perform(
-				multipart(FILES_BASE_PATH)
-                	.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
-					.params(params)
-					.contentType("multipart/form-data; boundary=" + boundary)
-					.characterEncoding("UTF-8")
-					.with(this.userAuthProfilesUtils.utenzaAdmin())
-					.with(csrf())
-					.accept(MediaType.APPLICATION_JSON)
-					)
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-		
-	}
-		
 	// 10. Upload Fail file filename vuoto.
 	@Test
 	void UC_1_10_UploadCsvFileFail_MissingFilename() throws Exception {
@@ -425,8 +324,8 @@ class Files_UC_1_UploadFileTest {
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_ID, servizio.getId() +"");
-		params.add(Costanti.PARAMETRO_ORGANIZATION_ID, ente.getId() + "");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 2+"");
+
 		
 		this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
