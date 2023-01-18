@@ -36,7 +36,7 @@ public class SecurityConfig{
     @Value("${govshell.auth.header:Govhub-Consumer-Principal}")
     private String headerAuthentication;
     
-    @Value("${govhub.csp.policy:default-src 'self'}")
+    @Value("${govio.csp.policy:default-src 'self'}")
     String cspPolicy;
 
 	@Bean
@@ -92,8 +92,8 @@ public class SecurityConfig{
 		http
 		.authorizeRequests()
 		// richieste GET Schema open-api accessibile a tutti
-		.antMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll() 
-		.antMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+		.antMatchers(HttpMethod.GET, "/api/swagger-ui/**").permitAll() 
+		.antMatchers(HttpMethod.GET, "/api/v3/api-docs/**").permitAll()
 		.anyRequest().authenticated()
 		;
 		return http;
