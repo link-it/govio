@@ -1,6 +1,6 @@
 -- Applicazioni
 
-INSERT INTO public.govhub_applications (id, application_id, name, deployed_uri) VALUES (1, 'govio', 'GovIO', 'http://localhost/govio');
+INSERT INTO public.govhub_applications (id, application_id, name, deployed_uri) VALUES (2, 'govio', 'GovIO', 'http://localhost/govio');
 
 -- Utenze
 
@@ -12,9 +12,9 @@ ALTER SEQUENCE SEQ_GOVHUB_USERS RESTART WITH 4;
 
 -- Ruoli
 
-INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (1, 2, 'govio_sysadmin');
-INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (2, 2, 'govio_sender');
-INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (3, 2, 'govio_viewer');
+INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (1, (select id from govhub_applications where application_id='govio'), 'govio_sysadmin');
+INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (2, (select id from govhub_applications where application_id='govio'), 'govio_sender');
+INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (3, (select id from govhub_applications where application_id='govio'), 'govio_viewer');
 
 ALTER SEQUENCE SEQ_GOVHUB_ROLES RESTART WITH 4;
 

@@ -138,13 +138,6 @@ class Messages_UC_5_FindMessagesTest {
 		assertEquals(msg.getNoticeNumber(), payment.getString("notice_number"));
 		assertEquals(msg.getPayeeTaxcode(), payment.getString("payee_taxcode"));
 
-		JsonObject organization = item.getJsonObject("organization");
-		assertNotNull(organization);
-		JsonObject sender = item.getJsonObject("user");
-		assertNotNull(sender);
-		JsonObject service = item.getJsonObject("service");
-		assertNotNull(service);
-		
 	}
 	
 }

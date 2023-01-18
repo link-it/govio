@@ -13,8 +13,10 @@ import it.govhub.govio.api.beans.GovioMessagePaymentItem;
 import it.govhub.govio.api.beans.GovioMessageStatus;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.web.MessageController;
+import it.govhub.govio.api.web.ServiceInstanceController;
 import it.govhub.govregistry.readops.api.assemblers.OrganizationAuthItemAssembler;
 import it.govhub.govregistry.readops.api.assemblers.ServiceAuthItemAssembler;
+import it.govhub.govregistry.readops.api.web.ReadUserController;
 
 @Component
 public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioMessageEntity, GovioMessage> {
@@ -48,12 +50,18 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 			ret.setPayment(payment);
 		}
 
-		// TODO: risolvere java.lang.IllegalArgumentException: Source must not be null
-		ret.user(this.userItemAssembler.toModel(src.getSender()));
-		ret.organization(this.orgItemAssembler.toModel(src.getGovioServiceInstance().getOrganization()));
-		ret.service(this.serviceItemAssembler.toModel(src.getGovioServiceInstance().getService().getGovhubService()));
-		
-		ret.add(linkTo(methodOn(MessageController.class).readMessage(src.getId())).withSelfRel());
+		ret.add(linkTo(
+				methodOn(MessageController.class)
+					.readMessage(src.getId())
+				).withSelfRel())
+			.add(linkTo(
+				methodOn(ServiceInstanceController.class)
+					.readServiceInstance(src.getGovioServiceInstance().getId()))
+				.withRel("service-instance"))
+		.add(linkTo(
+				methodOn(ReadUserController.class)
+					.readUser(src.getSender().getId()))
+				.withRel("sender"));
 		
 		return ret;
 	}

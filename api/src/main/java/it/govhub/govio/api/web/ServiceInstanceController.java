@@ -12,12 +12,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.ServiceInstanceAssembler;
+import it.govhub.govio.api.beans.GovioServiceInstance;
 import it.govhub.govio.api.beans.GovioServiceInstanceList;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.GovioServiceInstanceFilters;
 import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.spec.ServiceApi;
 import it.govhub.govregistry.commons.config.V1RestController;
+import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
 
@@ -38,7 +40,7 @@ public class ServiceInstanceController implements ServiceApi {
 			Integer limit,
 			Long offset) {
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.unsorted());	// TODO: Sort
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.unsorted());	// TODO: Sort e autorizzazioni
 		
 		Specification<GovioServiceInstanceEntity> spec = GovioServiceInstanceFilters.empty();
 		if (serviceId != null) {
@@ -62,6 +64,16 @@ public class ServiceInstanceController implements ServiceApi {
 		return ResponseEntity.ok(ret);
 	}
 
+	@Override
+	@Transactional
+	public ResponseEntity<GovioServiceInstance> readServiceInstance(Long id) {
+		// TODO autorizzazioni
+		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(id)
+			.orElseThrow( () -> new ResourceNotFoundException("Service Instance di id ["+id+"] non trovata."));
+		
+		GovioServiceInstance ret = this.serviceInstanceAssembler.toModel(instance);
+		return ResponseEntity.ok(ret);
+	}
 
 
 }

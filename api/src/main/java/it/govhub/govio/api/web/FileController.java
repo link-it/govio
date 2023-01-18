@@ -76,7 +76,7 @@ public class FileController implements FileApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovioFile> uploadFile(Long serviceId, Long organizationId, MultipartFile file) {
+	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -111,7 +111,7 @@ public class FileController implements FileApi {
     		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
-    	GovioServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
+    	GovioServiceInstanceEntity serviceInstance = this.serviceRepo.findById(serviceInstanceId)
     			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
