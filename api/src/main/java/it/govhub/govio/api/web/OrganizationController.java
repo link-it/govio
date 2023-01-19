@@ -79,7 +79,7 @@ public class OrganizationController extends ReadOrganizationController implement
 			roles.retainAll(withRoles);
 		}
 		
-		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(withRoles);
+		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(roles);
 
 		if (withServiceInstance != null) {
 			Set<Long> instanceOrgIds = this.serviceInstanceRepo.findAll().stream()
