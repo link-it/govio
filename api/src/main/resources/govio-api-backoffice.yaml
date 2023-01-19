@@ -498,7 +498,7 @@ components:
            type: integer
            format: int64
            minimum: 0
-           maximum:          
+           maximum: 99999999
 
       message_id:
          name: id
@@ -583,79 +583,97 @@ components:
             - markdown
             - scheduled_expedition_date
          properties:
-            taxcode:   
-               $ref: "#/components/schemas/CodiceFiscaleLax"
-            subject:
-               type: string
-               maxLength: 1024
-            markdown: 
-               type: string
-               maxLength: 2000000
-            payment:
-               $ref: "#/components/schemas/GovioMessagePaymentItem"
-            email:
-               type: string
-               format: email
-            scheduled_expedition_date:
-               type: string
-               format: date-time
-            due_date:
-               type: string
-               format: date-time
-            invalid_after_due_date:
-               type: boolean
-
+           taxcode:
+             type: string
+             maxLength: 16
+             minLength: 16
+             description: The fiscal code of the user, all upper case.
+             pattern: "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]"
+           subject:
+             minLength: 10
+             maxLength: 120
+             type: string
+             example: "Lorem ipsum"
+           markdown:
+             minLength: 80
+             maxLength: 10000
+             type: string
+             example: >-
+               # Lorem ipsum dolor sit amet
+               
+               Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+           payment:
+             $ref: '#/components/schemas/GovioMessagePaymentItem'
+           email:
+             type: string
+           scheduled_expedition_date:
+             type: string
+             format: date-time
+           due_date:
+             type: string
+             format: date-time
               
       GovioMessage:
          allOf:
-            - $ref: "#/components/schemas/GovioMessageCreate"
-            - type: object
-              additionalProperties: false
-              required:
-                 - id
-                 - status
-              properties:
-                 id:
-                    $ref: "#/components/schemas/MessageId"              
-                 status:
-                    $ref: "#/components/schemas/GovioMessageStatus"
-                 status_detail:
-                   type: string
-                   pattern: .*
-                   maxLength: 2000000 
-                 appio_message_id:
-                    type: string
-                    pattern: .*
-                    maxLength: 1024
-                 creation_date:
-                   type: string
-                   format: date-time       
-                 expedition_date:
-                    type: string
-                    format: date-time                     
-                 last_update_status:
-                    type: string
-                    format: date-time
+           - $ref: '#/components/schemas/GovioMessageCreate'
+           - type: object
+             required:
+               - id
+               - status
+               - creation_date
+             properties:
+               id:
+                 description: GovIO Message Id.
+                 format: int64
+                 example: 1
+               status:
+                 $ref: "#/components/schemas/GovioMessageStatus"
+               status_detail:
+                 maxLength: 2000000
+                 minLength: 0
+                 pattern: .*
+                 type: string
+               appio_message_id:
+                 maxLength: 1024
+                 minLength: 0
+                 pattern: .*
+                 type: string
+               creation_date:
+                 type: string
+                 format: date-time
+               expedition_date:
+                 type: string
+                 format: date-time
+               last_update_status:
+                 type: string
+                 format: date-time
+
                        
       GovioMessagePaymentItem:
          type: object
-         additionalProperties: false
+         required:
+           - amount
+           - notice_number
          properties:
-            amount:
-               type: integer
-               format: int64
-               minimum: 0
-               maximum: 9223372036854775807
-            notice_number:  
-               type: string
-               pattern: .*
-               maxLength: 256
-            invalid_after_due_date:
-               type: boolean
-            payee_taxcode:
-               type: string
-               pattern: .*
-               maxLength: 1024            
+           amount:
+             description: >-
+               Amount of payment in euro cent. PagoPA accepts up to 9999999999 euro
+               cents.
+             type: integer
+             format: int64
+             minimum: 1
+             maximum: 9999999999
+           notice_number:
+             description: Payment ID in pagoPA
+             type: string
+             pattern: "^[0123][0-9]{17}$"
+           invalid_after_due_date:
+             type: boolean
+           payee_taxcode:
+             maxLength: 11
+             minLength: 11
+             pattern: "[0-9]{11}"
+             type: string            
          
       GovioFile:
          type: object
