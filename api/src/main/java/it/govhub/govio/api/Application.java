@@ -18,6 +18,8 @@ import org.springframework.security.web.firewall.RequestRejectedHandler;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import it.govhub.govregistry.commons.config.CommonsExportedBeans;
 import it.govhub.govregistry.commons.config.TimeZoneConfigurer;
 import it.govhub.govregistry.commons.exception.handlers.RequestRejectedExceptionHandler;
@@ -59,6 +61,7 @@ public class Application extends SpringBootServletInitializer {
 	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
 		return builder ->  builder.
 				timeZone(this.timeZone).
+				serializationInclusion(Include.NON_EMPTY).
 				serializerByType(Base64String.class, new Base64StringSerializer());
 	}
 
