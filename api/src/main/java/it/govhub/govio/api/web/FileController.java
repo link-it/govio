@@ -34,6 +34,8 @@ import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
+import it.govhub.govio.api.messages.FileMessages;
+import it.govhub.govio.api.messages.ServiceInstanceMessages;
 import it.govhub.govio.api.repository.GovioFileFilters;
 import it.govhub.govio.api.repository.GovioFileMessageFilters;
 import it.govhub.govio.api.repository.GovioFileRepository;
@@ -47,7 +49,6 @@ import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
-import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
 @V1RestController
@@ -67,6 +68,12 @@ public class FileController implements FileApi {
 	
 	@Autowired
 	GovioFileRepository fileRepo;
+	
+	@Autowired
+	FileMessages fileMessages;
+	
+	@Autowired
+	ServiceInstanceMessages sinstanceMessages;
 	
 	Logger logger = LoggerFactory.getLogger(FileController.class);
 	
@@ -112,7 +119,7 @@ public class FileController implements FileApi {
     	}
     	
     	GovioServiceInstanceEntity serviceInstance = this.serviceRepo.findById(serviceInstanceId)
-    			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
+    			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
@@ -177,7 +184,7 @@ public class FileController implements FileApi {
     	this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
     	
     	GovioFileEntity file = this.fileRepo.findById(id)
-    			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+    			.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
 		
 		Path path = file.getLocation();
 		
@@ -209,7 +216,7 @@ public class FileController implements FileApi {
 		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 
 		GovioFileEntity file = this.fileRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("File di Id [" + id + "] non trovato"));
+    			.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
 
 		Specification<GovioFileMessageEntity> spec = GovioFileMessageFilters.ofFile(file.getId());
 
