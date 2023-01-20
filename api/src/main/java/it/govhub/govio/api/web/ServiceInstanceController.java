@@ -15,6 +15,7 @@ import it.govhub.govio.api.assemblers.ServiceInstanceAssembler;
 import it.govhub.govio.api.beans.GovioServiceInstance;
 import it.govhub.govio.api.beans.GovioServiceInstanceList;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
+import it.govhub.govio.api.messages.ServiceInstanceMessages;
 import it.govhub.govio.api.repository.GovioServiceInstanceFilters;
 import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.spec.ServiceApi;
@@ -30,7 +31,10 @@ public class ServiceInstanceController implements ServiceApi {
 	GovioServiceInstanceRepository serviceInstanceRepo;
 	
 	@Autowired
-	ServiceInstanceAssembler serviceInstanceAssembler;
+	ServiceInstanceAssembler instanceAssembler;
+	
+	@Autowired
+	ServiceInstanceMessages instanceMessages;
 
 	@Override
 	@Transactional
@@ -58,7 +62,7 @@ public class ServiceInstanceController implements ServiceApi {
 		GovioServiceInstanceList ret = ListaUtils.buildPaginatedList(instances, pageRequest.limit, curRequest, new GovioServiceInstanceList());
 		
 		for (var inst : instances) {
-			ret.addItemsItem(this.serviceInstanceAssembler.toModel(inst));
+			ret.addItemsItem(this.instanceAssembler.toModel(inst));
 		}
 		
 		return ResponseEntity.ok(ret);
@@ -69,9 +73,9 @@ public class ServiceInstanceController implements ServiceApi {
 	public ResponseEntity<GovioServiceInstance> readServiceInstance(Long id) {
 		// TODO autorizzazioni
 		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(id)
-			.orElseThrow( () -> new ResourceNotFoundException("Service Instance di id ["+id+"] non trovata."));
+			.orElseThrow( () -> new ResourceNotFoundException(this.instanceMessages.idNotFound(id)));
 		
-		GovioServiceInstance ret = this.serviceInstanceAssembler.toModel(instance);
+		GovioServiceInstance ret = this.instanceAssembler.toModel(instance);
 		return ResponseEntity.ok(ret);
 	}
 

@@ -14,6 +14,7 @@ import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
 import it.govhub.govio.api.entity.GovioMessageEntity;
+import it.govhub.govio.api.messages.MessageMessages;
 import it.govhub.govio.api.repository.GovioMessageRepository;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
@@ -27,12 +28,15 @@ public class MessageService {
 	
 	@Autowired
 	MessageAssembler messageAssembler;
+	
+	@Autowired
+	MessageMessages messageMessages;
 
 	@Transactional
 	public GovioMessage readMessage(Long id) {
 		
 		GovioMessageEntity message = this.messageRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Messaggio di id [" + id + "] non trovato."));
+				.orElseThrow(() -> new ResourceNotFoundException(this.messageMessages.idNotFound(id)));
 
 		return this.messageAssembler.toModel(message);
 	}
