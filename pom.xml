@@ -46,6 +46,7 @@
 	</properties>
 	
 	<modules>
+		<module>template-utils</module>
 		<module>batch</module>
 		<module>api</module>
 		<module>report</module>
