@@ -1,10 +1,11 @@
 package it.govhub.govio.api.web;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,10 +13,10 @@ import org.springframework.http.ResponseEntity;
 
 import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.GovioMessage;
-import it.govhub.govio.api.beans.GovioMessageCreate;
+import it.govhub.govio.api.beans.GovioNewMessage;
+import it.govhub.govio.api.beans.GovioNewMessageAllOfPlaceholders;
 import it.govhub.govio.api.beans.GovioMessageList;
 import it.govhub.govio.api.entity.GovioMessageEntity;
-import it.govhub.govio.api.entity.GovioMessageEntity.Status;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.MessageMessages;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
@@ -28,6 +29,7 @@ import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.security.services.SecurityService;
+import it.govio.template.BaseMessage;
 
 @V1RestController
 public class MessageController implements MessageApi {
@@ -100,30 +102,33 @@ public class MessageController implements MessageApi {
 		return ResponseEntity.ok(this.messageService.readMessage(id));
 	}
 
-
 	@Transactional
 	@Override
-	public ResponseEntity<GovioMessage> sendMessage(Long serviceInstance, GovioMessageCreate govioMessageCreate) {
-		
-		// TODO: Autorizzazioni
+	public ResponseEntity<GovioMessage> sendMessage(Long serviceInstance, GovioNewMessage govioNewMessage) {
 		
 		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(serviceInstance)
 				.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstance)));
 		
-		var entity = new GovioMessageEntity();
+		BaseMessage message = BaseMessage.builder()
+				.dueDate(govioNewMessage.getDueDate().toLocalDateTime())
+				.email(govioNewMessage.getEmail())
+				.scheduledExpeditionDate(govioNewMessage.getScheduledExpeditionDate().toLocalDateTime())
+				.taxcode(govioNewMessage.getTaxcode())
+				.build();
+		if(govioNewMessage.getPayment() != null) {
+			message.setInvalidAfterDueDate(govioNewMessage.getPayment().getInvalidAfterDueDate());
+			message.setNoticeNumber(govioNewMessage.getPayment().getNoticeNumber());
+			message.setPayee(govioNewMessage.getPayment().getPayeeTaxcode());
+			message.setAmount(govioNewMessage.getPayment().getAmount());
+		}
+		Map<String, String> placeholderValues = new HashMap<>();
+		if(govioNewMessage.getPlaceholders() != null)
+			for(GovioNewMessageAllOfPlaceholders p : govioNewMessage.getPlaceholders()) {
+				placeholderValues.put(p.getName(), p.getValue());
+			}
+		GovioMessageEntity messageEntity = this.messageService.newMessage(SecurityService.getPrincipal().getId(), instance.getId(), message, placeholderValues);
 		
-		BeanUtils.copyProperties(govioMessageCreate, entity);
-		
-		entity.setGovioServiceInstance(instance);
-		entity.setSender(SecurityService.getPrincipal());
-		entity.setCreationDate(OffsetDateTime.now());
-		entity.setStatus(Status.SCHEDULED);
-		
-		entity = this.messageRepo.save(entity);
-		
-		GovioMessage ret = this.messageAssembler.toModel(entity);
-		
-		return ResponseEntity.ok(ret);
+		return ResponseEntity.ok(this.messageAssembler.toModel(messageEntity));
 	}
 
 	
