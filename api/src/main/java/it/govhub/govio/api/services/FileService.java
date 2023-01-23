@@ -31,6 +31,7 @@ import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
+import it.govhub.govio.api.messages.FileMessages;
 import it.govhub.govio.api.repository.GovioFileMessageRepository;
 import it.govhub.govio.api.repository.GovioFileRepository;
 import it.govhub.govio.api.repository.GovioMessageRepository;
@@ -73,6 +74,9 @@ public class FileService {
 	@Autowired
 	MessageAssembler messageAssembler;
 	
+	@Autowired
+	FileMessages fileMessages;
+	
 	Logger logger = LoggerFactory.getLogger(FileService.class);
 	
 	@Transactional
@@ -82,7 +86,7 @@ public class FileService {
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
-			throw new SemanticValidationException("Un file con lo stesso nome è già presente");
+			throw new SemanticValidationException(this.fileMessages.conflict("name", sourceFilename));
 		}
 
     	Path destPath = this.fileRepositoryPath
@@ -127,7 +131,7 @@ public class FileService {
 	public GovioFile readFile(Long id) {
 		return this.fileRepo.findById(id)
 				.map( f -> this.fileAssembler.toModel(f))
-				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
 	}
 
 	

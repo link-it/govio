@@ -51,12 +51,15 @@ public class MessageService {
 	
 	@Autowired
 	MessageAssembler messageAssembler;
+	
+	@Autowired
+	MessageMessages messageMessages;
 
 	@Transactional
 	public GovioMessage readMessage(Long id) {
 		
 		GovioMessageEntity message = this.messageRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Messaggio di id [" + id + "] non trovato."));
+				.orElseThrow(() -> new ResourceNotFoundException(this.messageMessages.idNotFound(id)));
 
 		return this.messageAssembler.toModel(message);
 	}
@@ -132,17 +135,5 @@ public class MessageService {
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
