@@ -18,6 +18,8 @@ import it.govhub.govio.api.beans.GovioNewMessageAllOfPlaceholders;
 import it.govhub.govio.api.beans.GovioMessageList;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
+import it.govhub.govio.api.messages.MessageMessages;
+import it.govhub.govio.api.messages.ServiceInstanceMessages;
 import it.govhub.govio.api.repository.GovioMessageFilters;
 import it.govhub.govio.api.repository.GovioMessageRepository;
 import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
@@ -43,6 +45,12 @@ public class MessageController implements MessageApi {
 	
 	@Autowired
 	GovioMessageRepository messageRepo;
+	
+	@Autowired
+	ServiceInstanceMessages sinstanceMessages;
+	
+	@Autowired
+	MessageMessages messageMessages;
 	
 	@Override
 	public ResponseEntity<GovioMessageList> listMessages(
@@ -99,7 +107,7 @@ public class MessageController implements MessageApi {
 	public ResponseEntity<GovioMessage> sendMessage(Long serviceInstance, GovioNewMessage govioNewMessage) {
 		
 		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(serviceInstance)
-				.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio ["+serviceInstance+"] indicata non esiste.") );
+				.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstance)));
 		
 		BaseMessage message = BaseMessage.builder()
 				.dueDate(govioNewMessage.getDueDate().toLocalDateTime())
