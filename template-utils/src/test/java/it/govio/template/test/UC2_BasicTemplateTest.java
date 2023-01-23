@@ -1,7 +1,7 @@
 package it.govio.template.test;
 
+import it.govio.template.BaseMessage;
 import it.govio.template.BasicTemplateApplier;
-import it.govio.template.Message;
 import it.govio.template.Placeholder;
 import it.govio.template.Placeholder.Type;
 import it.govio.template.Template;
@@ -20,17 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UC2_BasicTemplateTest {
 	
-	private Message getDefaultMessage() {
-		return Message.builder()
+	private BaseMessage getDefaultMessage() {
+		return BaseMessage.builder()
 				.amount(100l)
 				.dueDate(LocalDateTime.of(2050, 12, 31, 12, 0, 0))
 				.email("s.nakamoto@xxxx.xx")
 				.invalidAfterDueDate(true)
-				.markdown(null)
 				.noticeNumber("301000001234500000")
 				.payee("01234567890")
 				.scheduledExpeditionDate(LocalDateTime.of(2050, 12, 31, 12, 0, 0))
-				.subject(null)
 				.taxcode("AAAAAA00A00A000A")
 				.build();
 	}
@@ -49,8 +47,8 @@ class UC2_BasicTemplateTest {
 				.build();
 		
 		BasicTemplateApplier templateApplier = TemplateApplierFactory.buildBasicTemplateApplier(template);
-		Message message = getDefaultMessage();
-		assertEquals(template.getMessageBody(), templateApplier.getMessage(message, null));
+		BaseMessage message = getDefaultMessage();
+		assertEquals(template.getMessageBody(), templateApplier.getMarkdown(message, null));
 		assertEquals(template.getSubject(), templateApplier.getSubject(message, null));
 	}
 	
@@ -77,10 +75,10 @@ class UC2_BasicTemplateTest {
 				.build();
 		
 		BasicTemplateApplier templateApplier = TemplateApplierFactory.buildBasicTemplateApplier(template);
-		Message message = getDefaultMessage();
+		BaseMessage message = getDefaultMessage();
 		Map<String, String> values = new HashMap<>();
 		values.put(fullname.getName(), "Satoshi Nakamoto");
-		assertEquals("Il Comune di Empoli le dice hello, Satoshi Nakamoto, il markdown deve essere di almeno 80 caratteri", templateApplier.getMessage(message, values));
+		assertEquals("Il Comune di Empoli le dice hello, Satoshi Nakamoto, il markdown deve essere di almeno 80 caratteri", templateApplier.getMarkdown(message, values));
 		assertEquals("hello, il subject deve essere almeno dieci caratteri Satoshi Nakamoto", templateApplier.getSubject(message, values));
 	}
 
