@@ -20,7 +20,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioFileMessageEntity;
-import it.govio.batch.entity.GovioTemplateEntity;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.step.FinalizeFileProcessingTasklet;
 import it.govio.batch.step.GovioFileItemProcessor;
@@ -28,6 +27,7 @@ import it.govio.batch.step.GovioFileItemWriter;
 import it.govio.batch.step.GovioFilePartitioner;
 import it.govio.batch.step.PromoteToProcessingTasklet;
 import it.govio.batch.step.beans.GovioFileMessageLineMapper;
+import it.govio.template.Template;
 
 @Configuration
 public class FileProcessingJobConfig {
@@ -127,7 +127,7 @@ public class FileProcessingJobConfig {
 	@StepScope
 	@Qualifier("govioFileItemProcessor")
 	public ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor(
-			@Value("#{stepExecutionContext[template]}") GovioTemplateEntity template) {
+			@Value("#{stepExecutionContext[template]}") Template template) {
 		GovioFileItemProcessor processor = new GovioFileItemProcessor();
 		processor.setGovioTemplate(template);
 		return processor;
