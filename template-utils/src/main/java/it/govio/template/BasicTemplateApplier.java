@@ -12,15 +12,15 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class BasicTemplateApplier extends TemplateApplier {
 	
-	public String getMessage(Message message, Map<String, String> placeholders) {
+	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) {
 		return getMessage(getStringSubstitutor(message, placeholders));
 	}
 	
-	public String getSubject(Message message, Map<String, String> placeholders) {
+	public String getSubject(BaseMessage message, Map<String, String> placeholders) {
 		return getSubject(getStringSubstitutor(message, placeholders));
 	}
 	
-	private StringSubstitutor getStringSubstitutor(Message message, Map<String, String> placeholders) {
+	private StringSubstitutor getStringSubstitutor(BaseMessage message, Map<String, String> placeholders) {
 		if(placeholders == null)
 			placeholders = new HashMap<String,String>();
 		if(message.getAmount() != null)
