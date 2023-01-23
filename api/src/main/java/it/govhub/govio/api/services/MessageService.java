@@ -25,6 +25,7 @@ import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
+import it.govhub.govio.api.messages.MessageMessages;
 import it.govhub.govio.api.repository.GovioMessageRepository;
 import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govregistry.commons.entity.UserEntity;
