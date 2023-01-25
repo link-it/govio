@@ -340,6 +340,12 @@ components:
               properties:
                   id:
                      $ref: "#/components/schemas/UserId"
+                  _links:
+                     type: array
+                     items:
+                       $ref: '#/components/schemas/Link'
+                     minItems: 0
+                     maxItems: 2147483647                          
                      
       OrganizationData:
          type: object
@@ -497,6 +503,27 @@ components:
               required:
                  - items 
               additionalProperties: false
+              
+      Link:
+            type: object
+            additionalProperties: false
+            properties:
+              href:
+                type: string
+              hreflang:
+                type: string
+              title:
+                type: string
+              type:
+                type: string
+              deprecation:
+                type: string
+              profile:
+                type: string
+              name:
+                type: string
+              templated:
+                type: boolean                        
 
       OrganizationList:
          allOf:
@@ -844,4 +871,4 @@ components:
                description: Number of found elements.
                format: int64
                example: 32         
-                                      
+               

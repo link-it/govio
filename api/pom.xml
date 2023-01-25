@@ -235,7 +235,7 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/govio-api-backoffice.yaml</inputSpec>
-							<generatorName>spring</generatorName>
+							<generatorName>govhub-codegen</generatorName>
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
 							<importMappings>
 								<!-- IMPORT MAPPINGS DI GOVHUB-COMMONS -->
@@ -271,7 +271,6 @@
 								<apiPackage>it.govhub.govio.api.spec</apiPackage>
 								<modelPackage>it.govhub.govio.api.beans</modelPackage>
 								<useBeanValidation>true</useBeanValidation>
-								<performBeanValidation>true</performBeanValidation>
 								<skipDefaultInterface>true</skipDefaultInterface>
 								<interfaceOnly>true</interfaceOnly>
 								<hateoas>true</hateoas>
@@ -289,6 +288,14 @@
 						</configuration>
 					</execution>
 				</executions>
+					<dependencies>
+					<dependency>
+						<groupId>it.govhub.govregistry</groupId>
+						<artifactId>govhub-openapi-codegen</artifactId>
+						<version>0.1.0-SNAPSHOT</version>
+					</dependency>
+				</dependencies>
+
 			</plugin>
 
 
