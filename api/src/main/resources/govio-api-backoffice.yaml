@@ -534,6 +534,7 @@ components:
             - subject
           properties:
             id:
+              type: integer
               description: GovIO Message Id.
               format: int64
               example: 1
