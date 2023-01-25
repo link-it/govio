@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -112,7 +113,7 @@ class UC2_NewMessageServiceTest {
 		content.setMarkdown(govioMessageEntity.getMarkdown());
 		content.setSubject(govioMessageEntity.getSubject());
 		if(govioMessageEntity.getDueDate() != null)
-		content.setDueDate(Timestamp.valueOf(govioMessageEntity.getDueDate()));
+		content.setDueDate(govioMessageEntity.getDueDate().atOffset(ZoneOffset.UTC).toString());
 		if(govioMessageEntity.getNoticeNumber() != null) {
 			Assert.assertNotNull(govioMessageEntity.getAmount());
 			PaymentData paymentData = new PaymentData();
