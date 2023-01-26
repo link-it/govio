@@ -228,6 +228,28 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>resource-dependencies</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<type>jar</type>
+							<includeArtifactIds>commons</includeArtifactIds>
+							<includes>govhub-api-commons.yaml</includes>
+							<outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
