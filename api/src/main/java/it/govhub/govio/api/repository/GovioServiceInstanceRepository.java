@@ -10,4 +10,7 @@ import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 
 public interface GovioServiceInstanceRepository extends JpaRepositoryImplementation<GovioServiceInstanceEntity, Long> {
 	
+	@Transactional
+     public Optional<GovioServiceInstanceEntity> findByService_GovhubService_IdAndOrganization_Id(Long serviceId, Long organizationId);
+	
 }

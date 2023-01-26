@@ -83,7 +83,8 @@ public class FileController implements FileApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, MultipartFile file) {
+	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, Long serviceId, Long organizationId, MultipartFile file) {
+	//public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -118,8 +119,19 @@ public class FileController implements FileApi {
     		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
-    	GovioServiceInstanceEntity serviceInstance = this.serviceRepo.findById(serviceInstanceId)
-    			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));
+    	GovioServiceInstanceEntity serviceInstance = null;
+    	if (serviceInstanceId != null) {
+    		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
+        			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
+    	} else if (serviceId != null && organizationId != null) {
+    		serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
+    				.orElseThrow( () -> new SemanticValidationException("Service Instance for service ["+serviceId+"] and organization ["+organizationId+"] not present"));
+    	}
+    	
+    	if (serviceInstance == null) {
+    		throw new BadRequestException("E' necessasrio specificare una service instance");
+    	}
+    	/**/
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
