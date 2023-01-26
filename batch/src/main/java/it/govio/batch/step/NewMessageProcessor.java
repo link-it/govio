@@ -25,6 +25,8 @@ import it.pagopa.io.v1.api.beans.PaymentData;
 
 @Component
 public class NewMessageProcessor extends GovioMessageAbstractProcessor {
+	
+	public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
 
 	private Logger logger = LoggerFactory.getLogger(NewMessageProcessor.class);
 
@@ -62,7 +64,6 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 			message.setDefaultAddresses(defaultAddress);
 		}
 		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
 		// setto i dati rimanenti del content
 		if(item.getDueDate() != null) {
 			mc.setDueDate(dtf.format(item.getDueDate().atOffset(ZoneOffset.UTC)));
