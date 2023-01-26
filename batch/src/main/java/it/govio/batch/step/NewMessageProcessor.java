@@ -1,8 +1,10 @@
 package it.govio.batch.step;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +62,11 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 			message.setDefaultAddresses(defaultAddress);
 		}
 		
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
 		// setto i dati rimanenti del content
-		if(item.getDueDate() != null)
-			mc.setDueDate(item.getDueDate().atOffset(ZoneOffset.UTC).toString());
+		if(item.getDueDate() != null) {
+			mc.setDueDate(dtf.format(item.getDueDate().atOffset(ZoneOffset.UTC)));
+		}
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);
