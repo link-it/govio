@@ -106,9 +106,10 @@ paths:
         - $ref: '#/components/parameters/user_id_query_optional'
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: '#/components/parameters/creation_date_from'
         - $ref: '#/components/parameters/creation_date_to'
+        - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
+        - $ref: '#/components/parameters/file_ordering_query'
       responses:
         '200':
           description: Successful operation.
@@ -279,6 +280,8 @@ paths:
         - $ref: '#/components/parameters/tax_code_query'
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
+        - $ref: '#/components/parameters/message_ordering_query'
+        - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/offset'
       summary: List Govio Messages
@@ -457,6 +460,7 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/FileMessageStatusEnum'
+        
     line_number_from_query:
       name: line_number_from
       in: query
@@ -466,36 +470,42 @@ components:
         format: int64
         minimum: 0
         maximum: 99999999
+        
     message_id:
       name: id
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/MessageId'
+        
     service_instance_id_query:
       name: service_instance
       in: query
       required: true
       schema:
         $ref: '#/components/schemas/GovioServiceInstanceId'
+        
     service_instance_id_query_optional:
       name: service_instance
       in: query
       required: false
       schema:
         $ref: '#/components/schemas/GovioServiceInstanceId'
+        
     service_instance_id:
       name: id
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/GovioServiceInstanceId'
+        
     tax_code_query:
       name: tax_code
       in: query
       required: false
       schema:
         $ref: 'govhub-api-commons.yaml#/components/schemas/TaxCode'
+        
     expedition_date_to_query:
       name: expedition_date_to
       in: query
@@ -503,6 +513,7 @@ components:
       schema:
         type: string
         format: date-time
+        
     expedition_date_from_query:
       name: expedition_date_from
       in: query
@@ -510,6 +521,7 @@ components:
       schema:
         type: string
         format: date-time
+        
     scheduled_expedition_date_to_query:
       name: scheduled_expedition_date_to
       in: query
@@ -517,6 +529,7 @@ components:
       schema:
         type: string
         format: date-time
+        
     scheduled_expedition_date_from_query:
       name: scheduled_expedition_date_from
       in: query
@@ -524,13 +537,33 @@ components:
       schema:
         type: string
         format: date-time
+        
     with_service_instance:
       name: with_service_instance
       in: query
       required: false
       schema:
         type: boolean
+        
+    message_ordering_query:
+         name: sort
+         in: query
+         description: Sorting field.
+         required: true
+         schema:
+            $ref: "#/components/schemas/MessageOrdering"        
+            
+    file_ordering_query:
+         name: sort
+         in: query
+         description: Sorting field.
+         required: true
+         schema:
+            $ref: "#/components/schemas/FileOrdering"            
+        
+        
   schemas:
+  
     GovioMessage:
       allOf:
         - $ref: '#/components/schemas/GovioBaseMessage'
@@ -731,6 +764,7 @@ components:
         - error
         - any
       default: any
+      
     GovioMessageStatus:
       type: string
       enum:
@@ -746,6 +780,7 @@ components:
         - forbidden
         - processed
         - created
+        
     FileUserItem:
       type: object
       additionalProperties: false
@@ -760,6 +795,7 @@ components:
       required:
         - id
         - full_name
+        
     GovioServiceInstance:
       type: object
       additionalProperties: false
@@ -768,6 +804,7 @@ components:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
         organization:
           $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
+          
     FileList:
       allOf:
         - $ref: 'govhub-api-commons.yaml#/components/schemas/List'
@@ -782,6 +819,8 @@ components:
           required:
             - items
           additionalProperties: false
+          
+          
     GovioServiceInstanceList:
       allOf:
         - $ref: 'govhub-api-commons.yaml#/components/schemas/List'
@@ -796,6 +835,7 @@ components:
           required:
             - items
           additionalProperties: false
+          
     GovioMessageList:
       allOf:
         - $ref: 'govhub-api-commons.yaml#/components/schemas/List'
@@ -810,6 +850,7 @@ components:
           required:
             - items
           additionalProperties: false
+          
     FileMessageList:
       allOf:
         - $ref: 'govhub-api-commons.yaml#/components/schemas/List'
@@ -824,6 +865,7 @@ components:
           required:
             - items
           additionalProperties: false
+          
     FileMessage:
       type: object
       additionalProperties: false
@@ -847,6 +889,7 @@ components:
       required:
         - id
         - status
+        
     GovioMessageItem:
       type: object
       additionalProperties: false
@@ -855,3 +898,19 @@ components:
           $ref: '#/components/schemas/MessageId'
       required:
         - id
+        
+    MessageOrdering:
+         type: string
+         enum:
+            - unsorted
+            - scheduled_expedition_date
+            - id
+         default: id        
+         
+    FileOrdering:
+         type: string
+         enum:
+            - unsorted
+            - creation_date
+            - id
+         default: id
