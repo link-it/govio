@@ -1,5 +1,7 @@
 package it.govhub.govio.api.repository;
 
+import java.util.Collection;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -29,9 +31,20 @@ public class GovioServiceInstanceFilters {
         return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
         	cb.equal(root.get(GovioServiceInstanceEntity_.service).get(GovioServiceEntity_.govhubService).get(ServiceEntity_.id), serviceId); 
 	}
+
 	
-	   
-	private GovioServiceInstanceFilters() {
+	public static Specification<GovioServiceInstanceEntity> byOrganizationIds(Collection<Long> orgIds) {
+        return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+    		root.get(GovioServiceInstanceEntity_.organization).get(OrganizationEntity_.id).in(orgIds);
 	}
+
+
+	public static Specification<GovioServiceInstanceEntity> byServiceIds(Collection<Long> serviceIds) {
+		 return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+     		root.get(GovioServiceInstanceEntity_.service).get(GovioServiceEntity_.govhubService).get(ServiceEntity_.id).in(serviceIds);
+     		
+	}
+	   
+	private GovioServiceInstanceFilters() {	}
 
 }

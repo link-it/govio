@@ -2,7 +2,6 @@ package it.govhub.govio.api.services;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +27,12 @@ import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
 import it.govhub.govio.api.messages.MessageMessages;
 import it.govhub.govio.api.repository.GovioMessageRepository;
 import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govregistry.commons.entity.UserEntity;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
+import it.govhub.security.services.SecurityService;
 import it.govio.template.BaseMessage;
 import it.govio.template.BasicTemplateApplier;
 import it.govio.template.Placeholder;
@@ -55,12 +56,20 @@ public class MessageService {
 	
 	@Autowired
 	MessageMessages messageMessages;
+	
+	@Autowired
+	SecurityService authService;
 
 	@Transactional
 	public GovioMessage readMessage(Long id) {
 		
 		GovioMessageEntity message = this.messageRepo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException(this.messageMessages.idNotFound(id)));
+		
+		GovioServiceInstanceEntity instance = message.getGovioServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 
 		return this.messageAssembler.toModel(message);
 	}
@@ -81,6 +90,7 @@ public class MessageService {
 		}
 		return ret;
 	}
+	
 	
 	@Transactional
 	public GovioMessageEntity newMessage(long senderId, long serviceInstanceId, BaseMessage message, Map<String, String> placeholderValues) {
