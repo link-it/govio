@@ -615,6 +615,7 @@ components:
 
                 Ut enim ad minim veniam, quis nostrud exercitation ullamco
                 laboris nisi ut aliquip ex ea commodo consequat.            
+                
     GovioMessagePaymentItem:
       type: object
       required:
@@ -639,12 +640,12 @@ components:
           maxLength: 11
           minLength: 11
           pattern: '[0-9]{11}'
-          type: string                    
+          type: string
+                              
     GovioBaseMessage:
       required:
         - markdown
         - scheduled_expedition_date
-        - subject
         - taxcode
       type: object
       properties:
@@ -658,13 +659,14 @@ components:
         payment:
           $ref: '#/components/schemas/GovioMessagePaymentItem'
         email:
-          type: string
+           $ref: "govhub-api-commons.yaml#/components/schemas/Email"
         scheduled_expedition_date:
           type: string
           format: date-time
         due_date:
           type: string
           format: date-time
+          
     GovioNewMessage:
       allOf:
         - $ref: '#/components/schemas/GovioBaseMessage'
@@ -673,15 +675,23 @@ components:
             placeholders:
               type: array
               items:
-                type: object
-                required:
-                  - name
-                  - value
-                properties:
-                  name:
-                    type: string
-                  value:
-                    type: string
+                 $ref: "#/components/schemas/Placeholder"
+                    
+    Placeholder:
+       type: object
+       required:
+         - name
+         - value
+       properties:
+         name:
+           type: string
+           pattern: .*
+           maxLength: 2000000
+         value:
+           type: string
+           pattern: .*
+           maxLength: 2000000    
+    
 
     GovioFile:
       type: object
