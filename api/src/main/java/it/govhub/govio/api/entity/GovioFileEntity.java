@@ -8,7 +8,6 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -42,7 +41,7 @@ public class GovioFileEntity {
  	@JoinColumn(name = "id_govhub_user", nullable=false)
 	private UserEntity govauthUser;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "id_govio_service_instance", nullable = false, foreignKey = @ForeignKey(name = "GovioFile_GovioServiceInstance"))
 	private GovioServiceInstanceEntity serviceInstance;
 	
