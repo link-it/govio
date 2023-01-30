@@ -286,9 +286,11 @@
 
 								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
 								<importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping>
+								<importMapping>GovioPlaceholderType=it.govhub.govio.api.entity.GovioPlaceholderEntity.Type</importMapping>
 							</importMappings>
 							<typeMappings>
 								<typeMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</typeMapping>
+								<typeMapping>GovioPlaceholderType=it.govhub.govio.api.entity.GovioPlaceholderEntity.Type</typeMapping>
 							</typeMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
