@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,6 +31,7 @@ import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
+import it.govhub.govio.api.beans.FileOrdering;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
@@ -142,6 +144,7 @@ public class FileController implements FileApi {
 	@Override
 	public ResponseEntity<FileList> listFiles(
 				Direction sortDirection, 
+				FileOrdering orderBy,
 				Integer limit, 
 				Long offset, 
 				String q,
@@ -151,9 +154,19 @@ public class FileController implements FileApi {
 				 OffsetDateTime creationDateFrom, 
 				 OffsetDateTime creationDateTo) {
 		
-		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+		// Pesco servizi e autorizzazioni che l'utente può leggere
+		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+		Set<Long> serviceIds = this.authService.listAuthorizedServices(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		
 		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
+		
+		// Se ho dei vincoli di lettura li metto nella spec
+		if (orgIds != null) {
+			spec = spec.and(GovioFileFilters.byOrganizations(orgIds));
+		}
+		if (serviceIds != null) {
+			spec = spec.and(GovioFileFilters.byServices(serviceIds));
+		}
 		
 		if (userId != null) {
 			spec = spec.and(GovioFileFilters.byUser(userId));
@@ -174,7 +187,7 @@ public class FileController implements FileApi {
 			spec = spec.and(GovioFileFilters.untilCreationDate(creationDateTo));
 		}
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection,orderBy));
 		
 		FileList ret = fileService.listFiles(spec, pageRequest);
 		
@@ -184,8 +197,6 @@ public class FileController implements FileApi {
 
 	@Override
 	public ResponseEntity<GovioFile> readFile(Long traceId) {
-		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
-				
 		return ResponseEntity.ok(	this.fileService.readFile(traceId));
 	}
 
@@ -193,10 +204,12 @@ public class FileController implements FileApi {
 	@Override
 	public ResponseEntity<Resource> readFileContent(Long id) {
 	
-    	this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
-    	
-    	GovioFileEntity file = this.fileRepo.findById(id)
-    			.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		Path path = file.getLocation();
 		
@@ -225,10 +238,12 @@ public class FileController implements FileApi {
             Long offset, 
             Long lineNumberFrom) {
 		
-		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
-
 		GovioFileEntity file = this.fileRepo.findById(id)
-    			.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;;
 
 		Specification<GovioFileMessageEntity> spec = GovioFileMessageFilters.ofFile(file.getId());
 
