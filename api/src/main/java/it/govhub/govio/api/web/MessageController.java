@@ -16,7 +16,6 @@ import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
 import it.govhub.govio.api.beans.GovioNewMessage;
-import it.govhub.govio.api.beans.GovioNewMessageAllOfPlaceholders;
 import it.govhub.govio.api.beans.MessageOrdering;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
@@ -31,6 +30,7 @@ import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
+import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
 import it.govhub.security.services.SecurityService;
 import it.govio.template.BaseMessage;
 
@@ -123,6 +123,16 @@ public class MessageController implements MessageApi {
 	@Override
 	public ResponseEntity<GovioMessage> sendMessage(Long serviceInstance, GovioNewMessage govioNewMessage) {
 		
+		// Faccio partire la validazione custom per la stringa \u0000
+		if (govioNewMessage.getPlaceholders() != null) {
+			int i = 0;
+			for (var p : govioNewMessage.getPlaceholders()) {
+				PostgreSQLUtilities.throwIfContainsNullByte(p.getName(), "placeholders["+i+"].name");
+				PostgreSQLUtilities.throwIfContainsNullByte(p.getValue(), "placeholders["+i+"].value");
+				i++;
+			}
+		}
+		
 		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(serviceInstance)
 				.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstance)));
 		
@@ -143,7 +153,7 @@ public class MessageController implements MessageApi {
 		}
 		Map<String, String> placeholderValues = new HashMap<>();
 		if(govioNewMessage.getPlaceholders() != null)
-			for(GovioNewMessageAllOfPlaceholders p : govioNewMessage.getPlaceholders()) {
+			for(var p : govioNewMessage.getPlaceholders()) {
 				placeholderValues.put(p.getName(), p.getValue());
 			}
 		GovioMessageEntity messageEntity = this.messageService.newMessage(SecurityService.getPrincipal().getId(), instance.getId(), message, placeholderValues);
