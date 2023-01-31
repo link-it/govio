@@ -261,6 +261,7 @@
 						<id>generate-sources-openapi</id>
 						<phase>generate-sources</phase>
 						<configuration>
+							<ignoreFileOverride>${project.basedir}/.openapi-generator-ignore</ignoreFileOverride>
 							<inputSpec>${project.basedir}/src/main/resources/govio-api-backoffice.yaml</inputSpec>
 							<generatorName>govhub-codegen</generatorName>
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
