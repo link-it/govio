@@ -18,7 +18,6 @@ import it.govhub.govio.api.entity.GovioServiceEntity_;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
-import it.govhub.govregistry.commons.entity.UserEntity_;
 import it.govhub.govregistry.commons.exception.UnreachableException;
 
 public class GovioMessageFilters {
