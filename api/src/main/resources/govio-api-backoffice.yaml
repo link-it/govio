@@ -545,7 +545,7 @@ paths:
              
      get:
          parameters:
-          - $ref: "#/components/parameters/embed_placeholder"
+          - $ref: "#/components/parameters/embeds_template_placeholder"
          tags:
            - template
          summary: List the template placeholders.
@@ -679,12 +679,16 @@ components:
       
   parameters:
   
-    embed_placeholder:
+    embeds_template_placeholder:
        name: embed
        in: query
        required: false
        schema:
-          $ref: "#/components/schemas/EmbedPlaceholderEnum"
+          type: array
+          minLength:  0
+          maxLength: 1024
+          items:
+             $ref: "#/components/schemas/EmbedPlaceholderEnum"
   
     creation_date_from:
       name: creation_date_from
@@ -958,6 +962,12 @@ components:
             - markdown
             - subject
           properties:
+            _embedded:
+                type: object
+                additionalProperties: false
+                properties:
+                   service_instance:
+                      $ref: '#/components/schemas/GovioServiceInstance'
             id:
               type: integer
               description: GovIO Message Id.
@@ -1175,14 +1185,28 @@ components:
                    type: object
                    properties:
                       placeholder:
-                         $ref: "govhub-api-commons.yaml#/components/schemas/Link"                         
+                         $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                _embedded:
+                   type: object
+                   properties:
+                      placeholder:
+                         $ref: "#/components/schemas/GovioPlaceholder"
+                      template:
+                         $ref: "#/components/schemas/GovioTemplate"
+#                _embedded:
+#                   type: object
+#                   additionalProperties: true                         
                     
     GovioListTemplatePlaceholder:
-       type: array
-       minItems: 0
-       maxItems: 2147483647
-       items:
-          $ref: "#/components/schemas/GovioTemplatePlaceholder"
+       type: object
+       additionalProperties: false
+       properties:
+          items:
+             type: array
+             minItems: 0
+             maxItems: 2147483647
+             items:
+                $ref: "#/components/schemas/GovioTemplatePlaceholder"
                            
     GovioFileId:
       type: integer
@@ -1231,6 +1255,7 @@ components:
        type: string
        enum:
            - placeholder
+           - template
       
     FileStatus:
       type: string

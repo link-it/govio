@@ -5,6 +5,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -49,15 +52,23 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 				.payeeTaxcode(src.getPayeeTaxcode());
 			ret.setPayment(payment);
 		}
+		
+		
+		Link linkToServiceInstance = linkTo(
+				methodOn(ServiceInstanceController.class)
+				.readServiceInstance(src.getGovioServiceInstance().getId()))
+			.withRel("service-instance"); 
+		
+		RepresentationModel<GovioMessage> guu = HalModelBuilder.halModelOf(ret)
+			.preview("Ciccione")
+			.forLink(linkToServiceInstance)
+			.build();
 
 		ret.add(linkTo(
 				methodOn(MessageController.class)
 					.readMessage(src.getId())
 				).withSelfRel())
-			.add(linkTo(
-				methodOn(ServiceInstanceController.class)
-					.readServiceInstance(src.getGovioServiceInstance().getId()))
-				.withRel("service-instance"))
+			.add(linkToServiceInstance)
 		.add(linkTo(
 				methodOn(ReadUserController.class)
 					.readUser(src.getSender().getId()))

@@ -1,17 +1,28 @@
 package it.govhub.govio.api.web;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.Min;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
@@ -116,9 +127,12 @@ public class MessageController implements MessageApi {
 	@Override
 	public ResponseEntity<GovioMessage> readMessage(Long id) {
 		
-		return ResponseEntity.ok(this.messageService.readMessage(id));
+		GovioMessage ret = this.messageService.readMessage(id);
+		
+		return ResponseEntity.ok(ret);
 	}
-
+	
+    
 	@Transactional
 	@Override
 	public ResponseEntity<GovioMessage> sendMessage(Long serviceInstance, GovioNewMessage govioNewMessage) {
