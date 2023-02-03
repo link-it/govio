@@ -1,6 +1,5 @@
 package it.govhub.govio.api.web;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +18,7 @@ import it.govhub.govio.api.assemblers.PlaceholderAssembler;
 import it.govhub.govio.api.assemblers.TemplateAssembler;
 import it.govhub.govio.api.assemblers.TemplatePlaceholderAssembler;
 import it.govhub.govio.api.beans.EmbedPlaceholderEnum;
+import it.govhub.govio.api.beans.GovioListTemplatePlaceholder;
 import it.govhub.govio.api.beans.GovioNewPlaceholder;
 import it.govhub.govio.api.beans.GovioNewTemplate;
 import it.govhub.govio.api.beans.GovioNewTemplatePlaceholder;
@@ -184,15 +184,17 @@ public class TemplateController implements TemplateApi {
 
 
 	@Override
-	public ResponseEntity<List<GovioTemplatePlaceholder>> listTemplatePlaceholders(Long templateId, EmbedPlaceholderEnum embed) {
+	public ResponseEntity<GovioListTemplatePlaceholder> listTemplatePlaceholders(Long templateId, List<EmbedPlaceholderEnum> embeds) {
 		
 		var spec = TemplatePlaceholderFilters.byTemplateId(templateId);
+		
 		List<GovioTemplatePlaceholderEntity> templatePlaceholders = this.templatePlaceholderRepo.findAll(spec);
 		
-		List<GovioTemplatePlaceholder> ret = new ArrayList<>(templatePlaceholders.size());
+		GovioListTemplatePlaceholder ret = new GovioListTemplatePlaceholder();
 		
 		for (var tp : templatePlaceholders) {
-			ret.add(this.templatePlaceholderAssembler.toModel(tp));
+			GovioTemplatePlaceholder item = this.templatePlaceholderAssembler.toEmbeddedModel(tp, embeds);
+			ret.addItemsItem(item);
 		}
 		
 		return ResponseEntity.ok(ret);
