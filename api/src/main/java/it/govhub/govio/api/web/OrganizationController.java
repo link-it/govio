@@ -16,8 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
-import it.govhub.govio.api.security.GovioRoles;
 import it.govhub.govio.api.spec.OrganizationApi;
 import it.govhub.govregistry.commons.api.beans.OrganizationList;
 import it.govhub.govregistry.commons.api.beans.OrganizationOrdering;

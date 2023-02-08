@@ -1059,18 +1059,22 @@ components:
              type: string
              pattern: .*
              maxLength:  9223372036854776000
+             example: cie
           description:
              type: string
              pattern: .*
              maxLength:  9223372036854776000
+             example: Numero carta d'identità elettronica.
           example:
              type: string
              pattern: .*
              maxLength:  9223372036854776000
+             example: CA000000AA
           pattern:
              type: string
              pattern: .*
              maxLength:  9223372036854776000
+             example:  "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]" 
           type:
              $ref: "#/components/schemas/GovioPlaceholderType"
 
@@ -1102,18 +1106,22 @@ components:
              type: string
              pattern: .*
              maxLength: 9223372036854776000
+             example: Spedizione Messaggio CIE
           description:
              type: string
              pattern: .*
-             maxLength: 9223372036854776000 
+             maxLength: 9223372036854776000
+             example: Segnala la scadenza della proprià C.I.E. 
           subject:
              type: string
              pattern: .*
              maxLength: 9223372036854776000
+             example: Scadenza CIE n. ${cie.uppercase}
           message_body:
              type: string
              pattern: .*
-             maxLength: 9223372036854776000             
+             maxLength: 9223372036854776000
+             example: Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}.             
           has_payment:
              type: boolean
           has_due_date:
@@ -1159,6 +1167,11 @@ components:
                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
                       placeholders:
                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                   example:
+                      self:
+                         href: "https://govhub.it/govio/templates/1"
+                      placeholders:
+                         href: "https://govhub.it/govio/templates/1/placeholders"
                                           
     GovioTemplateList:
          allOf:
@@ -1186,6 +1199,11 @@ components:
                    properties:
                       placeholder:
                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                   example:
+                      placeholder:
+                         href: "https://govhub.it/govio/placeholders/1"
+                      template:
+                         href: "https://govhub.it/govio/templates/1"
                 _embedded:
                    type: object
                    properties:
@@ -1193,9 +1211,6 @@ components:
                          $ref: "#/components/schemas/GovioPlaceholder"
                       template:
                          $ref: "#/components/schemas/GovioTemplate"
-#                _embedded:
-#                   type: object
-#                   additionalProperties: true                         
                     
     GovioListTemplatePlaceholder:
        type: object

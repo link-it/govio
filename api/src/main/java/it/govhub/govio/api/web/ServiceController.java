@@ -3,7 +3,7 @@ package it.govhub.govio.api.web;
 import java.util.HashSet;
 import java.util.Set;
 
-import it.govhub.govio.api.security.GovioRoles;
+import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.readops.api.web.ReadServiceController;
 
