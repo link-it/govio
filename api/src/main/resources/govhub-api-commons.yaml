@@ -145,6 +145,7 @@ components:
               $ref: "#/components/headers/X-RateLimit-Remaining"
            X-RateLimit-Reset:
              $ref: "#/components/headers/X-RateLimit-Reset"
+             
 
       '400BadRequest':
          description: Bad Request.
@@ -152,6 +153,12 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Missing required field. 
+                status: 400
+                title: Bad Request
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request
+                               
                
       '401Unauthorized':
          description: Required credentials missing.
@@ -159,13 +166,23 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Invalid Credentials  
+                status: 401
+                title: Unauthorized
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-401-unauthorized               
                
       '403Forbidden':
-         description: No Authorizations for the requested operation.
+         description: Agent not authorized for the operation.
          content:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: User not authorized for the operation.  
+                status: 403
+                title: Forbidden
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-403-forbidden               
                
       '404NotFound':
          description: Not Found.
@@ -173,6 +190,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Resource not found.  
+                status: 404
+                title: Not Found
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found               
                
       '409Conflict':
          description: Conflict (The entity already exists).
@@ -180,6 +202,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Resource with the same id already present.  
+                status: 409
+                title: Conflict
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-409-conflict               
                
       '429TooManyRequests':
          description: Too many requests.
@@ -206,6 +233,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Request Can't be fulfilled at the moment.  
+                status: 503
+                title: Service Unavailable
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-503-service-unavailable                   
                
       'ResponseDefault':
          description: Unexpected error.

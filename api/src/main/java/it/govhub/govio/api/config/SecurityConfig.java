@@ -1,4 +1,4 @@
-package it.govhub.govio.api.security;
+package it.govhub.govio.api.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package it.govhub.govio.api.security;
+package it.govhub.govio.api.config;
 
 
 public class GovioRoles {
