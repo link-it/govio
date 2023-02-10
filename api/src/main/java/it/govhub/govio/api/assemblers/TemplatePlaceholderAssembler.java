@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -19,6 +21,8 @@ import it.govhub.govio.api.web.TemplateController;
 
 @Component
 public class TemplatePlaceholderAssembler extends RepresentationModelAssemblerSupport<GovioTemplatePlaceholderEntity, GovioTemplatePlaceholder> {
+	
+	Logger log = LoggerFactory.getLogger(TemplateAssembler.class);
 	
 	@Autowired
 	PlaceholderAssembler placeholderAssembler;
@@ -33,6 +37,7 @@ public class TemplatePlaceholderAssembler extends RepresentationModelAssemblerSu
 	
 	@Override
 	public GovioTemplatePlaceholder toModel(GovioTemplatePlaceholderEntity entity) {
+		log.debug("Assembling Entity [GovioTemplatePlaceholder] to model...");
 		
 		var ret = new GovioTemplatePlaceholder();
 		BeanUtils.copyProperties(entity, ret);

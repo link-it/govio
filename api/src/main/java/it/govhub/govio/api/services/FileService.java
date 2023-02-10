@@ -77,10 +77,11 @@ public class FileService {
 	@Autowired
 	FileMessages fileMessages;
 	
-	Logger logger = LoggerFactory.getLogger(FileService.class);
+	Logger log = LoggerFactory.getLogger(FileService.class);
 	
 	@Transactional
 	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
+		log.info("Uploading file {} to Service Instance {}", sourceFilename, instance.getId());
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
@@ -97,14 +98,14 @@ public class FileService {
     	destDir.mkdirs();
     	
     	if (!destDir.isDirectory()) {
-    		logger.error("Impossibile creare la directory per conservare i files: {}", destDir);
+    		log.error("Impossibile creare la directory per conservare i files: {}", destDir);
     		throw new RuntimeException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
     	Path destFile =  destPath
     				.resolve(sourceFilename);
     	
-    	logger.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
+    	log.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
     	
     	long size;
     	try(InputStream stream=itemStream.openStream()){
@@ -129,16 +130,15 @@ public class FileService {
 
 	@Transactional
 	public GovioFile readFile(Long id) {
-		
 		GovioFileEntity file = this.fileRepo.findById(id)
 				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
 		GovioServiceInstanceEntity instance = file.getServiceInstance();
 		
+		log.debug("Reading file [{}]", file.getLocation());
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		GovioFile ret = this.fileAssembler.toModel(file);
-		
 		return ret;
 	}
 

@@ -1,28 +1,19 @@
 package it.govhub.govio.api.web;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
-import javax.validation.constraints.Min;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
@@ -39,6 +30,7 @@ import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
 import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
+import it.govhub.govregistry.commons.entity.UserEntity;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
@@ -68,6 +60,8 @@ public class MessageController implements MessageApi {
 	
 	@Autowired
 	SecurityService authService;
+	
+	Logger log = LoggerFactory.getLogger(MessageController.class);
 	
 	@Override
 	public ResponseEntity<GovioMessageList> listMessages(
@@ -146,6 +140,10 @@ public class MessageController implements MessageApi {
 				i++;
 			}
 		}
+		
+		UserEntity principal = SecurityService.getPrincipal();
+		
+		log.info("Sending new message from user [{}] to service instance [{}]: {} ", principal.getPrincipal(), serviceInstance, govioNewMessage);
 		
 		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(serviceInstance)
 				.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstance)));
