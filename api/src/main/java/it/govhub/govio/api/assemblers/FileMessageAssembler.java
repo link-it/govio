@@ -1,5 +1,7 @@
 package it.govhub.govio.api.assemblers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -11,27 +13,31 @@ import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.web.FileController;
 
 @Component
-public class FileMessageAssembler extends RepresentationModelAssemblerSupport<GovioFileMessageEntity, FileMessage>{
-       
-       @Autowired
-       MessageItemAssembler msgItemAssembler;
+public class FileMessageAssembler extends RepresentationModelAssemblerSupport<GovioFileMessageEntity, FileMessage> {
 
-       public FileMessageAssembler() {
-               super(FileController.class, FileMessage.class);
-       }
+	Logger log = LoggerFactory.getLogger(FileMessageAssembler.class);
+	
+	@Autowired
+	MessageItemAssembler msgItemAssembler;
 
-       @Override
-       public FileMessage toModel(GovioFileMessageEntity src) {
-               FileMessage ret = instantiateModel(src);
-               
-               FileMessageStatusEnum status = src.getGovioMessage() == null ? FileMessageStatusEnum.ERROR : FileMessageStatusEnum.ACQUIRED;
-               
-               BeanUtils.copyProperties(src,  ret);
-               
-               ret.status(status)
-                       .message(this.msgItemAssembler.toModel(src.getGovioMessage()));
-               
-               return ret;
-       }
+	public FileMessageAssembler() {
+		super(FileController.class, FileMessage.class);
+	}
+
+	@Override
+	public FileMessage toModel(GovioFileMessageEntity src) {
+		log.debug("Assembling Entity [GovioFileMessage] to model...");
+
+		FileMessage ret = instantiateModel(src);
+
+		FileMessageStatusEnum status = src.getGovioMessage() == null ? FileMessageStatusEnum.ERROR
+				: FileMessageStatusEnum.ACQUIRED;
+
+		BeanUtils.copyProperties(src, ret);
+
+		ret.status(status).message(this.msgItemAssembler.toModel(src.getGovioMessage()));
+
+		return ret;
+	}
 
 }

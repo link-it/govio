@@ -1,5 +1,7 @@
 package it.govhub.govio.api.assemblers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import it.govhub.govregistry.readops.api.assemblers.ServiceAuthItemAssembler;
 @Component
 public class ServiceInstanceAssembler extends RepresentationModelAssemblerSupport<GovioServiceInstanceEntity, GovioServiceInstance>{
 
+	Logger log = LoggerFactory.getLogger(ServiceInstanceAssembler.class);
+	
 	@Autowired
 	OrganizationAuthItemAssembler orgItemAssembler;
 	
@@ -25,11 +29,11 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 
 	@Override
 	public GovioServiceInstance toModel(GovioServiceInstanceEntity src) {
+		log.debug("Assembling Entity [GovioServiceInstance] to model...");
+
 		var ret = instantiateModel(src);
-		
 		ret.organization(this.orgItemAssembler.toModel(src.getOrganization())).
 				service(this.serviceItemAssembler.toModel(src.getService().getGovhubService()));
-			
 		return ret;
 	}
 

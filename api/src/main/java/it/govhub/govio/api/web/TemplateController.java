@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -73,8 +75,12 @@ public class TemplateController implements TemplateApi {
 	@Autowired
 	TemplatePlaceholderAssembler templatePlaceholderAssembler;
 	
+	Logger log = LoggerFactory.getLogger(TemplateController.class);
+	
 	@Override
 	public ResponseEntity<GovioTemplate> createTemplate(GovioNewTemplate govioNewTemplate) {
+		
+		log.info("Creating new template: {}", govioNewTemplate);
 		
 		GovioTemplateEntity template = new GovioTemplateEntity();
 		BeanUtils.copyProperties(govioNewTemplate, template);
@@ -119,6 +125,8 @@ public class TemplateController implements TemplateApi {
 	@Override
 	public ResponseEntity<GovioPlaceholder> createPlaceholder(GovioNewPlaceholder govioNewPlaceholder) {
 		
+		log.info("Creating new placeholder: {}", govioNewPlaceholder);
+		
 		var placeholder = new GovioPlaceholderEntity();
 		BeanUtils.copyProperties(govioNewPlaceholder, placeholder);
 		
@@ -160,6 +168,8 @@ public class TemplateController implements TemplateApi {
 	
 	@Override
 	public ResponseEntity<GovioTemplatePlaceholder> assignPlaceholder(Long templateId, Long placeholderId, GovioNewTemplatePlaceholder newTemplatePlaceholder) {
+		
+		log.info("Assigning placeholder [{}] to template [{}]: {}", placeholderId, templateId, newTemplatePlaceholder);
 		
 		// TODO Check conflitto 
 		

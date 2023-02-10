@@ -10,6 +10,8 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -59,6 +61,8 @@ public class MessageService {
 	
 	@Autowired
 	SecurityService authService;
+	
+	Logger log = LoggerFactory.getLogger(MessageService.class);
 
 	@Transactional
 	public GovioMessage readMessage(Long id) {

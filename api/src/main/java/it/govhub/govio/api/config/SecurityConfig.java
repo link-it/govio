@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.govhub.govregistry.commons.security.AccessDeniedHandlerImpl;
 import it.govhub.govregistry.commons.security.PreAuthenticatedExceptionHandler;
-import it.govhub.govregistry.commons.security.ProblemHttp403ForbiddenEntryPoint;
+import it.govhub.govregistry.commons.security.UnauthorizedAuthenticationEntryPoint;
 import it.govhub.security.services.GovhubUserDetailService;
 
 
@@ -67,7 +67,7 @@ public class SecurityConfig{
 				// Gestisci accessDenied in modo da restituire un problem ben formato
 				.accessDeniedHandler(accessDeniedHandler)																	
 				// Gestisci la mancata autenticazione con un problem ben formato
-				.authenticationEntryPoint(new ProblemHttp403ForbiddenEntryPoint(jsonMapper))	
+				.authenticationEntryPoint(new UnauthorizedAuthenticationEntryPoint(jsonMapper))	
 		.and()
 				// Le applicazioni di govhub non usano una sessione, nè fanno login. Arrivano solo richieste autenticate.
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)

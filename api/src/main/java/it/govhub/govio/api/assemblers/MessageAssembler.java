@@ -3,6 +3,8 @@ package it.govhub.govio.api.assemblers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -24,6 +26,8 @@ import it.govhub.govregistry.readops.api.web.ReadUserController;
 @Component
 public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioMessageEntity, GovioMessage> {
 
+	Logger log = LoggerFactory.getLogger(MessageAssembler.class);
+	
 	@Autowired
 	FileUserItemAssembler userItemAssembler;
 	
@@ -39,6 +43,8 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 
 	@Override
 	public GovioMessage toModel(GovioMessageEntity src) {
+		log.debug("Assembling Entity [GovioMessage] to model...");
+
 		GovioMessage ret = instantiateModel(src);
 
 		BeanUtils.copyProperties(src, ret);
@@ -59,10 +65,6 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 				.readServiceInstance(src.getGovioServiceInstance().getId()))
 			.withRel("service-instance"); 
 		
-		RepresentationModel<GovioMessage> guu = HalModelBuilder.halModelOf(ret)
-			.preview("Ciccione")
-			.forLink(linkToServiceInstance)
-			.build();
 
 		ret.add(linkTo(
 				methodOn(MessageController.class)
