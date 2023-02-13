@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -59,12 +57,10 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 			ret.setPayment(payment);
 		}
 		
-		
 		Link linkToServiceInstance = linkTo(
 				methodOn(ServiceInstanceController.class)
 				.readServiceInstance(src.getGovioServiceInstance().getId()))
 			.withRel("service-instance"); 
-		
 
 		ret.add(linkTo(
 				methodOn(MessageController.class)

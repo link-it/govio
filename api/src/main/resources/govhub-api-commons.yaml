@@ -223,6 +223,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: User has sent too many requests in a given amount of time.
+                status: 429
+                title: Too Many Requests
+                type: https://www.rfc-editor.org/rfc/rfc6585#section-4                              
                
       '503ServiceUnavailable':
          description: Service Unavailable.
@@ -373,11 +378,18 @@ components:
                   id:
                      $ref: "#/components/schemas/UserId"
                   _links:
-                     type: array
-                     items:
-                       $ref: '#/components/schemas/Link'
-                     minItems: 0
-                     maxItems: 2147483647                          
+                     type: object
+                     additionalProperties: false
+                     properties:
+                        self:
+                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                        avatar:
+                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                     example:
+                        self:
+                           href: "https://govhub.it/govregistry/users/1"
+                        avatar:
+                           href: "https://gravatar.com/avatar/md5/d2c457c9c97c9e4e2226317fe5685892/s=100&d=identicon"                          
                      
       OrganizationData:
          type: object
@@ -466,6 +478,15 @@ components:
             properties:
               id:
                 $ref: "#/components/schemas/OrganizationId"
+              _links:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    self:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 example:
+                    self: 
+                       href: "https://govhub.it/govregistry/organizations/1"
                 
       OrganizationItem:
         allOf:
@@ -476,7 +497,25 @@ components:
               - id
             properties:
               id:
-                $ref: "#/components/schemas/OrganizationId"       
+                $ref: "#/components/schemas/OrganizationId"
+              _links:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    self:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo_miniature:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 example:
+                    self: 
+                       href: "https://govhub.it/govregistry/organizations/1"                
+                    logo: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo"
+                    logo_miniature: 
+                       href: "https://govhub.it/govregistry/organizations/logo_miniature"
+                                                                     
                 
       ServiceCreate:
          type: object
@@ -504,6 +543,16 @@ components:
                properties:
                   id:
                      $ref: "#/components/schemas/ServiceId"
+                  _links:
+                     type: object
+                     additionalProperties: false
+                     properties:
+                        self:
+                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                     example:
+                       self: 
+                          href: "https://govhub.it/govregistry/services/1" 
+                        
                      
       OrganizationOrdering:
          type: string
@@ -629,6 +678,24 @@ components:
                $ref: "#/components/schemas/LegalName"
             tax_code:
                $ref: "#/components/schemas/TaxCode"
+            _links:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    self:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo_miniature:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 example:
+                    self: 
+                       href: "https://govhub.it/govregistry/organizations/1"                
+                    logo: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo"
+                    logo_miniature: 
+                       href: "https://govhub.it/govregistry/organizations/logo_miniature"               
+               
                
       UserId:
          type: integer
@@ -676,6 +743,23 @@ components:
               pattern: .*
               maxLength: 4096
               example: Service for customer management.
+            _links:
+              type: object
+              additionalProperties: false
+              properties:
+                 self:
+                    $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 logo:
+                    $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 logo_miniature:
+                    $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+              example:
+                 self: 
+                    href: "https://govhub.it/govregistry/services/1"                
+                 logo: 
+                    href: "https://govhub.it/govregistry/services/1/logo"
+                 logo_miniature: 
+                    href: "https://govhub.it/govregistry/services/logo_miniature"
                
       ServiceName:
          type: string
