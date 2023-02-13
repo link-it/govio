@@ -83,6 +83,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GovioFile'
+          links:
+             self:
+                $ref: "#/components/links/readFile"
+             content:
+                $ref: "#/components/links/readFileContent"
+             messages:
+                $ref: "#/components/links/readFileMessages"
+             
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -150,6 +158,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GovioFile'
+          links:
+             content:
+                $ref: "#/components/links/readFileContent"
+             messages:
+                $ref: "#/components/links/readFileMessages"                
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -257,12 +270,7 @@ paths:
                 $ref: '#/components/schemas/GovioMessage'
           links:
             self:
-              operationId: readMessage
-              parameters:
-                id: '$response.body#/id'
-              description: >
-                The `id` value returned in the response can be used as
-                the `userId` parameter in `GET /users/{userId}`.
+              $ref: "#/components/links/readMessage"
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -329,7 +337,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GovioMessage'
+                $ref: '#/components/schemas/GovioMessage'               
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -428,6 +436,14 @@ paths:
                application/json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplate'
+             links:
+               self:
+                  $ref: "#/components/links/readTemplate"
+               assignPlaceholder:
+                  $ref: "#/components/links/assignPlaceholder"
+               listTemplatePlaceholders:
+                  $ref: "#/components/links/listTemplatePlaceholders"
+                                  
            '400':
              $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
            '401':
@@ -486,6 +502,12 @@ paths:
                application/json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplate'
+             links:
+               assignPlaceholder:
+                  $ref: "#/components/links/assignPlaceholder"
+               listTemplatePlaceholders:
+                  $ref: "#/components/links/listTemplatePlaceholders"                   
+                   
            '400':
              $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
            '401':
@@ -593,6 +615,9 @@ paths:
                application/json:
                  schema:
                    $ref: '#/components/schemas/GovioPlaceholder'
+             links:
+                self:
+                   $ref: "#/components/links/readPlaceholder"
            '400':
              $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
            '401':
@@ -676,6 +701,67 @@ components:
       type: apiKey
       in: header
       name: GovHub-Consumer-Principal
+      
+  links:
+  
+    readFile:
+       description: Retrieve the file.
+       operationId: readFile
+       parameters:
+         id: $response.body#/id
+         
+    readFileContent:
+       description: Download the file.
+       operationId: readFileContent
+       parameters:
+         id: $response.body#/id
+         
+    readFileMessages:
+       description: Read the file messages
+       operationId: readFileMessages
+       parameters:
+         id: $response.body#/id
+         
+    readMessage:
+        operationId: readMessage
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          The `id` value returned in the response can be used as
+          the `userId` parameter in `GET /users/{userId}`.
+          
+    readTemplate:
+        operationId: readTemplate
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          The `id` value returned in the response can be used as
+          the `templateId` parameter for reading the template
+          
+    assignPlaceholder:
+        operationId: assignPlaceholder
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          You can assign a new placeholder using The `id` value returned as
+          the `templateId` query parameter
+          
+    listTemplatePlaceholders:
+        operationId: listTemplatePlacehodlers
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          You can list the placeholder template using the `id` value returned in the response
+          for the `templateId`  parameter          
+                              
+    readPlaceholder:
+        operationId: readPlaceholder
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          The `id` value returned in the response can be used as
+          the `placeholderId` parameter                              
+                 
       
   parameters:
   
