@@ -943,6 +943,19 @@ components:
           minimum: 0
           maximum: 9223372036854776000
           example: 9999
+        _links:
+           type: object
+           additionalProperties: false
+           properties:
+              self:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+              content:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+           example:
+              self: 
+                 href: "https://govhub.it/govio/files/1"                
+              content: 
+                 href: "https://govhub.it/govio/files/1/content"
       required:
         - creation_date
         - status
@@ -962,12 +975,6 @@ components:
             - markdown
             - subject
           properties:
-            _embedded:
-                type: object
-                additionalProperties: false
-                properties:
-                   service_instance:
-                      $ref: '#/components/schemas/GovioServiceInstance'
             id:
               type: integer
               description: GovIO Message Id.
@@ -1008,6 +1015,23 @@ components:
 
                 Ut enim ad minim veniam, quis nostrud exercitation ullamco
                 laboris nisi ut aliquip ex ea commodo consequat.            
+            _links:
+               type: object
+               additionalProperties: false
+               properties:
+                  self:
+                     $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                  service_instance:
+                     $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                  sender:
+                     $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+               example:
+                  self:
+                     href: "https://govhub.it/govio/messages/1"
+                  service_instance:
+                     href: "https://govhub.it/govio/service-instances/1"
+                  sender:
+                     href: "https://govhub.it/govio/users/1"
                 
     GovioMessagePaymentItem:
       type: object
@@ -1137,6 +1161,15 @@ components:
             properties:
                id:
                   $ref: "#/components/schemas/GovioPlaceholderId"
+               _links:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                     self:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                  example:
+                     self:
+                        href: "https://govhub.it/govio/placeholders/1"
                   
     GovioPlaceholderList:
          allOf:
@@ -1162,6 +1195,7 @@ components:
                    $ref: '#/components/schemas/GovioTemplateId'
                 _links:
                    type: object
+                   additionalProperties: false
                    properties:
                       self:
                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
@@ -1333,6 +1367,15 @@ components:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
         organization:
           $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
+        _links:
+           type: object
+           additionalProperties: false
+           properties:
+              self:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+           example:
+              self:
+                 href: "https://govhub.it/govio/service-instances/1"
           
     FileList:
       allOf:

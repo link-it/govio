@@ -1,5 +1,8 @@
 package it.govhub.govio.api.assemblers;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,12 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 		var ret = instantiateModel(src);
 		ret.organization(this.orgItemAssembler.toModel(src.getOrganization())).
 				service(this.serviceItemAssembler.toModel(src.getService().getGovhubService()));
+		
+		ret.add(linkTo(
+				methodOn(ServiceInstanceController.class)
+					.readServiceInstance(src.getId())
+				).withSelfRel());
+		
 		return ret;
 	}
 
