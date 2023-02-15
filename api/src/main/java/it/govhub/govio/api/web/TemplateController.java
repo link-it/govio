@@ -36,6 +36,7 @@ import it.govhub.govio.api.entity.GovioPlaceholderEntity_;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity_;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
+import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity_;
 import it.govhub.govio.api.messages.PlaceholderMessages;
 import it.govhub.govio.api.messages.TemplateMessages;
 import it.govhub.govio.api.repository.PlaceholderRepository;
@@ -209,7 +210,7 @@ public class TemplateController implements TemplateApi {
 		
 		var spec = TemplatePlaceholderFilters.byTemplateId(templateId);
 		
-		List<GovioTemplatePlaceholderEntity> templatePlaceholders = this.templatePlaceholderRepo.findAll(spec);
+		List<GovioTemplatePlaceholderEntity> templatePlaceholders = this.templatePlaceholderRepo.findAll(spec, Sort.by(Direction.ASC, GovioTemplatePlaceholderEntity_.POSITION));
 		
 		GovioListTemplatePlaceholder ret = new GovioListTemplatePlaceholder();
 		
