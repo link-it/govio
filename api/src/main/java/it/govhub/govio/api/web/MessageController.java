@@ -24,9 +24,9 @@ import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.MessageMessages;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
-import it.govhub.govio.api.repository.GovioMessageFilters;
-import it.govhub.govio.api.repository.GovioMessageRepository;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.repository.MessageFilters;
+import it.govhub.govio.api.repository.MessageRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
@@ -47,10 +47,10 @@ public class MessageController implements MessageApi {
 	MessageAssembler messageAssembler;
 
 	@Autowired
-	GovioServiceInstanceRepository serviceInstanceRepo;
+	ServiceInstanceRepository serviceInstanceRepo;
 	
 	@Autowired
-	GovioMessageRepository messageRepo;
+	MessageRepository messageRepo;
 	
 	@Autowired
 	ServiceInstanceMessages sinstanceMessages;
@@ -77,40 +77,40 @@ public class MessageController implements MessageApi {
 			Integer limit,
 			Long offset) {
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioMessageFilters.sort(orderBy, sortDirection));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, MessageFilters.sort(orderBy, sortDirection));
 		
 		// Pesco servizi e autorizzazioni che l'utente può leggere
 		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		Set<Long> serviceIds = this.authService.listAuthorizedServices(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		
-		Specification<GovioMessageEntity> spec = GovioMessageFilters.empty();
+		Specification<GovioMessageEntity> spec = MessageFilters.empty();
 		
 		if (orgIds != null) {
-			spec = spec.and(GovioMessageFilters.byOrganizationIds(orgIds));
+			spec = spec.and(MessageFilters.byOrganizationIds(orgIds));
 		}
 		if (serviceIds != null) {
-			spec = spec.and(GovioMessageFilters.byServiceIds(serviceIds));
+			spec = spec.and(MessageFilters.byServiceIds(serviceIds));
 		}
 		if (scheduledExpeditionDateFrom != null) {
-			spec = spec.and(GovioMessageFilters.fromScheduledExpeditionDate(scheduledExpeditionDateFrom));
+			spec = spec.and(MessageFilters.fromScheduledExpeditionDate(scheduledExpeditionDateFrom));
 		}
 		if (scheduledExpeditionDateTo != null) {
-			spec = spec.and(GovioMessageFilters.toScheduledExpeditionDate(scheduledExpeditionDateTo));
+			spec = spec.and(MessageFilters.toScheduledExpeditionDate(scheduledExpeditionDateTo));
 		}
 		if (expeditionDateFrom != null) {
-			spec = spec.and(GovioMessageFilters.fromExpeditionDate(expeditionDateFrom));
+			spec = spec.and(MessageFilters.fromExpeditionDate(expeditionDateFrom));
 		}
 		if (expeditionDateTo != null) {
-			spec = spec.and(GovioMessageFilters.toExpeditionDate(expeditionDateTo));
+			spec = spec.and(MessageFilters.toExpeditionDate(expeditionDateTo));
 		}
 		if (taxCode != null) {
-			spec = spec.and(GovioMessageFilters.byTaxCode(taxCode));
+			spec = spec.and(MessageFilters.byTaxCode(taxCode));
 		}
 		if (serviceId != null) {
-			spec = spec.and(GovioMessageFilters.byServiceId(serviceId));
+			spec = spec.and(MessageFilters.byServiceId(serviceId));
 		}
 		if (organizationId != null) {
-			spec = spec.and(GovioMessageFilters.byOrganizationId(organizationId));
+			spec = spec.and(MessageFilters.byOrganizationId(organizationId));
 		}
 		
 		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest);

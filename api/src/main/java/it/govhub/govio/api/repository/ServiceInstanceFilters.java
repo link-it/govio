@@ -14,7 +14,7 @@ import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
 
-public class GovioServiceInstanceFilters {
+public class ServiceInstanceFilters {
 
 	public static Specification<GovioServiceInstanceEntity> empty() {
            return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null; 
@@ -45,6 +45,6 @@ public class GovioServiceInstanceFilters {
      		
 	}
 	   
-	private GovioServiceInstanceFilters() {	}
+	private ServiceInstanceFilters() {	}
 
 }

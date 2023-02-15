@@ -16,7 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.config.GovioRoles;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.spec.OrganizationApi;
 import it.govhub.govregistry.commons.api.beans.OrganizationList;
 import it.govhub.govregistry.commons.api.beans.OrganizationOrdering;
@@ -47,7 +47,7 @@ public class OrganizationController extends ReadOrganizationController implement
 	SecurityService authService;
 	
 	@Autowired
-	GovioServiceInstanceRepository serviceInstanceRepo;
+	ServiceInstanceRepository serviceInstanceRepo;
 	
 	private static Set<String> readOrganizationRoles = Set.of(
 			GovioRoles.GOVIO_SYSADMIN, 

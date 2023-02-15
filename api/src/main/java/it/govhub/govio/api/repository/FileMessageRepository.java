@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryImplementati
 
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
 
-public interface GovioFileMessageRepository extends JpaRepositoryImplementation<GovioFileMessageEntity, Long>{
+public interface FileMessageRepository extends JpaRepositoryImplementation<GovioFileMessageEntity, Long>{
 
 }
 

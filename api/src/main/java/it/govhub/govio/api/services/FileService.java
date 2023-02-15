@@ -33,10 +33,10 @@ import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.FileMessages;
-import it.govhub.govio.api.repository.GovioFileMessageRepository;
-import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.GovioMessageRepository;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.repository.FileMessageRepository;
+import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.MessageRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
@@ -51,10 +51,10 @@ public class FileService {
 	Path fileRepositoryPath;
 	
 	@Autowired
-	GovioFileRepository fileRepo;
+	FileRepository fileRepo;
 
 	@Autowired
-	GovioServiceInstanceRepository serviceRepo;
+	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	SecurityService authService;
@@ -63,13 +63,13 @@ public class FileService {
 	FileAssembler fileAssembler;
 	
 	@Autowired
-	GovioFileMessageRepository fileMessageRepo;
+	FileMessageRepository fileMessageRepo;
 	
 	@Autowired
 	FileMessageAssembler fileMessageAssembler;
 	
 	@Autowired
-	GovioMessageRepository messageRepo;
+	MessageRepository messageRepo;
 	
 	@Autowired
 	MessageAssembler messageAssembler;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -36,10 +38,11 @@ import it.govhub.govio.api.entity.GovioTemplateEntity_;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
 import it.govhub.govio.api.messages.PlaceholderMessages;
 import it.govhub.govio.api.messages.TemplateMessages;
-import it.govhub.govio.api.repository.GovioPlaceholderRepository;
-import it.govhub.govio.api.repository.GovioTemplatePlaceholderRepository;
-import it.govhub.govio.api.repository.GovioTemplateRepository;
+import it.govhub.govio.api.repository.PlaceholderRepository;
+import it.govhub.govio.api.repository.TemplateFilters;
 import it.govhub.govio.api.repository.TemplatePlaceholderFilters;
+import it.govhub.govio.api.repository.TemplatePlaceholderRepository;
+import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.spec.TemplateApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
@@ -52,7 +55,7 @@ public class TemplateController implements TemplateApi {
 	// TODO: Autorizzazioni
 	
 	@Autowired
-	GovioTemplateRepository templateRepo;
+	TemplateRepository templateRepo;
 	
 	@Autowired
 	TemplateAssembler templateAssembler;
@@ -61,7 +64,7 @@ public class TemplateController implements TemplateApi {
 	TemplateMessages templateMessages;
 	
 	@Autowired
-	GovioPlaceholderRepository placeholderRepo;
+	PlaceholderRepository placeholderRepo;
 	
 	@Autowired
 	PlaceholderAssembler placeholderAssembler;
@@ -70,7 +73,7 @@ public class TemplateController implements TemplateApi {
 	PlaceholderMessages placeholderMessages;
 	
 	@Autowired
-	GovioTemplatePlaceholderRepository templatePlaceholderRepo;
+	TemplatePlaceholderRepository templatePlaceholderRepo;
 	
 	@Autowired
 	TemplatePlaceholderAssembler templatePlaceholderAssembler;
@@ -103,11 +106,19 @@ public class TemplateController implements TemplateApi {
 	
 	
 	@Override
-	public ResponseEntity<GovioTemplateList> listTemplates(Integer limit, Long offset) {
+	public ResponseEntity<GovioTemplateList> listTemplates(Direction sortDirection, Integer limit, Long offset, String q) {
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(Direction.ASC, GovioTemplateEntity_.NAME));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(sortDirection, GovioTemplateEntity_.NAME));
 		
-		Page<GovioTemplateEntity> templates = this.templateRepo.findAll(pageRequest.pageable);
+		Specification<GovioTemplateEntity> spec = TemplateFilters.empty();
+		
+		if (!StringUtils.isBlank(q)) {
+			spec = TemplateFilters.likeDescription(q).
+					or(TemplateFilters.likeName(q));
+		}
+		
+		
+		Page<GovioTemplateEntity> templates = this.templateRepo.findAll(spec, pageRequest.pageable);
 		
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();

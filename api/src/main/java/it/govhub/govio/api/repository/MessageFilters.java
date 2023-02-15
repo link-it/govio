@@ -20,7 +20,7 @@ import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
 import it.govhub.govregistry.commons.exception.UnreachableException;
 
-public class GovioMessageFilters {
+public class MessageFilters {
 	
 
 	
@@ -125,6 +125,6 @@ public class GovioMessageFilters {
 	}
 
 	
-	private GovioMessageFilters() { }
+	private MessageFilters() { }
 	
 }
