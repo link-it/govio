@@ -22,8 +22,8 @@ import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
-import it.govhub.govio.api.repository.GovioServiceInstanceFilters;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.repository.ServiceInstanceFilters;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.spec.ServiceApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
@@ -35,7 +35,7 @@ import it.govhub.security.services.SecurityService;
 public class ServiceInstanceController implements ServiceApi {
 	
 	@Autowired
-	GovioServiceInstanceRepository serviceInstanceRepo;
+	ServiceInstanceRepository serviceInstanceRepo;
 	
 	@Autowired
 	ServiceInstanceAssembler instanceAssembler;
@@ -56,23 +56,23 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(Direction.DESC, GovioServiceInstanceEntity_.ID));
 		
-		Specification<GovioServiceInstanceEntity> spec = GovioServiceInstanceFilters.empty();
+		Specification<GovioServiceInstanceEntity> spec = ServiceInstanceFilters.empty();
 
 		// Pesco servizi e autorizzazioni che l'utente può leggere
 		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
 		Set<Long> serviceIds = this.authService.listAuthorizedServices(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
 		
 		if (orgIds != null) {
-			spec = spec.and(GovioServiceInstanceFilters.byOrganizationIds(orgIds));
+			spec = spec.and(ServiceInstanceFilters.byOrganizationIds(orgIds));
 		}
 		if (serviceIds != null) {
-			spec = spec.and(GovioServiceInstanceFilters.byServiceIds(serviceIds));
+			spec = spec.and(ServiceInstanceFilters.byServiceIds(serviceIds));
 		}
 		if (serviceId != null) {
-			spec = spec.and(GovioServiceInstanceFilters.byServiceId(serviceId));
+			spec = spec.and(ServiceInstanceFilters.byServiceId(serviceId));
 		}
 		if (organizationId != null) {
-			spec = spec.and(GovioServiceInstanceFilters.byOrganizationId(organizationId));
+			spec = spec.and(ServiceInstanceFilters.byOrganizationId(organizationId));
 		}
 		
 		Page<GovioServiceInstanceEntity> instances = this.serviceInstanceRepo.findAll(spec, pageRequest.pageable);

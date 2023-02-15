@@ -32,7 +32,7 @@ import org.springframework.util.MultiValueMap;
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileEntity.Status;
-import it.govhub.govio.api.repository.GovioFileRepository;
+import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.MultipartUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -64,7 +64,7 @@ class Files_UC_1_UploadFileTest {
 	private ReadServiceRepository serviceRepository;
 	
 	@Autowired
-	private GovioFileRepository govioFileRepository;
+	private FileRepository govioFileRepository;
 	
 	private OrganizationEntity leggiEnteDB(String nome) {
 		List<OrganizationEntity> findAll = this.organizationRepository.findAll();

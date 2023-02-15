@@ -23,9 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.repository.GovioFileMessageRepository;
-import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.GovioMessageRepository;
+import it.govhub.govio.api.repository.FileMessageRepository;
+import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 
 
@@ -44,13 +44,13 @@ class Messages_UC_6_NewMessageTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 
 	@Autowired
-	GovioMessageRepository govioMessageRepository;
+	MessageRepository govioMessageRepository;
 
 	@Autowired
-	private GovioFileRepository govioFilesRepository;
+	private FileRepository govioFilesRepository;
 
 	@Autowired
-	private GovioFileMessageRepository govioFileMessagesRepository;
+	private FileMessageRepository govioFileMessagesRepository;
 
 	@Autowired
 	EntityManager em;

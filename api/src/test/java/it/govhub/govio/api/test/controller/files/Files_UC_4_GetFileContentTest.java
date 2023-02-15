@@ -38,8 +38,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
-import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.GovioFileUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -67,10 +67,10 @@ class Files_UC_4_GetFileContentTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Autowired
-	private GovioFileRepository govioFilesRepository;
+	private FileRepository govioFilesRepository;
 	
 	@Autowired
-	private GovioServiceInstanceRepository govioServiceInstancesRepository;
+	private ServiceInstanceRepository govioServiceInstancesRepository;
 	
 	@Autowired
 	private GovhubUserDetailService userDetailService;

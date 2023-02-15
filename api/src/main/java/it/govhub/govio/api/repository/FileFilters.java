@@ -21,7 +21,7 @@ import it.govhub.govregistry.commons.entity.UserEntity_;
 import it.govhub.govregistry.commons.exception.UnreachableException;
 
 
-public class GovioFileFilters {
+public class FileFilters {
 	
 	public static Specification<GovioFileEntity> empty() {
 		return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null; 
@@ -104,7 +104,7 @@ public class GovioFileFilters {
 		}
 	}
 	
-	private GovioFileFilters() { }
+	private FileFilters() { }
 
 	
 }

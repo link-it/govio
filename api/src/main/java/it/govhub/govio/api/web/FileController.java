@@ -39,10 +39,10 @@ import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.FileMessages;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
-import it.govhub.govio.api.repository.GovioFileFilters;
-import it.govhub.govio.api.repository.GovioFileMessageFilters;
-import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.repository.FileFilters;
+import it.govhub.govio.api.repository.FileMessageFilters;
+import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.services.FileService;
 import it.govhub.govio.api.spec.FileApi;
 import it.govhub.govregistry.commons.config.V1RestController;
@@ -57,7 +57,7 @@ import it.govhub.security.services.SecurityService;
 public class FileController implements FileApi {
 	
 	@Autowired
-	GovioServiceInstanceRepository serviceRepo;
+	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	FileService fileService;
@@ -69,7 +69,7 @@ public class FileController implements FileApi {
 	SecurityService authService;
 	
 	@Autowired
-	GovioFileRepository fileRepo;
+	FileRepository fileRepo;
 	
 	@Autowired
 	FileMessages fileMessages;
@@ -158,36 +158,36 @@ public class FileController implements FileApi {
 		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		Set<Long> serviceIds = this.authService.listAuthorizedServices(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		
-		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
+		Specification<GovioFileEntity> spec = FileFilters.empty();
 		
 		// Se ho dei vincoli di lettura li metto nella spec
 		if (orgIds != null) {
-			spec = spec.and(GovioFileFilters.byOrganizations(orgIds));
+			spec = spec.and(FileFilters.byOrganizations(orgIds));
 		}
 		if (serviceIds != null) {
-			spec = spec.and(GovioFileFilters.byServices(serviceIds));
+			spec = spec.and(FileFilters.byServices(serviceIds));
 		}
 		
 		if (userId != null) {
-			spec = spec.and(GovioFileFilters.byUser(userId));
+			spec = spec.and(FileFilters.byUser(userId));
 		}
 		if (serviceId != null) {
-			spec = spec.and(GovioFileFilters.byService(serviceId));
+			spec = spec.and(FileFilters.byService(serviceId));
 		}
 		if (organizationId != null) {
-			spec = spec.and(GovioFileFilters.byOrganization(organizationId));
+			spec = spec.and(FileFilters.byOrganization(organizationId));
 		}
 		if (q != null) {
-			spec = spec.and(GovioFileFilters.likeFileName(q));
+			spec = spec.and(FileFilters.likeFileName(q));
 		}
 		if(creationDateFrom != null) {
-			spec = spec.and(GovioFileFilters.fromCreationDate(creationDateFrom));
+			spec = spec.and(FileFilters.fromCreationDate(creationDateFrom));
 		}
 		if(creationDateTo != null) {
-			spec = spec.and(GovioFileFilters.untilCreationDate(creationDateTo));
+			spec = spec.and(FileFilters.untilCreationDate(creationDateTo));
 		}
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection,orderBy));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, FileFilters.sort(sortDirection,orderBy));
 		
 		FileList ret = fileService.listFiles(spec, pageRequest);
 		
@@ -245,20 +245,20 @@ public class FileController implements FileApi {
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;;
 
-		Specification<GovioFileMessageEntity> spec = GovioFileMessageFilters.ofFile(file.getId());
+		Specification<GovioFileMessageEntity> spec = FileMessageFilters.ofFile(file.getId());
 
 		if (lineNumberFrom != null) {
-			spec = spec.and(GovioFileMessageFilters.fromLineNumber(lineNumberFrom));
+			spec = spec.and(FileMessageFilters.fromLineNumber(lineNumberFrom));
 		}
 
 		if (status == FileMessageStatusEnum.ACQUIRED) {
-			spec = spec.and(GovioFileMessageFilters.acquired());
+			spec = spec.and(FileMessageFilters.acquired());
 		} else if (status == FileMessageStatusEnum.ERROR) {
-			spec = spec.and(GovioFileMessageFilters.error());
+			spec = spec.and(FileMessageFilters.error());
 		}
 
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit,
-				GovioFileMessageFilters.sortByLineNumber());
+				FileMessageFilters.sortByLineNumber());
 
 		FileMessageList ret = this.fileService.listFileMessages(spec, pageRequest);
 		

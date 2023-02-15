@@ -28,8 +28,8 @@ import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
 import it.govhub.govio.api.messages.MessageMessages;
-import it.govhub.govio.api.repository.GovioMessageRepository;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
+import it.govhub.govio.api.repository.MessageRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.entity.UserEntity;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
@@ -45,10 +45,10 @@ import it.govio.template.TemplateApplierFactory;
 public class MessageService {
 	
 	@Autowired
-	GovioMessageRepository messageRepo;
+	MessageRepository messageRepo;
 	
 	@Autowired
-	GovioServiceInstanceRepository serviceInstanceRepo;
+	ServiceInstanceRepository serviceInstanceRepo;
 	
 	@Autowired
 	EntityManager em;

@@ -12,7 +12,7 @@ import it.govhub.govio.api.entity.GovioFileEntity_;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity_;
 
-public class GovioFileMessageFilters {
+public class FileMessageFilters {
 
        public static Specification<GovioFileMessageEntity> empty() {
 	               return (Root<GovioFileMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null; 
