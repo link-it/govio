@@ -41,4 +41,13 @@ public class TemplateAssembler  extends RepresentationModelAssemblerSupport<Govi
 		return ret;
 	}
 
+	public GovioTemplateEntity toEntity(GovioTemplate model) {
+		log.debug("Converting Model [GovioTemplate] to entity...");
+		
+		GovioTemplateEntity ret = new GovioTemplateEntity();
+		BeanUtils.copyProperties(model, ret);
+		
+		return ret;
+	}
+
 }

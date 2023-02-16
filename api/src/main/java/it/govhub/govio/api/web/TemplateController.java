@@ -3,6 +3,7 @@ package it.govhub.govio.api.web;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,8 +16,17 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 
 import it.govhub.govio.api.assemblers.PlaceholderAssembler;
 import it.govhub.govio.api.assemblers.TemplateAssembler;
@@ -45,11 +55,16 @@ import it.govhub.govio.api.repository.TemplatePlaceholderFilters;
 import it.govhub.govio.api.repository.TemplatePlaceholderRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.spec.TemplateApi;
+import it.govhub.govregistry.commons.api.beans.PatchOp;
 import it.govhub.govregistry.commons.config.V1RestController;
+import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
+import it.govhub.govregistry.commons.messages.PatchMessages;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
+import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
+import it.govhub.govregistry.commons.utils.RequestUtils;
 
 @V1RestController
 public class TemplateController implements TemplateApi {
@@ -78,6 +93,12 @@ public class TemplateController implements TemplateApi {
 	
 	@Autowired
 	TemplatePlaceholderAssembler templatePlaceholderAssembler;
+	
+	@Autowired
+	Validator validator;
+	
+	@Autowired
+	ObjectMapper objectMapper;
 	
 	Logger log = LoggerFactory.getLogger(TemplateController.class);
 	
@@ -221,5 +242,66 @@ public class TemplateController implements TemplateApi {
 		
 		return ResponseEntity.ok(ret);
 	}
+
+
+	@Transactional
+	@Override
+	public ResponseEntity<GovioTemplate> updateTemplate( Long id, List<PatchOp> patchOp) {
+		
+		// Otteniamo l'oggetto JsonPatch
+		JsonPatch patch = RequestUtils.toJsonPatch(patchOp);
+		
+		log.info("Patching user [{}]: {}", id, patch);
+		
+		GovioTemplateEntity template = this.templateRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(id)));
+		
+		// Convertiamo la entity in json e applichiamo la patch sul json
+		GovioTemplate restTemplate = this.templateAssembler.toModel(template);
+		JsonNode jsonTemplate = this.objectMapper.convertValue(restTemplate, JsonNode.class);
+		
+		JsonNode newJsonTemplate;
+		try {
+			newJsonTemplate = patch.apply(jsonTemplate);
+		} catch (JsonPatchException e) {			
+			throw new BadRequestException(e.getLocalizedMessage());
+		}
+		
+		// Lo converto nell'oggetto Template, sostituendo l'ID per essere sicuri che la patch
+		// non l'abbia cambiato.
+		GovioTemplate updatedTemplate;
+		try {
+			updatedTemplate = this.objectMapper.treeToValue(newJsonTemplate, GovioTemplate.class);
+		} catch (JsonProcessingException e) {
+			throw new BadRequestException(e);
+		}
+		
+		if (updatedTemplate == null) {
+			throw new BadRequestException(PatchMessages.VOID_OBJECT_PATCH);
+		}
+		updatedTemplate.setId(id);
+		
+		// Faccio partire la validazione
+		Errors errors = new BeanPropertyBindingResult(updatedTemplate, updatedTemplate.getClass().getName());
+		validator.validate(updatedTemplate, errors);
+		if (!errors.getAllErrors().isEmpty()) {
+			throw new BadRequestException(PatchMessages.validationFailed(errors));
+		}
+		
+		// Faccio partire la validazione custom per la stringa \u0000
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedTemplate.getName(), "name");
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedTemplate.getDescription(), "description");
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedTemplate.getSubject(), "subject");
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedTemplate.getMessageBody(), "message_body");
+		
+		// Dall'oggetto REST passo alla entity
+		GovioTemplateEntity newTemplate = this.templateAssembler.toEntity(updatedTemplate);
+
+		newTemplate = this.templateRepo.save(newTemplate);
+		
+		return ResponseEntity.ok(this.templateAssembler.toModel(newTemplate));
+	}
+	
+	
 
 }
