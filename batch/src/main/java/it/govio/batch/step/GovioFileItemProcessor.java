@@ -15,6 +15,10 @@ import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
 import it.govio.template.Message;
 
+/**
+ * Processa ciascun GovioFileMessageEntity e la riga relativa del csv, applicando il template.  
+ *
+ */
 public class GovioFileItemProcessor implements ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> {
 
 	private Logger logger = LoggerFactory.getLogger(GovioFileItemProcessor.class);
