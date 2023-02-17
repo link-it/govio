@@ -49,7 +49,7 @@ public abstract class GovioMessageAbstractProcessor implements ItemProcessor<Gov
 		}
 			Thread.sleep(sleepTime);
 			logger.error("Ricevuta eccezione 429, aspettato {} prima di riprovare",sleepTime );
-			return null;
+			return Status.SCHEDULED;
 		default:
 			logger.error("Ricevuto client error non previsto da BackendIO: {}", e.getMessage());
 			throw e;
