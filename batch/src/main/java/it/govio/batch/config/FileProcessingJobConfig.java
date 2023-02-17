@@ -112,6 +112,10 @@ public class FileProcessingJobConfig {
 				.build();
 	}
 
+	/**
+	 * Mappa le righe di un file in uno stream di GovioFileMessageEntity
+	 *  
+	 */
 	@Bean
 	@StepScope
 	@Qualifier("govioFileItemReader")
