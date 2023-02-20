@@ -121,6 +121,7 @@ paths:
         - $ref: '#/components/parameters/creation_date_from'
         - $ref: '#/components/parameters/creation_date_to'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
+        - $ref: '#/components/parameters/file_status_query'
         - $ref: '#/components/parameters/file_ordering_query'
       responses:
         '200':
@@ -210,7 +211,7 @@ paths:
         default:
           $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
           
-  '/files/{id}/file_messages':
+  '/files/{id}/file-messages':
     parameters:
       - $ref: '#/components/parameters/file_id'
     get:
@@ -245,6 +246,37 @@ paths:
           $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
         default:
           $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
+          
+  '/files/{id}/statistics':
+    parameters:
+      - $ref: '#/components/parameters/file_id'
+    get:
+      tags:
+        - file
+      summary: Retrieve the file statistics
+      description: Get aggregated data on the statuses of the file messages.
+      operationId: readFileStats
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileStatistics'
+        '400':
+          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+        '403':
+          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+        '404':
+          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
+        '429':
+          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+        '503':
+          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+        default:
+          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'          
           
   /messages:
     post:
@@ -1009,7 +1041,14 @@ components:
          required: true
          schema:
             $ref: "#/components/schemas/FileOrdering"            
-        
+
+    file_status_query:
+         name: status
+         in: query
+         description: Status filter.
+         required: false
+         schema:
+            $ref: "#/components/schemas/FileStatus"        
         
   schemas:
   
@@ -1603,6 +1642,13 @@ components:
           $ref: '#/components/schemas/MessageId'
       required:
         - id
+
+    FileStatistics:
+        type: object
+        additionalProperties: false
+        properties:
+           scheduled:
+              type: integer
         
     MessageOrdering:
          type: string

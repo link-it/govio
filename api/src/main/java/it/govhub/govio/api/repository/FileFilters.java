@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import it.govhub.govio.api.beans.FileOrdering;
 import it.govhub.govio.api.entity.GovioFileEntity;
+import it.govhub.govio.api.entity.GovioFileEntity.Status;
 import it.govhub.govio.api.entity.GovioFileEntity_;
 import it.govhub.govio.api.entity.GovioServiceEntity_;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
@@ -90,6 +91,12 @@ public class FileFilters {
 	}
 
 	
+	public static Specification<GovioFileEntity> byStatus(Status status) {
+		return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+			cb.equal(root.get(GovioFileEntity_.status), status);
+	}
+	
+	
 	public static Sort sort(Direction direction, FileOrdering orderBy) {
 		switch (orderBy) {
 		case CREATION_DATE:
@@ -104,6 +111,7 @@ public class FileFilters {
 		}
 	}
 	
+
 	private FileFilters() { }
 
 	

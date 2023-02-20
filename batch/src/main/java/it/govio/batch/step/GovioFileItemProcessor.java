@@ -9,10 +9,10 @@ import org.springframework.batch.item.ItemProcessor;
 import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
-import it.govio.batch.exception.TemplateValidationException;
 import it.govio.template.CsvTemplateApplier;
 import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
+import it.govio.template.exception.TemplateValidationException;
 import it.govio.template.Message;
 
 /**

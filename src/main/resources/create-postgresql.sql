@@ -126,14 +126,6 @@ CREATE TABLE govio_file_messages
      id_govio_message BIGINT,
      PRIMARY KEY (id)
   );
-  
-ALTER TABLE govio_file_messages
-  ADD CONSTRAINT fk_govio_filemsg_file FOREIGN KEY (id_govio_file)
-  REFERENCES govio_files;
-
-ALTER TABLE govio_file_messages
-  ADD CONSTRAINT fk_govio_filemsg_msg FOREIGN KEY (id_govio_message)
-  REFERENCES govio_messages;
 
 CREATE TABLE govio_messages
   (
@@ -165,6 +157,16 @@ ALTER TABLE govio_messages
 ALTER TABLE govio_messages
   ADD CONSTRAINT fk_govio_msg_hubuser FOREIGN KEY (id_govhub_user) 
   REFERENCES govhub_users;  
+
+  
+ALTER TABLE govio_file_messages
+  ADD CONSTRAINT fk_govio_filemsg_file FOREIGN KEY (id_govio_file)
+  REFERENCES govio_files;
+
+ALTER TABLE govio_file_messages
+  ADD CONSTRAINT fk_govio_filemsg_msg FOREIGN KEY (id_govio_message)
+  REFERENCES govio_messages;
+
 
 
 

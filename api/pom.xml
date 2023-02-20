@@ -286,13 +286,16 @@
 								<importMapping>OrganizationOrdering=it.govhub.govregistry.commons.api.beans.OrganizationOrdering</importMapping>
 
 								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
-								<importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping>
+								<!-- <importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping> -->
 								<importMapping>GovioPlaceholderType=it.govhub.govio.api.entity.GovioPlaceholderEntity.Type</importMapping>
 							</importMappings>
 							<typeMappings>
-								<typeMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</typeMapping>
+								<!-- <typeMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</typeMapping> -->
 								<typeMapping>GovioPlaceholderType=it.govhub.govio.api.entity.GovioPlaceholderEntity.Type</typeMapping>
 							</typeMappings>
+							<schemaMappings>
+								<schemaMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</schemaMapping>
+							</schemaMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
 								<library>spring-boot</library>
