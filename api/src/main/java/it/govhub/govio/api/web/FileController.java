@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
@@ -32,6 +33,7 @@ import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.FileOrdering;
+import it.govhub.govio.api.beans.FileStatistics;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
@@ -152,7 +154,8 @@ public class FileController implements FileApi {
 				 Long serviceId,
 				 Long organizationId, 
 				 OffsetDateTime creationDateFrom, 
-				 OffsetDateTime creationDateTo) {
+				 OffsetDateTime creationDateTo,
+				 GovioFileEntity.Status status) {
 		
 		// Pesco servizi e autorizzazioni che l'utente può leggere
 		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
@@ -185,6 +188,9 @@ public class FileController implements FileApi {
 		}
 		if(creationDateTo != null) {
 			spec = spec.and(FileFilters.untilCreationDate(creationDateTo));
+		}
+		if(status!=null) {
+			spec = spec.and(FileFilters.byStatus(status));
 		}
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, FileFilters.sort(sortDirection,orderBy));
@@ -289,6 +295,13 @@ public class FileController implements FileApi {
     	}
     	
     	return filename;
+	}
+
+
+	@Override
+	public ResponseEntity<FileStatistics> readFileStats(@Min(0) Long id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
