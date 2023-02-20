@@ -1628,6 +1628,10 @@ components:
           maxLength: 20000000
         message:
           $ref: '#/components/schemas/GovioMessageItem'
+        error:
+           type: string
+           pattern: .*
+           maxLength: 20000000 
         status:
           $ref: '#/components/schemas/FileMessageStatusEnum'
       required:
