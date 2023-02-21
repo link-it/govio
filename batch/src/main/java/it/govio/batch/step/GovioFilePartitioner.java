@@ -16,6 +16,11 @@ import it.govio.batch.entity.GovioTemplatePlaceholderEntity;
 import it.govio.template.Placeholder;
 import it.govio.template.Template;
 
+/**
+ *  Per ogni file dei govioFileEntities crea un ExecutionContext con dentro le informazioni del GovioFile,
+ *  inoltre inizializza il template per quel file.
+ *
+ */
 public class GovioFilePartitioner implements Partitioner {
 
 	List<GovioFileEntity> govioFileEntities;
