@@ -1315,7 +1315,7 @@ components:
              example: Scadenza CIE n. ${cie.uppercase}
           message_body:
              type: string
-             pattern: .*
+             pattern: '[\s\S]*'
              maxLength: 9223372036854776000
              example: Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}.             
           has_payment:
