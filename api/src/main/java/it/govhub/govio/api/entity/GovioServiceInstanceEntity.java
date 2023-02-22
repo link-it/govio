@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
 import lombok.AllArgsConstructor;
@@ -29,20 +28,17 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(
-		name = "govio_service_instances", 
-		uniqueConstraints = { @UniqueConstraint( columnNames = { "id_govio_service", "id_govhub_organization" }) }
-	)
+@Table(name = "govio_service_instances")
 public class GovioServiceInstanceEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
+
+	@EqualsAndHashCode.Include
 	@Id
 	@SequenceGenerator(name = "seq_govio_service_instances", sequenceName = "seq_govio_service_instances", initialValue = 1, allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_service_instances")
 	private Long id;
 
-	@EqualsAndHashCode.Include
 	@ManyToOne
 	@JoinColumn(name = "id_govio_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioService"))
 	private GovioServiceEntity service;
@@ -51,7 +47,6 @@ public class GovioServiceInstanceEntity implements Serializable {
 	@JoinColumn(name = "id_govio_template", nullable = true, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))
 	private GovioTemplateEntity template;
 	
-	@EqualsAndHashCode.Include
 	@ManyToOne
 	@JoinColumn(name = "id_govhub_organization", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovhubOrganization"))
 	private OrganizationEntity organization;

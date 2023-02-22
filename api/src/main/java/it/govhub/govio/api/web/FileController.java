@@ -4,8 +4,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
@@ -30,15 +32,19 @@ import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
+import it.govhub.govio.api.beans.FileOrdering;
+import it.govhub.govio.api.beans.FileStatistics;
 import it.govhub.govio.api.beans.GovioFile;
+import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
-import it.govhub.govio.api.repository.GovioFileFilters;
-import it.govhub.govio.api.repository.GovioFileMessageFilters;
-import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
-import it.govhub.govio.api.security.GovioRoles;
+import it.govhub.govio.api.messages.FileMessages;
+import it.govhub.govio.api.messages.ServiceInstanceMessages;
+import it.govhub.govio.api.repository.FileFilters;
+import it.govhub.govio.api.repository.FileMessageFilters;
+import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.services.FileService;
 import it.govhub.govio.api.spec.FileApi;
 import it.govhub.govregistry.commons.config.V1RestController;
@@ -47,14 +53,13 @@ import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
-import it.govhub.security.config.GovregistryRoles;
 import it.govhub.security.services.SecurityService;
 
 @V1RestController
 public class FileController implements FileApi {
 	
 	@Autowired
-	GovioServiceInstanceRepository serviceRepo;
+	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	FileService fileService;
@@ -66,7 +71,13 @@ public class FileController implements FileApi {
 	SecurityService authService;
 	
 	@Autowired
-	GovioFileRepository fileRepo;
+	FileRepository fileRepo;
+	
+	@Autowired
+	FileMessages fileMessages;
+	
+	@Autowired
+	ServiceInstanceMessages sinstanceMessages;
 	
 	Logger logger = LoggerFactory.getLogger(FileController.class);
 	
@@ -76,7 +87,8 @@ public class FileController implements FileApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovioFile> uploadFile(Long serviceId, Long organizationId, MultipartFile file) {
+	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, Long serviceId, Long organizationId, MultipartFile file) {
+	//public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -111,8 +123,19 @@ public class FileController implements FileApi {
     		throw new BadRequestException("E' necessario indicare il filename nello header Content-Disposition del blocco multipart del file.\ne.g: [Content-Disposition: form-data; name=\"file\"; filename=\"file.csv\"] ");
     	}
     	
-    	GovioServiceInstanceEntity serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
-    			.orElseThrow( () -> new SemanticValidationException("L'istanza di servizio indicata non esiste"));
+    	GovioServiceInstanceEntity serviceInstance = null;
+    	if (serviceInstanceId != null) {
+    		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
+        			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
+    	} else if (serviceId != null && organizationId != null) {
+    		serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
+    				.orElseThrow( () -> new SemanticValidationException("Service Instance for service ["+serviceId+"] and organization ["+organizationId+"] not present"));
+    	}
+    	
+    	if (serviceInstance == null) {
+    		throw new BadRequestException("E' necessasrio specificare una service instance");
+    	}
+    	/**/
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
@@ -123,6 +146,7 @@ public class FileController implements FileApi {
 	@Override
 	public ResponseEntity<FileList> listFiles(
 				Direction sortDirection, 
+				FileOrdering orderBy,
 				Integer limit, 
 				Long offset, 
 				String q,
@@ -130,32 +154,46 @@ public class FileController implements FileApi {
 				 Long serviceId,
 				 Long organizationId, 
 				 OffsetDateTime creationDateFrom, 
-				 OffsetDateTime creationDateTo) {
+				 OffsetDateTime creationDateTo,
+				 GovioFileEntity.Status status) {
 		
-		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+		// Pesco servizi e autorizzazioni che l'utente può leggere
+		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
+		Set<Long> serviceIds = this.authService.listAuthorizedServices(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
 		
-		Specification<GovioFileEntity> spec = GovioFileFilters.empty();
+		Specification<GovioFileEntity> spec = FileFilters.empty();
+		
+		// Se ho dei vincoli di lettura li metto nella spec
+		if (orgIds != null) {
+			spec = spec.and(FileFilters.byOrganizations(orgIds));
+		}
+		if (serviceIds != null) {
+			spec = spec.and(FileFilters.byServices(serviceIds));
+		}
 		
 		if (userId != null) {
-			spec = spec.and(GovioFileFilters.byUser(userId));
+			spec = spec.and(FileFilters.byUser(userId));
 		}
 		if (serviceId != null) {
-			spec = spec.and(GovioFileFilters.byService(serviceId));
+			spec = spec.and(FileFilters.byService(serviceId));
 		}
 		if (organizationId != null) {
-			spec = spec.and(GovioFileFilters.byOrganization(organizationId));
+			spec = spec.and(FileFilters.byOrganization(organizationId));
 		}
 		if (q != null) {
-			spec = spec.and(GovioFileFilters.likeFileName(q));
+			spec = spec.and(FileFilters.likeFileName(q));
 		}
 		if(creationDateFrom != null) {
-			spec = spec.and(GovioFileFilters.fromCreationDate(creationDateFrom));
+			spec = spec.and(FileFilters.fromCreationDate(creationDateFrom));
 		}
 		if(creationDateTo != null) {
-			spec = spec.and(GovioFileFilters.untilCreationDate(creationDateTo));
+			spec = spec.and(FileFilters.untilCreationDate(creationDateTo));
+		}
+		if(status!=null) {
+			spec = spec.and(FileFilters.byStatus(status));
 		}
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, GovioFileFilters.sort(sortDirection));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, FileFilters.sort(sortDirection,orderBy));
 		
 		FileList ret = fileService.listFiles(spec, pageRequest);
 		
@@ -165,8 +203,6 @@ public class FileController implements FileApi {
 
 	@Override
 	public ResponseEntity<GovioFile> readFile(Long traceId) {
-		this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
-				
 		return ResponseEntity.ok(	this.fileService.readFile(traceId));
 	}
 
@@ -174,10 +210,12 @@ public class FileController implements FileApi {
 	@Override
 	public ResponseEntity<Resource> readFileContent(Long id) {
 	
-    	this.authService.expectAnyRole(GovregistryRoles.GOVREGISTRY_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
-    	
-    	GovioFileEntity file = this.fileRepo.findById(id)
-    			.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		Path path = file.getLocation();
 		
@@ -206,25 +244,27 @@ public class FileController implements FileApi {
             Long offset, 
             Long lineNumberFrom) {
 		
-		this.authService.expectAnyRole(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
-
 		GovioFileEntity file = this.fileRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("File di Id [" + id + "] non trovato"));
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;;
 
-		Specification<GovioFileMessageEntity> spec = GovioFileMessageFilters.ofFile(file.getId());
+		Specification<GovioFileMessageEntity> spec = FileMessageFilters.ofFile(file.getId());
 
 		if (lineNumberFrom != null) {
-			spec = spec.and(GovioFileMessageFilters.fromLineNumber(lineNumberFrom));
+			spec = spec.and(FileMessageFilters.fromLineNumber(lineNumberFrom));
 		}
 
 		if (status == FileMessageStatusEnum.ACQUIRED) {
-			spec = spec.and(GovioFileMessageFilters.acquired());
+			spec = spec.and(FileMessageFilters.acquired());
 		} else if (status == FileMessageStatusEnum.ERROR) {
-			spec = spec.and(GovioFileMessageFilters.error());
+			spec = spec.and(FileMessageFilters.error());
 		}
 
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit,
-				GovioFileMessageFilters.sortByLineNumber());
+				FileMessageFilters.sortByLineNumber());
 
 		FileMessageList ret = this.fileService.listFileMessages(spec, pageRequest);
 		
@@ -255,6 +295,13 @@ public class FileController implements FileApi {
     	}
     	
     	return filename;
+	}
+
+
+	@Override
+	public ResponseEntity<FileStatistics> readFileStats(@Min(0) Long id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

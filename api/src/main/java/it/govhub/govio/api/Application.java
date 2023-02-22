@@ -18,6 +18,8 @@ import org.springframework.security.web.firewall.RequestRejectedHandler;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.fasterxml.jackson.databind.MapperFeature;
+
 import it.govhub.govregistry.commons.config.CommonsExportedBeans;
 import it.govhub.govregistry.commons.config.TimeZoneConfigurer;
 import it.govhub.govregistry.commons.exception.handlers.RequestRejectedExceptionHandler;
@@ -59,7 +61,8 @@ public class Application extends SpringBootServletInitializer {
 	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
 		return builder ->  builder.
 				timeZone(this.timeZone).
-				serializerByType(Base64String.class, new Base64StringSerializer());
+				serializerByType(Base64String.class, new Base64StringSerializer()).
+				featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
 	}
 
 	/**

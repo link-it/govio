@@ -1,7 +1,10 @@
 package it.govio.batch.step;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,8 @@ import it.pagopa.io.v1.api.beans.PaymentData;
 
 @Component
 public class NewMessageProcessor extends GovioMessageAbstractProcessor {
+	
+	public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
 
 	private Logger logger = LoggerFactory.getLogger(NewMessageProcessor.class);
 
@@ -60,8 +65,9 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		}
 		
 		// setto i dati rimanenti del content
-		if(item.getDueDate() != null)
-			mc.setDueDate(Timestamp.valueOf(item.getDueDate()));
+		if(item.getDueDate() != null) {
+			mc.setDueDate(dtf.format(item.getDueDate().atOffset(ZoneOffset.UTC)));
+		}
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
 		message.setContent(mc);

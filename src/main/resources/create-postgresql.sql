@@ -96,12 +96,12 @@ CREATE TABLE govio_files
      id                        BIGINT DEFAULT nextval('seq_govio_files') NOT NULL,
      acquired_messages         BIGINT,
      creation_date             TIMESTAMP NOT NULL,
-     processing_date           TIMESTAMP NOT NULL,
+     processing_date           TIMESTAMP,
      error_messages            BIGINT,
      location                  VARCHAR(255) NOT NULL,
      name                      VARCHAR(255) NOT NULL,
      status                    VARCHAR(255) NOT NULL,
-     status_detail             TEXT NOT NULL,
+     status_detail             TEXT,
      size                      BIGINT NOT NULL,
      id_govio_service_instance BIGINT NOT NULL,
      id_govhub_user            BIGINT NOT NULL,
@@ -126,14 +126,6 @@ CREATE TABLE govio_file_messages
      id_govio_message BIGINT,
      PRIMARY KEY (id)
   );
-  
-ALTER TABLE govio_file_messages
-  ADD CONSTRAINT fk_govio_filemsg_file FOREIGN KEY (id_govio_file)
-  REFERENCES govio_files;
-
-ALTER TABLE govio_file_messages
-  ADD CONSTRAINT fk_govio_filemsg_msg FOREIGN KEY (id_govio_message)
-  REFERENCES govio_messages;
 
 CREATE TABLE govio_messages
   (
@@ -165,6 +157,16 @@ ALTER TABLE govio_messages
 ALTER TABLE govio_messages
   ADD CONSTRAINT fk_govio_msg_hubuser FOREIGN KEY (id_govhub_user) 
   REFERENCES govhub_users;  
+
+  
+ALTER TABLE govio_file_messages
+  ADD CONSTRAINT fk_govio_filemsg_file FOREIGN KEY (id_govio_file)
+  REFERENCES govio_files;
+
+ALTER TABLE govio_file_messages
+  ADD CONSTRAINT fk_govio_filemsg_msg FOREIGN KEY (id_govio_message)
+  REFERENCES govio_messages;
+
 
 
 

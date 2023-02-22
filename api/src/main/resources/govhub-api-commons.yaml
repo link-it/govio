@@ -15,165 +15,6 @@ info:
     name: Apache 2.0 ( TODO )
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
-paths:    
-   /profile:
-       get:
-         tags:
-           - profile
-         summary: Retrieve the user profile.
-         description: Retrieve the  logged user profile.
-         operationId: profile
-         responses:
-           '200':
-             description: Successful operation.
-             content:
-               application/json:
-                 schema:
-                   $ref: '#/components/schemas/Profile'          
-           '400':
-             $ref: "#/components/responses/400BadRequest"
-           '401':
-             $ref: "#/components/responses/401Unauthorized"
-           '403':
-             $ref: "#/components/responses/403Forbidden"
-           '404':
-             $ref: "#/components/responses/404NotFound"
-           '429':
-             $ref: "#/components/responses/429TooManyRequests"
-           '503':
-             $ref: "#/components/responses/503ServiceUnavailable"
-           default:
-             $ref: "#/components/responses/ResponseDefault"
-
-   /users/{id}:
-    parameters:
-      - $ref: "#/components/parameters/user_id"    
-    get:
-      tags:
-        - user
-      summary: Retrieve a user.
-      description: Retrieve the user with the provided id.
-      operationId: readUser
-      responses:
-        '200':
-          description: Successful operation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'          
-        '400':
-          $ref: "#/components/responses/400BadRequest"
-        '401':
-          $ref: "#/components/responses/401Unauthorized"
-        '403':
-          $ref: "#/components/responses/403Forbidden"
-        '404':
-          $ref: "#/components/responses/404NotFound"
-        '429':
-          $ref: "#/components/responses/429TooManyRequests"
-        '503':
-          $ref: "#/components/responses/503ServiceUnavailable"
-        default:
-          $ref: "#/components/responses/ResponseDefault"
-          
-   /organizations/{id}:
-       parameters:
-         - $ref: "#/components/parameters/organization_id"    
-       get:
-         tags:
-           - organization
-         summary: Retrieve an Organization.
-         description: Retrieve the Organization with the provided id.
-         operationId: readOrganization
-         responses:
-           '200':
-             description: Successful operation.
-             content:
-               application/json:
-                 schema:
-                   $ref: '#/components/schemas/Organization'          
-           '400':
-             $ref: "#/components/responses/400BadRequest"
-           '401':
-             $ref: "#/components/responses/401Unauthorized"
-           '403':
-             $ref: "#/components/responses/403Forbidden"
-           '404':
-             $ref: "#/components/responses/404NotFound"
-           '429':
-             $ref: "#/components/responses/429TooManyRequests"
-           '503':
-             $ref: "#/components/responses/503ServiceUnavailable"
-           default:
-             $ref: "#/components/responses/ResponseDefault"
-             
-   /services/{id}:
-       parameters:
-         - $ref: "#/components/parameters/service_id"    
-       get:
-         tags:
-           - service
-         summary: Retrieve a service.
-         description: Retrieve the service with the provided id.
-         operationId: readService
-         responses:
-           '200':
-             description: Successful operation.
-             content:
-               application/json:
-                 schema:
-                   $ref: '#/components/schemas/Service'          
-           '400':
-             $ref: "#/components/responses/400BadRequest"
-           '401':
-             $ref: "#/components/responses/401Unauthorized"
-           '403':
-             $ref: "#/components/responses/403Forbidden"
-           '404':
-             $ref: "#/components/responses/404NotFound"
-           '429':
-             $ref: "#/components/responses/429TooManyRequests"
-           '503':
-             $ref: "#/components/responses/503ServiceUnavailable"
-           default:
-             $ref: "#/components/responses/ResponseDefault"                
-  
-   /users/{id}/authorizations:
-      parameters:
-        - $ref: "#/components/parameters/user_id"        
-      get:
-         tags:
-            - authorization
-         summary: Retrieve the user authorizations.
-         description: Retrieve the user authorizations.
-         operationId: listAuthorizations
-         parameters:
-            - $ref: "#/components/parameters/limit"
-            - $ref: "#/components/parameters/offset"
-            - $ref: "#/components/parameters/authorization_ordering_query"
-            - $ref: "#/components/parameters/sort_direction_query"
-         responses:
-           '200':
-             description: Successful operation.
-             content:
-               application/json:
-                 schema:
-                    $ref: "#/components/schemas/AuthorizationList"
-           '400':
-             $ref: "#/components/responses/400BadRequest"
-           '401':
-             $ref: "#/components/responses/401Unauthorized"
-           '403':
-             $ref: "#/components/responses/403Forbidden"
-           '404':
-             $ref: "#/components/responses/404NotFound"
-           '429':
-             $ref: "#/components/responses/429TooManyRequests"
-           '503':
-             $ref: "#/components/responses/503ServiceUnavailable"
-           default:
-             $ref: "#/components/responses/ResponseDefault"                
-  
 components:
 
    parameters:
@@ -197,7 +38,23 @@ components:
          in: path
          required: true
          schema:
-            $ref: "#/components/schemas/ServiceId"        
+            $ref: "#/components/schemas/ServiceId"
+            
+      enabled_query:
+         name: enabled
+         in: query
+         description: filter by status.
+         required: false
+         schema:
+            type: boolean
+            
+      user_ordering_query:
+         name: sort
+         in: query
+         description: Sorting field.
+         required: true
+         schema:
+            $ref: "#/components/schemas/UserOrdering"                   
    
       sort_direction_query:
          name: sort_direction
@@ -244,7 +101,34 @@ components:
          description: Sorting field.
          required: true
          schema:
-            $ref: "#/components/schemas/AuthorizationOrdering"            
+            $ref: "#/components/schemas/AuthorizationOrdering"
+            
+      organization_ordering_query:
+         name: sort
+         in: query
+         description: Sorting field.
+         required: true
+         schema:
+            $ref: "#/components/schemas/OrganizationOrdering"
+            
+      service_ordering_query:            
+         name: sort
+         in: query
+         description: Sorting field.
+         required: true
+         schema:
+            $ref: "#/components/schemas/ServiceOrdering"
+            
+      with_roles:
+         name: with_roles
+         in: query
+         description: Retrieve the items for whose the principal has the roles.
+         schema:
+            type: array
+            items:
+               type: string
+               pattern: .*
+               maxLength: 255                                       
 
    responses:
    
@@ -261,6 +145,7 @@ components:
               $ref: "#/components/headers/X-RateLimit-Remaining"
            X-RateLimit-Reset:
              $ref: "#/components/headers/X-RateLimit-Reset"
+             
 
       '400BadRequest':
          description: Bad Request.
@@ -268,6 +153,12 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Missing required field. 
+                status: 400
+                title: Bad Request
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request
+                               
                
       '401Unauthorized':
          description: Required credentials missing.
@@ -275,13 +166,23 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Invalid Credentials  
+                status: 401
+                title: Unauthorized
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-401-unauthorized               
                
       '403Forbidden':
-         description: No Authorizations for the requested operation.
+         description: Agent not authorized for the operation.
          content:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: User not authorized for the operation.  
+                status: 403
+                title: Forbidden
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-403-forbidden               
                
       '404NotFound':
          description: Not Found.
@@ -289,6 +190,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Resource not found.  
+                status: 404
+                title: Not Found
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found               
                
       '409Conflict':
          description: Conflict (The entity already exists).
@@ -296,6 +202,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Resource with the same id already present.  
+                status: 409
+                title: Conflict
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-409-conflict               
                
       '429TooManyRequests':
          description: Too many requests.
@@ -312,6 +223,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: User has sent too many requests in a given amount of time.
+                status: 429
+                title: Too Many Requests
+                type: https://www.rfc-editor.org/rfc/rfc6585#section-4                              
                
       '503ServiceUnavailable':
          description: Service Unavailable.
@@ -322,6 +238,11 @@ components:
            application/problem+json:
              schema:
                $ref: "#/components/schemas/Problem"
+             example:
+                detail: Request Can't be fulfilled at the moment.  
+                status: 503
+                title: Service Unavailable
+                type: https://www.rfc-editor.org/rfc/rfc9110.html#name-503-service-unavailable                   
                
       'ResponseDefault':
          description: Unexpected error.
@@ -456,6 +377,19 @@ components:
               properties:
                   id:
                      $ref: "#/components/schemas/UserId"
+                  _links:
+                     type: object
+                     additionalProperties: false
+                     properties:
+                        self:
+                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                        avatar:
+                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                     example:
+                        self:
+                           href: "https://govhub.it/govregistry/users/1"
+                        avatar:
+                           href: "https://gravatar.com/avatar/md5/d2c457c9c97c9e4e2226317fe5685892/s=100&d=identicon"                          
                      
       OrganizationData:
          type: object
@@ -544,6 +478,44 @@ components:
             properties:
               id:
                 $ref: "#/components/schemas/OrganizationId"
+              _links:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    self:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 example:
+                    self: 
+                       href: "https://govhub.it/govregistry/organizations/1"
+                
+      OrganizationItem:
+        allOf:
+          - $ref: "#/components/schemas/OrganizationData" 
+          - type: object
+            additionalProperties: false
+            required:
+              - id
+            properties:
+              id:
+                $ref: "#/components/schemas/OrganizationId"
+              _links:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    self:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo_miniature:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 example:
+                    self: 
+                       href: "https://govhub.it/govregistry/organizations/1"                
+                    logo: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo"
+                    logo_miniature: 
+                       href: "https://govhub.it/govregistry/organizations/logo_miniature"
+                                                                     
                 
       ServiceCreate:
          type: object
@@ -558,6 +530,10 @@ components:
               pattern: .*
               maxLength: 4096
               example: Service for customer management.
+            logo_miniature:
+               $ref: "#/components/schemas/SmallLogo"
+            logo:
+             $ref: "#/components/schemas/Logo"                          
               
       Service:
          allOf:
@@ -566,7 +542,100 @@ components:
                additionalProperties: false
                properties:
                   id:
-                     $ref: "#/components/schemas/ServiceId"                
+                     $ref: "#/components/schemas/ServiceId"
+                  _links:
+                     type: object
+                     additionalProperties: false
+                     properties:
+                        self:
+                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                     example:
+                       self: 
+                          href: "https://govhub.it/govregistry/services/1" 
+                        
+                     
+      OrganizationOrdering:
+         type: string
+         enum:
+            - unsorted
+            - legal_name
+            - id
+         default: id          
+                        
+      ServiceOrdering:
+         type: string
+         enum:
+            - unsorted
+            - id
+            - service_name      
+         default: id
+               
+      UserList:
+         allOf:
+            - $ref: "#/components/schemas/List"
+            - type: object
+              properties:              
+                 items:
+                    type: array
+                    items:
+                       $ref: "#/components/schemas/User"
+                    minItems: 0
+                    maxItems: 2147483647
+              required:
+                 - items 
+              additionalProperties: false
+              
+      Link:
+            type: object
+            additionalProperties: false
+            properties:
+              href:
+                type: string
+              hreflang:
+                type: string
+              title:
+                type: string
+              type:
+                type: string
+              deprecation:
+                type: string
+              profile:
+                type: string
+              name:
+                type: string
+              templated:
+                type: boolean                        
+
+      OrganizationList:
+         allOf:
+            - $ref: "#/components/schemas/List"
+            - type: object
+              properties:              
+                 items:
+                    type: array
+                    items:
+                       $ref: "#/components/schemas/OrganizationItem"
+                    minItems: 0
+                    maxItems: 2147483647
+              required:
+                 - items 
+              additionalProperties: false
+              
+
+      ServiceList:
+         allOf:
+            - $ref: "#/components/schemas/List"
+            - type: object
+              properties:              
+                 items:
+                    type: array
+                    items:
+                       $ref: "#/components/schemas/ServiceAuthItem"
+                    minItems: 0
+                    maxItems: 2147483647
+              required:
+                 - items 
+              additionalProperties: false                         
              
       Authorization:
          type: object
@@ -609,6 +678,24 @@ components:
                $ref: "#/components/schemas/LegalName"
             tax_code:
                $ref: "#/components/schemas/TaxCode"
+            _links:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    self:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo_miniature:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 example:
+                    self: 
+                       href: "https://govhub.it/govregistry/organizations/1"                
+                    logo: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo"
+                    logo_miniature: 
+                       href: "https://govhub.it/govregistry/organizations/logo_miniature"               
+               
                
       UserId:
          type: integer
@@ -651,6 +738,28 @@ components:
                $ref: "#/components/schemas/ServiceId"         
             service_name:
                $ref: "#/components/schemas/ServiceName"
+            description:
+              type: string
+              pattern: .*
+              maxLength: 4096
+              example: Service for customer management.
+            _links:
+              type: object
+              additionalProperties: false
+              properties:
+                 self:
+                    $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 logo:
+                    $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                 logo_miniature:
+                    $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+              example:
+                 self: 
+                    href: "https://govhub.it/govregistry/services/1"                
+                 logo: 
+                    href: "https://govhub.it/govregistry/services/1/logo"
+                 logo_miniature: 
+                    href: "https://govhub.it/govregistry/services/logo_miniature"
                
       ServiceName:
          type: string
@@ -665,7 +774,7 @@ components:
         pattern: ^(\+|00)?[0-9 \-\(\)\.]{7,32}$
 
       Email:
-       maxLength: 255
+       maxLength: 2048
        type: string
        format: email
        example: "m.rossi@acme.com"
@@ -796,7 +905,15 @@ components:
             - unsorted
             - id
             - role_name            
-         default: id         
+         default: id
+         
+      UserOrdering:
+         type: string
+         enum:
+            - unsorted
+            - full_name
+            - id
+         default: id                  
          
       PatchOperations:
          type: "array"
@@ -870,4 +987,4 @@ components:
                description: Number of found elements.
                format: int64
                example: 32         
-                                      
+               
