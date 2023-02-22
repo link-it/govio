@@ -673,7 +673,35 @@ paths:
              $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
            default:
              $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'                     
-
+             
+  /templates/{template_id}/placeholders/{placeholder_id}:
+     parameters:
+        - $ref: "#/components/parameters/template_id2"             
+        - $ref: "#/components/parameters/placeholder_id2"
+     delete:
+       tags:
+         - template
+       summary: Removes the placeholder from the template.
+       description: Removes the placeholder from the template.
+       operationId: removeTemplatePlaceholder
+       responses:
+         '200':
+           description: Successful operation.
+         '400':
+           $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+         '401':
+           $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+         '403':
+           $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+         '404':
+           $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+         '429':
+           $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+         '503':
+           $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+         default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"     
+ 
   /placeholders:
      post:
          tags:
@@ -772,6 +800,47 @@ paths:
              $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
            default:
              $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'      
+
+     patch:
+       summary: Update placeholder data.
+       description: Update placeholder  data.
+       operationId: updatePlaceholder
+       tags:
+       - template
+       requestBody:    
+         required: true
+         content:
+           application/json-patch+json:
+             schema:
+               $ref: 'govhub-api-commons.yaml#/components/schemas/PatchOperations'
+             example:
+               - op: add
+                 path: /name
+                 value: cie
+       responses:
+         '200':
+           description: Succsessful operation.
+           content:
+              application/json:
+                 schema:
+                    $ref: '#/components/schemas/GovioPlaceholder'
+           links:
+               self:
+                  $ref: "#/components/links/readPlaceholder"                            
+         '400':
+           $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+         '401':
+           $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+         '403':
+           $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+         '404':
+           $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+         '429':
+           $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+         '503':
+           $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+         default:
+           $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                                    
                 
 components:
 
@@ -855,6 +924,22 @@ components:
           items:
              $ref: "#/components/schemas/EmbedPlaceholderEnum"
   
+    expedition_date_to_query:
+      name: expedition_date_to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+        
+    expedition_date_from_query:
+      name: expedition_date_from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+  
     creation_date_from:
       name: creation_date_from
       in: query
@@ -912,6 +997,13 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/GovioTemplateId'      
+        
+    template_id2:
+      name: template_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/GovioTemplateId'        
                 
     placeholder_id_query:
       name: placeholder_id
@@ -926,6 +1018,13 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/GovioPlaceholderId'
+        
+    placeholder_id2:
+      name: placeholder_id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/GovioPlaceholderId'        
                 
     user_id_query_optional:
       name: user_id
@@ -987,21 +1086,7 @@ components:
       schema:
         $ref: 'govhub-api-commons.yaml#/components/schemas/TaxCode'
         
-    expedition_date_to_query:
-      name: expedition_date_to
-      in: query
-      required: false
-      schema:
-        type: string
-        format: date-time
-        
-    expedition_date_from_query:
-      name: expedition_date_from
-      in: query
-      required: false
-      schema:
-        type: string
-        format: date-time
+
         
     scheduled_expedition_date_to_query:
       name: scheduled_expedition_date_to
@@ -1258,7 +1343,7 @@ components:
              example: cie
           description:
              type: string
-             pattern: .*
+             pattern: '[\s\S]*'
              maxLength:  9223372036854776000
              example: Numero carta d'identità elettronica.
           example:
@@ -1268,7 +1353,7 @@ components:
              example: CA000000AA
           pattern:
              type: string
-             pattern: .*
+             pattern: '[\s\S]*'
              maxLength:  9223372036854776000
              example:  "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]" 
           type:

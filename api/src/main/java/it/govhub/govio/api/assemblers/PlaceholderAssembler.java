@@ -35,5 +35,15 @@ public class PlaceholderAssembler extends RepresentationModelAssemblerSupport<Go
 		
 		return ret;
 	}
+	
+	
+	public GovioPlaceholderEntity toEntity(GovioPlaceholder src) {
+		log.debug("Converting Model [GovioPlaceholder] to entity...");
+
+		GovioPlaceholderEntity ret = new GovioPlaceholderEntity();
+		BeanUtils.copyProperties(src, ret);
+		
+		return ret;
+	}
 
 }

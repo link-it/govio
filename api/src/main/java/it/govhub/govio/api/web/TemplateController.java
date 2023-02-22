@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,12 +247,12 @@ public class TemplateController implements TemplateApi {
 
 	@Transactional
 	@Override
-	public ResponseEntity<GovioTemplate> updateTemplate( Long id, List<PatchOp> patchOp) {
+	public ResponseEntity<GovioTemplate> updateTemplate(Long id, List<PatchOp> patchOp) {
 		
 		// Otteniamo l'oggetto JsonPatch
 		JsonPatch patch = RequestUtils.toJsonPatch(patchOp);
 		
-		log.info("Patching user [{}]: {}", id, patch);
+		log.info("Patching template [{}]: {}", id, patch);
 		
 		GovioTemplateEntity template = this.templateRepo.findById(id)
 				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(id)));
@@ -300,6 +301,83 @@ public class TemplateController implements TemplateApi {
 		newTemplate = this.templateRepo.save(newTemplate);
 		
 		return ResponseEntity.ok(this.templateAssembler.toModel(newTemplate));
+	}
+
+
+	@Transactional
+	@Override
+	public ResponseEntity<Void> removeTemplatePlaceholder(Long templateId, Long placeholderId) {
+		
+		var template = this.templateRepo.findById(templateId)
+				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(templateId)) );
+		
+		var placeholder = IterableUtils.find(template.getGovioTemplatePlaceholders(), t -> t.getGovioPlaceholder().getId().equals(placeholderId));
+		if (placeholder == null) {
+			throw new ResourceNotFoundException(this.placeholderMessages.idNotFound(placeholderId));
+		}
+		
+		template.getGovioTemplatePlaceholders().remove(placeholder);
+		this.templateRepo.save(template);
+		
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+
+	@Override
+	public ResponseEntity<GovioPlaceholder> updatePlaceholder(Long id, List<PatchOp> patchOp) {
+
+		// Otteniamo l'oggetto JsonPatch
+		JsonPatch patch = RequestUtils.toJsonPatch(patchOp);
+		
+		log.info("Patching placeholder [{}]: {}", id, patch);
+		
+		GovioPlaceholderEntity placeholder= this.placeholderRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.placeholderMessages.idNotFound(id)));
+		
+		// Convertiamo la entity in json e applichiamo la patch sul json
+		GovioPlaceholder restPlaceholder= this.placeholderAssembler.toModel(placeholder);
+		JsonNode jsonTemplate = this.objectMapper.convertValue(restPlaceholder, JsonNode.class);
+		
+		JsonNode newJsonTemplate;
+		try {
+			newJsonTemplate = patch.apply(jsonTemplate);
+		} catch (JsonPatchException e) {			
+			throw new BadRequestException(e.getLocalizedMessage());
+		}
+		
+		// Lo converto nell'oggetto Template, sostituendo l'ID per essere sicuri che la patch
+		// non l'abbia cambiato.
+		GovioPlaceholder updatedPlaceholder;
+		try {
+			updatedPlaceholder = this.objectMapper.treeToValue(newJsonTemplate, GovioPlaceholder.class);
+		} catch (JsonProcessingException e) {
+			throw new BadRequestException(e);
+		}
+		
+		if (updatedPlaceholder == null) {
+			throw new BadRequestException(PatchMessages.VOID_OBJECT_PATCH);
+		}
+		updatedPlaceholder.setId(id);
+		
+		// Faccio partire la validazione
+		Errors errors = new BeanPropertyBindingResult(updatedPlaceholder, updatedPlaceholder.getClass().getName());
+		validator.validate(updatedPlaceholder, errors);
+		if (!errors.getAllErrors().isEmpty()) {
+			throw new BadRequestException(PatchMessages.validationFailed(errors));
+		}
+		
+		// Faccio partire la validazione custom per la stringa \u0000
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedPlaceholder.getName(), "name");
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedPlaceholder.getDescription(), "description");
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedPlaceholder.getExample(), "example");
+		PostgreSQLUtilities.throwIfContainsNullByte(updatedPlaceholder.getPattern(), "pattern");
+		
+		// Dall'oggetto REST passo alla entity
+		GovioPlaceholderEntity newPlaceholder = this.placeholderAssembler.toEntity(updatedPlaceholder);
+
+		newPlaceholder = this.placeholderRepo.save(newPlaceholder);
+		
+		return ResponseEntity.ok(this.placeholderAssembler.toModel(newPlaceholder));
 	}
 	
 	
