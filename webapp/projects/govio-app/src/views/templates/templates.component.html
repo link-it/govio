@@ -18,22 +18,20 @@
         <ul role="tablist" class="nav gp-border-b-0 gp-tabs-nav">
           <li class="nav-item">
             <a role="tab" tabindex="-1" target="_self" class="nav-link gp-tab-nav-item gp-tab-nav-item-active cursor-pointer" (click)="_resetScroll()">
-              <span title="Show all messages.">{{ 'APP.FILTER.Found' | translate }}</span> <span class="badge gp-tab-counter-badge badge-muted badge-pill gp-badge sm" [title]="messages.length">{{ page?.total || 0 }}</span>
+              <span title="Show all templates.">{{ 'APP.FILTER.Found' | translate }}</span> <span class="badge gp-tab-counter-badge badge-muted badge-pill gp-badge sm" [title]="templates.length">{{ page?.total || 0 }}</span>
             </a>
           </li>
         </ul>
       </div>
     </div>
     <div class="nav-controls">
-      <!-- <a title="Subscribe to RSS feed" aria-label="Subscribe to RSS feed" href="/gitlab-org/gitlab-ui/-/issues.atom" class="btn btn-default btn-md gl-button btn-icon">
-        <mat-icon fontSet="material-icons-outlined">rss_feed</mat-icon>
-      </a>
-      <a title="Subscribe to calendar" aria-label="Subscribe to calendar" href="/gitlab-org/gitlab-ui/-/issues.ics?due_date=next_month_and_previous_two_weeks&amp;sort=closest_future_date" class="btn btn-default btn-md gl-button btn-icon">
-        <mat-icon fontSet="material-icons-outlined">calendar_today</mat-icon>
-      </a>
-      <a href="/gitlab-org/gitlab-ui/-/issues/new" class="btn btn-confirm btn-md gl-button">
-        <span class="gl-button-text">New issue</span>
-      </a> -->
+      <div role="group" class="gl-w-full btn-group-">
+        <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'create'"> -->
+          <button aria-label="Add template" type="button" class="btn btn-confirm btn-md gl-button btn-icon" (click)="_onNew()">
+            <i class="bi-table"></i><span class="ms-2">{{ 'APP.BUTTON.AddTemplate' | translate }}</span>
+          </button>
+        <!-- </ng-template> -->
+      </div>
     </div>
   </div>
   <section class="search-bar container-fluid px-0" *ngIf="_hasFilter">
@@ -41,9 +39,9 @@
       <div class="col-12">
         <ui-search-bar-form #searchBarForm
           [classBlock]="''"
-          [placeholder]="'APP.PLACEHOLDER.Search' | translate"
+          [template]="'APP.TEMPLATE.Search' | translate"
           [showHistory]="showHistory"
-          [historyStore]="'messages'"
+          [historyStore]="'templates'"
           [showSearch]="showSearch"
           [searchFields]="searchFields"
           [showSorting]="showSorting"
@@ -68,16 +66,8 @@
                 </div>
                 <div class="row">
                   <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="taxcode">{{ 'APP.LABEL.Taxcode' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="taxcode" type="text" formControlName="taxcode" autocomplete="off">
-                  </div>
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="status">{{ 'APP.LABEL.LegalName' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="legal_name" type="text" formControlName="organization.legal_name" autocomplete="off">
-                  </div>
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="type">{{ 'APP.LABEL.ServiceName' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="service_name" type="text" formControlName="service.service_name" autocomplete="off">
+                    <label class="label-bold mb-0" for="subject">{{ 'APP.LABEL.Subject' | translate }}</label>
+                    <input class="form-control form-control-sm gl-form-input" id="subject" type="text" formControlName="subject" autocomplete="off">
                   </div>
                 </div>
                 <button type="submit" class="d-none">hidden submit</button>
@@ -96,29 +86,29 @@
     [scrollWindow]="false">
     <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
 
-    <ui-box-message *ngIf="messages.length == 0 && !_spin"
+    <ui-box-template *ngIf="templates.length == 0 && !_spin"
       [size]="64"
       [icon]="'report_problem'"
-      [image]="'./assets/images/illustrations/messages.svg'"
-      [message]="_message | translate"
-      [subMessage]="_messageHelp | translate">
-    </ui-box-message>
+      [image]="'./assets/images/illustrations/templates.svg'"
+      [template]="_template | translate"
+      [subTemplate]="_templateHelp | translate">
+    </ui-box-template>
 
     <div class="row">
       <div class="col-12">
-        <!-- <ui-simple-item class="border-bottom" *ngFor="let message of messages"
-          [primaryText]="message.primaryText"
-          [secondaryText]="message.secondaryText"
-          [metadata]="message.metadata"
-          [secondaryMetadata]="message.secondaryMetadata"
+        <!-- <ui-simple-item class="border-bottom" *ngFor="let template of templates"
+          [primaryText]="template.primaryText"
+          [secondaryText]="template.secondaryText"
+          [metadata]="template.metadata"
+          [secondaryMetadata]="template.secondaryMetadata"
           [hasLink]="true"
-          (simpleClick)="_onEdit($event, message)">
+          (simpleClick)="_onEdit($event, template)">
         </ui-simple-item> -->
-        <ui-item-row class="border-bottom" *ngFor="let message of messages"
-          [data]="message"
-          [config]="messagesConfig"
+        <ui-item-row class="border-bottom" *ngFor="let template of templates"
+          [data]="template"
+          [config]="templatesConfig"
           [hasLink]="true"
-          (itemClick)="_onEdit($event, message)">
+          (itemClick)="_onEdit($event, template)">
         </ui-item-row>
       </div>
     </div>

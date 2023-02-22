@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 
 import { Tools } from './tools.service';
-import { ActionsUpdate } from 'projects/components/src/lib/nav-bar/toolbar-actions';
-
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +25,6 @@ export class ConfigService {
           const _currentTheme = this.config.AppConfig.CurrentThems;
           const _theme = this.config.AppConfig.Themes.find((theme: any) => theme.Name === _currentTheme);
           Tools.SetThemeColors(_theme || null);
-          ActionsUpdate();
           resolve();
         });
     });

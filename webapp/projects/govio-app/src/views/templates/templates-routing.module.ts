@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { FileMessagesComponent } from './file-messages.component';
-import { FileMessageComponent } from '../file-message/file-message.component';
+import { TemplatesComponent } from './templates.component';
+import { TemplateDetailsComponent } from './template-details/template-details.component';
 
 const routes: Routes = [
   {
@@ -10,13 +10,13 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        data: { breadcrumb: 'Messages' },
-        component: FileMessagesComponent
+        data: { breadcrumb: 'Templates' },
+        component: TemplatesComponent
       },
       {
         path: ':id',
         data: { breadcrumb: ':id' },
-        component: FileMessageComponent
+        component: TemplateDetailsComponent
       }
     ]
   }
@@ -26,4 +26,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class FileMessagesRoutingModule {}
+export class TemplatesRoutingModule {}

@@ -1,6 +1,15 @@
 {
+  "/govshell-reverse-proxy/govio/api/v1/*": {
+    "target": "http://172.16.1.121:8083/govio/api/v1",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false,
+    "pathRewrite": {
+      "^/govshell-reverse-proxy/govio/api/v1": ""
+    }
+  },
   "/api/*": {
-    "target": "http://localhost:9003",
+    "target": "http://172.16.1.121:8083/govio/api/v1",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": false,

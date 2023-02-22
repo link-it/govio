@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ComponentsComponent } from './components.component';
 
 import { VendorsModule } from 'projects/vendors/src/lib/vendors.module';
 import { LinkLabModule } from 'projects/link-lab/src/lib/link-lab.module';
@@ -83,7 +82,6 @@ import { CountUpeModule } from './directives/count-up.module';
     CountUpeModule
   ],
   declarations: [
-    ComponentsComponent,
     HeadBarComponent,
     NavBarComponent, FilterActionsPipe, InnerHTMLPipe,
     // SidenavMenuComponent,
@@ -128,7 +126,6 @@ import { CountUpeModule } from './directives/count-up.module';
     FileUploaderModule,
     PhotoBase64Module,
 
-    ComponentsComponent,
     HeadBarComponent,
     NavBarComponent, FilterActionsPipe, InnerHTMLPipe,
     // SidenavMenuComponent,
