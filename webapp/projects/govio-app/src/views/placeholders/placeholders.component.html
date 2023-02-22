@@ -18,22 +18,20 @@
         <ul role="tablist" class="nav gp-border-b-0 gp-tabs-nav">
           <li class="nav-item">
             <a role="tab" tabindex="-1" target="_self" class="nav-link gp-tab-nav-item gp-tab-nav-item-active cursor-pointer" (click)="_resetScroll()">
-              <span title="Show all messages.">{{ 'APP.FILTER.Found' | translate }}</span> <span class="badge gp-tab-counter-badge badge-muted badge-pill gp-badge sm" [title]="messages.length">{{ page?.total || 0 }}</span>
+              <span title="Show all placeholders.">{{ 'APP.FILTER.Found' | translate }}</span> <span class="badge gp-tab-counter-badge badge-muted badge-pill gp-badge sm" [title]="placeholders.length">{{ page?.total || 0 }}</span>
             </a>
           </li>
         </ul>
       </div>
     </div>
     <div class="nav-controls">
-      <!-- <a title="Subscribe to RSS feed" aria-label="Subscribe to RSS feed" href="/gitlab-org/gitlab-ui/-/issues.atom" class="btn btn-default btn-md gl-button btn-icon">
-        <mat-icon fontSet="material-icons-outlined">rss_feed</mat-icon>
-      </a>
-      <a title="Subscribe to calendar" aria-label="Subscribe to calendar" href="/gitlab-org/gitlab-ui/-/issues.ics?due_date=next_month_and_previous_two_weeks&amp;sort=closest_future_date" class="btn btn-default btn-md gl-button btn-icon">
-        <mat-icon fontSet="material-icons-outlined">calendar_today</mat-icon>
-      </a>
-      <a href="/gitlab-org/gitlab-ui/-/issues/new" class="btn btn-confirm btn-md gl-button">
-        <span class="gl-button-text">New issue</span>
-      </a> -->
+      <div role="group" class="gl-w-full btn-group-">
+        <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'create'"> -->
+          <button aria-label="Add placeholder" type="button" class="btn btn-confirm btn-md gl-button btn-icon" (click)="_onNew()">
+            <i class="bi-braces-asterisk"></i><span class="ms-2">{{ 'APP.BUTTON.AddPlaceholder' | translate }}</span>
+          </button>
+        <!-- </ng-template> -->
+      </div>
     </div>
   </div>
   <section class="search-bar container-fluid px-0" *ngIf="_hasFilter">
@@ -43,7 +41,7 @@
           [classBlock]="''"
           [placeholder]="'APP.PLACEHOLDER.Search' | translate"
           [showHistory]="showHistory"
-          [historyStore]="'messages'"
+          [historyStore]="'placeholders'"
           [showSearch]="showSearch"
           [searchFields]="searchFields"
           [showSorting]="showSorting"
@@ -96,29 +94,29 @@
     [scrollWindow]="false">
     <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
 
-    <ui-box-message *ngIf="messages.length == 0 && !_spin"
+    <ui-box-placeholder *ngIf="placeholders.length == 0 && !_spin"
       [size]="64"
       [icon]="'report_problem'"
-      [image]="'./assets/images/illustrations/messages.svg'"
-      [message]="_message | translate"
-      [subMessage]="_messageHelp | translate">
-    </ui-box-message>
+      [image]="'./assets/images/illustrations/placeholders.svg'"
+      [placeholder]="_placeholder | translate"
+      [subPlaceholder]="_placeholderHelp | translate">
+    </ui-box-placeholder>
 
     <div class="row">
       <div class="col-12">
-        <!-- <ui-simple-item class="border-bottom" *ngFor="let message of messages"
-          [primaryText]="message.primaryText"
-          [secondaryText]="message.secondaryText"
-          [metadata]="message.metadata"
-          [secondaryMetadata]="message.secondaryMetadata"
+        <!-- <ui-simple-item class="border-bottom" *ngFor="let placeholder of placeholders"
+          [primaryText]="placeholder.primaryText"
+          [secondaryText]="placeholder.secondaryText"
+          [metadata]="placeholder.metadata"
+          [secondaryMetadata]="placeholder.secondaryMetadata"
           [hasLink]="true"
-          (simpleClick)="_onEdit($event, message)">
+          (simpleClick)="_onEdit($event, placeholder)">
         </ui-simple-item> -->
-        <ui-item-row class="border-bottom" *ngFor="let message of messages"
-          [data]="message"
-          [config]="messagesConfig"
+        <ui-item-row class="border-bottom" *ngFor="let placeholder of placeholders"
+          [data]="placeholder"
+          [config]="placeholdersConfig"
           [hasLink]="true"
-          (itemClick)="_onEdit($event, message)">
+          (itemClick)="_onEdit($event, placeholder)">
         </ui-item-row>
       </div>
     </div>

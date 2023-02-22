@@ -2,6 +2,8 @@
 	"APP": {
 		"BUTTON": {
 			"AddFile": "Add file",
+			"AddPlaceholder": "Add placeholder",
+			"AddTemplate": "Add template",
 			"AlertAction": "Close",
 			"Cancel": "Cancel",
 			"Clear": "Clear",
@@ -83,10 +85,13 @@
 			"DueDate": "Due date",
 			"Email": "Email",
 			"ErrorMessages": "Error messages",
+			"Example": "Example",
 			"File": "File",
 			"FileName": "Filename",
 			"Filename": "Filename",
 			"FullName": "Fullname",
+			"HasDueDate": "Has due date",
+			"HasPayment": "Has payment",
 			"Id": "ID",
 			"Index": "Index",
 			"LastUpdateDate": "Last update",
@@ -95,6 +100,7 @@
 			"Logo": "Logo",
 			"Markdown": "Markdown",
 			"Message": "Message",
+			"MessageBody": "Message body",
 			"Name": "Name",
 			"Organization": "Organization name",
 			"Password": "Password",
@@ -113,14 +119,19 @@
 			"All": ""
 		},
 		"MENU": {
+			"Configurations": "Configurations",
 			"Dashboard": "Dashboard",
 			"DeleteFile": "Delete file …",
+			"DeletePlaceholder": "Delete placeholder …",
+			"DeleteTemplate": "Delete template …",
 			"ExportCSV": "Export CSV",
 			"ExportPDF": "Export PDF",
 			"Files": "Files",
 			"Home": "Home",
 			"Logout": "Logout",
-			"Messages": "Messages"
+			"Messages": "Messages",
+			"Placeholders": "Placeholders",
+			"Templates": "Templates"
 		},
 		"MESSAGE": {
 			"AreYouSure": "Are you sure you want to delete the selected item?",
@@ -195,6 +206,18 @@
 			"SelectOrganization": "Select a organization",
 			"SelectService": "Select a service"
 		},
+		"PLACEHOLDERS": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": ""
+			}
+		},
 		"SEARCH": {
 			"ClearRecentSearches": "Clear recent searches",
 			"NoRecentSearches": "You don't have any recent searches",
@@ -229,11 +252,27 @@
 			"Description": "Description",
 			"Status": "Status"
 		},
+		"TEMPLATES": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": "",
+				"Placeholders": "Placeholders",
+				"Placeholders_sub": ""
+			}
+		},
 		"TITLE": {
 			"Attention": "Attention",
 			"Configurations": "Configurations",
 			"Dashboard": "Dashboard",
 			"EditFiles": "Edit file",
+			"EditPlaceholder": "Edit placeholder",
+			"EditTemplate": "Edit template",
 			"File": "File",
 			"Files": "Files",
 			"GeneralInformations": "General informations",
@@ -242,8 +281,12 @@
 			"Messages": "Messages",
 			"New": "New",
 			"NewFile": "New file",
+			"NewPlaceholder": "New placeholder",
+			"NewTemplate": "New template",
 			"Organization": "Organization",
+			"Placeholders": "Placeholders",
 			"Service": "Service",
+			"Templates": "Templates",
 			"Watermark": "Staging"
 		},
 		"TOOLTIP": {
@@ -252,6 +295,8 @@
 			"CancelEdit": "Cancel edit",
 			"CancelNew": "Cancel add",
 			"EditFile": "Edit file",
+			"EditPlaceholder": "Edit placeholder",
+			"EditTemplate": "Edit template",
 			"ErrorMessages": "Error messages",
 			"Export": "Export",
 			"ExportCSV": "Export file CSV",
@@ -261,7 +306,9 @@
 			"ScheduledExpeditionDate": "Scheduled expedition date"
 		},
 		"TYPE": {
-			"MANUALE": "Manual"
+			"DATE": "Date",
+			"MANUALE": "Manual",
+			"STRING": "String"
 		}
 	}
 }
