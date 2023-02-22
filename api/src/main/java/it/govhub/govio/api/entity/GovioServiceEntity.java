@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -35,7 +36,7 @@ public class GovioServiceEntity {
 	@JoinColumn(name = "id_govio_template", nullable = false, foreignKey = @ForeignKey(name = "GovioService_GovioTemplate"))
 	private GovioTemplateEntity govioTemplate;
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "id_govhub_service", nullable = false, foreignKey = @ForeignKey(name = "GovioService_GovhubService"))
 	private ServiceEntity govhubService;
 }

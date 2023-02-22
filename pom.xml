@@ -35,7 +35,7 @@
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<maven.install.plugin.version>2.5.2</maven.install.plugin.version>
 		<maven-processor.version>4.5</maven-processor.version>
-		<openapi.tool.codegen.version>6.0.0</openapi.tool.codegen.version>
+		<openapi.tool.codegen.version>6.2.1</openapi.tool.codegen.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<springdoc.version>1.6.4</springdoc.version>
@@ -46,6 +46,7 @@
 	</properties>
 	
 	<modules>
+		<module>template-utils</module>
 		<module>batch</module>
 		<module>api</module>
 		<module>report</module>

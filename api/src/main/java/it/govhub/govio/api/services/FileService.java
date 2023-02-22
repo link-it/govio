@@ -28,14 +28,15 @@ import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.GovioFile;
+import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
-import it.govhub.govio.api.repository.GovioFileMessageRepository;
-import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.GovioMessageRepository;
-import it.govhub.govio.api.repository.GovioServiceInstanceRepository;
-import it.govhub.govio.api.security.GovioRoles;
+import it.govhub.govio.api.messages.FileMessages;
+import it.govhub.govio.api.repository.FileMessageRepository;
+import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.MessageRepository;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
@@ -50,10 +51,10 @@ public class FileService {
 	Path fileRepositoryPath;
 	
 	@Autowired
-	GovioFileRepository fileRepo;
+	FileRepository fileRepo;
 
 	@Autowired
-	GovioServiceInstanceRepository serviceRepo;
+	ServiceInstanceRepository serviceRepo;
 	
 	@Autowired
 	SecurityService authService;
@@ -62,27 +63,31 @@ public class FileService {
 	FileAssembler fileAssembler;
 	
 	@Autowired
-	GovioFileMessageRepository fileMessageRepo;
+	FileMessageRepository fileMessageRepo;
 	
 	@Autowired
 	FileMessageAssembler fileMessageAssembler;
 	
 	@Autowired
-	GovioMessageRepository messageRepo;
+	MessageRepository messageRepo;
 	
 	@Autowired
 	MessageAssembler messageAssembler;
 	
-	Logger logger = LoggerFactory.getLogger(FileService.class);
+	@Autowired
+	FileMessages fileMessages;
+	
+	Logger log = LoggerFactory.getLogger(FileService.class);
 	
 	@Transactional
 	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
+		log.info("Uploading file {} to Service Instance {}", sourceFilename, instance.getId());
 		
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER);
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
-			throw new SemanticValidationException("Un file con lo stesso nome è già presente");
+			throw new SemanticValidationException(this.fileMessages.conflict("name", sourceFilename));
 		}
 
     	Path destPath = this.fileRepositoryPath
@@ -93,14 +98,14 @@ public class FileService {
     	destDir.mkdirs();
     	
     	if (!destDir.isDirectory()) {
-    		logger.error("Impossibile creare la directory per conservare i files: {}", destDir);
+    		log.error("Impossibile creare la directory per conservare i files: {}", destDir);
     		throw new RuntimeException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
     	Path destFile =  destPath
     				.resolve(sourceFilename);
     	
-    	logger.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
+    	log.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
     	
     	long size;
     	try(InputStream stream=itemStream.openStream()){
@@ -125,9 +130,16 @@ public class FileService {
 
 	@Transactional
 	public GovioFile readFile(Long id) {
-		return this.fileRepo.findById(id)
-				.map( f -> this.fileAssembler.toModel(f))
-				.orElseThrow( () -> new ResourceNotFoundException("File di id ["+id+"] non trovato."));
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		log.debug("Reading file [{}]", file.getLocation());
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
+		
+		GovioFile ret = this.fileAssembler.toModel(file);
+		return ret;
 	}
 
 	

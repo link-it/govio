@@ -21,11 +21,6 @@ test:
     stage: test
     script:
       - mvn verify sonar:sonar -U
-    rules:
-      - if: $CI_COMMIT_BRANCH == "staging"
-        allow_failure: true
-      - if: $CI_COMMIT_BRANCH != "staging"
-        allow_failure: false
     artifacts:
         untracked: false
         name: test_and_coverage_report
@@ -74,7 +69,7 @@ deploy_staging:
     - scp -r api/target/govio.war $DEPLOY_STAGING_SSH_HOST:/tmp/
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo tar xvf /tmp/govio-app.tgz'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo systemctl stop tomcat'
-    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r dist/govio-app/* /usr/share/nginx/html/govio-app/'
+    - ssh $DEPLOY_STAGING_SSH_HOST 'sudo rm -rf /usr/share/nginx/html/govio-app/* && sudo cp -r dist/govio-app/* /usr/share/nginx/html/govio-app/'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo cp -r /tmp/govio-batch.war /tmp/govio.war /opt/apache-tomcat-9.0.70/webapps/'  
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo systemctl start tomcat'
     - ssh $DEPLOY_STAGING_SSH_HOST 'sudo rm -rf /tmp/govio-app.tgz dist /tmp/govio-batch.war /tmp/govio.war'

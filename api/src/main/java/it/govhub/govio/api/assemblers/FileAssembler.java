@@ -3,6 +3,8 @@ package it.govhub.govio.api.assemblers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -26,7 +28,8 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFil
 	
 	@Autowired
 	ServiceAuthItemAssembler serviceAssembler;
-	
+
+	Logger log = LoggerFactory.getLogger(FileAssembler.class);
 
 	public FileAssembler() {
 		super(FileController.class, GovioFile.class);
@@ -34,6 +37,7 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFil
 
 	@Override
 	public GovioFile  toModel(GovioFileEntity src) {
+		log.debug("Assembling Entity [GovioFile] to model...");
 		GovioFile ret = instantiateModel(src);
 		
         BeanUtils.copyProperties(src, ret);

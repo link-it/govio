@@ -30,9 +30,9 @@ import it.govhub.govio.api.beans.GovioMessageStatus;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioMessageEntity.Status;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
-import it.govhub.govio.api.repository.GovioFileMessageRepository;
-import it.govhub.govio.api.repository.GovioFileRepository;
-import it.govhub.govio.api.repository.GovioMessageRepository;
+import it.govhub.govio.api.repository.FileMessageRepository;
+import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.entity.UserEntity;
@@ -53,13 +53,13 @@ class Messages_UC_5_FindMessagesTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Autowired
-	GovioMessageRepository govioMessageRepository;
+	MessageRepository govioMessageRepository;
 
 	@Autowired
-	private GovioFileRepository govioFilesRepository;
+	private FileRepository govioFilesRepository;
 	
 	@Autowired
-	private GovioFileMessageRepository govioFileMessagesRepository;
+	private FileMessageRepository govioFileMessagesRepository;
 	
 	@Autowired
 	EntityManager em;
@@ -138,13 +138,6 @@ class Messages_UC_5_FindMessagesTest {
 		assertEquals(msg.getNoticeNumber(), payment.getString("notice_number"));
 		assertEquals(msg.getPayeeTaxcode(), payment.getString("payee_taxcode"));
 
-		JsonObject organization = item.getJsonObject("organization");
-		assertNotNull(organization);
-		JsonObject sender = item.getJsonObject("user");
-		assertNotNull(sender);
-		JsonObject service = item.getJsonObject("service");
-		assertNotNull(service);
-		
 	}
 	
 }

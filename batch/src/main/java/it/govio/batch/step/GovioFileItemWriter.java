@@ -13,6 +13,11 @@ import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFileMessagesRepository;
 
+/**
+ * Popola i riferimenti agli oggetti di Govio e scrive su database i GofioFileMessageEntity costruiti a partire dalla righe del csv. 
+ *
+ *
+ */
 public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 
 	@PersistenceContext
