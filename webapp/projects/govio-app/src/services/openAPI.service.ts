@@ -63,10 +63,26 @@ export class OpenAPIService {
     return this.http.patch<any>(_url, body, options);
   }
 
+  updateElementRelated(name: string, id: any, related: string, body: Object, options?: IRequestOptions) {
+    if(!options) options = {};
+    options.headers = new HttpHeaders();
+    options.headers = options.headers.set('Content-type', 'application/json-patch+json');
+
+    const _url = `${this.proxyPath}${name}/${id}/${related}`;
+    return this.http.patch<any>(_url, body, options);
+  }
+
   deleteElement(name: string, id: any, options?: IRequestOptions) {
     if(!options) options = {};
     
     const _url = `${this.proxyPath}${name}/${id}`;
+    return this.http.delete<any>(_url, options);
+  }
+
+  deleteElementRelated(name: string, id: any, related: string, options?: IRequestOptions) {
+    if(!options) options = {};
+    
+    const _url = `${this.proxyPath}${name}/${id}/${related}`;
     return this.http.delete<any>(_url, options);
   }
 

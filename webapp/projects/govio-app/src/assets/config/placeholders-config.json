@@ -1,14 +1,13 @@
 {
   "itemRow": {
     "primaryText": [
-      { "field": "name", "type": "text" }
-    ],
-    "secondaryText": [
       { "field": "description", "type": "text" }
     ],
+    "secondaryText": [],
     "metadata": {
       "text": [
-        { "field": "id", "type": "cardinal", "class": "" }
+        { "field": "id", "type": "cardinal", "class": "" },
+        { "field": "name", "type": "text", "class": "" }
       ],
       "label": [
         { "field": "type", "type": "label", "options": "type" }

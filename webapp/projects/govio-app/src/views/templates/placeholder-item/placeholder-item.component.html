@@ -1,0 +1,75 @@
+<div class="border-2 border-success" [class.border]="_isEdit">
+  <div class="d-flex align-items-center" *ngIf="data?._embedded && !_isEdit">
+    <!-- <div class="text-center me-3 placeholder-drag-handle" cdkDragHandle>
+      <i class="bi-grip-vertical"></i><span class="mt-0 mb-1">{{ data.position }}</span>
+    </div> -->
+    <div class="flex-grow-1">
+      <!-- <p class="mt-0 mb-1 fw-bold">{{ data._embedded.placeholder.name }}</p>
+      <small>{{ data._embedded.placeholder.description }}</small> -->
+      <ui-item-row class="item-row-small"
+        [data]="_dataSrc"
+        [config]="config"
+        [hasLink]="false">
+      </ui-item-row>
+    </div>
+    <div class="text-end position-relative">
+      <i class="bi-circle-fill text-primary smaller" *ngIf="data.mandatory" [tooltip]="'APP.TOOLTIP.Mandatory' | translate" placement="left"></i>
+    </div>
+    <div class="ms-3 text-end" *ngIf="editable">
+      <div class="btn-group">
+        <!-- <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onEdit($event)">
+          <i class="bi bi-pencil"></i>
+        </button> -->
+        <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onDelete($event)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="border-2 px-3 py-3 position-relative" *ngIf="!data || _isEdit">
+    <div class="position-absolute top-0 end-0" (click)="_onCloseEdit($event)">
+      <button type="button" class="close"><i class="bi bi-x"></i></button>
+    </div>
+    <form novalidate class="gl-show-field-errors form-sm" [class.form-readonly]="!_isEdit" [formGroup]="_formGroup" (submit)="_onSubmit(_formGroup.value)">
+      <div class="row row-cols-lg-auto align-items-center">
+        <div class="col-2">
+          <div class="form-group position mb-0">
+            <label class="label-bold visually-hidden-" for="position">{{ 'APP.LABEL.Position' | translate }}</label>
+            <input autofocus="autofocus" autocomplete="off" class="form-control" type="text" name="position" id="position" formControlName="position" [placeholder]="'APP.LABEL.Position' | translate">
+          </div>
+        </div>
+        <div class="col-7">
+          <div class="form-group position mb-0">
+            <label class="label-bold visually-hidden-" for="placeholderId">{{ 'APP.LABEL.Placeholder' | translate }}</label>
+            <input autofocus="autofocus" autocomplete="off" class="form-control" type="text" name="placeholderId" id="placeholderId" formControlName="placeholderId" [placeholder]="'APP.LABEL.Placeholder' | translate">
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="form-group position mb-0">
+            <label class="label-bold visually-hidden-" for="placeholderId">&nbsp;</label>
+            <div class="gl-form-checkbox custom-control custom-checkbox mandatory">
+              <label class="label-bold visually-hidden-" for="mandatory">&nbsp;</label>
+              <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="mandatory" id="mandatory" formControlName="mandatory">
+              <label class="custom-control-label" for="mandatory">
+                <span>{{ 'APP.LABEL.Mandatory' | translate }}</span>
+              </label>
+            </div>  
+          </div>
+        </div>
+      </div>
+
+      <div class="gl-alert gl-alert-danger mt-3 p-3" *ngIf="_isEdit && _error">
+        {{ _errorMsg }}
+      </div>
+
+      <div class="row-content-block footer-block text-end mt-1- py-2">
+        <button aria-label="Create" class="gl-button btn btn-sm btn-default gl-mr-2" *ngIf="!data">
+          {{ 'APP.BUTTON.CreateNewPlaceholder' | translate }}
+        </button>
+        <button aria-label="Save" type="submit" class="gl-button btn btn-sm btn-confirm gl-mr-2" [disabled]="_formGroup.invalid">
+          {{ 'APP.BUTTON.Save' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

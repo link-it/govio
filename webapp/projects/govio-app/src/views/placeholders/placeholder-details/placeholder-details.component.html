@@ -93,7 +93,7 @@
                         <ui-input-help field="name" context="PLACEHOLDER"></ui-input-help>
                       </div>
                       <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="name" [value]="placeholder.name">
+                        <input type="text" readonly class="form-control-plaintext" id="name" [value]="placeholder.name || '-'">
                       </div>
                     </div>
                   <!-- </div>
@@ -108,7 +108,7 @@
                         <ui-input-help field="description" context="PLACEHOLDER"></ui-input-help>
                       </div>
                       <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="description" [value]="placeholder.description">
+                        <input type="text" readonly class="form-control-plaintext" id="description" [value]="placeholder.description || '-'">
                       </div>
                     </div>
                   <!-- </div>
@@ -125,7 +125,7 @@
                         <ui-input-help field="example" context="PLACEHOLDER"></ui-input-help>
                       </div>
                       <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="example" [value]="placeholder.example">
+                        <input type="text" readonly class="form-control-plaintext" id="example" [value]="placeholder.example || '-'">
                       </div>
                     </div>
                   <!-- </div>
@@ -133,7 +133,10 @@
                     <div class="form-group type">
                       <label class="label-bold" for="type">{{ 'APP.LABEL.Type' | translate }}</label>
                       <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('type')" type="text" name="type" id="type" formControlName="type">
+                        <select class="form-select form-control-sm" id="type" formControlName="type" [class.gl-field-error-outline]="_hasControlError('type')">
+                          <option *ngFor="let pt of palceholderTypes" [value]="pt.value">{{ pt.label }}</option>
+                        </select>  
+                        <!-- <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('type')" type="text" name="type" id="type" formControlName="type"> -->
                         <p *ngIf="f['type'].invalid && (f['type'].dirty || f['type'].touched)" class="form-text text-danger">
                           <span *ngIf="f['type'].errors && f['type'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
                         </p>
@@ -141,6 +144,21 @@
                       </div>
                       <div class="" *ngIf="!_isEdit">
                         <input type="text" readonly class="form-control-plaintext" id="type" [value]="placeholder.type">
+                      </div>
+                    </div>
+                  <!-- </div>
+                  <div class="col-lg-6"> -->
+                    <div class="form-group pattern">
+                      <label class="label-bold" for="pattern">{{ 'APP.LABEL.Pattern' | translate }}</label>
+                      <div class="" *ngIf="_isEdit">
+                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('pattern')" type="text" name="pattern" id="pattern" formControlName="pattern">
+                        <p *ngIf="f['pattern'].invalid && (f['pattern'].dirty || f['pattern'].touched)" class="form-text text-danger">
+                          <span *ngIf="f['pattern'].errors && f['pattern'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                        </p>
+                        <ui-input-help field="pattern" context="PLACEHOLDER"></ui-input-help>
+                      </div>
+                      <div class="" *ngIf="!_isEdit">
+                        <input pattern="text" readonly class="form-control-plaintext" id="pattern" [value]="placeholder.pattern || '-'">
                       </div>
                     </div>
                   <!-- </div>

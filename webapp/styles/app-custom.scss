@@ -465,3 +465,9 @@ mat-list-item.mat-list-item:hover {
 .border-bottom {
   border-bottom: 1px solid #f0f0f0 !important;
 }
+
+.item-row-small {
+  .main-content {
+    padding: 0 !important;
+  }
+}
