@@ -48,6 +48,7 @@ import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity_;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity_;
+import it.govhub.govio.api.entity.GovioTemplatePlaceholderKey;
 import it.govhub.govio.api.messages.PlaceholderMessages;
 import it.govhub.govio.api.messages.TemplateMessages;
 import it.govhub.govio.api.repository.PlaceholderRepository;
@@ -215,9 +216,11 @@ public class TemplateController implements TemplateApi {
 		
 		var templatePlaceholder = new GovioTemplatePlaceholderEntity();
 		
+		
+		var id = new GovioTemplatePlaceholderKey(placeholder.getId(), template.getId());
+		
+		templatePlaceholder.setId(id);
 		BeanUtils.copyProperties(newTemplatePlaceholder, templatePlaceholder);
-		templatePlaceholder.setGovioTemplate(template);
-		templatePlaceholder.setGovioPlaceholder(placeholder);
 		
 		templatePlaceholder = this.templatePlaceholderRepo.save(templatePlaceholder);
 		
