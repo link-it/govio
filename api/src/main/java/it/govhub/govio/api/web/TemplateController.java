@@ -319,8 +319,7 @@ public class TemplateController implements TemplateApi {
 			throw new ResourceNotFoundException(this.placeholderMessages.idNotFound(placeholderId));
 		}
 		
-		template.getGovioTemplatePlaceholders().remove(placeholder);
-		this.templateRepo.save(template);
+		this.templatePlaceholderRepo.delete(placeholder);
 		
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}

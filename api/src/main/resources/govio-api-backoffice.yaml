@@ -618,7 +618,7 @@ paths:
           - $ref: "#/components/parameters/placeholder_id_query"
          tags:
            - template
-         summary: Create a new template placeholder.
+         summary: Assign a placeholder to a  template.
          description: Associate a placeholder to a template.
          operationId: assignPlaceholder
          requestBody:
