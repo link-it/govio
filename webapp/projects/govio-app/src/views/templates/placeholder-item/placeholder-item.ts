@@ -1,13 +1,9 @@
-import * as moment from 'moment';
+export class PlaceholderItem {
 
-export class Placeholder {
-
-  id: number | null = null;
-  name: string | null = null;
-  description: string | null = null;
-  example: string | null = null;
-  type: string | null = null;
-  pattern: string | null = null;
+  templateId: number | null = null;
+  placeholderId: number | null = null;
+  position: number | null = null;
+  mandatory: boolean = false;
 
   constructor(_data?: any) {
     if (_data) {

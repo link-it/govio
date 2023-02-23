@@ -8,8 +8,7 @@ import { VendorsModule } from 'projects/vendors/src/lib/vendors.module';
 import { ComponentsModule } from 'projects/components/src/lib/components.module';
 import { LinkLabModule } from 'projects/link-lab/src/lib/link-lab.module';
 
-import { PlaceholderItemModule } from '../placeholder-item/placeholder-item.module';
-import { TemplatePlaceholdersComponent } from './template-placeholders.component';
+import { PlaceholderItemComponent } from './placeholder-item.component';
 
 @NgModule({
   imports: [
@@ -18,14 +17,13 @@ import { TemplatePlaceholdersComponent } from './template-placeholders.component
     TranslateModule,
     VendorsModule,
     ComponentsModule,
-    LinkLabModule,
-    PlaceholderItemModule
+    LinkLabModule
   ],
   declarations: [
-    TemplatePlaceholdersComponent
+    PlaceholderItemComponent
   ],
-  exports: [TemplatePlaceholdersComponent],
+  exports: [PlaceholderItemComponent],
   providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class TemplatePlaceholdersModule { }
+export class PlaceholderItemModule { }

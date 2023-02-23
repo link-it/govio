@@ -1,19 +1,64 @@
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <span class="spinner-border spinner-border-sm text-primary me-3-" *ngIf="_spin"></span> 
+  <span class="" *ngIf="!_spin"><i class="bi-arrow-clockwise text-white" (click)="refresh()"></i></span> 
+  <div class="position-relative">
+    <div role="group" class="gl-w-full btn-group-" *ngIf="templatePlaceholders?.length">
+      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onEditPlaceholders($event)" [tooltip]="(_editPlaceholders ? 'APP.TOOLTIP.CancelEdit' : 'APP.TOOLTIP.EditPlaceholders') | translate" placement="left">
+        <i class="bi-pencil" *ngIf="!_editPlaceholders"></i>
+        <i class="bi-x-lg" *ngIf="_editPlaceholders"></i>
+      </button>
+    </div>
+  </div>
+</div>
 <div class="border px-2 py-2">
-  <ul class="list-group placeholder-list" cdkDropList (cdkDropListDropped)="drop($event)">
-    <li class="list-group-item placeholder-box" *ngFor="let ph of templatePlaceholders" cdkDrag>
+  <ul class="list-group placeholder-list" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListLockAxis="y" [cdkDropListDisabled]="!_editPlaceholders">
+    <li class="list-group-item placeholder-box text-center py-3" *ngIf="!templatePlaceholders?.length">
+      <span class="">{{ 'APP.MESSAGE.NoPlaceholder' | translate }}</span>
+    </li>
+    <li class="list-group-item placeholder-box pe-2" *ngFor="let ph of templatePlaceholders" cdkDrag>
       <div class="d-flex" *ngIf="ph._embedded">
-        <div class="text-center me-3 placeholder-drag-handle" cdkDragHandle>
-          <i class="bi-grip-vertical"></i><span class="mt-0 mb-1">{{ ph.position }}</span>
+        <div class="text-center me-3 placeholder-drag-handle" [class.cursor-move]="_editPlaceholders" cdkDragHandle>
+          <i class="bi-grip-vertical" *ngIf="_editPlaceholders"></i><span class="mt-0 mb-1">{{ ph.position }}</span>
         </div>
         <div class="flex-grow-1">
-          <p class="mt-0 mb-1 fw-bold">{{ ph._embedded.placeholder.name }}</p>
-          <small>{{ ph._embedded.placeholder.description }}</small>
-        </div>
-        <div class="text-end">
-          <p class="mt-0 mb-1">{{ ph._embedded.placeholder.type }}</p>
-          <small>{{ ph.mandatory ? 'mandatory' : '' }}</small>
+          <app-placeholder-item
+            [templateId]="id"
+            [data]="ph"
+            [config]="placeholdersConfig"
+            [editable]="_editPlaceholders"
+            (save)="_onSave($event)"
+            (delete)="_onDelete($event)">
+          </app-placeholder-item>
         </div>
       </div>
     </li>
+    <li class="list-group-item placeholder-box pe-2" *ngIf="_isNew">
+      <div class="border border-2 border-danger">
+        <app-placeholder-item
+          [templateId]="id"
+          [data]="null"
+          [config]="placeholdersConfig"
+          (close)="_onNew()"
+          (save)="_onSave($event)">
+        </app-placeholder-item>
+      </div>
+    </li>
   </ul>
+</div>
+<div class="d-flex justify-content-between align-items-center mt-2">
+  <!-- <span class="spinner-border spinner-border-sm text-primary me-3-" *ngIf="_spin"></span>  -->
+  <span class="">&nbsp;</span> 
+  <div class="position-relative">
+    <div role="group" class="gl-w-full btn-group-" *ngIf="!_editPlaceholders && !_isNew">
+      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onNew()" [tooltip]="'APP.TOOLTIP.AddPlaceholder' | translate" placement="left">
+        <i class="bi-plus-lg"></i><!-- <span class="ms-2">{{ 'APP.BUTTON.AddPlaceholder' | translate }}</span> -->
+      </button>
+    </div>
+    <div role="group" class="gl-w-full btn-group-" *ngIf="_editPlaceholders">
+      <span class="me-3 text-danger small" *ngIf="_modifiedPlaceholders"><i class="bi-circle-fill"></i></span>
+      <button aria-label="Add placeholder" type="button" class="btn btn-confirm btn-md gl-button btn-icon" (click)="_onSavePlaceholders($event)">
+        <span class="">{{ 'APP.BUTTON.Save' | translate }}</span>
+      </button>
+    </div>
+  </div>
 </div>

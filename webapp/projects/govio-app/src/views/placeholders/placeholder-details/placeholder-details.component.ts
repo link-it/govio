@@ -70,6 +70,12 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
 
   _imagePlaceHolder: string = './assets/images/logo-placeholder.png';
 
+  palceholderTypes: any[] = [
+    { label: 'STRING', value: 'STRING' },
+    { label: 'DATE', value: 'DATE' },
+    { label: 'DATETIME', value: 'DATETIME' }
+  ];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,

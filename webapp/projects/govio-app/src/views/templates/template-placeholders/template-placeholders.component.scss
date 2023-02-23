@@ -21,7 +21,9 @@
   // font-size: 14px;
 
   .placeholder-drag-handle {
-    cursor: move;
+    &.cursor-move {
+      cursor: move;
+    }
   }
 }
 
