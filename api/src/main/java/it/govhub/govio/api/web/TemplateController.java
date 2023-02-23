@@ -319,6 +319,7 @@ public class TemplateController implements TemplateApi {
 			throw new ResourceNotFoundException(this.placeholderMessages.idNotFound(placeholderId));
 		}
 		
+		
 		this.templatePlaceholderRepo.delete(placeholder);
 		
 		return ResponseEntity.status(HttpStatus.OK).build();
