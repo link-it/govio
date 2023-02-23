@@ -263,6 +263,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FileStatistics'
+              example:
+              - status: acquired
+                count: 23
+              - status: scheduled
+                count: 15
+              - status: denied
+                count: 100
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -1577,6 +1584,7 @@ components:
         - error
         - any
       default: any
+      example: aqcuired
       
     GovioPlaceholderType:
        type: string
@@ -1736,8 +1744,24 @@ components:
         type: object
         additionalProperties: false
         properties:
-           scheduled:
+           statuses:
+              type: array
+              minItems: 0
+              maxItems: 99999999999
+              items:
+                 $ref: "#/components/schemas/FileStatisticsItem"
+           
+
+                       
+    FileStatisticsItem:
+        type: object
+        additionalProperties: false
+        properties:
+           status:
+              $ref: "#/components/schemas/GovioMessageStatus"
+           count:
               type: integer
+              format: int64                           
         
     MessageOrdering:
          type: string
