@@ -51,6 +51,7 @@ import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity_;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderKey;
 import it.govhub.govio.api.messages.PlaceholderMessages;
 import it.govhub.govio.api.messages.TemplateMessages;
+import it.govhub.govio.api.repository.PlaceholderFilters;
 import it.govhub.govio.api.repository.PlaceholderRepository;
 import it.govhub.govio.api.repository.TemplateFilters;
 import it.govhub.govio.api.repository.TemplatePlaceholderFilters;
@@ -183,8 +184,14 @@ public class TemplateController implements TemplateApi {
 
 
 	@Override
-	public ResponseEntity<GovioPlaceholderList> listPlaceholders(Integer limit, Long offset) {
+	public ResponseEntity<GovioPlaceholderList> listPlaceholders(Integer limit, Long offset, String q) {
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(Direction.DESC, GovioPlaceholderEntity_.NAME));
+		
+		Specification<GovioPlaceholderEntity> spec = PlaceholderFilters.empty();
+		if (!StringUtils.isBlank(q)) {
+			spec = PlaceholderFilters.likeDescription(q).	and(PlaceholderFilters.likeName(q));
+					
+		}
 		
 		Page<GovioPlaceholderEntity> placeholders = this.placeholderRepo.findAll(pageRequest.pageable);
 		
