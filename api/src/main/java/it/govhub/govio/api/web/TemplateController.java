@@ -193,7 +193,7 @@ public class TemplateController implements TemplateApi {
 					
 		}
 		
-		Page<GovioPlaceholderEntity> placeholders = this.placeholderRepo.findAll(pageRequest.pageable);
+		Page<GovioPlaceholderEntity> placeholders = this.placeholderRepo.findAll(spec, pageRequest.pageable);
 		
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
