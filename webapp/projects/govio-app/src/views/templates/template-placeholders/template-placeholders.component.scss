@@ -5,7 +5,7 @@
   display: block;
   background: white;
   border-radius: 0px;
-  overflow: hidden;
+  // overflow: hidden;
 }
 
 .placeholder-box {
@@ -45,4 +45,11 @@
 
 .placeholder-list.cdk-drop-list-dragging .placeholder-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.list-group-item {
+  border-left: 0px;
+  border-right: 0px;
+  // border-bottom: 0px;
+  padding: 0.5rem 0.5rem !important;
 }

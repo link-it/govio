@@ -8,6 +8,7 @@ export class Placeholder {
   example: string | null = null;
   type: string | null = null;
   pattern: string | null = null;
+  mandatory?: boolean | null = null;
 
   constructor(_data?: any) {
     if (_data) {

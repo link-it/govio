@@ -31,6 +31,7 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
   _isNew: boolean = false;
   _editPlaceholders: boolean = false;
   _modifiedPlaceholders: boolean = false;
+  _createPlaceholder: boolean = false;
 
   _formGroup: UntypedFormGroup = new UntypedFormGroup({});
 
@@ -119,12 +120,13 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
   }
 
   _onNew() {
-    this._isNew = !this._isNew;
+    this._isNew = true;
   }
 
   _onSave(event: any) {
     this._isEdit = false;
     this._isNew = false;
+    this._createPlaceholder = false;
     this.refresh();
   }
 
@@ -166,6 +168,8 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
 
   _onClose(event: any) {
     this._isEdit = false;
+    this._isNew = false;
+    this._createPlaceholder = false;
   }
 
   _onEditPlaceholders(event: any) {
@@ -189,5 +193,11 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
     if (event.previousIndex !== event.currentIndex) {
       this._modifiedPlaceholders = true;
     }
+  }
+
+  _onCreatePlcaholder() {
+    this._createPlaceholder = true;
+    this._isEdit = false;
+    this._isNew = false;
   }
 }

@@ -23,6 +23,7 @@
 			"Remove": "Remove",
 			"Report": "Report",
 			"Save": "Save",
+			"SaveNewPlaceholder": "Save new placeholder",
 			"Search": "Search",
 			"UploadFile": "Upload file"
 		},
@@ -172,8 +173,10 @@
 			"NoResponseUnimplemented": "No Response or Unimplemented yet",
 			"NoResults": "Sorry, your filter produced no results",
 			"NoResultsHelp": "To widen your search, change or remove filters above",
+			"NotFoundItem": "Not found item",
 			"NotFoundText": "Not found text",
 			"PageNumber": "Page {{page}} of {{total}}",
+			"PleaseEnterMin": "Please enter {{lengthTerm}} or more characters",
 			"Sign_in_message": "Sign in with your account",
 			"Unimplemented": "Unimplemented yet",
 			"VALIDATION": {
