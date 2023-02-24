@@ -751,6 +751,7 @@ paths:
          parameters:
              - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
              - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+             - $ref: 'govhub-api-commons.yaml#/components/parameters/q_query'
          tags:
            - template
          summary: List the placeholders.
