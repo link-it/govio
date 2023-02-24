@@ -189,7 +189,7 @@ public class TemplateController implements TemplateApi {
 		
 		Specification<GovioPlaceholderEntity> spec = PlaceholderFilters.empty();
 		if (!StringUtils.isBlank(q)) {
-			spec = PlaceholderFilters.likeDescription(q).	and(PlaceholderFilters.likeName(q));
+			spec = PlaceholderFilters.likeDescription(q).	or(PlaceholderFilters.likeName(q));
 					
 		}
 		
