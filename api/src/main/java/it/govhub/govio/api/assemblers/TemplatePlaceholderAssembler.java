@@ -4,7 +4,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -40,14 +39,15 @@ public class TemplatePlaceholderAssembler extends RepresentationModelAssemblerSu
 		log.debug("Assembling Entity [GovioTemplatePlaceholder] to model...");
 		
 		var ret = new GovioTemplatePlaceholder();
+		ret.setPlaceholderId(entity.getId().getGovioPlaceholder());
 		BeanUtils.copyProperties(entity, ret);
 		
 		ret.
 			add(
-					linkTo(methodOn(TemplateController.class).readTemplate(entity.getGovioTemplate().getId())).
+					linkTo(methodOn(TemplateController.class).readTemplate(entity.getId().getGovioTemplate())).
 					withRel("template")).
 			 add(
-					linkTo(methodOn(TemplateController.class).readPlaceholder(entity.getGovioPlaceholder().getId())).
+					linkTo(methodOn(TemplateController.class).readPlaceholder(entity.getId().getGovioPlaceholder())).
 					withRel("placeholder"));
 		
 		return ret;
