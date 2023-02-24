@@ -39,6 +39,7 @@ public class TemplatePlaceholderAssembler extends RepresentationModelAssemblerSu
 		log.debug("Assembling Entity [GovioTemplatePlaceholder] to model...");
 		
 		var ret = new GovioTemplatePlaceholder();
+		ret.setPlaceholderId(entity.getId().getGovioPlaceholder());
 		BeanUtils.copyProperties(entity, ret);
 		
 		ret.

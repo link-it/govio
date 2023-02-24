@@ -1,5 +1,8 @@
 package it.govhub.govio.api.repository;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -25,6 +28,12 @@ public class PlaceholderFilters {
 	public static Specification<GovioPlaceholderEntity> likeDescription(String description) {
 		return (Root<GovioPlaceholderEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
 			cb.like(cb.upper(root.get(GovioPlaceholderEntity_.description)), "%"+description.toUpperCase()+"%");
+	}
+
+
+	public static Specification<GovioPlaceholderEntity> byIds(Set<Long> requestedIds) {
+		return (Root<GovioPlaceholderEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+			root.get(GovioPlaceholderEntity_.id).in(requestedIds);
 	}
 	
 }
