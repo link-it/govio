@@ -23,6 +23,7 @@
 			"Remove": "Rimuovi",
 			"Report": "Resoconto",
 			"Save": "Salva",
+			"SaveNewPlaceholder": "Salva nuovo segnaposto",
 			"Search": "Cerca",
 			"UploadFile": "Carica tracciato"
 		},
@@ -172,8 +173,10 @@
 			"NoResponseUnimplemented": "Nessuna risposta o ancora non implementato",
 			"NoResults": "Siamo spiacenti, il tuo filtro non ha prodotto risultati",
 			"NoResultsHelp": "Per ampliare la tua ricerca, cambia o rimuovi i filtri qui sopra",
+			"NotFoundItem": "Elemento non trovato",
 			"NotFoundText": "Testo non trovato",
 			"PageNumber": "Pagina {{page}} di {{total}}",
+			"PleaseEnterMin": "Inserisci {{lengthTerm}} o più caratteri",
 			"Sign_in_message": "Accedi con il tuo account",
 			"Unimplemented": "Funzionalità attualmente non disponibile",
 			"VALIDATION": {

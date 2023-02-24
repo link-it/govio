@@ -7,6 +7,10 @@
     font-size: 0.8rem;
   }
 
+  textarea.form-control {
+    height: auto !important;
+  }
+  
   .form-control, .form-select, .search form {
     font-size: 0.8rem;
     height: 25px;
@@ -14,5 +18,9 @@
 }
 
 .smaller {
+  font-size: 0.6rem;
+}
+
+.smallest {
   font-size: 0.4rem;
 }

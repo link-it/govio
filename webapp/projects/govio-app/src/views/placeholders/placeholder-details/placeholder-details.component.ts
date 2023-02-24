@@ -70,7 +70,7 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
 
   _imagePlaceHolder: string = './assets/images/logo-placeholder.png';
 
-  palceholderTypes: any[] = [
+  placeholderTypes: any[] = [
     { label: 'STRING', value: 'STRING' },
     { label: 'DATE', value: 'DATE' },
     { label: 'DATETIME', value: 'DATETIME' }
@@ -185,7 +185,9 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
 
   __onSave(body: any) {
     this._error = false;
-    this.apiService.saveElement(this.model, body).subscribe(
+    const _body = Tools.RemoveEmpty(body);
+    if (!_body.example) { _body.example = ''; }
+    this.apiService.saveElement(this.model, _body).subscribe(
       (response: any) => {
         this.placeholder = new Placeholder({ ...response });
         this._placeholder = new Placeholder({ ...response });
@@ -202,22 +204,11 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
     );
   }
 
-  __removeEmpty(obj: any) {
-    const $this = this;
-    return Object.keys(obj)
-      .filter(function (k) {
-        return obj[k] != null;
-      })
-      .reduce(function (acc: any, k: string) {
-        acc[k] = typeof obj[k] === "object" ? $this.__removeEmpty(obj[k]) : obj[k];
-        return acc;
-      }, {});
-  }
-
   __onUpdate(id: number, body: any) {
     this._error = false;
-    const _placeholder = this.__removeEmpty(this.placeholder);
-    const _body = this.__removeEmpty(body);
+    const _placeholder = Tools.RemoveEmpty(this.placeholder);
+    const _body = Tools.RemoveEmpty(body);
+    if (!_body.example) { _body.example = ''; }
     const _bodyPatch: any[] = jsonpatch.compare(_placeholder, _body);
     if (_bodyPatch) {
       this.apiService.updateElement(this.model, id, _bodyPatch).subscribe(
