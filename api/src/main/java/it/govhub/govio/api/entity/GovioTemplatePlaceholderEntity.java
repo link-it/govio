@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,10 +25,12 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "govio_template_placeholders")
 public class GovioTemplatePlaceholderEntity {
 	
+	@EqualsAndHashCode.Include
 	@EmbeddedId
 	private GovioTemplatePlaceholderKey id;
 

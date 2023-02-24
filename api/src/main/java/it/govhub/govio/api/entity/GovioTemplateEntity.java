@@ -3,6 +3,7 @@ package it.govhub.govio.api.entity;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -53,6 +54,6 @@ public class GovioTemplateEntity implements Serializable {
 	@Column(name = "has_payment", nullable = false)
 	private Boolean hasPayment;
 
-	@OneToMany(mappedBy = "govioTemplate", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "govioTemplate", fetch = FetchType.EAGER, cascade= CascadeType.ALL,  orphanRemoval = true)
 	Set<GovioTemplatePlaceholderEntity> govioTemplatePlaceholders;
 }

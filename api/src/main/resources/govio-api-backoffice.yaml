@@ -651,6 +651,62 @@ paths:
            default:
              $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
              
+     put:
+         tags:
+           - template
+         summary: Update the template placeholders.
+         description: Updates the whole template placeholder list.
+         operationId: updateTemplatePlaceholders
+         requestBody:
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/GovioTemplatePlaceholderUpdateList'
+               example:
+                    items:
+                       - mandatory: false
+                         position: 0
+                         placeholder_id: 1
+                       - mandatory: false
+                         position: 1
+                         placeholder_id: 10
+                       - mandatory: true
+                         position: 4
+                         placeholder_id: 2                               
+           required: true
+         responses:
+           '201':
+             description: Successful operation.
+             content:
+               application/json:
+                 schema:
+                   $ref: '#/components/schemas/GovioListTemplatePlaceholder'
+                 example:
+                    items:
+                       - mandatory: false
+                         position: 0
+                         placeholder_id: 1
+                       - mandatory: false
+                         position: 1
+                         placeholder_id: 10
+                       - mandatory: true
+                         position: 4
+                         placeholder_id: 2                         
+           '400':
+             $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
+           '401':
+             $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+           '403':
+             $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+           '404':
+             $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'             
+           '429':
+             $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+           '503':
+             $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+           default:
+             $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'             
+             
      get:
          parameters:
           - $ref: "#/components/parameters/embeds_template_placeholder"
@@ -1493,6 +1549,8 @@ components:
           - type: object
             additionalProperties: false            
             properties:
+                placeholder_id:
+                   $ref: "#/components/schemas/GovioPlaceholderId"                      
                 _links:
                    type: object
                    properties:
@@ -1521,7 +1579,31 @@ components:
              maxItems: 2147483647
              items:
                 $ref: "#/components/schemas/GovioTemplatePlaceholder"
-                           
+                
+                
+    GovioTemplatePlaceholderUpdateItem:
+       allOf:
+          - $ref: "#/components/schemas/GovioNewTemplatePlaceholder"
+          - type: object
+            additionalProperties: false
+            required:
+               - placeholder_id
+            properties:
+               placeholder_id:
+                  $ref: "#/components/schemas/GovioPlaceholderId"                          
+                
+                
+    GovioTemplatePlaceholderUpdateList:
+       type: object
+       additionalProperties: false
+       properties:
+          items:
+             type: array
+             minItems: 0
+             maxItems: 2147483647
+             items:
+                $ref: "#/components/schemas/GovioTemplatePlaceholderUpdateItem"                
+                                           
     GovioFileId:
       type: integer
       format: int64
