@@ -1,9 +1,14 @@
 package it.govhub.govio.api.web;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,14 +47,18 @@ import it.govhub.govio.api.beans.GovioPlaceholderList;
 import it.govhub.govio.api.beans.GovioTemplate;
 import it.govhub.govio.api.beans.GovioTemplateList;
 import it.govhub.govio.api.beans.GovioTemplatePlaceholder;
+import it.govhub.govio.api.beans.GovioTemplatePlaceholderUpdateItem;
+import it.govhub.govio.api.beans.GovioTemplatePlaceholderUpdateList;
 import it.govhub.govio.api.entity.GovioPlaceholderEntity;
 import it.govhub.govio.api.entity.GovioPlaceholderEntity_;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity_;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity_;
+import it.govhub.govio.api.entity.GovioTemplatePlaceholderKey;
 import it.govhub.govio.api.messages.PlaceholderMessages;
 import it.govhub.govio.api.messages.TemplateMessages;
+import it.govhub.govio.api.repository.PlaceholderFilters;
 import it.govhub.govio.api.repository.PlaceholderRepository;
 import it.govhub.govio.api.repository.TemplateFilters;
 import it.govhub.govio.api.repository.TemplatePlaceholderFilters;
@@ -182,10 +191,16 @@ public class TemplateController implements TemplateApi {
 
 
 	@Override
-	public ResponseEntity<GovioPlaceholderList> listPlaceholders(Integer limit, Long offset) {
+	public ResponseEntity<GovioPlaceholderList> listPlaceholders(Integer limit, Long offset, String q) {
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(Direction.DESC, GovioPlaceholderEntity_.NAME));
 		
-		Page<GovioPlaceholderEntity> placeholders = this.placeholderRepo.findAll(pageRequest.pageable);
+		Specification<GovioPlaceholderEntity> spec = PlaceholderFilters.empty();
+		if (!StringUtils.isBlank(q)) {
+			spec = PlaceholderFilters.likeDescription(q).	or(PlaceholderFilters.likeName(q));
+					
+		}
+		
+		Page<GovioPlaceholderEntity> placeholders = this.placeholderRepo.findAll(spec, pageRequest.pageable);
 		
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
@@ -215,9 +230,10 @@ public class TemplateController implements TemplateApi {
 		
 		var templatePlaceholder = new GovioTemplatePlaceholderEntity();
 		
+		var id = new GovioTemplatePlaceholderKey(placeholder.getId(), template.getId());
+		
+		templatePlaceholder.setId(id);
 		BeanUtils.copyProperties(newTemplatePlaceholder, templatePlaceholder);
-		templatePlaceholder.setGovioTemplate(template);
-		templatePlaceholder.setGovioPlaceholder(placeholder);
 		
 		templatePlaceholder = this.templatePlaceholderRepo.save(templatePlaceholder);
 		
@@ -225,6 +241,47 @@ public class TemplateController implements TemplateApi {
 				status(HttpStatus.CREATED).
 				body(this.templatePlaceholderAssembler.toModel(templatePlaceholder));
 	}
+	
+	
+	@Transactional
+	@Override
+	public ResponseEntity<GovioListTemplatePlaceholder> updateTemplatePlaceholders(Long id, GovioTemplatePlaceholderUpdateList govioTemplatePlaceholderUpdateList) {
+		
+		var template = this.templateRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(id)));
+		
+		// Validazione semantica, verifichiamo che i placeholder esistano.
+		Set<Long> requestedIds = govioTemplatePlaceholderUpdateList.getItems()
+				.stream()
+				.map( GovioTemplatePlaceholderUpdateItem::getPlaceholderId)
+				.collect(Collectors.toSet());
+		
+		List<GovioPlaceholderEntity> placeholdersFound = this.placeholderRepo.findAll(PlaceholderFilters.byIds(requestedIds));
+		Set<Long> foundIds = placeholdersFound.stream().map(GovioPlaceholderEntity::getId).collect(Collectors.toSet());
+		requestedIds.removeAll(foundIds);
+		
+		// TODO usare la placeholderMessages per costruire il messaggio di errore
+		if (!requestedIds.isEmpty()) {
+			throw new SemanticValidationException("Placeholders with IDs: " + requestedIds + " not Found");
+		}
+
+		template.getGovioTemplatePlaceholders().clear();
+
+		for(GovioTemplatePlaceholderUpdateItem item : govioTemplatePlaceholderUpdateList.getItems()) {
+	
+			var templatePlaceholder = new GovioTemplatePlaceholderEntity();
+			templatePlaceholder.setId(new GovioTemplatePlaceholderKey(item.getPlaceholderId(), template.getId()));
+			BeanUtils.copyProperties(item, templatePlaceholder);
+			
+			template.getGovioTemplatePlaceholders().add(templatePlaceholder);
+		}
+		
+		template = this.templateRepo.save(template);
+		
+		return this.listTemplatePlaceholders(id, null);
+		
+	}
+	
 
 
 	@Override
@@ -302,8 +359,8 @@ public class TemplateController implements TemplateApi {
 		
 		return ResponseEntity.ok(this.templateAssembler.toModel(newTemplate));
 	}
-
-
+	
+	
 	@Transactional
 	@Override
 	public ResponseEntity<Void> removeTemplatePlaceholder(Long templateId, Long placeholderId) {
@@ -317,6 +374,7 @@ public class TemplateController implements TemplateApi {
 		}
 		
 		template.getGovioTemplatePlaceholders().remove(placeholder);
+		
 		this.templateRepo.save(template);
 		
 		return ResponseEntity.status(HttpStatus.OK).build();
@@ -379,7 +437,6 @@ public class TemplateController implements TemplateApi {
 		
 		return ResponseEntity.ok(this.placeholderAssembler.toModel(newPlaceholder));
 	}
-	
-	
+
 
 }

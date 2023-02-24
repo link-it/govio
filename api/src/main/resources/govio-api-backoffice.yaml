@@ -263,6 +263,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FileStatistics'
+              example:
+              - status: acquired
+                count: 23
+              - status: scheduled
+                count: 15
+              - status: denied
+                count: 100
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -611,7 +618,7 @@ paths:
           - $ref: "#/components/parameters/placeholder_id_query"
          tags:
            - template
-         summary: Create a new template placeholder.
+         summary: Assign a placeholder to a  template.
          description: Associate a placeholder to a template.
          operationId: assignPlaceholder
          requestBody:
@@ -643,6 +650,62 @@ paths:
              $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
            default:
              $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
+             
+     put:
+         tags:
+           - template
+         summary: Update the template placeholders.
+         description: Updates the whole template placeholder list.
+         operationId: updateTemplatePlaceholders
+         requestBody:
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/GovioTemplatePlaceholderUpdateList'
+               example:
+                    items:
+                       - mandatory: false
+                         position: 0
+                         placeholder_id: 1
+                       - mandatory: false
+                         position: 1
+                         placeholder_id: 10
+                       - mandatory: true
+                         position: 4
+                         placeholder_id: 2                               
+           required: true
+         responses:
+           '201':
+             description: Successful operation.
+             content:
+               application/json:
+                 schema:
+                   $ref: '#/components/schemas/GovioListTemplatePlaceholder'
+                 example:
+                    items:
+                       - mandatory: false
+                         position: 0
+                         placeholder_id: 1
+                       - mandatory: false
+                         position: 1
+                         placeholder_id: 10
+                       - mandatory: true
+                         position: 4
+                         placeholder_id: 2                         
+           '400':
+             $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
+           '401':
+             $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+           '403':
+             $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+           '404':
+             $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'             
+           '429':
+             $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+           '503':
+             $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+           default:
+             $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'             
              
      get:
          parameters:
@@ -744,6 +807,7 @@ paths:
          parameters:
              - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
              - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+             - $ref: 'govhub-api-commons.yaml#/components/parameters/q_query'
          tags:
            - template
          summary: List the placeholders.
@@ -1485,6 +1549,8 @@ components:
           - type: object
             additionalProperties: false            
             properties:
+                placeholder_id:
+                   $ref: "#/components/schemas/GovioPlaceholderId"                      
                 _links:
                    type: object
                    properties:
@@ -1513,7 +1579,31 @@ components:
              maxItems: 2147483647
              items:
                 $ref: "#/components/schemas/GovioTemplatePlaceholder"
-                           
+                
+                
+    GovioTemplatePlaceholderUpdateItem:
+       allOf:
+          - $ref: "#/components/schemas/GovioNewTemplatePlaceholder"
+          - type: object
+            additionalProperties: false
+            required:
+               - placeholder_id
+            properties:
+               placeholder_id:
+                  $ref: "#/components/schemas/GovioPlaceholderId"                          
+                
+                
+    GovioTemplatePlaceholderUpdateList:
+       type: object
+       additionalProperties: false
+       properties:
+          items:
+             type: array
+             minItems: 0
+             maxItems: 2147483647
+             items:
+                $ref: "#/components/schemas/GovioTemplatePlaceholderUpdateItem"                
+                                           
     GovioFileId:
       type: integer
       format: int64
@@ -1577,6 +1667,7 @@ components:
         - error
         - any
       default: any
+      example: aqcuired
       
     GovioPlaceholderType:
        type: string
@@ -1736,8 +1827,24 @@ components:
         type: object
         additionalProperties: false
         properties:
-           scheduled:
+           statuses:
+              type: array
+              minItems: 0
+              maxItems: 99999999999
+              items:
+                 $ref: "#/components/schemas/FileStatisticsItem"
+           
+
+                       
+    FileStatisticsItem:
+        type: object
+        additionalProperties: false
+        properties:
+           status:
+              $ref: "#/components/schemas/GovioMessageStatus"
+           count:
               type: integer
+              format: int64                           
         
     MessageOrdering:
          type: string
