@@ -15,6 +15,7 @@ export class ItemRowComponent implements OnInit, AfterViewInit {
 
   @Input('data') _data: any = null;
   @Input('config') _config: any = null;
+  @Input() configRow: string = 'itemRow';
   @Input() actionDisabled: boolean = false;
   @Input() notify: boolean = false;
   @Input() hoverFeedback: boolean = true;
@@ -32,7 +33,7 @@ export class ItemRowComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this._itemRowConfig = this._config.itemRow || this._config.simpleItem;
+    this._itemRowConfig = this._config[this.configRow] || this._config.simpleItem;
   }
 
   ngAfterViewInit(): void {

@@ -465,3 +465,45 @@ mat-list-item.mat-list-item:hover {
 .border-bottom {
   border-bottom: 1px solid #f0f0f0 !important;
 }
+
+.item-row-small {
+  .main-content {
+    padding: 0 !important;
+  }
+}
+
+// ng-select
+
+.ng-select.select-custom {
+  border: 0px;
+  min-height: 0px;
+  border-radius: 4px;
+}
+
+.ng-select.select-custom .ng-select-container  {            
+  min-height: 0px;
+  border-radius: 4px;
+  height: 25px;
+
+  .ng-value-container .ng-input>input {
+    font-size: 0.8rem;
+  }
+  
+  .ng-arrow-wrapper {
+    width: 25px;
+    padding-top: 4px;
+  }
+
+  .ng-clear-wrapper {
+    width: 25px;
+    padding-top: 4px;
+  }
+}
+
+.ng-select.ng-select-single .ng-select-container .ng-value-container .ng-input {
+  top: 1px;
+}
+
+.modal-backdrop.show {
+  opacity: 0.40 !important;
+}

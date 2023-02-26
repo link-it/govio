@@ -10,7 +10,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        data: { breadcrumb: 'Transactions' },
+        data: { breadcrumb: 'Messages' },
         component: FileMessagesComponent
       },
       {
