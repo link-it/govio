@@ -81,88 +81,74 @@
                 <div class="text-break" markdown>{{ 'APP.PLACEHOLDERS.TITLE.GeneralInformations_sub' | translate }}</div>
               </div>
               <div class="col-lg-8">
-                <!-- <div class="row">
-                  <div class="col-lg-6"> -->
-                    <div class="form-group name">
-                      <label class="label-bold" for="name">{{ 'APP.LABEL.Name' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('name')" type="text" name="nameg" id="name" formControlName="name">
-                        <p *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['name'].errors && f['name'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="name" context="PLACEHOLDER"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="name" [value]="placeholder.name || '-'">
-                      </div>
-                    </div>
-                  <!-- </div>
-                  <div class="col-lg-6"> -->
-                    <div class="form-group description">
-                      <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('description')" type="text" name="description" id="description" formControlName="description">
-                        <p *ngIf="f['description'].invalid && (f['description'].dirty || f['description'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['description'].errors && f['description'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="description" context="PLACEHOLDER"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="description" [value]="placeholder.description || '-'">
-                      </div>
-                    </div>
-                  <!-- </div>
+                <div class="form-group name">
+                  <label class="label-bold" for="name">{{ 'APP.LABEL.Name' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('name')" type="text" name="nameg" id="name" formControlName="name">
+                    <p *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['name'].errors && f['name'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                    </p>
+                    <ui-input-help field="name" context="PLACEHOLDER"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input type="text" readonly class="form-control-plaintext" id="name" [value]="placeholder.name || '-'">
+                  </div>
                 </div>
-                <div class="row">
-                  <div class="col-lg-6"> -->
-                    <div class="form-group example">
-                      <label class="label-bold" for="example">{{ 'APP.LABEL.Example' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <textarea aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('example')" name="example" id="example" formControlName="example" rows="5"></textarea>
-                        <p *ngIf="f['example'].invalid && (f['example'].dirty || f['example'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['example'].errors && f['example'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="example" context="PLACEHOLDER"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="example" [value]="placeholder.example || '-'">
-                      </div>
-                    </div>
-                  <!-- </div>
-                  <div class="col-lg-6"> -->
-                    <div class="form-group type">
-                      <label class="label-bold" for="type">{{ 'APP.LABEL.Type' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <select class="form-select form-control-sm" id="type" formControlName="type" [class.gl-field-error-outline]="_hasControlError('type')">
-                          <option *ngFor="let pt of placeholderTypes" [value]="pt.value">{{ pt.label }}</option>
-                        </select>  
-                        <!-- <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('type')" type="text" name="type" id="type" formControlName="type"> -->
-                        <p *ngIf="f['type'].invalid && (f['type'].dirty || f['type'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['type'].errors && f['type'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="type" context="PLACEHOLDER"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="type" [value]="placeholder.type">
-                      </div>
-                    </div>
-                  <!-- </div>
-                  <div class="col-lg-6"> -->
-                    <div class="form-group pattern">
-                      <label class="label-bold" for="pattern">{{ 'APP.LABEL.Pattern' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('pattern')" type="text" name="pattern" id="pattern" formControlName="pattern">
-                        <p *ngIf="f['pattern'].invalid && (f['pattern'].dirty || f['pattern'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['pattern'].errors && f['pattern'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="pattern" context="PLACEHOLDER"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input pattern="text" readonly class="form-control-plaintext" id="pattern" [value]="placeholder.pattern || '-'">
-                      </div>
-                    </div>
-                  <!-- </div>
-                </div> -->
+                <div class="form-group description">
+                  <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('description')" type="text" name="description" id="description" formControlName="description">
+                    <p *ngIf="f['description'].invalid && (f['description'].dirty || f['description'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['description'].errors && f['description'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                    </p>
+                    <ui-input-help field="description" context="PLACEHOLDER"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input type="text" readonly class="form-control-plaintext" id="description" [value]="placeholder.description || '-'">
+                  </div>
+                </div>
+                <div class="form-group example">
+                  <label class="label-bold" for="example">{{ 'APP.LABEL.Example' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <textarea aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('example')" name="example" id="example" formControlName="example" rows="5"></textarea>
+                    <p *ngIf="f['example'].invalid && (f['example'].dirty || f['example'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['example'].errors && f['example'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                    </p>
+                    <ui-input-help field="example" context="PLACEHOLDER"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input type="text" readonly class="form-control-plaintext" id="example" [value]="placeholder.example || '-'">
+                  </div>
+                </div>
+                <div class="form-group type">
+                  <label class="label-bold" for="type">{{ 'APP.LABEL.Type' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <select class="form-select form-control-sm" id="type" formControlName="type" [class.gl-field-error-outline]="_hasControlError('type')">
+                      <option *ngFor="let pt of placeholderTypes" [value]="pt.value">{{ pt.label }}</option>
+                    </select>  
+                    <!-- <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('type')" type="text" name="type" id="type" formControlName="type"> -->
+                    <p *ngIf="f['type'].invalid && (f['type'].dirty || f['type'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['type'].errors && f['type'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                    </p>
+                    <ui-input-help field="type" context="PLACEHOLDER"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input type="text" readonly class="form-control-plaintext" id="type" [value]="placeholder.type">
+                  </div>
+                </div>
+                <div class="form-group pattern" *ngIf="f['type'] && (f['type'].value == 'STRING')">
+                  <label class="label-bold" for="pattern">{{ 'APP.LABEL.Pattern' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('pattern')" type="text" name="pattern" id="pattern" formControlName="pattern">
+                    <p *ngIf="f['pattern'].invalid && (f['pattern'].dirty || f['pattern'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['pattern'].errors && f['pattern'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                    </p>
+                    <ui-input-help field="pattern" context="PLACEHOLDER"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input pattern="text" readonly class="form-control-plaintext" id="pattern" [value]="placeholder.pattern || '-'">
+                  </div>
+                </div>
               </div>
             </div>
 

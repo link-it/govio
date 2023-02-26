@@ -9,11 +9,16 @@
       <ui-item-row class="item-row-small"
         [data]="_dataSrc"
         [config]="config"
+        [configRow]="'itemRowAlt'"
         [hasLink]="false">
       </ui-item-row>
+      <div class="d-block d-md-none">
+        <span class="badge rounded-pill text-bg-dark" *ngIf="data.mandatory">{{ 'APP.LABEL.Mandatory' | translate }}</span>
+      </div>
     </div>
-    <div class="text-end position-relative">
-      <i class="bi-asterisk text-primary smaller" *ngIf="data.mandatory" [tooltip]="'APP.TOOLTIP.Mandatory' | translate" placement="left"></i>
+    <div class="text-start position-relative pe-5 d-none d-md-block">
+      <!-- <i class="bi-exclamation-circle-fill text-primary smaller-" *ngIf="data.mandatory" [tooltip]="'APP.TOOLTIP.Mandatory' | translate" placement="left"></i> -->
+      <span class="badge rounded-pill text-bg-dark" *ngIf="data.mandatory">{{ 'APP.LABEL.Mandatory' | translate }}</span>
     </div>
     <div class="ms-3 text-end" *ngIf="editable">
       <div class="btn-group">
@@ -67,7 +72,7 @@
             <label class="label-bold visually-hidden-" for="placeholderId">&nbsp;</label>
             <div class="gl-form-checkbox custom-control custom-checkbox mandatory">
               <label class="label-bold visually-hidden-" for="mandatory">&nbsp;</label>
-              <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="mandatory" id="mandatory" formControlName="mandatory">
+              <input class="custom-control-input" type="checkbox" name="mandatory" id="mandatory" formControlName="mandatory">
               <label class="custom-control-label" for="mandatory">
                 <span>{{ 'APP.LABEL.Mandatory' | translate }}</span>
               </label>
@@ -128,7 +133,7 @@
               <span *ngIf="f['type'].errors && f['type'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
             </p>
           </div>
-          <div class="form-group pattern">
+          <div class="form-group pattern" *ngIf="f['type'] && (f['type'].value == 'STRING')">
             <label class="label-bold" for="pattern">{{ 'APP.LABEL.Pattern' | translate }}</label>
             <input aria-required="true" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('pattern')" type="text" name="pattern" id="pattern" formControlName="pattern">
             <p *ngIf="f['pattern'].invalid && (f['pattern'].dirty || f['pattern'].touched)" class="form-text text-danger">
@@ -137,7 +142,7 @@
           </div>
           <div class="form-group mandatory mb-0">
             <div class="gl-form-checkbox custom-control custom-checkbox mandatory">
-              <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="mandatory" id="mandatory" formControlName="mandatory">
+              <input class="custom-control-input" type="checkbox" name="mandatory" id="mandatory" formControlName="mandatory">
               <label class="custom-control-label" for="mandatory">
                 <span>{{ 'APP.LABEL.Mandatory' | translate }}</span>
               </label>

@@ -72,6 +72,15 @@ export class OpenAPIService {
     return this.http.patch<any>(_url, body, options);
   }
 
+  putElementRelated(name: string, id: any, related: string, body: Object, options?: IRequestOptions) {
+    if(!options) options = {};
+    options.headers = new HttpHeaders();
+    // options.headers = options.headers.set('Content-type', 'application/json');
+
+    const _url = `${this.proxyPath}${name}/${id}/${related}`;
+    return this.http.put<any>(_url, body, options);
+  }
+
   deleteElement(name: string, id: any, options?: IRequestOptions) {
     if(!options) options = {};
     

@@ -3,7 +3,7 @@ export class PlaceholderItem {
   templateId: number | null = null;
   placeholderId: number | null = null;
   position: number | null = null;
-  mandatory: boolean = false;
+  mandatory: boolean = true;
 
   constructor(_data?: any) {
     if (_data) {

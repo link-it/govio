@@ -46,6 +46,8 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
 
   _modalConfirmRef!: BsModalRef;
 
+  _flexList: boolean = true;
+
   constructor(
     private translate: TranslateService,
     private modalService: BsModalService,
@@ -121,6 +123,7 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
 
   _onNew() {
     this._isNew = true;
+    this._createPlaceholder = false;
   }
 
   _onSave(event: any) {
@@ -131,7 +134,7 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
   }
 
   _onDelete(event: any) {
-    const _pId = event.item._embedded.placeholder.id;
+    const _pId = event.item?._embedded?.placeholder.id || event._embedded?.placeholder.id;
 
     const initialState = {
       title: this.translate.instant('APP.TITLE.Attention'),
@@ -175,24 +178,47 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
   _onEditPlaceholders(event: any) {
     this._editPlaceholders = !this._editPlaceholders;
     if (!this._editPlaceholders && this._modifiedPlaceholders) {
-      this._modifiedPlaceholders = false;
       this.templatePlaceholders = JSON.parse(JSON.stringify(this._origTemplatePlaceholders));
+    }
+    if (!this._editPlaceholders) {
+      this._modifiedPlaceholders = false;
+      this._isEdit = false;
+      this._isNew = false;    
+      this._createPlaceholder = false;
     }
   }
 
   _onSavePlaceholders(event: any) {
-    this._editPlaceholders = false;
-    this.refresh();
+    const newSorting: any = { items: [] };
+    this.templatePlaceholders.forEach((item: any, index: number) => {
+      newSorting.items.push({
+        placeholder_id: item.placeholder_id,
+        position: index + 1,
+        mandatory: item.mandatory
+      });
+    });
+    this.apiService.putElementRelated('templates', this.id, 'placeholders', newSorting).subscribe(
+      (response: any) => {
+        this.refresh();
+        this._editPlaceholders = false;
+      },
+      (error: any) => {
+        console.log('sorting error', error);
+      }
+    );
   }
 
   drop(event: any) {
-    const _prevItem = this.templatePlaceholders[event.previousIndex];
-    const _currentItem = this.templatePlaceholders[event.currentIndex];
+    // const _prevItem = this.templatePlaceholders[event.previousIndex];
+    // const _currentItem = this.templatePlaceholders[event.currentIndex];
     moveItemInArray(this.templatePlaceholders, event.previousIndex, event.currentIndex);
-    console.log('drop', this.templatePlaceholders);
     if (event.previousIndex !== event.currentIndex) {
       this._modifiedPlaceholders = true;
-    }
+      this.templatePlaceholders.map((item: any, index: number) => {
+        item.position = index + 1;
+        return item;
+      });
+      }
   }
 
   _onCreatePlcaholder() {

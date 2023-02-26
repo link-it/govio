@@ -16,6 +16,22 @@
     "secondaryMetadata": []
   },
 
+  "itemRowAlt": {
+    "primaryText": [
+      { "field": "description", "type": "text" }
+    ],
+    "secondaryText": [],
+    "metadata": {
+      "text": [
+        { "field": "name", "type": "text", "class": "" }
+      ],
+      "label": [
+        { "field": "type", "type": "label", "options": "type" }
+      ]
+    },
+    "secondaryMetadata": []
+  },
+
   "details": [
     { "label": "APP.LABEL.Name", "field": "name", "type": "text" },
     { "label": "APP.LABEL.Description", "field": "description", "type": "text" },

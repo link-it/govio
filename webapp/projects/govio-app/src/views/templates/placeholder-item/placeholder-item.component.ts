@@ -63,7 +63,7 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
   placeholdersInput$ = new Subject<string>();
   placeholdersLoading: boolean = false;
   selectedPlaceholder: any;
-  minLengthTerm = 3;
+  minLengthTerm = 1;
 
   placeholderTypes: any[] = [
     { label: 'STRING', value: 'STRING' },
@@ -90,7 +90,7 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
       templateId: this.templateId,
       placeholderId: this.data?._embedded ? this.data._embedded.placeholder.id : null,
       position: this.data ? this.data.position : this.position,
-      mandatory: this.data ? this.data.mandatory : false
+      mandatory: this.data ? this.data.mandatory : true
     };
     this._initForm(this._formData);
 
@@ -135,9 +135,13 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.createPlaceholder && changes.createPlaceholder.currentValue) {
-      this._newPlaceholder();
-    }
+    if (changes.createPlaceholder) {
+      if (changes.createPlaceholder.currentValue) {
+        this._newPlaceholder();
+      } else {
+        this._isNewPlaceholder = false;
+      }
+      }
   }
 
   ngOnDestroy() {
@@ -287,8 +291,8 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
             break;
-          case 'mandadory':
-            value = data[key] ? data[key] : false;
+          case 'mandatory':
+            value = data[key] ? data[key] : true;
             _group[key] = new UntypedFormControl(value, []);
             break;
           default:
