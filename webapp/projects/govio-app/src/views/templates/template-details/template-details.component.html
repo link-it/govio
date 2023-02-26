@@ -8,13 +8,13 @@
     <div class="d-flex flex-grow-1">&nbsp;</div>
     <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'edit'"> -->
       <div class="nav-controls">
-        <div class="position-relative" *ngIf="!_isEdit && !_spin">
-          <button aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-icon" [tooltip]="'APP.TOOLTIP.EditTemplate' | translate" (click)="_editTemplate()">
+        <div class="position-relative d-inline-block" *ngIf="!_isEdit && !_spin">
+          <button aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-icon" [tooltip]="'APP.TOOLTIP.EditTemplate' | translate" (click)="_editTemplate()" placement="left">
             <i class="bi bi-pencil"></i>
           </button>
         </div>
         <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'delete'"> -->
-          <div role="group" class="btn-group- ms-1" *ngIf="!_isEdit && !_spin">
+          <div role="group" class="btn-group- ms-1 d-inline-block" *ngIf="!_isEdit && !_spin">
             <div class="dropdown b-dropdown gl-new-dropdown btn-group" id="actions">
               <button aria-haspopup="true" aria-expanded="false" type="button" class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret" data-bs-toggle="dropdown" data-bs-display="static" id="other_actions">
                 <i class="bi bi-three-dots-vertical"></i>
@@ -81,56 +81,48 @@
                 <div class="text-break" markdown>{{ 'APP.TEMPLATES.TITLE.GeneralInformations_sub' | translate }}</div>
               </div>
               <div class="col-lg-8">
-                <!-- <div class="row">
-                  <div class="col-lg-6"> -->
-                    <div class="form-group description">
-                      <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('description')" type="text" name="description" id="description" formControlName="description">
-                        <p *ngIf="f['description'].invalid && (f['description'].dirty || f['description'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['description'].errors && f['description'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                          <span *ngIf="f['description'].errors && f['description'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Templatedescription' | translate }}</span>
-                        </p>
-                        <ui-input-help field="description" context="TEMPLATE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="description" [value]="template.description">
-                      </div>
-                    </div>
-                  <!-- </div>
-                  <div class="col-lg-6"> -->
-                    <div class="form-group subject">
-                      <label class="label-bold" for="subject">{{ 'APP.LABEL.Subject' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('subject')" type="text" name="subject" id="subject" formControlName="subject">
-                        <p *ngIf="f['subject'].invalid && (f['subject'].dirty || f['subject'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['subject'].errors && f['subject'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="subject" context="TEMPLATE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <input type="text" readonly class="form-control-plaintext" id="subject" [value]="template.subject">
-                      </div>
-                    </div>
-                  <!-- </div>
-                  <div class="col-lg-6"> -->
-                    <div class="form-group message_body">
-                      <label class="label-bold" for="message_body">{{ 'APP.LABEL.MessageBody' | translate }}</label>
-                      <div class="" *ngIf="_isEdit">
-                        <textarea aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('message_body')" type="text" name="message_body" id="message_body" formControlName="message_body" rows="9"></textarea>
-                        <p *ngIf="f['message_body'].invalid && (f['message_body'].dirty || f['message_body'].touched)" class="form-text text-danger">
-                          <span *ngIf="f['message_body'].errors && f['message_body'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                        </p>
-                        <ui-input-help field="message_body" context="TEMPLATE"></ui-input-help>
-                      </div>
-                      <div class="" *ngIf="!_isEdit">
-                        <textarea type="text" readonly class="form-control-plaintext" id="message_body" [value]="template.message_body" rows="9"></textarea>
-                      </div>
-                    </div>
-                  <!-- </div>
-                </div> -->
-                <div class="row mt-5">
-                  <div class="col-lg-6">
+                <div class="form-group description">
+                  <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('description')" type="text" name="description" id="description" formControlName="description">
+                    <p *ngIf="f['description'].invalid && (f['description'].dirty || f['description'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['description'].errors && f['description'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                      <span *ngIf="f['description'].errors && f['description'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Templatedescription' | translate }}</span>
+                    </p>
+                    <ui-input-help field="description" context="TEMPLATE"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input type="text" readonly class="form-control-plaintext" id="description" [value]="template.description">
+                  </div>
+                </div>
+                <div class="form-group subject">
+                  <label class="label-bold" for="subject">{{ 'APP.LABEL.Subject' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('subject')" type="text" name="subject" id="subject" formControlName="subject">
+                    <p *ngIf="f['subject'].invalid && (f['subject'].dirty || f['subject'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['subject'].errors && f['subject'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                    </p>
+                    <ui-input-help field="subject" context="TEMPLATE"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input type="text" readonly class="form-control-plaintext" id="subject" [value]="template.subject">
+                  </div>
+                </div>
+                <div class="form-group message_body">
+                  <label class="label-bold" for="message_body">{{ 'APP.LABEL.MessageBody' | translate }}</label>
+                  <div class="" *ngIf="_isEdit">
+                    <textarea aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('message_body')" type="text" name="message_body" id="message_body" formControlName="message_body" rows="9"></textarea>
+                    <p *ngIf="f['message_body'].invalid && (f['message_body'].dirty || f['message_body'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['message_body'].errors && f['message_body'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                    </p>
+                    <ui-input-help field="message_body" context="TEMPLATE"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <textarea type="text" readonly class="form-control-plaintext" id="message_body" [value]="template.message_body" rows="9"></textarea>
+                  </div>
+                </div>
+                <div class="row mt-5 has_payment has_due_date">
+                  <div class="col-md-6">
                     <div class="" *ngIf="_isEdit">
                       <div class="gl-form-checkbox custom-control custom-checkbox has_payment">
                         <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" formControlName="has_payment">
@@ -148,7 +140,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-lg-6">
+                  <div class="col-md-6">
                     <div class="" *ngIf="_isEdit">
                       <div class="gl-form-checkbox custom-control custom-checkbox has_due_date">
                         <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_due_date" id="has_due_date" formControlName="has_due_date">

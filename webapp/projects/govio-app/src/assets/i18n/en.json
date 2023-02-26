@@ -314,6 +314,7 @@
 			"ExportCSV": "Export file CSV",
 			"ExportPDF": "Export file PDF",
 			"Mandatory": "Mandatory",
+			"Position": "Position",
 			"Preview": "Preview",
 			"Remove": "Remove",
 			"ScheduledExpeditionDate": "Scheduled expedition date"

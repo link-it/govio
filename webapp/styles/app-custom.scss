@@ -503,3 +503,7 @@ mat-list-item.mat-list-item:hover {
 .ng-select.ng-select-single .ng-select-container .ng-value-container .ng-input {
   top: 1px;
 }
+
+.modal-backdrop.show {
+  opacity: 0.40 !important;
+}

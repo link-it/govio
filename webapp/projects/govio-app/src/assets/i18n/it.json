@@ -314,6 +314,7 @@
 			"ExportCSV": "Esporta documento CSV",
 			"ExportPDF": "Esporta documento PDF",
 			"Mandatory": "Obbligatorio",
+			"Position": "Posizione",
 			"Preview": "Anteprima",
 			"Remove": "Rimuovi",
 			"ScheduledExpeditionDate": "Data di spedizione pianificata"

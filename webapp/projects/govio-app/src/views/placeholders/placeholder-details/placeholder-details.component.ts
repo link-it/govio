@@ -151,7 +151,6 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
 
   _loadAll() {
     this._loadPlaceholder();
-    // this._loadPlaceholderProviders();
   }
 
   _hasControlError(name: string) {
@@ -284,6 +283,7 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
             this._title = Tools.simpleItemFormatter(this.config.detailsTitle, this.placeholder);
           }
           // this.__initInformazioni();
+          this._initForm({ ...this._placeholder });
         },
         error: (error: any) => {
           Tools.OnError(error);
