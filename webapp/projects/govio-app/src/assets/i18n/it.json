@@ -2,6 +2,8 @@
 	"APP": {
 		"BUTTON": {
 			"AddFile": "Aggiungi tracciato",
+			"AddPlaceholder": "Aggiungi segnaposto",
+			"AddTemplate": "Aggiungi modello",
 			"AlertAction": "Chiudi",
 			"Cancel": "Annulla",
 			"Clear": "Pulisci",
@@ -11,6 +13,7 @@
 			"CollapseSidebar": "Comprimi la barra laterale",
 			"Confirm": "Conferma",
 			"Continue": "Continua",
+			"CreateNewPlaceholder": "Crea un nuovo segnaposto",
 			"Download": "Scarica",
 			"Entra": "Entra",
 			"Expand": "Espandi",
@@ -20,6 +23,7 @@
 			"Remove": "Rimuovi",
 			"Report": "Resoconto",
 			"Save": "Salva",
+			"SaveNewPlaceholder": "Salva nuovo segnaposto",
 			"Search": "Cerca",
 			"UploadFile": "Carica tracciato"
 		},
@@ -83,21 +87,29 @@
 			"DueDate": "Data di scadenza",
 			"Email": "E-mail",
 			"ErrorMessages": "Messaggi di errore",
+			"Example": "Esempio",
 			"File": "Tracciato",
 			"FileName": "Nome del file",
 			"Filename": "Nome del file",
 			"FullName": "Nome e cognome",
+			"HasDueDate": "Ha una data di scadenza",
+			"HasPayment": "Ha il pagamento",
 			"Id": "ID",
 			"Index": "Indice",
 			"LastUpdateDate": "Data ultimo aggiornamento",
 			"LastUpdateStatus": "Ultimo aggiornamento stato",
 			"LegalName": "Ragione sociale",
 			"Logo": "Logo",
+			"Mandatory": "Obbligatorio",
 			"Markdown": "Markdown",
 			"Message": "Messaggio",
+			"MessageBody": "Corpo del messaggio",
 			"Name": "Nome",
 			"Organization": "Nome ente",
 			"Password": "Password",
+			"Pattern": "Pattern",
+			"Placeholder": "Segnaposto",
+			"Position": "Posizione",
 			"Principal": "Nome utente",
 			"ScheduledExpeditionDate": "Data di spedizione pianificata",
 			"Service": "Servizio",
@@ -113,14 +125,19 @@
 			"All": ""
 		},
 		"MENU": {
+			"Configurations": "Configurazioni",
 			"Dashboard": "Cruscotto",
 			"DeleteFile": "Elimina tracciato...",
+			"DeletePlaceholder": "Elimina segnaposto...",
+			"DeleteTemplate": "Elimina modello...",
 			"ExportCSV": "Esporta CSV",
 			"ExportPDF": "Esporta PDF",
 			"Files": "Tracciati",
 			"Home": "Home",
 			"Logout": "Logout",
-			"Messages": "Messaggi"
+			"Messages": "Messaggi",
+			"Placeholders": "Segnaposto",
+			"Templates": "Modelli"
 		},
 		"MESSAGE": {
 			"AreYouSure": "Sei sicuro di voler eliminare l'elemento selezionato?",
@@ -150,12 +167,16 @@
 			},
 			"NoData": "Spiacenti, le informazioni richieste non sono state trovate",
 			"NoDataHelp": "Controlla la tua connessione e riprova",
+			"NoItem": "Nessun elemento",
+			"NoPlaceholder": "Nessun segnaposto",
 			"NoResponse": "Nessuna risposta",
 			"NoResponseUnimplemented": "Nessuna risposta o ancora non implementato",
 			"NoResults": "Siamo spiacenti, il tuo filtro non ha prodotto risultati",
 			"NoResultsHelp": "Per ampliare la tua ricerca, cambia o rimuovi i filtri qui sopra",
+			"NotFoundItem": "Elemento non trovato",
 			"NotFoundText": "Testo non trovato",
 			"PageNumber": "Pagina {{page}} di {{total}}",
+			"PleaseEnterMin": "Inserisci {{lengthTerm}} o più caratteri",
 			"Sign_in_message": "Accedi con il tuo account",
 			"Unimplemented": "Funzionalità attualmente non disponibile",
 			"VALIDATION": {
@@ -195,6 +216,18 @@
 			"SelectOrganization": "Seleziona un'ente",
 			"SelectService": "Seleziona un servizio"
 		},
+		"PLACEHOLDERS": {
+			"FILTER": {
+				"All": "Tutti",
+				"Closed": "Chiusi",
+				"Found": "Trovati",
+				"Open": "Aperti"
+			},
+			"TITLE": {
+				"GeneralInformations": "Informazioni generali",
+				"GeneralInformations_sub": ""
+			}
+		},
 		"SEARCH": {
 			"ClearRecentSearches": "Cancella le ricerche recenti",
 			"NoRecentSearches": "Non hai ricerche recenti",
@@ -229,11 +262,27 @@
 			"Description": "Descrizione",
 			"Status": "Stato"
 		},
+		"TEMPLATES": {
+			"FILTER": {
+				"All": "Tutti",
+				"Closed": "Chiusi",
+				"Found": "Trovati",
+				"Open": "Aperti"
+			},
+			"TITLE": {
+				"GeneralInformations": "Informazioni generali",
+				"GeneralInformations_sub": "",
+				"Placeholders": "Segnaposto",
+				"Placeholders_sub": ""
+			}
+		},
 		"TITLE": {
 			"Attention": "Attenzione",
 			"Configurations": "Configurazioni",
 			"Dashboard": "Cruscotto",
 			"EditFiles": "Modifica tracciato",
+			"EditPlaceholder": "Modifica segnaposto",
+			"EditTemplate": "Modifica modello",
 			"File": "Tracciato",
 			"Files": "Tracciati",
 			"GeneralInformations": "Informazioni generali",
@@ -242,26 +291,38 @@
 			"Messages": "Messaggi",
 			"New": "Nuovo",
 			"NewFile": "Nuovo tracciato",
+			"NewPlaceholder": "Nuovo segnaposto",
+			"NewTemplate": "Nuovo modello",
 			"Organization": "Organizzazione",
+			"Placeholders": "Segnaposto",
 			"Service": "Servizio",
+			"Templates": "Modelli",
 			"Watermark": "Staging"
 		},
 		"TOOLTIP": {
 			"AcquiredMessages": "Messaggi acquisiti",
 			"Add": "Aggiungi",
+			"AddPlaceholder": "Aggiungi segnaposto",
 			"CancelEdit": "Annulla modifica",
 			"CancelNew": "Annulla inserimento",
 			"EditFile": "Modifica tracciato",
+			"EditPlaceholder": "Modifica segnaposto",
+			"EditPlaceholders": "Modifica i segnaposto",
+			"EditTemplate": "Modifica modello",
 			"ErrorMessages": "Messaggi di errore",
 			"Export": "Esporta",
 			"ExportCSV": "Esporta documento CSV",
 			"ExportPDF": "Esporta documento PDF",
+			"Mandatory": "Obbligatorio",
+			"Position": "Posizione",
 			"Preview": "Anteprima",
 			"Remove": "Rimuovi",
 			"ScheduledExpeditionDate": "Data di spedizione pianificata"
 		},
 		"TYPE": {
-			"MANUALE": "Manuale"
+			"DATE": "Data",
+			"MANUALE": "Manuale",
+			"STRING": "Stringa"
 		}
 	}
 }

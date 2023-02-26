@@ -27,5 +27,37 @@ export const navItemsMainMenu: INavData[] = [
     iconBs: 'send',
     permission: 'MESSAGES',
     attributes: { disabled: false }
+  },
+  {
+    divider: true,
+    label: 'APP.MENU.Empty'
+  },
+  {
+    title: true,
+    label: 'APP.MENU.Configurations',
+    path: 'placeholders',
+    url: '/placeholders',
+    iconBs: 'gear',
+    permission: 'SETTINGS',
+    children: [
+      {
+        title: true,
+        label: 'APP.MENU.Placeholders',
+        path: 'placeholders',
+        url: '/placeholders',
+        iconBs: 'tag',
+        permission: 'PLACEHOLDERS',
+        attributes: { disabled: false }
+      },
+      {
+        title: true,
+        label: 'APP.MENU.Templates',
+        path: 'templates',
+        url: '/templates',
+        iconBs: 'tag',
+        permission: 'TEMPLATES',
+        attributes: { disabled: false }
+      }
+    ]
   }
 ];
