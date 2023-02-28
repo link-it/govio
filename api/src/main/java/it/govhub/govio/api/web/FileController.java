@@ -7,7 +7,6 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
@@ -33,7 +32,6 @@ import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.FileOrdering;
-import it.govhub.govio.api.beans.FileStatistics;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
@@ -297,11 +295,5 @@ public class FileController implements FileApi {
     	return filename;
 	}
 
-
-	@Override
-	public ResponseEntity<FileStatistics> readFileStats(@Min(0) Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }
