@@ -86,9 +86,9 @@
       </div>
 
       <div class="row-content-block footer-block text-end mt-1- py-2">
-        <!-- <button aria-label="Create" class="gl-button btn btn-sm btn-default gl-mr-3" *ngIf="!data">
+        <button aria-label="Create" class="gl-button btn btn-sm btn-default gl-mr-3" (click)="_newPlaceholder()" *ngIf="!data">
           {{ 'APP.BUTTON.CreateNewPlaceholder' | translate }}
-        </button> -->
+        </button>
         <button aria-label="Save" type="submit" class="gl-button btn btn-sm btn-confirm gl-mr-2" [disabled]="_formGroup.invalid">
           {{ 'APP.BUTTON.Save' | translate }}
         </button>
@@ -156,6 +156,9 @@
       </div>
 
       <div class="row-content-block footer-block text-end mt-1 py-2">
+        <button aria-label="Assign" class="gl-button btn btn-sm btn-default gl-mr-3" (click)="_onEdit($event)" *ngIf="!data">
+          {{ 'APP.BUTTON.AssignPlaceholder' | translate }}
+        </button>
         <button aria-label="Save" type="submit" class="gl-button btn btn-sm btn-confirm gl-mr-2" [disabled]="_formGroupPlaceholder.invalid || _savingPlaceHolder">
           <span>{{ 'APP.BUTTON.SaveNewPlaceholder' | translate }}</span>
           <span class="spinner-border spinner-border-sm text-primary ms-3" *ngIf="_savingPlaceHolder"></span> 

@@ -3,8 +3,11 @@
   <span class="" *ngIf="!_spin"><i class="bi-arrow-clockwise text-white" (click)="refresh()"></i></span> 
   <div class="position-relative">
     <div role="group" class="gl-w-full btn-group-" *ngIf="templatePlaceholders?.length">
-      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-3" (click)="_onCreatePlcaholder()" *ngIf="_editPlaceholders" [disabled]="_createPlaceholder">
+      <!-- <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-3" (click)="_onCreatePlcaholder()" *ngIf="_editPlaceholders" [disabled]="_createPlaceholder">
         <span class="">{{ 'APP.BUTTON.CreateNewPlaceholder' | translate }}</span>
+      </button> -->
+      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-3" (click)="_onNew()" *ngIf="_editPlaceholders && !(_isNew || _createPlaceholder)" [disabled]="_createPlaceholder">
+        <span class="">{{ 'APP.BUTTON.AddPlaceholder' | translate }}</span>
       </button>
       <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onEditPlaceholders($event)" [tooltip]="(_editPlaceholders ? '' : 'APP.TOOLTIP.EditPlaceholders') | translate" placement="left">
         <span *ngIf="!_editPlaceholders"><i class="bi-pencil"></i></span>
@@ -30,7 +33,7 @@
       </div>
     </div>
   </div>
-  <div class="table-container" role="table" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListLockAxis="y" [cdkDropListDisabled]="!_editPlaceholders">
+  <div class="table-container" [class.disabled]="_isNew" role="table" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListLockAxis="y" [cdkDropListDisabled]="!_editPlaceholders || _isNew">
     <div class="flex-table align-items-center border-bottom" role="rowgroup" *ngFor="let ph of templatePlaceholders" cdkDrag>
       <div class="flex-table-row first first-top text-center" role="columnheader">
         <div class="placeholder-drag-handle" [class.cursor-move]="_editPlaceholders" cdkDragHandle>
@@ -56,28 +59,15 @@
         <span class="badge rounded-pill text-bg-dark" *ngIf="ph.mandatory">{{ 'APP.LABEL.Mandatory' | translate }}</span>
       </div>
       <div class="flex-table-row text-end fourth" role="columnheader">
-        <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onDelete(ph)" *ngIf="_editPlaceholders">
+        <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onDelete(ph)" *ngIf="_editPlaceholders" [disabled]="_isNew">
           <i class="bi bi-trash"></i>
         </button>
       </div>
     </div>
   </div>
-  <div class="table-container mt-3" *ngIf="_isNew || _createPlaceholder">
-    <div class="border border-2 border-danger">
-      <app-placeholder-item
-        [templateId]="id"
-        [data]="null"
-        [createPlaceholder]="_createPlaceholder"
-        [toExcluded]="templatePlaceholders"
-        [config]="placeholdersConfig"
-        (close)="_onClose($event)"
-        (save)="_onSave($event)">
-      </app-placeholder-item>
-    </div>
-  </div>
 </div>
 <div class="PLACEHOLDERS-LIST px-2 py-2" *ngIf="!_flexList">
-  <ul class="list-group placeholder-list" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListLockAxis="y" [cdkDropListDisabled]="!_editPlaceholders">
+  <ul class="list-group placeholder-list" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListLockAxis="y" [cdkDropListDisabled]="!_editPlaceholders || _isNew">
     <li class="list-group-item placeholder-box text-center py-3" *ngIf="!templatePlaceholders?.length">
       <span class="">{{ 'APP.MESSAGE.NoPlaceholder' | translate }}</span>
     </li>
@@ -99,19 +89,6 @@
         </div>
       </div>
     </li>
-    <li class="list-group-item placeholder-box pe-2" *ngIf="_isNew || _createPlaceholder">
-      <div class="border border-2 border-danger">
-        <app-placeholder-item
-          [templateId]="id"
-          [data]="null"
-          [createPlaceholder]="_createPlaceholder"
-          [toExcluded]="templatePlaceholders"
-          [config]="placeholdersConfig"
-          (close)="_onClose($event)"
-          (save)="_onSave($event)">
-        </app-placeholder-item>
-      </div>
-    </li>
   </ul>
 </div>
 <div class="row-content-block footer-block text-end mt-1 py-2" *ngIf="_editPlaceholders">
@@ -120,13 +97,26 @@
   <!-- <span class="">&nbsp;</span>  -->
   <div class="position-relative">
     <div role="group" class="gl-w-full btn-group-">
-      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-2" (click)="_onNew()" [tooltip]="'APP.TOOLTIP.AddPlaceholder' | translate" placement="left" *ngIf="!_isNew">
-        <i class="bi-plus-lg"></i><!-- <span class="ms-2">{{ 'APP.BUTTON.AddPlaceholder' | translate }}</span> -->
-      </button>
+      <!-- <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-2" (click)="_onNew()" [tooltip]="'APP.TOOLTIP.AddPlaceholder' | translate" placement="left" *ngIf="!_isNew">
+        <i class="bi-plus-lg"></i>
+      </button> -->
       <!-- <span class="me-3 text-danger small" *ngIf="_modifiedPlaceholders"><i class="bi-circle-fill"></i></span> -->
       <button aria-label="Add placeholder" type="button" class="btn btn-confirm btn-md gl-button btn-icon" (click)="_onSavePlaceholders($event)" [disabled]="!_modifiedPlaceholders">
         <span class="">{{ 'APP.BUTTON.Save' | translate }}</span>
       </button>
     </div>
+  </div>
+</div>
+<div id="edit-container" class="table-container mt-3" *ngIf="_isNew || _createPlaceholder">
+  <div class="border border-2 border-danger">
+    <app-placeholder-item
+      [templateId]="id"
+      [data]="null"
+      [createPlaceholder]="_createPlaceholder"
+      [toExcluded]="templatePlaceholders"
+      [config]="placeholdersConfig"
+      (close)="_onClose($event)"
+      (save)="_onSave($event)">
+    </app-placeholder-item>
   </div>
 </div>

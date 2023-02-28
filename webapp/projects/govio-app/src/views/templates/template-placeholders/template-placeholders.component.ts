@@ -123,7 +123,11 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
 
   _onNew() {
     this._isNew = true;
+    this._isEdit = true;
     this._createPlaceholder = false;
+    setTimeout(() => {
+      this.scrollTo('edit-container');
+    }, 400); 
   }
 
   _onSave(event: any) {
@@ -225,5 +229,40 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
     this._createPlaceholder = true;
     this._isEdit = false;
     this._isNew = false;
+  }
+
+  // ScrollTo
+
+  scrollTo(id: string) {
+    const box = document.querySelector('.container-scroller');
+    const targetElm = document.getElementById(id); // <-- Scroll to here within ".box"
+
+    this.scrollToElm(box, targetElm, 600);   
+  }
+
+  scrollToElm(container: any, elm: any, duration: number){
+    var pos = this.getRelativePos(elm);
+
+    this._scrollTo(container, pos.top, duration);  // duration in seconds
+  }
+
+  getRelativePos(elm: any){
+    const pPos: any = elm.parentNode.getBoundingClientRect(), // parent pos
+          cPos: any = elm.getBoundingClientRect(), // target pos
+          pos: any = {};
+
+    pos.top    = cPos.top    - pPos.top + elm.parentNode.scrollTop + (pPos.bottom - pPos.top),
+    pos.right  = cPos.right  - pPos.right,
+    pos.bottom = cPos.bottom - pPos.bottom,
+    pos.left   = cPos.left   - pPos.left;
+
+    return pos;
+  }
+  
+  _scrollTo(element: any, to: any, duration: number) {
+    var start = element.scrollTop,
+        change = to - start;
+
+    element.scrollTop = start + change;
   }
 }
