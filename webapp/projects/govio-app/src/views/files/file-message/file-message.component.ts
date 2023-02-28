@@ -17,9 +17,9 @@ export interface DialogTarnsactionData {
 }
 
 @Component({
-  selector: 'app-journal-transaction',
-  templateUrl: 'journal-transaction.component.html',
-  styleUrls: ['journal-transaction.component.scss']
+  selector: 'app-file-message',
+  templateUrl: 'file-message.component.html',
+  styleUrls: ['file-message.component.scss']
 })
 export class FileMessageComponent implements OnInit {
   static readonly Name = 'FileMessageComponent';

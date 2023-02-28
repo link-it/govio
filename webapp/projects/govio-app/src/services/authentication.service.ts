@@ -43,7 +43,6 @@ export class AuthenticationService {
   API_PROFILE: string = '/profile';
   API_LOGOUT: string = '/logout';
 
-
   constructor(
     private http: HttpClient,
     public configService: ConfigService,

@@ -38,6 +38,14 @@ const routes: Routes = [
         path: 'messages',
         loadChildren: () => import('../views/messages/messages.module').then(m => m.MessagesModule)
       },
+      {
+        path: 'placeholders',
+        loadChildren: () => import('../views/placeholders/placeholders.module').then(m => m.PlaceholdersModule)
+      },
+      {
+        path: 'templates',
+        loadChildren: () => import('../views/templates/templates.module').then(m => m.TemplatesModule)
+      }
     ]
   },
   { path: '**', redirectTo: 'dashboard' }

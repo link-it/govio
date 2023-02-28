@@ -47,7 +47,7 @@
         "title": "GovIO",
         "logo": "linkit_logo/linkit_logo_2x_reverse.png"
       },
-      "forceMenuOpen": false,
+      "forceMenuOpen": true,
       "Details": {
         "columns": 6,
         "Collapsible": {
