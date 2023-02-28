@@ -246,45 +246,7 @@ paths:
           $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
         default:
           $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
-          
-  '/files/{id}/statistics':
-    parameters:
-      - $ref: '#/components/parameters/file_id'
-    get:
-      tags:
-        - file
-      summary: Retrieve the file statistics
-      description: Get aggregated data on the statuses of the file messages.
-      operationId: readFileStats
-      responses:
-        '200':
-          description: Successful operation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FileStatistics'
-              example:
-              - status: acquired
-                count: 23
-              - status: scheduled
-                count: 15
-              - status: denied
-                count: 100
-        '400':
-          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
-        '401':
-          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
-        '403':
-          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
-        '404':
-          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
-        '429':
-          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
-        '503':
-          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
-        default:
-          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'          
-          
+                    
   /messages:
     post:
       tags:
