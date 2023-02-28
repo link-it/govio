@@ -34,6 +34,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { PortalModule } from '@angular/cdk/portal';
 import { OverlayModule, ScrollDispatcher } from '@angular/cdk/overlay';
 import { CdkScrollableModule, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   imports: [
@@ -72,6 +73,7 @@ import { CdkScrollableModule, CdkVirtualScrollViewport } from '@angular/cdk/scro
     PortalModule,
     OverlayModule,
     CdkScrollableModule,
+    DragDropModule
   ],
   exports: [
     MatMenuModule,
@@ -109,6 +111,7 @@ import { CdkScrollableModule, CdkVirtualScrollViewport } from '@angular/cdk/scro
     PortalModule,
     OverlayModule,
     CdkScrollableModule,
+    DragDropModule
   ],
   providers: [
     MatIconRegistry,

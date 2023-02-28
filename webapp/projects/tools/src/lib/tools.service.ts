@@ -434,6 +434,17 @@ export class Tools {
     }).join('');
   }
 
+  public static RemoveEmpty(obj: any) {
+    return Object.keys(obj)
+      .filter(function (k) {
+        return obj[k] != null;
+      })
+      .reduce(function (acc: any, k: string) {
+        acc[k] = typeof obj[k] === "object" ? Tools.RemoveEmpty(obj[k]) : obj[k];
+        return acc;
+      }, {});
+  }
+
   /**
    * Download CSV file
    * @param {any} data
