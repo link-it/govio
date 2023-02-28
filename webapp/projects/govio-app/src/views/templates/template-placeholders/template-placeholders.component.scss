@@ -68,6 +68,10 @@ $columns: 4;
   width: 100%;
   max-width: 1320px;
 
+  &.disabled {
+    opacity: 0.6;
+  }
+
   &.fs-smaller {
     font-size: 85%;
   }
