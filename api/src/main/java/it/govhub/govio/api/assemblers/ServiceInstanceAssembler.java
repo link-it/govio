@@ -35,8 +35,9 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 		log.debug("Assembling Entity [GovioServiceInstance] to model...");
 
 		var ret = instantiateModel(src);
-		ret.organization(this.orgItemAssembler.toModel(src.getOrganization())).
-				service(this.serviceItemAssembler.toModel(src.getService().getGovhubService()));
+		// TODO links e embed
+		/*ret.organization(this.orgItemAssembler.toModel(src.getOrganization())).
+				service(this.serviceItemAssembler.toModel(src.getService().getGovhubService()));*/
 		
 		ret.add(linkTo(
 				methodOn(ServiceInstanceController.class)

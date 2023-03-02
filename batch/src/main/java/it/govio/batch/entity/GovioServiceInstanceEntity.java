@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import it.govhub.govregistry.commons.entity.ServiceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,9 +33,13 @@ public class GovioServiceInstanceEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_service_instances")
 	private Long id;
 
-	@ManyToOne
+/*	@ManyToOne
 	@JoinColumn(name = "id_govio_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioService"))
-	private GovioServiceEntity govioService;
+	private GovioServiceEntity govioService;*/
+	
+	@ManyToOne
+	@JoinColumn(name = "id_govhub_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovhubService"))
+	private ServiceEntity govhubService;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_template", nullable = true, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))

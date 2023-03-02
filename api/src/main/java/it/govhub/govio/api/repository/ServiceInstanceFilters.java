@@ -29,7 +29,7 @@ public class ServiceInstanceFilters {
 
 	public static Specification<GovioServiceInstanceEntity> byServiceId(Long serviceId) {
         return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
-        	cb.equal(root.get(GovioServiceInstanceEntity_.service).get(GovioServiceEntity_.govhubService).get(ServiceEntity_.id), serviceId); 
+        	cb.equal(root.get(GovioServiceInstanceEntity_.service).get(ServiceEntity_.id), serviceId); 
 	}
 
 	
@@ -41,7 +41,7 @@ public class ServiceInstanceFilters {
 
 	public static Specification<GovioServiceInstanceEntity> byServiceIds(Collection<Long> serviceIds) {
 		 return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
-     		root.get(GovioServiceInstanceEntity_.service).get(GovioServiceEntity_.govhubService).get(ServiceEntity_.id).in(serviceIds);
+     		root.get(GovioServiceInstanceEntity_.service).get(ServiceEntity_.id).in(serviceIds);
      		
 	}
 	   

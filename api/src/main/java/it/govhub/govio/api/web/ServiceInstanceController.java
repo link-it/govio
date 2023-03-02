@@ -6,18 +6,12 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -125,13 +119,13 @@ public class ServiceInstanceController implements ServiceApi {
 	}
 
 	@Override
-	public ResponseEntity<Void> disableServiceInstance(@Min(0) Long id) {
+	public ResponseEntity<Void> disableServiceInstance(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ResponseEntity<GovioServiceInstance> updateServiceInstance(@Min(0) Long id, @Valid List<PatchOp> patchOp) {
+	public ResponseEntity<GovioServiceInstance> updateServiceInstance(Long id, List<PatchOp> patchOp) {
 		// TODO Auto-generated method stub
 		return null;
 	}
