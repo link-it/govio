@@ -90,7 +90,6 @@ paths:
                 $ref: "#/components/links/readFileContent"
              messages:
                 $ref: "#/components/links/readFileMessages"
-             
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -355,14 +354,56 @@ paths:
           $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
           
   /service-instances:
+    post:
+      tags:
+        - service
+      summary: Creates  a new Service Instance.
+      description: >
+         An organization can subscribe to a service multiple times, each time with a different message template, then the
+         clients can send messages to the IO service using the service instance.
+      operationId: createServiceInstance
+      requestBody:
+        content:
+          application/json:
+             schema:
+                $ref: "#/components/schemas/GovioServiceInstanceCreate"            
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovioServiceInstance'
+          links:
+             self:
+                $ref: "#/components/links/readServiceInstance"
+        '400':
+          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+        '403':
+          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+        '404':
+          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
+        '429':
+          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+        '503':
+          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+        default:
+          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
+            
     get:
       tags:
         - service
       parameters:
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
+        - $ref: '#/components/parameters/service_q'
+        - $ref: '#/components/parameters/organization_q'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/offset'
+        - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
+        - $ref: '#/components/parameters/embed_service_instance'
       summary: List Govio Service Instances
       description: Read and Filter the Govio Service Instanes
       operationId: listServiceInstances
@@ -402,6 +443,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GovioServiceInstance'
+          links:
+             delete:
+                $ref: "#/components/links/disableServiceInstance"
+             upload-file:
+                $ref: "#/components/links/uploadFile"
+             send-message:
+                $ref: "#/components/links/sendMessage"                            
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -416,6 +464,69 @@ paths:
           $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
         default:
           $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
+          
+    patch:
+      summary: Update the service instance.
+      description: Only the apiKey can be modified by this operation.
+      operationId: updateServiceInstance
+      tags:
+      - service
+      requestBody:    
+        required: true
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: 'govhub-api-commons.yaml#/components/schemas/PatchOperations'
+      responses:
+        '200':
+          description: Succsessful operation.
+          content:
+             application/json:
+                schema:
+                   $ref: '#/components/schemas/GovioServiceInstance'
+          links:
+             self:
+                $ref: "#/components/links/readServiceInstance"
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '404':
+          $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+        '409':
+          $ref: "govhub-api-commons.yaml#/components/responses/409Conflict"          
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"              
+          
+    delete:
+      tags:
+        - service
+      summary: Disables  a service instance.
+      description: Deletes the specified service instance, only and only if there are no pending messages for it.
+      operationId: disableServiceInstance
+      responses:
+        '200':
+          description: Successful operation.
+        '400':
+          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+        '403':
+          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+        '404':
+          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
+        '429':
+          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+        '503':
+          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+        default:
+          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'          
           
   /templates:
      post:
@@ -440,11 +551,6 @@ paths:
              links:
                self:
                   $ref: "#/components/links/readTemplate"
-               assignPlaceholder:
-                  $ref: "#/components/links/assignPlaceholder"
-               listTemplatePlaceholders:
-                  $ref: "#/components/links/listTemplatePlaceholders"
-                                  
            '400':
              $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
            '401':
@@ -495,8 +601,8 @@ paths:
      get:
          tags:
            - template
-         summary: Reads a message template.
-         description:  Reads a message template.
+         summary: Reads a service template.
+         description:  Reads a service template.
          operationId: readTemplate
          responses:
            '200':
@@ -551,11 +657,7 @@ paths:
                     $ref: '#/components/schemas/GovioTemplate'
            links:
                self:
-                  $ref: "#/components/links/readTemplate"
-               assignPlaceholder:
-                  $ref: "#/components/links/assignPlaceholder"
-               listTemplatePlaceholders:
-                  $ref: "#/components/links/listTemplatePlaceholders"                                
+                  $ref: "#/components/links/readTemplate"                              
          '400':
            $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
          '401':
@@ -671,7 +773,7 @@ paths:
              
      get:
          parameters:
-          - $ref: "#/components/parameters/embeds_template_placeholder"
+          - $ref: "#/components/parameters/embed_template_placeholder"
          tags:
            - template
          summary: List the template placeholders.
@@ -878,6 +980,34 @@ components:
       
   links:
   
+    assignPlaceholder:
+        operationId: assignPlaceholder
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          You can assign a new placeholder using The `id` value.
+          
+    disableServiceInstance:
+        operationId: disableServiceInstance
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          You can disable the service instance using The `id` value.
+
+    uploadFile:
+        operationId: uploadFile
+        parameters:
+           service_instance: '$response.body#/id'
+        description: >
+          You can assign a new placeholder using The `id` value.
+          
+    listTemplatePlaceholders:
+        operationId: listTemplatePlacehodlers
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          You can list the placeholder template using the `id` value.
+                                          
     readFile:
        description: Retrieve the file.
        operationId: readFile
@@ -904,42 +1034,41 @@ components:
           The `id` value returned in the response can be used as
           the `userId` parameter in `GET /users/{userId}`.
           
-    readTemplate:
-        operationId: readTemplate
-        parameters:
-          id: '$response.body#/id'
-        description: >
-          The `id` value returned in the response can be used as
-          the `templateId` parameter for reading the template
-          
-    assignPlaceholder:
-        operationId: assignPlaceholder
-        parameters:
-          id: '$response.body#/id'
-        description: >
-          You can assign a new placeholder using The `id` value returned as
-          the `templateId` query parameter
-          
-    listTemplatePlaceholders:
-        operationId: listTemplatePlacehodlers
-        parameters:
-          id: '$response.body#/id'
-        description: >
-          You can list the placeholder template using the `id` value returned in the response
-          for the `templateId`  parameter          
-                              
     readPlaceholder:
         operationId: readPlaceholder
         parameters:
           id: '$response.body#/id'
         description: >
           The `id` value returned in the response can be used as
-          the `placeholderId` parameter                              
+          the `placeholderId` parameter
+          
+    readServiceInstance:
+        operationId: readServiceInstance
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          The `id` value returned in the response can be used as
+          the `serviceInstanceId` parameter
                  
+    readTemplate:
+        operationId: readTemplate
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          The `id` value returned in the response can be used as
+          the `templateId` parameter for reading the template                 
+          
+    sendMessage:
+        operationId: sendMessage
+        parameters:
+          service_instance: '$response.body#/id'
+        description: >
+          The `id` value returned in the response can be used as
+          the `service_instance` query parameter for sending a  message through the instance.          
       
   parameters:
   
-    embeds_template_placeholder:
+    embed_template_placeholder:
        name: embed
        in: query
        required: false
@@ -949,6 +1078,17 @@ components:
           maxLength: 1024
           items:
              $ref: "#/components/schemas/EmbedPlaceholderEnum"
+             
+    embed_service_instance:
+       name: embed
+       in: query
+       required: false
+       schema:
+          type: array
+          minLength:  0
+          maxLength: 1024
+          items:
+             $ref: "#/components/schemas/EmbedServiceInstanceEnum"             
   
     expedition_date_to_query:
       name: expedition_date_to
@@ -1016,6 +1156,20 @@ components:
       required: false
       schema:
         $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
+        
+    service_q:
+      name: service_q
+      in: query
+      required: false
+      schema:
+        $ref: 'govhub-api-commons.yaml#/components/schemas/GenericSearchString'
+        
+    organization_q:
+      name: organization_q
+      in: query
+      required: false
+      schema:
+        $ref: 'govhub-api-commons.yaml#/components/schemas/GenericSearchString'                
         
     template_id:
       name: id
@@ -1614,6 +1768,13 @@ components:
        enum:
            - placeholder
            - template
+           
+    EmbedServiceInstanceEnum:
+       type: string
+       enum:
+           - service
+           - organization
+           - template           
       
     FileStatus:
       type: string
@@ -1668,25 +1829,63 @@ components:
       required:
         - id
         - full_name
+
         
-    GovioServiceInstance:
+    GovioServiceInstanceCreate:
       type: object
       additionalProperties: false
       properties:
-        service:
-          $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
-        organization:
-          $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
-        _links:
-           type: object
+        service_id:
+          $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
+        organization_id:
+          $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationId'
+        template_id:
+          $ref: '#/components/schemas/GovioTemplateId'
+        apiKey:
+           type: string
+           maxLength: 9999999
+           pattern: '[\s\S]*'
+
+
+    GovioServiceInstance:
+      allOf:
+         - $ref: '#/components/schemas/GovioServiceInstanceCreate'
+         - type: object
            additionalProperties: false
            properties:
-              self:
-                 $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-           example:
-              self:
-                 href: "https://govhub.it/govio/service-instances/1"
-          
+              id:
+                 $ref: '#/components/schemas/GovioServiceInstanceId'           
+              _links:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    self:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    service:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    organization:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    template:
+                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"                                                                     
+                 example:
+                    self:
+                       href: "https://govhub.it/govio/service-instances/1"                                   
+                    service:
+                       href: "https://govhub.it/govio/services/1"
+                    organization:
+                       href: "https://govhub.it/govio/organizations/1"
+                    template:
+                       href: "https://govhub.it/govio/templates/1"
+              _embedded:
+                 type: object
+                 additionalProperties: false
+                 properties:
+                    service:
+                      $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
+                    organization:
+                      $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
+                    template:
+                      $ref: '#/components/schemas/GovioTemplate'           
     FileList:
       allOf:
         - $ref: 'govhub-api-commons.yaml#/components/schemas/List'
