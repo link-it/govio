@@ -14,6 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
+import it.govhub.govregistry.commons.entity.ServiceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,9 +40,16 @@ public class GovioServiceInstanceEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_service_instances")
 	private Long id;
 
-	@ManyToOne
+	/*@ManyToOne
 	@JoinColumn(name = "id_govio_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioService"))
-	private GovioServiceEntity service;
+	private GovioServiceEntity service;*/
+	
+	// Lato db devo aggiungere una FK id_gobhub_service, seguire la fk relazione id_govio_service per prendere l'id del servizio e assegnarlo alla nuova FK
+	// Successivamente devo droppare il vincolo FK su id_govio_service ed eliminare la colonna
+	
+	@ManyToOne
+	@JoinColumn(name = "id_govhub_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovhubService"))
+	private ServiceEntity service;
 
 	@ManyToOne
 	@JoinColumn(name = "id_govio_template", nullable = true, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))

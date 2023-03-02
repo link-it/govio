@@ -126,7 +126,7 @@ public class FileController implements FileApi {
     		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
         			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
     	} else if (serviceId != null && organizationId != null) {
-    		serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
+    		serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
     				.orElseThrow( () -> new SemanticValidationException("Service Instance for service ["+serviceId+"] and organization ["+organizationId+"] not present"));
     	}
     	

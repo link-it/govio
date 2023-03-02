@@ -175,7 +175,7 @@ class FileProcessingJobTest {
 		initailizeJobLauncherTestUtils();
 
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
-		assertEquals(1, file.getGovioServiceInstance().getGovioService().getGovioTemplate().getId());
+		assertEquals(1, file.getGovioServiceInstance().getGovioTemplate().getId());
 		assertEquals(null, file.getGovioServiceInstance().getGovioTemplate());
 
 		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
