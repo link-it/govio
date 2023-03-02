@@ -1,9 +1,16 @@
 package it.govhub.govio.api.web;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +23,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.ServiceInstanceAssembler;
+import it.govhub.govio.api.beans.EmbedServiceInstanceEnum;
 import it.govhub.govio.api.beans.GovioServiceInstance;
+import it.govhub.govio.api.beans.GovioServiceInstanceCreate;
 import it.govhub.govio.api.beans.GovioServiceInstanceList;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
@@ -25,6 +34,7 @@ import it.govhub.govio.api.messages.ServiceInstanceMessages;
 import it.govhub.govio.api.repository.ServiceInstanceFilters;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.spec.ServiceApi;
+import it.govhub.govregistry.commons.api.beans.PatchOp;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
@@ -49,10 +59,14 @@ public class ServiceInstanceController implements ServiceApi {
 	@Override
 	@Transactional
 	public ResponseEntity<GovioServiceInstanceList> listServiceInstances(
+			Direction sortDirection,
 			Long serviceId,
 			Long organizationId,
+			String serviceQ,
+			String organizationQ,
 			Integer limit,
-			Long offset) {
+			Long offset,
+			 List<EmbedServiceInstanceEnum> embed) {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(Direction.DESC, GovioServiceInstanceEntity_.ID));
 		
@@ -101,6 +115,25 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		GovioServiceInstance ret = this.instanceAssembler.toModel(instance);
 		return ResponseEntity.ok(ret);
+	}
+
+	@Override
+	public ResponseEntity<GovioServiceInstance> createServiceInstance(
+			@Valid GovioServiceInstanceCreate govioServiceInstanceCreate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResponseEntity<Void> disableServiceInstance(@Min(0) Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResponseEntity<GovioServiceInstance> updateServiceInstance(@Min(0) Long id, @Valid List<PatchOp> patchOp) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
