@@ -9,14 +9,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import it.govhub.govregistry.commons.config.CommonsExportedBeans;
-
 @SpringBootApplication(scanBasePackages={"it.govio.batch","it.pagopa.io.v1.api"})
-@Import(CommonsExportedBeans.class)
+//@Import(CommonsExportedBeans.class)
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
 

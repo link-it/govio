@@ -54,13 +54,9 @@ ALTER SEQUENCE SEQ_GOVHUB_AUTHORIZATIONS RESTART WITH 3;
 INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment) VALUES (1,'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur','Lorem ipsum dolor sit amet.',false,false);
 ALTER SEQUENCE seq_govio_templates RESTART WITH 2;	
 
-INSERT INTO govio_services(id, id_govhub_service, id_govio_template) VALUES(1, 1, 1);
-INSERT INTO govio_services(id, id_govhub_service, id_govio_template) VALUES(2, 4, 1);
 
-ALTER SEQUENCE seq_govio_services RESTART WITH 3;
-
-INSERT INTO govio_service_instances(id,id_govio_service,id_govhub_organization,id_govio_template,apikey) VALUES (1,1,1,1,'17886617e07d47e8b1ba314f2f1e3052');
-INSERT INTO govio_service_instances(id,id_govio_service,id_govhub_organization,id_govio_template,apikey) VALUES (2,2,2,1,'17886617e07d47e8b1ba314f2f1e3053');
+INSERT INTO govio_service_instances(id,id_govhub_service,id_govhub_organization,id_govio_template,apikey) VALUES (1,1,1,1,'17886617e07d47e8b1ba314f2f1e3052');
+INSERT INTO govio_service_instances(id,id_govhub_service,id_govhub_organization,id_govio_template,apikey) VALUES (2,4,2,1,'17886617e07d47e8b1ba314f2f1e3053');
 
 ALTER SEQUENCE seq_govio_service_instances RESTART WITH 3;
 
@@ -70,4 +66,31 @@ ALTER SEQUENCE seq_govio_service_instances RESTART WITH 3;
 
 -- INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('1','1', true, 1);
 -- INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('1','2', true, 2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -15,9 +15,9 @@ import it.govhub.govio.api.beans.FileOrdering;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileEntity.Status;
 import it.govhub.govio.api.entity.GovioFileEntity_;
-import it.govhub.govio.api.entity.GovioServiceEntity_;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
+import it.govhub.govregistry.commons.entity.ServiceEntity_;
 import it.govhub.govregistry.commons.entity.UserEntity_;
 import it.govhub.govregistry.commons.exception.UnreachableException;
 
@@ -53,7 +53,12 @@ public class FileFilters {
 	
 	public static Specification<GovioFileEntity> byService(Long serviceId) {
 		return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-			cb.equal(root.get(GovioFileEntity_.serviceInstance).get(GovioServiceInstanceEntity_.service).get(GovioServiceEntity_.id), serviceId);
+			cb.equal(
+					root.
+						get(GovioFileEntity_.serviceInstance).
+						get(GovioServiceInstanceEntity_.service).
+						get(ServiceEntity_.id), 
+					serviceId);
 	}
 	
 	
@@ -62,7 +67,11 @@ public class FileFilters {
 			return never();
 		} else {
 			return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-				root.get(GovioFileEntity_.serviceInstance).get(GovioServiceInstanceEntity_.service).get(GovioServiceEntity_.id).in(serviceIds);
+				root.
+					get(GovioFileEntity_.serviceInstance).
+					get(GovioServiceInstanceEntity_.service).
+					get(ServiceEntity_.id).
+					in(serviceIds);
 		}
 	}
 	
