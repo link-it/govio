@@ -60,5 +60,5 @@ public class GovioServiceInstanceEntity implements Serializable {
 	private OrganizationEntity organization;
 
 	@Column(name = "apikey", nullable = false)
-	private String apikey;
+	private String apiKey;
 }

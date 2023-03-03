@@ -63,11 +63,11 @@ public class TemplatePlaceholderAssembler extends RepresentationModelAssemblerSu
 			item.setEmbedded(new HashMap<>());
 			
 			if (embeds.contains(EmbedPlaceholderEnum.PLACEHOLDER)) {
-				item.getEmbedded().put("placeholder", this.placeholderAssembler.toModel(tp.getGovioPlaceholder()));
+				item.getEmbedded().put(EmbedPlaceholderEnum.PLACEHOLDER.toString(), this.placeholderAssembler.toModel(tp.getGovioPlaceholder()));
 			}
 			
 			if (embeds.contains(EmbedPlaceholderEnum.TEMPLATE)) {
-			item.getEmbedded().put("template",this.templateAssembler.toModel(tp.getGovioTemplate()));
+			item.getEmbedded().put(EmbedPlaceholderEnum.TEMPLATE.toString(),this.templateAssembler.toModel(tp.getGovioTemplate()));
 			}
 		}
 

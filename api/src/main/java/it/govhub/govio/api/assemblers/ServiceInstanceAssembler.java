@@ -34,6 +34,9 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 	@Autowired
 	ServiceAuthItemAssembler serviceItemAssembler;
 	
+	@Autowired
+	TemplateAssembler templateAssembler;
+	
 	public ServiceInstanceAssembler() {
 		super(ServiceInstanceController.class, GovioServiceInstance.class);
 	}
@@ -43,9 +46,6 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 		log.debug("Assembling Entity [GovioServiceInstance] to model...");
 
 		var ret = instantiateModel(src);
-		// TODO links e embed
-		/*ret.organization(this.orgItemAssembler.toModel(src.getOrganization())).
-				service(this.serviceItemAssembler.toModel(src.getService().getGovhubService()));*/
 		
 		ret.add(linkTo(
 				methodOn(ServiceInstanceController.class)
@@ -67,20 +67,25 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 		return ret;
 	}
 
+	// TODO: La List deve diventare un Set e invece di tutti questi contains(), va fatto un for sul Set
 	public GovioServiceInstance toEmbeddedModel(GovioServiceInstanceEntity src, List<EmbedServiceInstanceEnum> embed) {
-		
 		GovioServiceInstance model = this.toModel(src);
 		
-		if (!CollectionUtils.isEmpty(embed))  
+		if (!CollectionUtils.isEmpty(embed)) {  
 			model.setEmbedded(new HashMap<>());
 			
-/*			if (embeds.contains(EmbedPlaceholderEnum.PLACEHOLDER)) {
-				item.getEmbedded().put("placeholder", this.placeholderAssembler.toModel(tp.getGovioPlaceholder()));
+			if (embed.contains(EmbedServiceInstanceEnum.ORGANIZATION)) {
+				model.getEmbedded().put(EmbedServiceInstanceEnum.ORGANIZATION.getValue(), this.orgItemAssembler.toModel(src.getOrganization()));				
 			}
 			
-			if (embeds.contains(EmbedPlaceholderEnum.TEMPLATE)) {
-			item.getEmbedded().put("template",this.templateAssembler.toModel(tp.getGovioTemplate()));
-			}*/
+			if (embed.contains(EmbedServiceInstanceEnum.SERVICE)) {
+				model.getEmbedded().put(EmbedServiceInstanceEnum.SERVICE.getValue(), this.serviceItemAssembler.toModel(src.getService()));				
+			}
+			
+			if (embed.contains(EmbedServiceInstanceEnum.TEMPLATE)) {
+				model.getEmbedded().put(EmbedServiceInstanceEnum.TEMPLATE.getValue(), this.templateAssembler.toModel(src.getTemplate()));				
+			}
+		}
 
 		return model;
 	}
