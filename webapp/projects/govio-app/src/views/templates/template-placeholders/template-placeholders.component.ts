@@ -109,7 +109,7 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
       // if (!url) { this.templatePlaceholders = []; }
       this.apiService.getList(`templates/${this.id}/placeholders?embed=placeholder`).subscribe({
         next: (response: any) => {
-          this.templatePlaceholders = response.items;
+          this.templatePlaceholders = response.items ? JSON.parse(JSON.stringify(response.items)) : null;
           this._origTemplatePlaceholders = response.items ? JSON.parse(JSON.stringify(response.items)) : null;
           this._spin = false;
         },
@@ -213,8 +213,6 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
   }
 
   drop(event: any) {
-    // const _prevItem = this.templatePlaceholders[event.previousIndex];
-    // const _currentItem = this.templatePlaceholders[event.currentIndex];
     moveItemInArray(this.templatePlaceholders, event.previousIndex, event.currentIndex);
     if (event.previousIndex !== event.currentIndex) {
       this._modifiedPlaceholders = true;
@@ -229,6 +227,10 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
     this._createPlaceholder = true;
     this._isEdit = false;
     this._isNew = false;
+  }
+
+  onChangeMandatory(event: any, placeholder: any) {
+    this._modifiedPlaceholders = true;
   }
 
   // ScrollTo

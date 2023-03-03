@@ -8,9 +8,7 @@
     ],
     "metadata": {
       "text": [
-        { "field": "id", "type": "cardinal", "class": "" },
-        { "field": "has_payment", "type": "text" },
-        { "field": "has_due_date", "type": "text" }
+        { "field": "id", "type": "cardinal", "class": "" }
       ],
       "label": []
     },

@@ -55,8 +55,9 @@
         </div>
       </div>
       <div class="flex-table-row text-center thirth" role="columnheader">
-        <!-- <i class="bi-exclamation-circle-fill text-primary smaller- fs-6" *ngIf="ph.mandatory"></i> -->
-        <span class="badge rounded-pill text-bg-dark" *ngIf="ph.mandatory">{{ 'APP.LABEL.Mandatory' | translate }}</span>
+        <i class="bi-check-lg smaller- fs-6" *ngIf="ph.mandatory && !_editPlaceholders"></i>
+        <input type="checkbox" [name]="ph.placeholderId" [(ngModel)]="ph.mandatory" *ngIf="_editPlaceholders" (ngModelChange)="onChangeMandatory($event, ph)">
+        <!-- <span class="badge rounded-pill text-bg-dark" *ngIf="ph.mandatory">{{ 'APP.LABEL.Mandatory' | translate }}</span> -->
       </div>
       <div class="flex-table-row text-end fourth" role="columnheader">
         <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onDelete(ph)" *ngIf="_editPlaceholders" [disabled]="_isNew">
