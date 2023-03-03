@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -30,6 +31,8 @@ import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.spec.ServiceApi;
 import it.govhub.govregistry.commons.api.beans.PatchOp;
 import it.govhub.govregistry.commons.config.V1RestController;
+import it.govhub.govregistry.commons.entity.OrganizationEntity_;
+import it.govhub.govregistry.commons.entity.ServiceEntity_;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
@@ -62,13 +65,28 @@ public class ServiceInstanceController implements ServiceApi {
 			Long offset,
 			 List<EmbedServiceInstanceEnum> embed) {
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(Direction.DESC, GovioServiceInstanceEntity_.ID));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(sortDirection, GovioServiceInstanceEntity_.ORGANIZATION +"."+OrganizationEntity_.LEGAL_NAME, GovioServiceInstanceEntity_.SERVICE + "." + ServiceEntity_.NAME));
 		
 		Specification<GovioServiceInstanceEntity> spec = ServiceInstanceFilters.empty();
 
 		// Pesco servizi e autorizzazioni che l'utente può leggere
-		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
 		Set<Long> serviceIds = this.authService.listAuthorizedServices(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
+		
+		if (serviceId != null && serviceIds != null) { 
+			serviceIds.retainAll(Set.of(serviceId));
+		}
+		else if (serviceId != null && serviceIds == null) {
+			serviceIds = Set.of(serviceId);
+		}
+
+		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
+		
+		if (organizationId != null && orgIds != null) {
+			orgIds.retainAll(Set.of(organizationId));
+		}
+		else if (organizationId != null && orgIds == null) {
+			orgIds = Set.of(organizationId);
+		}
 		
 		if (orgIds != null) {
 			spec = spec.and(ServiceInstanceFilters.byOrganizationIds(orgIds));
@@ -76,11 +94,12 @@ public class ServiceInstanceController implements ServiceApi {
 		if (serviceIds != null) {
 			spec = spec.and(ServiceInstanceFilters.byServiceIds(serviceIds));
 		}
-		if (serviceId != null) {
-			spec = spec.and(ServiceInstanceFilters.byServiceId(serviceId));
+		if (!StringUtils.isBlank(serviceQ)) {
+			spec = spec.and(
+					ServiceInstanceFilters.likeServiceName(serviceQ).or(ServiceInstanceFilters.likeTemplateName(serviceQ)));
 		}
-		if (organizationId != null) {
-			spec = spec.and(ServiceInstanceFilters.byOrganizationId(organizationId));
+		if (!StringUtils.isBlank(organizationQ)) {
+			spec = spec.and(ServiceInstanceFilters.likeOrganizationName(organizationQ));
 		}
 		
 		Page<GovioServiceInstanceEntity> instances = this.serviceInstanceRepo.findAll(spec, pageRequest.pageable);
@@ -91,7 +110,7 @@ public class ServiceInstanceController implements ServiceApi {
 		GovioServiceInstanceList ret = ListaUtils.buildPaginatedList(instances, pageRequest.limit, curRequest, new GovioServiceInstanceList());
 		
 		for (var inst : instances) {
-			ret.addItemsItem(this.instanceAssembler.toModel(inst));
+			ret.addItemsItem(this.instanceAssembler.toEmbeddedModel(inst,embed));
 		}
 		
 		return ResponseEntity.ok(ret);
@@ -118,12 +137,14 @@ public class ServiceInstanceController implements ServiceApi {
 		return null;
 	}
 
+	
 	@Override
 	public ResponseEntity<Void> disableServiceInstance(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	
 	@Override
 	public ResponseEntity<GovioServiceInstance> updateServiceInstance(Long id, List<PatchOp> patchOp) {
 		// TODO Auto-generated method stub
