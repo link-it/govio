@@ -49,7 +49,7 @@
 		<module>template-utils</module>
 		<module>batch</module>
 		<module>api</module>
-		<module>stats</module>
+		<!-- <module>stats</module> -->
 		<module>report</module>
 	</modules>
 
