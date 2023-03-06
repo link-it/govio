@@ -299,6 +299,7 @@ paths:
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/offset'
+        - $ref: '#/components/parameters/embed_message'
       summary: List Govio Messages
       description: Read and Filter the Govio Messages.
       operationId: listMessages
@@ -1068,6 +1069,29 @@ components:
       
   parameters:
   
+    embed_message:
+       name: embed
+       in: query
+       required: false
+       schema:
+          type: array
+          minLength:  0
+          maxLength: 1024
+          items:
+             $ref: "#/components/schemas/EmbedMessageEnum"  
+  
+  
+    embed_service_instance:
+       name: embed
+       in: query
+       required: false
+       schema:
+          type: array
+          minLength:  0
+          maxLength: 1024
+          items:
+             $ref: "#/components/schemas/EmbedServiceInstanceEnum"
+  
     embed_template_placeholder:
        name: embed
        in: query
@@ -1079,16 +1103,6 @@ components:
           items:
              $ref: "#/components/schemas/EmbedPlaceholderEnum"
              
-    embed_service_instance:
-       name: embed
-       in: query
-       required: false
-       schema:
-          type: array
-          minLength:  0
-          maxLength: 1024
-          items:
-             $ref: "#/components/schemas/EmbedServiceInstanceEnum"             
   
     expedition_date_to_query:
       name: expedition_date_to
@@ -1458,7 +1472,7 @@ components:
                properties:
                   self:
                      $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                  service_instance:
+                  service-instance:
                      $ref: "govhub-api-commons.yaml#/components/schemas/Link"
                   sender:
                      $ref: "govhub-api-commons.yaml#/components/schemas/Link"
@@ -1469,6 +1483,13 @@ components:
                      href: "https://govhub.it/govio/service-instances/1"
                   sender:
                      href: "https://govhub.it/govio/users/1"
+            _embedded:
+                   type: object
+                   properties:
+                      service-instance:
+                         $ref: "#/components/schemas/GovioServiceInstance"
+                      sender:
+                         $ref: "govhub-api-commons.yaml#/components/schemas/User"                     
                 
     GovioMessagePaymentItem:
       type: object
@@ -1761,7 +1782,13 @@ components:
       format: int64
       minimum: 0
       example: 1
-      description: GovIO Placeholder Id.    
+      description: GovIO Placeholder Id.
+      
+    EmbedMessageEnum:
+       type: string
+       enum:
+           - sender
+           - service-instance
     
     EmbedPlaceholderEnum:
        type: string

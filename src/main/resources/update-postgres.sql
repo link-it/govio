@@ -16,7 +16,15 @@ update govio_service_instances SET id_govio_template=gs.id_govio_template FROM g
 drop table govio_services;
 
 
+-- PATCH 06-03-2023 - Vincoli
+
+alter table govio_service_instances ALTER column id_govio_template set not null;
+
+alter table govio_service_instances add constraint UniqueServiceOrganizationTemplate unique (id_govhub_service, id_govio_template, id_govhub_organization);
+
+
 -- PATCH 06-03-2023 - Aggiunta campo 'enabled' per disabilitare le service instances
 
 alter table govio_service_instances add column enabled boolean not null default true;
+
 
