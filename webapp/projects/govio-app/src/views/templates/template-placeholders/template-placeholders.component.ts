@@ -109,7 +109,7 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
       // if (!url) { this.templatePlaceholders = []; }
       this.apiService.getList(`templates/${this.id}/placeholders?embed=placeholder`).subscribe({
         next: (response: any) => {
-          this.templatePlaceholders = response.items;
+          this.templatePlaceholders = response.items ? JSON.parse(JSON.stringify(response.items)) : null;
           this._origTemplatePlaceholders = response.items ? JSON.parse(JSON.stringify(response.items)) : null;
           this._spin = false;
         },
@@ -123,7 +123,11 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
 
   _onNew() {
     this._isNew = true;
+    this._isEdit = true;
     this._createPlaceholder = false;
+    setTimeout(() => {
+      this.scrollTo('edit-container');
+    }, 400); 
   }
 
   _onSave(event: any) {
@@ -209,8 +213,6 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
   }
 
   drop(event: any) {
-    // const _prevItem = this.templatePlaceholders[event.previousIndex];
-    // const _currentItem = this.templatePlaceholders[event.currentIndex];
     moveItemInArray(this.templatePlaceholders, event.previousIndex, event.currentIndex);
     if (event.previousIndex !== event.currentIndex) {
       this._modifiedPlaceholders = true;
@@ -225,5 +227,44 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
     this._createPlaceholder = true;
     this._isEdit = false;
     this._isNew = false;
+  }
+
+  onChangeMandatory(event: any, placeholder: any) {
+    this._modifiedPlaceholders = true;
+  }
+
+  // ScrollTo
+
+  scrollTo(id: string) {
+    const box = document.querySelector('.container-scroller');
+    const targetElm = document.getElementById(id); // <-- Scroll to here within ".box"
+
+    this.scrollToElm(box, targetElm, 600);   
+  }
+
+  scrollToElm(container: any, elm: any, duration: number){
+    var pos = this.getRelativePos(elm);
+
+    this._scrollTo(container, pos.top, duration);  // duration in seconds
+  }
+
+  getRelativePos(elm: any){
+    const pPos: any = elm.parentNode.getBoundingClientRect(), // parent pos
+          cPos: any = elm.getBoundingClientRect(), // target pos
+          pos: any = {};
+
+    pos.top    = cPos.top    - pPos.top + elm.parentNode.scrollTop + (pPos.bottom - pPos.top),
+    pos.right  = cPos.right  - pPos.right,
+    pos.bottom = cPos.bottom - pPos.bottom,
+    pos.left   = cPos.left   - pPos.left;
+
+    return pos;
+  }
+  
+  _scrollTo(element: any, to: any, duration: number) {
+    var start = element.scrollTop,
+        change = to - start;
+
+    element.scrollTop = start + change;
   }
 }

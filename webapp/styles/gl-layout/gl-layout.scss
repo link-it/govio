@@ -185,6 +185,7 @@
     overflow-y: auto;
     padding-top: .75rem;
     padding-bottom: 50px;
+    scroll-behavior: smooth;
 
     &:hover {
       &::-webkit-scrollbar-thumb {
