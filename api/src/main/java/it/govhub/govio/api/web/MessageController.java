@@ -148,7 +148,7 @@ public class MessageController implements MessageApi {
 		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(serviceInstance)
 				.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstance)));
 		
-    	if (instance.getEnabled() ) {
+    	if (!instance.getEnabled() ) {
     		throw new SemanticValidationException("La service instance ["+instance.getId()+"] è disabilitata.");
     	}
 		
