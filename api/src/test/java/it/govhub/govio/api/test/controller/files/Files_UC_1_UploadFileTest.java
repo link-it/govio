@@ -118,7 +118,7 @@ class Files_UC_1_UploadFileTest {
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("amministratore", govioFileEntity.getGovauthUser().getPrincipal());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getGovhubService().getName());
+		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 	}
 	
@@ -157,7 +157,7 @@ class Files_UC_1_UploadFileTest {
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("govio_sender", govioFileEntity.getGovauthUser().getPrincipal());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getGovhubService().getName());
+		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 	}
 	
@@ -292,7 +292,7 @@ class Files_UC_1_UploadFileTest {
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("amministratore", govioFileEntity.getGovauthUser().getPrincipal());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getGovhubService().getName());
+		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 		
 		this.mockMvc.perform(

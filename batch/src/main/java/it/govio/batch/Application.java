@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @SpringBootApplication(scanBasePackages={"it.govio.batch","it.pagopa.io.v1.api"})
+//@Import(CommonsExportedBeans.class)
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
 

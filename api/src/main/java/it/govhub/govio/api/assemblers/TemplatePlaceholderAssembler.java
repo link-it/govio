@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import it.govhub.govio.api.beans.EmbedPlaceholderEnum;
 import it.govhub.govio.api.beans.GovioTemplatePlaceholder;
@@ -58,15 +59,15 @@ public class TemplatePlaceholderAssembler extends RepresentationModelAssemblerSu
 		
 		GovioTemplatePlaceholder item = this.toModel(tp);
 		
-		if (embeds != null)  {
+		if (!CollectionUtils.isEmpty(embeds)) {
 			item.setEmbedded(new HashMap<>());
 			
 			if (embeds.contains(EmbedPlaceholderEnum.PLACEHOLDER)) {
-				item.getEmbedded().put("placeholder", this.placeholderAssembler.toModel(tp.getGovioPlaceholder()));
+				item.getEmbedded().put(EmbedPlaceholderEnum.PLACEHOLDER.toString(), this.placeholderAssembler.toModel(tp.getGovioPlaceholder()));
 			}
 			
 			if (embeds.contains(EmbedPlaceholderEnum.TEMPLATE)) {
-			item.getEmbedded().put("template",this.templateAssembler.toModel(tp.getGovioTemplate()));
+			item.getEmbedded().put(EmbedPlaceholderEnum.TEMPLATE.toString(),this.templateAssembler.toModel(tp.getGovioTemplate()));
 			}
 		}
 

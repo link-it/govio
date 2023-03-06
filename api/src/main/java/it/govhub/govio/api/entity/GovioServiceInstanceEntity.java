@@ -12,8 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import it.govhub.govregistry.commons.entity.OrganizationEntity;
+import it.govhub.govregistry.commons.entity.ServiceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +30,11 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "govio_service_instances")
+@Table(
+		name = "govio_service_instances", 
+		uniqueConstraints = {
+		   @UniqueConstraint(name = "UniqueServiceOrganizationTemplate", columnNames = {"id_govhub_service", "id_govio_template", "id_govhub_organization"})
+		})
 public class GovioServiceInstanceEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -38,13 +44,13 @@ public class GovioServiceInstanceEntity implements Serializable {
 	@SequenceGenerator(name = "seq_govio_service_instances", sequenceName = "seq_govio_service_instances", initialValue = 1, allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_service_instances")
 	private Long id;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_govhub_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovhubService"))
+	private ServiceEntity service;
 
 	@ManyToOne
-	@JoinColumn(name = "id_govio_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioService"))
-	private GovioServiceEntity service;
-
-	@ManyToOne
-	@JoinColumn(name = "id_govio_template", nullable = true, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))
+	@JoinColumn(name = "id_govio_template", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))
 	private GovioTemplateEntity template;
 	
 	@ManyToOne
@@ -52,5 +58,9 @@ public class GovioServiceInstanceEntity implements Serializable {
 	private OrganizationEntity organization;
 
 	@Column(name = "apikey", nullable = false)
-	private String apikey;
+	private String apiKey;
+	
+	@Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
+	@Builder.Default
+	private Boolean enabled = true;
 }
