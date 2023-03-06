@@ -2,6 +2,7 @@ package it.govhub.govio.api.web;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 
 import it.govhub.govio.api.assemblers.MessageAssembler;
+import it.govhub.govio.api.beans.EmbedMessageEnum;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
 import it.govhub.govio.api.beans.GovioNewMessage;
@@ -75,7 +77,8 @@ public class MessageController implements MessageApi {
 			Long serviceId,
 			Long organizationId,
 			Integer limit,
-			Long offset) {
+			Long offset,
+			List<EmbedMessageEnum> embeds) {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, MessageFilters.sort(orderBy, sortDirection));
 		
@@ -113,7 +116,7 @@ public class MessageController implements MessageApi {
 			spec = spec.and(MessageFilters.byOrganizationId(organizationId));
 		}
 		
-		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest);
+		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest, embeds);
 		return ResponseEntity.ok(ret);
 	}
 
@@ -147,6 +150,10 @@ public class MessageController implements MessageApi {
 		
 		GovioServiceInstanceEntity instance = this.serviceInstanceRepo.findById(serviceInstance)
 				.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstance)));
+		
+    	if (!instance.getEnabled() ) {
+    		throw new SemanticValidationException("La service instance ["+instance.getId()+"] è disabilitata.");
+    	}
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER,  GovioRoles.GOVIO_SYSADMIN);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;

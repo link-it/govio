@@ -75,7 +75,8 @@ CREATE TABLE govio_service_instances
      apikey                   VARCHAR(255) NOT NULL,
      id_govio_service         BIGINT NOT NULL,
      id_govhub_organization   BIGINT NOT NULL,
-     id_govio_template        BIGINT,
+     id_govio_template        BIGINT,NOT NULL,
+	 enabled                  BOOLEAN NOT NULL DEFAULT TRUE,
      PRIMARY KEY (id)
   );
 
@@ -90,6 +91,10 @@ ALTER TABLE govio_service_instances
 ALTER TABLE govio_service_instances
   ADD CONSTRAINT fk_govio_srvinst_huborg FOREIGN KEY (id_govhub_organization)
   REFERENCES govhub_organizations;  
+
+ALTER table govio_service_instances
+       add constraint UniqueServiceOrganizationTemplate unique (id_govhub_service, id_govio_template, id_govhub_organization);
+
     
 CREATE TABLE govio_files
   (

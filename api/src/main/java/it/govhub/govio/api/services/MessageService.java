@@ -20,6 +20,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.MessageAssembler;
+import it.govhub.govio.api.beans.EmbedMessageEnum;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
 import it.govhub.govio.api.config.GovioRoles;
@@ -81,7 +82,7 @@ public class MessageService {
 
 	
 	@Transactional
-	public GovioMessageList listMessages(Specification<GovioMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
+	public GovioMessageList listMessages(Specification<GovioMessageEntity> spec, LimitOffsetPageRequest pageRequest, List<EmbedMessageEnum> embeds) {
 		Page<GovioMessageEntity> messages = this.messageRepo.findAll(spec, pageRequest.pageable);
 		
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
@@ -90,7 +91,7 @@ public class MessageService {
 		GovioMessageList ret = ListaUtils.buildPaginatedList(messages, pageRequest.limit, curRequest, new GovioMessageList());
 		
 		for (var message: messages) {
-			ret.addItemsItem(this.messageAssembler.toModel(message));
+			ret.addItemsItem(this.messageAssembler.toEmbeddedModel(message, embeds));
 		}
 		return ret;
 	}

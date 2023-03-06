@@ -3,6 +3,9 @@ package it.govhub.govio.api.assemblers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -10,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import it.govhub.govio.api.beans.EmbedMessageEnum;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessagePaymentItem;
 import it.govhub.govio.api.beans.GovioMessageStatus;
@@ -34,6 +39,9 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 	
 	@Autowired
 	ServiceAuthItemAssembler serviceItemAssembler;
+	
+	@Autowired
+	ServiceInstanceAssembler instanceAssembler;
 	
 	public MessageAssembler() {
 		super(MessageController.class, GovioMessage.class);
@@ -74,4 +82,36 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 		
 		return ret;
 	}
+
+	public GovioMessage toEmbeddedModel(GovioMessageEntity src, List<EmbedMessageEnum> embed) {
+		
+		GovioMessage ret = this.toModel(src);
+		
+		if (!CollectionUtils.isEmpty(embed)) {
+			ret.setEmbedded(new HashMap<>());
+			
+			for(var e : embed) {
+				switch(e) {
+				case SENDER:
+					ret.getEmbedded().put(EmbedMessageEnum.SENDER.getValue(), this.userItemAssembler.toModel(src.getSender()));
+					break;
+				case SERVICE_INSTANCE:
+					ret.getEmbedded().put(EmbedMessageEnum.SERVICE_INSTANCE.getValue(), this.instanceAssembler.toModel(src.getGovioServiceInstance()));
+					break;
+				default:
+					break;
+				
+				}
+			}
+		}
+		
+		return ret;
+	}
 }
+
+
+
+
+
+
+
