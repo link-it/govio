@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -31,6 +33,7 @@ import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
+import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.FileMessages;
 import it.govhub.govio.api.repository.FileMessageRepository;
@@ -78,6 +81,15 @@ public class FileService {
 	FileMessages fileMessages;
 	
 	Logger log = LoggerFactory.getLogger(FileService.class);
+	
+	// TODO: Chiedi a lorenzo quali sono gli stati intermedi
+	public static final Set<GovioMessageEntity.Status> IntermediateStatuses = Set.of(
+				GovioMessageEntity.Status.THROTTLED,
+				GovioMessageEntity.Status.SCHEDULED,
+				GovioMessageEntity.Status.RECIPIENT_ALLOWED,
+				GovioMessageEntity.Status.CREATED
+			);
+	
 	
 	@Transactional
 	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {

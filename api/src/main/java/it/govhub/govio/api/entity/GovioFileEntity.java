@@ -2,6 +2,8 @@ package it.govhub.govio.api.entity;
 
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -14,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -80,7 +83,7 @@ public class GovioFileEntity {
 	
 	//TODO Da verificare!! Lorenzo vs Francesco
 //	// L'entita collegata è readonly, non abbiamo cascade quindi possiamo salvare il GovioFileEntity senza problemi
-//	@OneToMany(mappedBy = "govioFile")
-//	@Builder.Default
-//	private List<GovioFileMessageEntity> fileMessages = new ArrayList<>();
+	@OneToMany(mappedBy = "govioFile")
+	@Builder.Default
+	private List<GovioFileMessageEntity> fileMessages = new ArrayList<>();
 }

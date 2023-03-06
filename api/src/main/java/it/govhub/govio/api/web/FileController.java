@@ -133,6 +133,10 @@ public class FileController implements FileApi {
     	if (serviceInstance == null) {
     		throw new BadRequestException("E' necessasrio specificare una service instance");
     	}
+    	
+    	if (!serviceInstance.getEnabled() ) {
+    		throw new SemanticValidationException("La service instance ["+serviceInstance.getId()+"] è disabilitata.");
+    	}
     	/**/
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
