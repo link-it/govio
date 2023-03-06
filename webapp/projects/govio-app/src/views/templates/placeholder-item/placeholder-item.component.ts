@@ -140,6 +140,8 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
         this._newPlaceholder();
       } else {
         this._isNewPlaceholder = false;
+        this._isNew = false;
+        this._isEdit = false;
       }
       }
   }
@@ -179,7 +181,9 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
   }
 
   _onEdit(event: any) {
+    this._isNew = true;
     this._isEdit = true;
+    this._isNewPlaceholder = false;
   }
 
   __onSave(form: any) {
@@ -250,8 +254,8 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
 
   _onCloseEdit(event: any) {
     this._isEdit = false;
-    this._isNewPlaceholder = false;
     this._isNew = false;
+    this._isNewPlaceholder = false;
     this.close.emit({ item: this.data });
   }
   

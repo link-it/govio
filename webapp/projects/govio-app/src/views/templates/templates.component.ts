@@ -182,15 +182,16 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
         this._links = response._links;
 
         if (response.items) {
+          const _itemRow = this.templatesConfig.itemRow;
           const _list: any = response.items.map((template: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.templatesConfig.itemRow.metadata.text, template, this.templatesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.templatesConfig.itemRow.metadata.label, template, this.templatesConfig.options || null);
+            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, template, this.templatesConfig.options || null);
+            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, template, this.templatesConfig.options || null);
             const element = {
               id: template.id,
-              primaryText: Tools.simpleItemFormatter(this.templatesConfig.itemRow.primaryText, template, this.templatesConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(this.templatesConfig.itemRow.secondaryText, template, this.templatesConfig.options || null, ' '),
+              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, template, this.templatesConfig.options || null, ' '),
+              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, template, this.templatesConfig.options || null, ' '),
               metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.templatesConfig.itemRow.secondaryMetadata, template, this.templatesConfig.options || null, ' '),
+              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, template, this.templatesConfig.options || null, ' '),
               editMode: false,
               source: { ...template }
             };
