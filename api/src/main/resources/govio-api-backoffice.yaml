@@ -1852,9 +1852,15 @@ components:
          - $ref: '#/components/schemas/GovioServiceInstanceCreate'
          - type: object
            additionalProperties: false
+           required:
+              - id
+              - enabled
            properties:
               id:
-                 $ref: '#/components/schemas/GovioServiceInstanceId'           
+                 $ref: '#/components/schemas/GovioServiceInstanceId'
+              enabled:
+                 type: boolean
+                 default: false           
               _links:
                  type: object
                  additionalProperties: false

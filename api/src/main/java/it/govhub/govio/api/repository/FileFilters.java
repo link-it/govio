@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.springframework.data.domain.Sort;
@@ -15,6 +16,9 @@ import it.govhub.govio.api.beans.FileOrdering;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileEntity.Status;
 import it.govhub.govio.api.entity.GovioFileEntity_;
+import it.govhub.govio.api.entity.GovioFileMessageEntity_;
+import it.govhub.govio.api.entity.GovioMessageEntity;
+import it.govhub.govio.api.entity.GovioMessageEntity_;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
@@ -47,7 +51,6 @@ public class FileFilters {
 			return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 			
 				root.get(GovioFileEntity_.serviceInstance).get(GovioServiceInstanceEntity_.organization).get(OrganizationEntity_.id).in(orgIds);
 		}
-		
 	}
 	
 	
@@ -103,6 +106,24 @@ public class FileFilters {
 	public static Specification<GovioFileEntity> byStatus(Status status) {
 		return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
 			cb.equal(root.get(GovioFileEntity_.status), status);
+	}
+	
+	public static Specification<GovioFileEntity> byMessageStatus(Collection<GovioMessageEntity.Status> statuses) {
+		if (statuses.isEmpty()) {
+			return never();
+		} else {
+			return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+				root.join(GovioFileEntity_.fileMessages, JoinType.LEFT).
+						get(GovioFileMessageEntity_.govioMessage).
+						get(GovioMessageEntity_.status).
+						in(statuses);
+		}
+	}
+	
+	
+	public static Specification<GovioFileEntity> byServiceInstanceId(Long id) {
+		return (Root<GovioFileEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+			cb.equal(root.get(GovioFileEntity_.serviceInstance).get(GovioServiceInstanceEntity_.id), id);
 	}
 	
 	
