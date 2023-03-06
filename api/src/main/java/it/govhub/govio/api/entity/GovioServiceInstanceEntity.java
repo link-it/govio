@@ -60,7 +60,7 @@ public class GovioServiceInstanceEntity implements Serializable {
 	@Column(name = "apikey", nullable = false)
 	private String apiKey;
 	
-	@Column(name = "enabled", nullable = false)
+	@Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
 	@Builder.Default
 	private Boolean enabled = true;
 }
