@@ -1331,6 +1331,11 @@ components:
         
   schemas:
   
+    FileName:
+       type: string
+       pattern: .*
+       maxLength: 2048
+       example: file1.csv
 
     GovioBaseMessage:
       required:
@@ -1364,10 +1369,7 @@ components:
         id:
           $ref: '#/components/schemas/GovioFileId'
         filename:
-          type: string
-          pattern: .*
-          maxLength: 256
-          example: file1.csv
+          $ref: "#/components/schemas/FileName"
         user:
           $ref: '#/components/schemas/FileUserItem'
         organization:

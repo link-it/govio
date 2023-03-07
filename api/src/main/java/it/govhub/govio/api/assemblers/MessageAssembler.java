@@ -99,7 +99,7 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 					ret.getEmbedded().put(EmbedMessageEnum.SERVICE_INSTANCE.getValue(), this.instanceAssembler.toModel(src.getGovioServiceInstance()));
 					break;
 				default:
-					break;
+					break; 
 				
 				}
 			}
