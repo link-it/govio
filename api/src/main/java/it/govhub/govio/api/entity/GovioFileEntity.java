@@ -45,7 +45,7 @@ public class GovioFileEntity {
 	private Long id;
 
 	@ManyToOne
- 	@JoinColumn(name = "id_govhub_user", nullable=false)
+ 	@JoinColumn(name = "id_govhub_user", nullable=false, foreignKey = @ForeignKey(name = "GovioFile_GovhubUser"))
 	private UserEntity govauthUser;
 	
 	@ManyToOne
