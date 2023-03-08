@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
@@ -51,6 +50,7 @@ import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
+import it.govhub.govregistry.commons.utils.RequestUtils;
 import it.govhub.security.services.SecurityService;
 
 @V1RestController
@@ -110,7 +110,7 @@ public class FileController implements FileApi {
 			    if (itemStream.isFormField()) {
 			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
 			    } else {
-				    sourceFilename = readFilenameFromHeaders(itemStream.getHeaders());
+				    sourceFilename = RequestUtils.readFilenameFromHeaders(itemStream.getHeaders());
 			    }
 			}
 		} catch (Exception e) {
@@ -271,32 +271,6 @@ public class FileController implements FileApi {
 		FileMessageList ret = this.fileService.listFileMessages(spec, pageRequest);
 		
 		return ResponseEntity.ok(ret);
-	}
-	
-	
-	
-	private String readFilenameFromHeaders(FileItemHeaders headers) {
-		
-    	String filename = null;
-    	try {
-	    	String contentDisposition = headers.getHeader("Content-Disposition");
-	    	logger.debug("Content Disposition Header: {}", contentDisposition);
-	    	
-	    	String[] headerDirectives = contentDisposition.split(";");
-	    	
-	    	for(String directive : headerDirectives) {
-	    		String[] keyValue = directive.split("=");
-	    		if (StringUtils.equalsIgnoreCase(keyValue[0].trim(), "filename")) {
-	    			// Rimuovo i doppi apici
-	    			filename = keyValue[1].trim().substring(1, keyValue[1].length()-1);
-	    		}
-	    	}
-    	} catch (Exception e) {
-    		logger.error("Exception while reading header: {}", e);
-    		filename = null;
-    	}
-    	
-    	return filename;
 	}
 
 	

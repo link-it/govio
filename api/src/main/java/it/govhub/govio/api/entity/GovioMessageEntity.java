@@ -45,7 +45,7 @@ public class GovioMessageEntity {
 	private GovioServiceInstanceEntity govioServiceInstance;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_govhub_user", nullable = false)
+	@JoinColumn(name = "id_govhub_user", nullable = false, foreignKey = @ForeignKey(name = "GovioMessage_GovhubUser"))
 	private UserEntity sender; 
 
 	@Column(name = "taxcode", nullable = false)
