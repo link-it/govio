@@ -92,8 +92,7 @@ public class ServiceInstanceController implements ServiceApi {
 			Direction sortDirection,
 			Long serviceId,
 			Long organizationId,
-			String serviceQ,
-			String organizationQ,
+			String q,
 			Integer limit,
 			Long offset,
 			 List<EmbedServiceInstanceEnum> embed) {
@@ -127,12 +126,12 @@ public class ServiceInstanceController implements ServiceApi {
 		if (serviceIds != null) {
 			spec = spec.and(ServiceInstanceFilters.byServiceIds(serviceIds));
 		}
-		if (!StringUtils.isBlank(serviceQ)) {
+		if (!StringUtils.isBlank(q)) {
 			spec = spec.and(
-					ServiceInstanceFilters.likeServiceName(serviceQ).or(ServiceInstanceFilters.likeTemplateName(serviceQ)));
-		}
-		if (!StringUtils.isBlank(organizationQ)) {
-			spec = spec.and(ServiceInstanceFilters.likeOrganizationName(organizationQ));
+						ServiceInstanceFilters.likeServiceName(q).
+						or(ServiceInstanceFilters.likeTemplateName(q)).
+						or(ServiceInstanceFilters.likeOrganizationName(q))
+					);
 		}
 		
 		Page<GovioServiceInstanceEntity> instances = this.instanceRepo.findAll(spec, pageRequest.pageable);
