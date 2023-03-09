@@ -130,15 +130,14 @@ public class ServiceInstanceController implements ServiceApi {
 			spec = spec.and(
 						ServiceInstanceFilters.likeServiceName(q).
 						or(ServiceInstanceFilters.likeTemplateName(q)).
-						or(ServiceInstanceFilters.likeOrganizationName(q))
+						or(ServiceInstanceFilters.likeOrganizationName(q)).
+						or(ServiceInstanceFilters.likeOrganizationTaxCode(q))
 					);
 		}
 		
 		Page<GovioServiceInstanceEntity> instances = this.instanceRepo.findAll(spec, pageRequest.pageable);
-		
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
-		
 		GovioServiceInstanceList ret = ListaUtils.buildPaginatedList(instances, pageRequest.limit, curRequest, new GovioServiceInstanceList());
 		
 		for (var inst : instances) {
