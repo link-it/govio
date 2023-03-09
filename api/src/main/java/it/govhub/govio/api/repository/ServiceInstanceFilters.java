@@ -76,8 +76,15 @@ public class ServiceInstanceFilters {
 	public static Specification<GovioServiceInstanceEntity> likeOrganizationName(String organizationQ) {
 	    return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
     	cb.like(
-    			cb.lower(root.get(GovioServiceInstanceEntity_.organization).get(OrganizationEntity_.LEGAL_NAME)), 
+    			cb.lower(root.get(GovioServiceInstanceEntity_.organization).get(OrganizationEntity_.legalName)), 
     			"%"+organizationQ.toLowerCase()+"%" );
+	}
+	
+	public static Specification<GovioServiceInstanceEntity> likeOrganizationTaxCode(String q) {
+	    return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+    	cb.like(
+    			cb.lower(root.get(GovioServiceInstanceEntity_.organization).get(OrganizationEntity_.taxCode)),
+    			"%"+q.toLowerCase()+"%" );
 	}
 	
 	
