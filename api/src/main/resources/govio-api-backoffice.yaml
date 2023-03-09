@@ -399,8 +399,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
-        - $ref: '#/components/parameters/service_q'
-        - $ref: '#/components/parameters/organization_q'
+        - $ref: 'govhub-api-commons.yaml#/components/parameters/q_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/offset'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
