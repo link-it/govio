@@ -141,21 +141,6 @@ public class FileService {
 	
 
 	@Transactional
-	public GovioFile readFile(Long id) {
-		GovioFileEntity file = this.fileRepo.findById(id)
-				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
-		GovioServiceInstanceEntity instance = file.getServiceInstance();
-		
-		log.debug("Reading file [{}]", file.getLocation());
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
-		
-		GovioFile ret = this.fileAssembler.toModel(file);
-		return ret;
-	}
-
-	
-	@Transactional
 	public FileList listFiles(Specification<GovioFileEntity> spec, LimitOffsetPageRequest pageRequest) {
 		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
 		
