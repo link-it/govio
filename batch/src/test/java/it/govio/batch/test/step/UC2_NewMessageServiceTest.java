@@ -113,7 +113,7 @@ class UC2_NewMessageServiceTest {
 		content.setMarkdown(govioMessageEntity.getMarkdown());
 		content.setSubject(govioMessageEntity.getSubject());
 		if(govioMessageEntity.getDueDate() != null)
-		content.setDueDate(new Timestamp(govioMessageEntity.getDueDate().toEpochSecond(ZoneOffset.UTC)));
+		content.setDueDate(NewMessageProcessor.dtf.format(govioMessageEntity.getDueDate().atOffset(ZoneOffset.UTC)));
 		if(govioMessageEntity.getNoticeNumber() != null) {
 			Assert.assertNotNull(govioMessageEntity.getAmount());
 			PaymentData paymentData = new PaymentData();

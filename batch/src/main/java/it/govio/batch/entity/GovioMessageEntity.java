@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,8 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.stereotype.Component;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,15 +24,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
-@Getter	
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Component
 @Table(name = "govio_messages")
 public class GovioMessageEntity {
-	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED}
+	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED, REJECTED}
 
 	@Id
 	@SequenceGenerator(name="seq_govio_messages",sequenceName="seq_govio_messages", initialValue=1, allocationSize=1)
@@ -41,8 +39,11 @@ public class GovioMessageEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_govio_service_instance", nullable = false)
+	@JoinColumn(name = "id_govio_service_instance", nullable = false, foreignKey = @ForeignKey(name = "GovioMessage_GovioServiceInstance"))
 	private GovioServiceInstanceEntity govioServiceInstance;
+	
+	@Column(name = "id_govhub_user", nullable = false)
+	private Long govhubUserId;
 	
 	@Column(name = "taxcode", nullable = false)
 	private String taxcode;
@@ -50,7 +51,7 @@ public class GovioMessageEntity {
 	@Column(name = "subject", nullable = false)
 	private String subject;
 
-	@Column(name = "markdown", nullable = false)
+	@Column(name = "markdown", nullable = false, columnDefinition = "TEXT")
 	private String markdown;
 
 	@Column(name = "status", nullable = false)
@@ -77,16 +78,16 @@ public class GovioMessageEntity {
 
 	@Column(name = "creation_date", nullable = false)
 	private LocalDateTime creationDate;
-	
+
 	@Column(name = "scheduled_expedition_date", nullable = false)
 	private LocalDateTime scheduledExpeditionDate;
 
 	@Column(name = "expedition_date")
 	private LocalDateTime expeditionDate;
-	
+
 	@Column(name = "due_date")
 	private LocalDateTime dueDate;
-	
+
 	@Column(name = "last_update_status")
 	private LocalDateTime lastUpdateStatus;
 

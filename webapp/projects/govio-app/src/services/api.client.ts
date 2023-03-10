@@ -84,6 +84,12 @@ export class ApiClient {
     return this.http.get<T>(this.api_url + endPoint, options);
   }
 
+  getContentRaw(endPoint: string) {
+    let _headers = new HttpHeaders();
+    _headers = _headers.set('Content-Type', 'application/octet-stream');
+    return this.http.get(this.api_url + endPoint, { responseType: 'blob' });
+  }
+
   /**
    * POST request
    * @param {string} endPoint end point of the api

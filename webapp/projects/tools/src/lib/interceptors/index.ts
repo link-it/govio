@@ -5,7 +5,7 @@ import { DEFAULT_TIMEOUT, TimeoutInterceptor } from 'projects/tools/src/lib/inte
 import { ErrorInterceptor } from './error.interceptor';
 import { LoaderInterceptor } from './loader.interceptor';
 import { CSRFInterceptor } from './csrf.interceptor';
-import { AuthDevInterceptor } from './authdev.interceptor';
+// import { AuthDevInterceptor } from './authdev.interceptor';
 
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
@@ -14,5 +14,5 @@ export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
   { provide: HTTP_INTERCEPTORS, useClass: CSRFInterceptor, multi: true },
-  { provide: HTTP_INTERCEPTORS, useClass: AuthDevInterceptor, multi: true }
+  // { provide: HTTP_INTERCEPTORS, useClass: AuthDevInterceptor, multi: true }
 ];

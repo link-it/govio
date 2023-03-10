@@ -1,11 +1,14 @@
 export class MenuAction {
 
-  title: string = 'title';
-  subTitle: string = 'subTitle';
-  action: string = 'action';
+  title: string = '';
+  subTitle: string = '';
+  action: string = '';
   url: string = '';
+  type: string = '';
   image: string = '';
   icon: string = '';
+  micon: string = '';
+  iconUrl: string = '';
   bgColor: string = '';
   color: string = '';
   enabled: boolean = true;
