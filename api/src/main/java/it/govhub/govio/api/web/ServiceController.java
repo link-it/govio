@@ -13,10 +13,8 @@ public class ServiceController extends ReadServiceController {
 	private static Set<String> readServiceRoles = Set.of(
 			GovioRoles.GOVIO_SYSADMIN, 
 			GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER,
-			GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR,
-			GovioRoles.GOVIO_SERVICE_VIEWER,
-			GovioRoles.GOVIO_SERVICE_EDITOR);
-
+			GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR
+			);
 	
 	@Override
 	protected Set<String> getReadServiceRoles() {

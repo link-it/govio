@@ -22,21 +22,11 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name, description) V
 INSERT INTO public.govhub_roles (id, id_govhub_application, name, description) VALUES (
 	nextval('public.seq_govhub_roles'),
 	(SELECT id FROM govhub_applications WHERE application_id='govio'), 
-	'govio_service_viewer',
+	'govio_service_instance_viewer',
 	'Autorizza alla consultazione di servizi e template.');
 
 INSERT INTO public.govhub_roles (id, id_govhub_application, name, description) VALUES (
 	nextval('public.seq_govhub_roles'), 
 	(SELECT id FROM govhub_applications WHERE application_id='govio'), 
-	'govio_service_editor',
+	'govio_service_instance_editor',
 	'Autorizza alla consultazione e modifica di servizi e template.');
-
----INSERT INTO public.govhub_roles (id, id_govhub_application, name, description) VALUES (
---	nextval('public.seq_govhub_roles'), 
---	(SELECT id FROM govhub_applications WHERE application_id='govio'), 
---	'govio_service_instance_viewer');
-
---INSERT INTO public.govhub_roles (id, id_govhub_application, name, description) VALUES (
---	nextval('public.seq_govhub_roles'), 
---	(SELECT id FROM govhub_applications WHERE application_id='govio'), 
---	'govio_service_instance_editor');
