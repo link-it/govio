@@ -470,7 +470,7 @@ components:
 
       Organization:
         allOf:
-          - $ref: "#/components/schemas/OrganizationCreate" 
+          - $ref: "#/components/schemas/OrganizationData" 
           - type: object
             additionalProperties: false
             required:
@@ -484,9 +484,17 @@ components:
                  properties:
                     self:
                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
+                    logo-miniature:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
                  example:
                     self: 
-                       href: "https://govhub.it/govregistry/organizations/1"
+                       href: "https://govhub.it/govregistry/organizations/1" 
+                    logo: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo"
+                    logo-miniature: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo-miniature"                                        
                 
       OrganizationItem:
         allOf:
@@ -527,7 +535,7 @@ components:
                $ref: "#/components/schemas/ServiceName"
             description:
               type: string
-              pattern: .*
+              pattern: '[\s\S]*'
               maxLength: 4096
               example: Service for customer management.
             logo_miniature:
@@ -536,22 +544,39 @@ components:
              $ref: "#/components/schemas/Logo"                          
               
       Service:
-         allOf:
-            - $ref: "#/components/schemas/ServiceCreate"
-            -  type: object
-               additionalProperties: false
-               properties:
-                  id:
-                     $ref: "#/components/schemas/ServiceId"
-                  _links:
-                     type: object
-                     additionalProperties: false
-                     properties:
-                        self:
-                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                     example:
-                       self: 
-                          href: "https://govhub.it/govregistry/services/1" 
+            type: object
+            additionalProperties: false
+            required:
+               - service_name
+               - id
+            properties:
+               service_name:
+                  $ref: "#/components/schemas/ServiceName"
+               description:
+                 type: string
+                 pattern: '[\s\S]*'
+                 maxLength: 4096
+                 example: Service for customer management.               
+               id:
+                  $ref: "#/components/schemas/ServiceId"
+               _links:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                     self:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                     logo:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
+                     logo-miniature:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
+                  example:
+                    self: 
+                       href: "https://govhub.it/govregistry/services/1" 
+                    logo: 
+                       href: "https://govhub.it/govregistry/services/1/logo"
+                    logo-miniature: 
+                       href: "https://govhub.it/govregistry/services/1/logo-miniature"                                                    
+                          
                         
                      
       OrganizationOrdering:
