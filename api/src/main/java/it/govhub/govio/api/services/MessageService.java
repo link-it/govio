@@ -65,21 +65,6 @@ public class MessageService {
 	
 	Logger log = LoggerFactory.getLogger(MessageService.class);
 
-	@Transactional
-	public GovioMessage readMessage(Long id) {
-		
-		GovioMessageEntity message = this.messageRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(this.messageMessages.idNotFound(id)));
-		
-		GovioServiceInstanceEntity instance = message.getGovioServiceInstance();
-		
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
-
-		return this.messageAssembler.toModel(message);
-	}
-
-
 	
 	@Transactional
 	public GovioMessageList listMessages(Specification<GovioMessageEntity> spec, LimitOffsetPageRequest pageRequest, List<EmbedMessageEnum> embeds) {

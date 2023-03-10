@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
@@ -77,7 +78,7 @@ public class FileController implements FileApi {
 	@Autowired
 	ServiceInstanceMessages sinstanceMessages;
 	
-	Logger logger = LoggerFactory.getLogger(FileController.class);
+	Logger log = LoggerFactory.getLogger(FileController.class);
 	
 	/**
 	 * I parametri argomento vengono ignorati e sono null. Abbiamo disabilitato la gestione del multipart di spring 
@@ -102,13 +103,13 @@ public class FileController implements FileApi {
 			// quando viene chiamato iterStream.hasNext.
 			// Per lo short-circuit dell'&&, una volta trovato l'elemento multipart necessario, usciamo dal while
 			// senza chiamare iterStream.hasNext
-			logger.debug("Reading Multipart Elements..");
+			log.debug("Reading Multipart Elements..");
 			while (sourceFilename == null && iterStream.hasNext()) {
 			    itemStream = iterStream.next();
-			    logger.debug("Found element: {}", itemStream.getFieldName());
+			    log.debug("Found element: {}", itemStream.getFieldName());
 			    
 			    if (itemStream.isFormField()) {
-			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
+			    	log.debug("Skipping multipart form field {}", itemStream.getFieldName());
 			    } else {
 				    sourceFilename = RequestUtils.readFilenameFromHeaders(itemStream.getHeaders());
 			    }
@@ -203,9 +204,21 @@ public class FileController implements FileApi {
 	}
 
 
+	@Transactional
 	@Override
-	public ResponseEntity<GovioFile> readFile(Long traceId) {
-		return ResponseEntity.ok(	this.fileService.readFile(traceId));
+	public ResponseEntity<GovioFile> readFile(Long id) {
+		
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		log.debug("Reading file [{}]", id);
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
+		
+		GovioFile ret = this.fileAssembler.toModel(file);
+		return ResponseEntity.ok(	ret);
 	}
 
 

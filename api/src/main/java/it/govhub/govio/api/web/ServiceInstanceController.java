@@ -44,6 +44,7 @@ import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceFilters;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.services.FileService;
+import it.govhub.govio.api.services.ServiceInstanceService;
 import it.govhub.govio.api.spec.ServiceApi;
 import it.govhub.govregistry.commons.api.beans.PatchOp;
 import it.govhub.govregistry.commons.config.V1RestController;
@@ -61,6 +62,8 @@ import it.govhub.security.services.SecurityService;
 
 @V1RestController
 public class ServiceInstanceController implements ServiceApi {
+	
+	Logger log = LoggerFactory.getLogger(ServiceInstanceController.class);
 	
 	@Autowired
 	ServiceInstanceAssembler instanceAssembler;
@@ -84,8 +87,9 @@ public class ServiceInstanceController implements ServiceApi {
 	@Autowired
 	Validator validator;
 	
-	Logger log = LoggerFactory.getLogger(ServiceInstanceController.class);
-
+	@Autowired
+	ServiceInstanceService instanceService;
+	
 	@Override
 	@Transactional
 	public ResponseEntity<GovioServiceInstanceList> listServiceInstances(
@@ -222,12 +226,6 @@ public class ServiceInstanceController implements ServiceApi {
 			throw new BadRequestException(PatchMessages.validationFailed(errors));
 		}
 		
-		if ( restInstance.getServiceId() != updatedInstance.getServiceId() || 
-			  restInstance.getOrganizationId() != updatedInstance.getOrganizationId() ||
-			  restInstance.getTemplateId() != updatedInstance.getTemplateId()) {
-			throw new BadRequestException("Non è possibile modificare i riferimenti al template, organizzazione o servizio della ServiceInstance");
-		}
-		
 		// Faccio partire la validazione custom per la stringa \u0000
 		PostgreSQLUtilities.throwIfContainsNullByte(updatedInstance.getApiKey(), "apiKey");
 		
@@ -235,7 +233,7 @@ public class ServiceInstanceController implements ServiceApi {
 		GovioServiceInstanceEntity newInstance = this.instanceAssembler.toEntity(updatedInstance);
 		newInstance.setId(id);
 		
-		newInstance = this.instanceRepo.save(newInstance);
+		newInstance = this.instanceService.replaceInstance(instance, newInstance);
 		
 		return ResponseEntity.ok(this.instanceAssembler.toModel(newInstance));
 	}
@@ -243,18 +241,10 @@ public class ServiceInstanceController implements ServiceApi {
 	
 	@Override
 	public ResponseEntity<Void> disableServiceInstance(Long id) {
-		
 		var instance = this.instanceRepo.findById(id)
 				.orElseThrow( () -> new NotFoundException(this.instanceMessages.idNotFound(id)));
 		
-		var spec = FileFilters.byMessageStatus(FileService.IntermediateStatuses).and(FileFilters.byServiceInstanceId(id));
-		
-		if (this.fileRepo.exists(spec)) {
-			throw new SemanticValidationException("L'istanza di servizio ["+id+"] non può essere disattivata in quanto ci sono ancora messaggi in coda.");
-		} else {
-			instance.setEnabled(false);
-			this.instanceRepo.save(instance);
-		}
+		this.instanceService.disableIntance(instance);
 		
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
