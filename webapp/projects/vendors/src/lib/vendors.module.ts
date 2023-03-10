@@ -9,6 +9,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { MarkdownModule } from 'ngx-markdown';
 import { GravatarModule, GravatarConfig, FALLBACK, RATING } from 'ngx-gravatar';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 const gravatarConfig: GravatarConfig = {
   fallback: FALLBACK.mm,
@@ -31,6 +32,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MarkdownModule.forRoot(),
     GravatarModule.forRoot(gravatarConfig),
     InfiniteScrollModule,
+    NgSelectModule,
     NgxChartsModule
   ],
   exports: [
@@ -43,6 +45,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MarkdownModule,
     GravatarModule,
     InfiniteScrollModule,
+    NgSelectModule,
     NgxChartsModule
   ],
 })

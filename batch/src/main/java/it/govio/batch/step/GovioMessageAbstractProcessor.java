@@ -14,15 +14,21 @@ import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.exception.BackendioRuntimeException;
 
+
 @Component
 public abstract class GovioMessageAbstractProcessor implements ItemProcessor<GovioMessageEntity, GovioMessageEntity> {
 
 	private Logger logger = LoggerFactory.getLogger(GovioMessageAbstractProcessor.class);
 
+    @Value( "${govio.consumer.retry-after-default:3600}" )
+	protected int defaultRetryTimer;
+    @Value( "${ govio.consumer.retry-after-max:10000}" )
+	protected int maxRetryTimer;
+
 	@Value( "${rest.debugging:false}" )
 	protected boolean debugging;
 
-	protected Status handleRestClientException(HttpClientErrorException e) throws HttpClientErrorException {
+	protected Status handleRestClientException(HttpClientErrorException e) throws HttpClientErrorException, InterruptedException {
 		logErrorResponse(e);
 		switch (e.getRawStatusCode()) {
 		case 400:
@@ -33,6 +39,17 @@ public abstract class GovioMessageAbstractProcessor implements ItemProcessor<Gov
 			return Status.FORBIDDEN;
 		case 404:
 			return Status.PROFILE_NOT_EXISTS;
+		case 429:
+			String value = e.getResponseHeaders().getFirst("Retry-After");
+			int sleepTime;
+			if (value == null) sleepTime = defaultRetryTimer;
+			else {
+				if (Integer.parseInt(value) > maxRetryTimer) sleepTime = maxRetryTimer;
+				else sleepTime = Integer.parseInt(value);
+		}
+			Thread.sleep(sleepTime);
+			logger.error("Ricevuta eccezione 429, aspettato {} prima di riprovare",sleepTime );
+			return Status.SCHEDULED;
 		default:
 			logger.error("Ricevuto client error non previsto da BackendIO: {}", e.getMessage());
 			throw e;

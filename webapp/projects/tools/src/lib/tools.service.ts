@@ -139,13 +139,13 @@ export class Tools {
   }
 
   public static simpleItemFormatter(fields: any[], data: any, options: any = null, join: string = ' · ') {
-    const $this = this;
     const results: string[] = [];
     fields.forEach(field => {
       const value = Tools.getObjectValue(data, field.field); // data[field.field]
       switch (field.type) {
         case 'number':
-          results.push(GridFormatters.numberFormatter({ value: value }, false));
+          const _tooltip = null; // field.tooltip ? this.translate.instant(field.tooltip) : null;
+          results.push(GridFormatters.numberFormatter({ value: value, icon: field.icon, hideZero: field.hideZero, tooltip: _tooltip }, true));
           break;
         case 'currency':
           results.push(GridFormatters.currencyFormatter({ value: value }, false));
@@ -181,12 +181,12 @@ export class Tools {
   public static generateFields(fields: any, data: any, empty: boolean | string = false, options: any = null) {
     const _list: any[] = [];
     fields.map((field: any) => {
-      if (field.type === 'downnload') {
+      if (field.type === 'download') {
         _list.push(new FieldClass({ label: 'APP.LABEL.Content', value: field.field, download: true, icon: 'download', json: data }));
       } else {
-        const value = Tools.getObjectValue(data, field.field); // data[field.field]
-        if (value) {
-          _list.push(new FieldClass({ label: field.label, value: Tools.formatValue(value, field, false, options), json: data }));
+        const value = Tools.getObjectValue(data, field.field);
+        if (value || (field.type === 'number')) {
+          _list.push(new FieldClass({ label: field.label, value: Tools.formatValue(value, field, true, options), json: data }));
         } else {
           if (empty) {
             _list.push(new FieldClass({ label: field.label, value: empty, json: data }));
@@ -432,6 +432,17 @@ export class Tools {
     return str.toLowerCase().split('_').map((s: string) => {
       return s.charAt(0).toUpperCase() + s.substring(1);
     }).join('');
+  }
+
+  public static RemoveEmpty(obj: any) {
+    return Object.keys(obj)
+      .filter(function (k) {
+        return obj[k] != null;
+      })
+      .reduce(function (acc: any, k: string) {
+        acc[k] = typeof obj[k] === "object" ? Tools.RemoveEmpty(obj[k]) : obj[k];
+        return acc;
+      }, {});
   }
 
   /**

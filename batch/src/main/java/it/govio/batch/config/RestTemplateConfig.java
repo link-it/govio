@@ -9,6 +9,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 
 @Configuration
@@ -30,7 +31,7 @@ public class RestTemplateConfig {
 		// Il backend IO non accetta i null values
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setSerializationInclusion(Include.NON_NULL);
-
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
 		messageConverter.setObjectMapper(objectMapper);
 		

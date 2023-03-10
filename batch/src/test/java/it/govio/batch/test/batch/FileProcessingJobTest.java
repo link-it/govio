@@ -33,16 +33,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.govio.batch.Application;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
-import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 
-@SpringBootTest
+@SpringBootTest(classes = Application.class)
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -56,7 +56,7 @@ class FileProcessingJobTest {
 	private GovioFilesRepository govioFilesRepository;
 
 	@Autowired
-	private GovioFileMessagesRepository govioFileMessagesRepository;
+	private GovioFilesRepository govioFileMessagesRepository;
 	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
@@ -151,6 +151,7 @@ class FileProcessingJobTest {
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
 				.creationDate(LocalDateTime.now())
 				.govioServiceInstance(instanceService)
+				.govhubUserId(1l)
 				.location(file.toPath().toString())
 				.name(file.getName())
 				.status(Status.CREATED)
@@ -158,6 +159,5 @@ class FileProcessingJobTest {
 
 		return govioFile1;
 	}
-
-
+	
 }

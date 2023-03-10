@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-between w-100">
     <div class="align-self-center">
       <img [src]="'assets/images/' + logo" class="header-logo d-inline-block" *ngIf="logo">
-      <p class="d-inline-block my-0" [class.ms-4]="logo" *ngIf="title">{{ title }}</p>
+      <p class="d-inline-block my-0" [class.ms-4]="logo" [class.h4]="!logo" *ngIf="title">{{ title }}</p>
     </div>
     <div class="align-self-center d-flex justify-content-end">
       <div class="d-flex justify-content-end align-items-center ms-auto text-truncate headbar-user">
@@ -13,27 +13,49 @@
           <ul role="menu" tabindex="-1" class="dropdown-menu dropdown-menu-end ui-popover-content-" aria-labelledby="menu-apps">
             <div class="ui-menu other-menu app-switcher-menu position-relative" tabindex="0">
               <div class="ui-menu-scroll-container position-relative" role="menu">
+                <div class="ui-menu-item app-switcher-wide-item app-switcher-list-item" role="menuitem" tabindex="-1" (click)="_onMenuAppAction(_menuShellActions)">
+                  <div class="other-menu-item" role="presentation">
+                    <mat-icon fontSet="material-icons-outlined">{{ _menuShellActions.icon }}</mat-icon>
+                    <i class="bi bi-{{ _menuShellActions.icon }} symbol-icon"></i>
+                    <div class="label" role="presentation">{{ _menuShellActions.title }}</div>
+                  </div>
+                </div>
                 <div class="ui-menu-item app-switcher-wide-item app-switcher-heading" role="menuitem" aria-disabled="true" tabindex="-1">App</div>
                 <div class="ui-menu-item app-switcher-grid-cell" [ngClass]="{'menu-disabled': !menu.enabled}" role="menuitem" aria-label="Apri Mail" tabindex="-1" *ngFor="let menu of _menuAppActions" (click)="_onMenuAppAction(menu)">
                   <div class="app-icon">
-                    <ng-container *ngIf="menu.image">
-                      <img [src]="menu.image">
-                    </ng-container>
-                    <ng-container *ngIf="!menu.image">
-                      <div class="d-flex justify-content-center app-icon-image" [ngStyle]="{'background-color': menu.bgColor, 'color': menu.color}">
-                        <i class="bi bi-{{ menu.icon || 'app' }} symbol-icon align-self-center"></i>
-                      </div>
+                    <ng-container [ngSwitch]="menu.type">
+                      <ng-container *ngSwitchCase="'image'">
+                        <img [src]="menu.image">
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'bootstrap'">
+                        <div class="d-flex justify-content-center app-icon-image"
+                          [ngStyle]="{'background-color': menu.bgColor, 'color': menu.color}">
+                          <i class="bi bi-{{ menu.icon || 'app' }} symbol-icon align-self-center" *ngIf="menu.icon"></i>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'material'">
+                        <div class="d-flex justify-content-center app-icon-image"
+                          [ngStyle]="{'background-color': menu.bgColor, 'color': menu.color}">
+                          <mat-icon fontSet="material-icons-outlined" *ngIf="menu.micon">{{ menu.micon }}</mat-icon>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'svg'">
+                        <div class="d-flex justify-content-center app-icon-image"
+                          [ngStyle]="{'background-color': menu.bgColor, 'color': menu.color}">
+                          <img [src]="menu.iconUrl" *ngIf="menu.iconUrl">
+                        </div>
+                      </ng-container>
                     </ng-container>
                   </div>
                   <div class="app-switcher-app-name" role="presentation">{{ menu.title }}</div>
                 </div>
-                <div class="ui-menu-item app-switcher-wide-item app-switcher-heading" role="menuitem" aria-disabled="true" tabindex="-1">Altro</div>
+                <!-- <div class="ui-menu-item app-switcher-wide-item app-switcher-heading" role="menuitem" aria-disabled="true" tabindex="-1">Altro</div>
                 <div class="ui-menu-item app-switcher-wide-item app-switcher-list-item" [ngClass]="{'menu-disabled': !menu.enabled}" role="menuitem" tabindex="-1" *ngFor="let menu of _menuAppActions" (click)="_onMenuAppAction(menu)">
                   <div class="other-menu-item" role="presentation">
                     <i class="bi bi-{{ menu.icon || 'app' }} symbol-icon"></i>
                     <div class="label" role="presentation">{{ menu.title }}</div>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </ul>

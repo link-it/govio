@@ -27,10 +27,14 @@
           <ng-container *ngIf="true">
             <li class="" [ngClass]="{ 'js-collapsed-desktop': _sideBarCollapsed && desktop, 'js-expanded-mobile': _sideBarCollapsed && !desktop, 'js-mobile': mobile, 'expanded': (_item.expanded && mobile) || _forceMenuOpen, 'force-menu-open': _forceMenuOpen }" [appRouterLinkMatch]="{ 'active': _item.path + '' }" appFlyOut>
               <ng-container [ngSwitch]="sidebarNavHelper.itemType(_item)">
+                <ng-container *ngSwitchCase="'divider'">
+                  <a class="divider"></a>
+                </ng-container>
                 <ng-container *ngSwitchCase="'title'">
                   <a class="gl-link cursor-pointer" [class.has-sub-items]="_item?.children?.length" (click)="_onClickMenu($event, _item)">
                     <span class="nav-icon-container">
                       <mat-icon fontSet="material-icons-outlined" *ngIf="sidebarNavHelper.hasIcon(_item)">{{ _item.icon}}</mat-icon>
+                      <i class="bi bi-{{ _item.iconBs}}" *ngIf="sidebarNavHelper.hasIconBs(_item)"></i>
                     </span>
                     <span class="nav-item-name">{{ _item.label + '' | translate }}</span>
                     <!-- <span class="gl-badge badge rounded-pill badge-info text-dark sm count issue_counter">580</span> -->

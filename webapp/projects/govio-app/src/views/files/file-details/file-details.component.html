@@ -1,0 +1,222 @@
+<div id="route-section" class="">
+  <div class="alert-wrapper gp-force-block-formatting-context">
+    <ui-breadcrumb [breadcrumbs]="breadcrumbs" [classContainer]="'limit-container-width'" (onClick)="onBreadcrumb($event)"></ui-breadcrumb>
+  </div>
+  <div class="top-area container-fluid container-limited limit-container-width px-0">
+    <h3 class="page-title" *ngIf="_isEdit && !_isNew">{{ 'APP.TITLE.EditFile' | translate }}</h3>
+    <h3 class="page-title" *ngIf="_isEdit && _isNew">{{ 'APP.TITLE.NewFile' | translate }}</h3>
+    <div class="d-flex flex-grow-1">&nbsp;</div>
+    <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'edit'"> -->
+      <div class="nav-controls">
+        <div class="position-relative" *ngIf="!_isEdit && !_spin && _editable">
+          <button aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-icon" [tooltip]="'APP.TOOLTIP.EditFile' | translate" (click)="_editFile()">
+            <i class="bi bi-pencil"></i>
+          </button>
+        </div>
+        <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'delete'"> -->
+          <div role="group" class="btn-group- ms-1" *ngIf="!_isEdit && !_spin && _deleteable">
+            <div class="dropdown b-dropdown gl-new-dropdown btn-group" id="actions">
+              <button aria-haspopup="true" aria-expanded="false" type="button" class="btn dropdown-toggle btn-default btn-md gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret" data-bs-toggle="dropdown" data-bs-display="static" id="other_actions">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul role="menu" tabindex="-1" class="dropdown-menu dropdown-menu-end" aria-labelledby="sort_toggle">
+                <div class="gl-new-dropdown-inner">
+                  <div class="gl-new-dropdown-contents">
+                    <li role="presentation" class="gl-new-dropdown-item">
+                      <button role="menuitem" type="button" class="dropdown-item" (click)="_deleteFile()">
+                        <div class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start">
+                          <i class="bi bi-trash text-danger"></i>
+                        </div>
+                        <div class="gl-new-dropdown-item-text-wrapper">
+                          <p class="gl-new-dropdown-item-text-primary">{{ 'APP.MENU.DeleteFile' | translate }}</p>
+                        </div>
+                      </button>
+                    </li>
+                  </div>
+                </div>
+              </ul>
+            </div>
+          </div>
+        <!-- </ng-template> -->
+        <div role="group" class="gl-w-full btn-group- position-relative" *ngIf="_isEdit && !_spin">
+          <button aria-haspopup="true" aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-default-tertiary ms-2" [tooltip]="(_isNew ? 'APP.TOOLTIP.CancelNew' : 'APP.TOOLTIP.CancelEdit') | translate" (click)="_onCancelEdit()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    <!-- </ng-template> -->
+  </div>
+  <section class="container-fluid container-limited limit-container-width container-scroller container-scroller-no-search">
+    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin && !_isNew"></ui-box-spinner>
+    <ui-box-message *ngIf="!file && !_spin && !_isNew"
+      [image]="'./assets/images/illustrations/no-data.svg'"
+      [message]="'APP.MESSAGE.NoData' | translate"
+      [subMessage]="'APP.MESSAGE.NoDataHelp' | translate">
+    </ui-box-message>
+
+    <div class="settings" *ngIf="(file && !_spin) || _isNew">
+      <div class="settings-header d-none">
+        <h4 class="settings-title">{{ 'APP.FILES.TITLE.GeneralInformations' | translate }}</h4>
+        <ng-template [appHasPermission]="'SETTINGS'" [action]="'edit'">
+          <button aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-icon" [tooltip]="'APP.TOOLTIP.EditFile' | translate" (click)="_editFile()" *ngIf="!_isEdit && !_spin">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <div role="group" class="gl-w-full btn-group-" *ngIf="_isEdit && !_spin">
+            <button aria-haspopup="true" aria-expanded="false" type="button" class="btn btn-default btn-md gl-button btn-default-tertiary ms-2 btn-icon" [tooltip]="(_isNew ? 'APP.TOOLTIP.CancelNew' : 'APP.TOOLTIP.CancelEdit') | translate" (click)="_onCancelEdit()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </ng-template>
+        <p markdown>{{ 'APP.FILES.TITLE.GeneralInformations_sub' | translate }}</p>
+      </div>
+      <div class="settings-content">
+        <div class="gl-alert gl-alert-danger col-md-12 mb-5" *ngIf="!_isEdit && _error">
+          {{ _errorMsg }}
+        </div>
+        <div class="edit-form" *ngIf="_isEdit">
+          <form novalidate class="issue-form common-note-form mt-3 gl-show-field-errors gfm-form" [class.form-readonly]="!_isEdit" [formGroup]="_formGroup" (submit)="_onSubmit(_formGroup.value)">
+            <div class="row gl-mt-3">
+              <div class="col-lg-4">
+                <h4 class="gl-mt-0 text-break">{{ 'APP.FILES.TITLE.GeneralInformations' | translate }}</h4>
+                <div class="text-break" markdown>{{ 'APP.FILES.TITLE.GeneralInformations_sub' | translate }}</div>
+              </div>
+              <div class="col-lg-8">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group organization_id">
+                      <label class="label-bold" for="organization_id">{{ 'APP.LABEL.Organization' | translate }}</label>
+                      <div class="">
+                        <ng-select #organizationsSelect
+                          [class.gl-field-error-outline-select]="_hasControlError('organization_id')"
+                          [items]="_organizations"
+                          [selectOnTab]="true"
+                          bindValue="id"
+                          bindLabel="legal_name" 
+                          labelForId="id"
+                          [placeholder]="'APP.PLACEHOLDER.SelectOrganization' | translate"
+                          [notFoundText]="'APP.MESSAGE.NotFoundText' | translate"
+                          [loadingText]="'APP.MESSAGE.LoadingText' | translate"
+                          formControlName="organization_id">
+                            <ng-template ng-label-tmp let-item="item">
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
+                              </div>
+                            </ng-template>
+                        </ng-select>
+                        <!-- <select class="form-select" [class.gl-field-error-outline]="_hasControlError('organization_id')" aria-label="organization_id" formControlName="organization_id">
+                          <option [value]="item.id" *ngFor="let item of _organizations">{{ item.legal_name }}</option>
+                        </select> -->
+                        <p *ngIf="f['organization_id'].invalid && (f['organization_id'].dirty || f['organization_id'].touched)" class="form-text text-danger">
+                          <span *ngIf="f['organization_id'].errors && f['organization_id'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                        </p>
+                        <ui-input-help field="organization_id" context="FILE"></ui-input-help>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group service_id">
+                      <label class="label-bold" for="service_id">{{ 'APP.LABEL.Service' | translate }}</label>
+                      <div class="">
+                        <ng-select #organizationsSelect
+                          [class.gl-field-error-outline-select]="_hasControlError('service_id')"
+                          [items]="_services"
+                          [selectOnTab]="true"
+                          bindValue="id"
+                          bindLabel="service_name" 
+                          labelForId="service_name"
+                          [placeholder]="'APP.PLACEHOLDER.SelectService' | translate"
+                          [notFoundText]="'APP.MESSAGE.NotFoundText' | translate"
+                          [loadingText]="'APP.MESSAGE.LoadingText' | translate"
+                          formControlName="service_id">
+                            <ng-template ng-label-tmp let-item="item">
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _serviceLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.service_name}}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                              <div class="d-flex flex-row align-items-center">
+                                <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _serviceLogoBackground"></div>
+                                <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                                <span class="flex-shrink-1 ms-3">{{item.service_name}}</span>
+                              </div>
+                            </ng-template>
+                        </ng-select>
+                        <!-- <select class="form-select" [class.gl-field-error-outline]="_hasControlError('service_id')" aria-label="service_id" formControlName="service_id">
+                          <option [value]="item.id" *ngFor="let item of _services">{{ item.service_name }}</option>
+                        </select> -->
+                        <p *ngIf="f['service_id'].invalid && (f['service_id'].dirty || f['service_id'].touched)" class="form-text text-danger">
+                          <span *ngIf="f['service_id'].errors && f['service_id'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                          <span *ngIf="f['service_id'].errors && f['service_id'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Fileservice_id' | translate }}</span>
+                        </p>
+                        <ui-input-help field="service_id" context="FILE"></ui-input-help>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12">
+                    <div class="form-group file">
+                      <label class="label-bold" for="logo">{{ 'APP.LABEL.File' | translate }}</label>
+                      <div class="" *ngIf="_isEdit">
+                        <input type="file" class="form-control form-control-sm" formControlName="file" (change)="_onFileLoaded($event, 'file')" [class.gl-field-error-outline]="_hasControlError('file')">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="gl-alert gl-alert-danger col-md-12 mt-3" *ngIf="_isEdit && _error">
+              {{ _errorMsg }}
+            </div>
+
+            <div class="row-content-block footer-block" *ngIf="_isEdit">
+              <button aria-label="Save" type="submit" class="gl-button btn btn-confirm gl-mr-2" [disabled]="_formGroup.invalid || _spin">
+                {{ 'APP.BUTTON.Save' | translate }}
+              </button>
+              <button aria-label="Cancel" type="button" class="btn gl-button btn-default" (click)="_onCancelEdit()">
+                {{ 'APP.BUTTON.Cancel' | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="edit-form" *ngIf="!_isEdit">
+          <div class="row gl-mt-3">
+            <!-- <div class="col-lg-4">
+              <h4 class="gl-mt-0 text-break">{{ 'APP.FILES.TITLE.GeneralInformations' | translate }}</h4>
+              <div class="text-break" markdown>{{ 'APP.FILES.TITLE.GeneralInformations_sub' | translate }}</div>
+            </div> -->
+            <div class="col-lg-12">
+              <ui-box-collapse *ngIf="file && !_spin"
+                [opened]="true"
+                [showCollapse]="appConfig.AppConfig?.Layout?.Details?.Collapsible?.informations"
+                [id]="'general-informations'"
+                [title]="'APP.FILES.TITLE.GeneralInformations' | translate"
+                [subTitle]="'APP.FILES.TITLE.GeneralInformations_sub' | translate">
+                <ui-form-readonly
+                  [fields]="_informazioni"
+                  [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6"
+                  (downloadClick)="_downloadAction($event)">
+                </ui-form-readonly>
+              </ui-box-collapse>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

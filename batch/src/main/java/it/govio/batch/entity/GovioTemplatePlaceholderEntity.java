@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
@@ -37,16 +38,16 @@ public class GovioTemplatePlaceholderEntity {
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@MapsId("GovioTemplateId")
-	@JoinColumn(name = "id_govio_template", nullable = false)
+	@JoinColumn(name = "id_govio_template", nullable = false, foreignKey = @ForeignKey(name = "GovioTemplatePlaceholder_GovioTemplate"))
 	private GovioTemplateEntity govioTemplate;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne()
 	@MapsId("GovioPlaceholderId")
-	@JoinColumn(name = "id_govio_placeholder", nullable = false)
+	@JoinColumn(name = "id_govio_placeholder", nullable = false, foreignKey = @ForeignKey(name = "GovioTemplatePlaceholder_GovioPlaceholder"))
 	private GovioPlaceholderEntity govioPlaceholder;
 
-	@Column(name = "index", nullable = false)
-	private int index;
+	@Column(name = "position", nullable = false)
+	private int position;
 
 	@Column(name = "mandatory", nullable = false)
 	private boolean mandatory;

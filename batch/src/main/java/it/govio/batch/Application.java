@@ -1,7 +1,5 @@
 package it.govio.batch;
 
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -15,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @SpringBootApplication(scanBasePackages={"it.govio.batch","it.pagopa.io.v1.api"})
+//@Import(CommonsExportedBeans.class)
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
 
@@ -37,7 +36,7 @@ public class Application extends SpringBootServletInitializer {
 		SpringApplication.run(Application.class, args);
 	}
 
-	@Scheduled(fixedDelayString = "${scheduler.fileProcessingJob.fixedDelayString:10}", initialDelayString = "${scheduler.initialDelayString:1}")
+	@Scheduled(fixedDelayString = "${scheduler.fileProcessingJob.fixedDelayString:10000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void fileProcessingJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))
@@ -45,7 +44,7 @@ public class Application extends SpringBootServletInitializer {
 		jobLauncher.run(fileProcessingJob, params);
 	}
 	
-	@Scheduled(fixedDelayString = "${scheduler.sendMessageJob.fixedDelayString:60}", initialDelayString = "${scheduler.initialDelayString:1}")
+	@Scheduled(fixedDelayString = "${scheduler.sendMessageJob.fixedDelayString:60000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void sendMessageJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))
@@ -53,7 +52,7 @@ public class Application extends SpringBootServletInitializer {
 		jobLauncher.run(sendMessagesJob, params);
 	}
 	
-	@Scheduled(fixedDelayString = "${scheduler.verifyMessagesJob.fixedDelayString:600}", initialDelayString = "${scheduler.initialDelayString:1}")
+	@Scheduled(fixedDelayString = "${scheduler.verifyMessagesJob.fixedDelayString:600000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void verifyMessagesJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))

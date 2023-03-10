@@ -32,7 +32,8 @@
 							"moment",
 							"lodash",
 							"ts-md5/dist/md5",
-							"clone-deep"
+							"clone-deep",
+							"rfdc"
 						],
 						"inlineStyleLanguage": "scss",
 						"assets": [

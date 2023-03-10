@@ -59,7 +59,7 @@ export class SearchBarFormComponent implements OnInit, OnChanges, AfterViewInit 
     this.config = this.configService.getConfiguration();
     this._historyCount = this.config.AppConfig.Search.HistoryCount || this._historyCount;
 
-    this._addIconsSvg();
+    // this._addIconsSvg();
   }
 
   ngOnInit() {

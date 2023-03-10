@@ -20,14 +20,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioFileMessageEntity;
-import it.govio.batch.entity.GovioTemplateEntity;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.step.FinalizeFileProcessingTasklet;
 import it.govio.batch.step.GovioFileItemProcessor;
 import it.govio.batch.step.GovioFileItemWriter;
 import it.govio.batch.step.GovioFilePartitioner;
-import it.govio.batch.step.UpdateFileStatusTasklet;
+import it.govio.batch.step.PromoteToProcessingTasklet;
 import it.govio.batch.step.beans.GovioFileMessageLineMapper;
+import it.govio.template.Template;
 
 @Configuration
 public class FileProcessingJobConfig {
@@ -55,16 +55,19 @@ public class FileProcessingJobConfig {
 		return jobs.get("FileProcessingJob")
 				.incrementer(new RunIdIncrementer())
 				.start(promoteProcessingFileTasklet)
-				.next(govioFileReaderMasterStep)
+				.on("NEW_FILES_NOT_FOUND")
+				.end()
+				.from(promoteProcessingFileTasklet)
+				.on("NEW_FILES_FOUND")
+				.to(govioFileReaderMasterStep)
 				.next(finalizeProcessingFileTasklet)
+				.end()
 				.build();
 	}
 
 	@Bean
 	@Qualifier("promoteProcessingFileTasklet")
-	public Step promoteProcessingFileTasklet(UpdateFileStatusTasklet updateFileStatusTasklet) {
-		updateFileStatusTasklet.setPreviousStatus(Status.CREATED);
-		updateFileStatusTasklet.setAfterStatus(Status.PROCESSING);
+	public Step promoteProcessingFileTasklet(PromoteToProcessingTasklet updateFileStatusTasklet) {
 		return steps.get("promoteProcessingFileTasklet")
 				.tasklet(updateFileStatusTasklet)
 				.build();
@@ -109,6 +112,10 @@ public class FileProcessingJobConfig {
 				.build();
 	}
 
+	/**
+	 * Mappa le righe di un file in uno stream di GovioFileMessageEntity
+	 *  
+	 */
 	@Bean
 	@StepScope
 	@Qualifier("govioFileItemReader")
@@ -124,7 +131,7 @@ public class FileProcessingJobConfig {
 	@StepScope
 	@Qualifier("govioFileItemProcessor")
 	public ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor(
-			@Value("#{stepExecutionContext[template]}") GovioTemplateEntity template) {
+			@Value("#{stepExecutionContext[template]}") Template template) {
 		GovioFileItemProcessor processor = new GovioFileItemProcessor();
 		processor.setGovioTemplate(template);
 		return processor;
@@ -135,10 +142,12 @@ public class FileProcessingJobConfig {
 	@Qualifier("govioFileItemWriter")
 	public ItemWriter<GovioFileMessageEntity> govioFileItemWriter(
 			@Value("#{stepExecutionContext[id]}") long govioFileId,
-			@Value("#{stepExecutionContext[serviceInstance]}") Long serviceInstanceId){
+			@Value("#{stepExecutionContext[serviceInstance]}") Long serviceInstanceId,
+			@Value("#{stepExecutionContext[govhubUserId]}") Long govhubUserId){
 		GovioFileItemWriter govioFileItemWriter =  new GovioFileItemWriter();
 		govioFileItemWriter.setGovioFileId(govioFileId);
 		govioFileItemWriter.setGovioServiceInstanceId(serviceInstanceId);
+		govioFileItemWriter.setGovhubUserId(govhubUserId);
 		return govioFileItemWriter;
 	}
 

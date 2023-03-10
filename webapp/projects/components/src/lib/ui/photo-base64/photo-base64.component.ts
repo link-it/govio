@@ -60,8 +60,6 @@ export class PhotoBase64Component implements OnInit, OnChanges {
           const img_height = rs.currentTarget['height'];
           const img_width = rs.currentTarget['width'];
 
-          console.log(img_height, img_width);
-
           if (img_height > max_height && img_width > max_width) {
             this.imageError =
               'Maximum dimentions allowed ' +
