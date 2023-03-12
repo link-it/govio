@@ -3,16 +3,6 @@
     <div class="breadcrumbs-area">
       <ui-breadcrumb [breadcrumbs]="breadcrumbs" (onClick)="onBreadcrumb($event)"></ui-breadcrumb>
     </div>
-    <div class="flash-container flash-container-page sticky gp-display-block d-none">
-      <div class="flash-notice" data-testid="alert-info">
-        <div class="flash-text">
-          You must sign in to search for specific terms.
-          <div class="close-icon-wrapper">
-            <mat-icon class="fs-6" fontSet="material-icons-outlined">close</mat-icon>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="top-area">
       <div class="tabs gp-tabs d-flex flex-grow-1 p-0 m-0 mobile-separator issuable-state-filters">
         <div class="">
@@ -29,7 +19,7 @@
         <div role="group" class="gl-w-full btn-group-">
           <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'create'"> -->
             <button aria-label="Add file" type="button" class="btn btn-confirm btn-md gl-button btn-icon" (click)="_onNew()">
-              <mat-icon fontSet="material-icons-outlined">note_add</mat-icon> <span class="ms-2">{{ 'APP.BUTTON.AddFile' | translate }}</span>
+              <i class="bi bi-plus-lg"></i><span class="ms-2">{{ 'APP.BUTTON.AddFile' | translate }}</span>
             </button>
           <!-- </ng-template> -->
         </div>

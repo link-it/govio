@@ -3,6 +3,7 @@
 		"BUTTON": {
 			"AddFile": "Aggiungi tracciato",
 			"AddPlaceholder": "Aggiungi segnaposto",
+			"AddService": "Aggiungi servizio",
 			"AddTemplate": "Aggiungi modello",
 			"AlertAction": "Chiudi",
 			"AssignPlaceholder": "Assegna segnaposto",
@@ -130,6 +131,7 @@
 			"Dashboard": "Cruscotto",
 			"DeleteFile": "Elimina tracciato...",
 			"DeletePlaceholder": "Elimina segnaposto...",
+			"DeleteService": "Elimina servizio...",
 			"DeleteTemplate": "Elimina modello...",
 			"ExportCSV": "Esporta CSV",
 			"ExportPDF": "Esporta PDF",
@@ -138,6 +140,7 @@
 			"Logout": "Logout",
 			"Messages": "Messaggi",
 			"Placeholders": "Segnaposto",
+			"Services": "Servizi",
 			"Templates": "Modelli"
 		},
 		"MESSAGE": {
@@ -235,6 +238,18 @@
 			"RecentSearches": "Ricerche recenti",
 			"View": "Vista"
 		},
+		"SERVICES": {
+			"FILTER": {
+				"All": "Tutti",
+				"Closed": "Chiusi",
+				"Found": "Trovati",
+				"Open": "Aperti"
+			},
+			"TITLE": {
+				"GeneralInformations": "Informazioni generali",
+				"GeneralInformations_sub": ""
+			}
+		},
 		"SIDENAV": {
 			"Title": "GovIO"
 		},
@@ -283,6 +298,7 @@
 			"Dashboard": "Cruscotto",
 			"EditFiles": "Modifica tracciato",
 			"EditPlaceholder": "Modifica segnaposto",
+			"EditService": "Modifica servizio",
 			"EditTemplate": "Modifica modello",
 			"File": "Tracciato",
 			"Files": "Tracciati",
@@ -293,10 +309,13 @@
 			"New": "Nuovo",
 			"NewFile": "Nuovo tracciato",
 			"NewPlaceholder": "Nuovo segnaposto",
+			"NewService": "Nuovo servizio",
 			"NewTemplate": "Nuovo modello",
 			"Organization": "Organizzazione",
 			"Placeholders": "Segnaposto",
 			"Service": "Servizio",
+			"Service (2)": "Servizio",
+			"Services": "Servizi",
 			"Templates": "Modelli",
 			"Watermark": "Staging"
 		},
@@ -309,6 +328,7 @@
 			"EditFile": "Modifica tracciato",
 			"EditPlaceholder": "Modifica segnaposto",
 			"EditPlaceholders": "Modifica i segnaposto",
+			"EditService": "Modifica servizio",
 			"EditTemplate": "Modifica modello",
 			"ErrorMessages": "Messaggi di errore",
 			"Export": "Esporta",

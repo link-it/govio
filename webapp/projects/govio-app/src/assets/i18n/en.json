@@ -3,6 +3,7 @@
 		"BUTTON": {
 			"AddFile": "Add file",
 			"AddPlaceholder": "Add placeholder",
+			"AddService": "Add service",
 			"AddTemplate": "Add template",
 			"AlertAction": "Close",
 			"AssignPlaceholder": "Assign placeholder",
@@ -130,6 +131,7 @@
 			"Dashboard": "Dashboard",
 			"DeleteFile": "Delete file …",
 			"DeletePlaceholder": "Delete placeholder …",
+			"DeleteService": "Delete service …",
 			"DeleteTemplate": "Delete template …",
 			"ExportCSV": "Export CSV",
 			"ExportPDF": "Export PDF",
@@ -138,6 +140,7 @@
 			"Logout": "Logout",
 			"Messages": "Messages",
 			"Placeholders": "Placeholders",
+			"Services": "Services",
 			"Templates": "Templates"
 		},
 		"MESSAGE": {
@@ -235,6 +238,18 @@
 			"RecentSearches": "Recent searches",
 			"View": "View"
 		},
+		"SERVICES": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": ""
+			}
+		},
 		"SIDENAV": {
 			"Title": "GovIO"
 		},
@@ -283,6 +298,7 @@
 			"Dashboard": "Dashboard",
 			"EditFiles": "Edit file",
 			"EditPlaceholder": "Edit placeholder",
+			"EditService": "Edit service",
 			"EditTemplate": "Edit template",
 			"File": "File",
 			"Files": "Files",
@@ -293,10 +309,13 @@
 			"New": "New",
 			"NewFile": "New file",
 			"NewPlaceholder": "New placeholder",
+			"NewService": "New service",
 			"NewTemplate": "New template",
 			"Organization": "Organization",
 			"Placeholders": "Placeholders",
 			"Service": "Service",
+			"Service (2)": "Service",
+			"Services": "Services",
 			"Templates": "Templates",
 			"Watermark": "Staging"
 		},
@@ -309,6 +328,7 @@
 			"EditFile": "Edit file",
 			"EditPlaceholder": "Edit placeholder",
 			"EditPlaceholders": "Edit placeholders",
+			"EditService": "Edit service",
 			"EditTemplate": "Edit template",
 			"ErrorMessages": "Error messages",
 			"Export": "Export",
