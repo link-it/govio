@@ -31,10 +31,9 @@ public class GovioServiceInstanceEntity {
 	@SequenceGenerator(name="seq_govio_service_instances",sequenceName="seq_govio_service_instances", initialValue=1, allocationSize=1)
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_service_instances")
 	private Long id;
-
-	@ManyToOne
-	@JoinColumn(name = "id_govio_service", nullable = false, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioService"))
-	private GovioServiceEntity govioService;
+	
+	@Column(name = "id_govhub_service")
+	private Long govhubServiceId;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_govio_template", nullable = true, foreignKey = @ForeignKey(name = "GovioServiceInstance_GovioTemplate"))

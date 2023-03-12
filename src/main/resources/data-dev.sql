@@ -34,19 +34,41 @@ INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VA
 
 -- Creo un govio_service
 
-INSERT INTO govhub_services (id, name, description) VALUES(nextval('seq_govhub_services'), 'CIE', 'Servizio dev');
+INSERT INTO govhub_services(id, name, description) VALUES(nextval('seq_govhub_services'), 'CIE', 'Servizio dev');
 
 INSERT INTO govhub_organizations(id, tax_code, legal_name) VALUES(nextval('seq_govhub_organizations'), '80015010723', 'Cie org');
 
 
 -- inserimento dati per la configurazione di un template per la spedizione di un messaggio
 
-INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment) VALUES (nextval('public.seq_govio_templates'), 'Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}. Per maggiori informazioni sulle modalità di rinnovo può consultare https://comune.dimostrativo.it.', 'Scadenza CIE n. ${cie.uppercase}', true, false);
+do $$
+declare
+	template_id integer;
+	placeholder_id integer;
+    service_instance_id integer;
+begin
+	INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment) VALUES (
+		nextval('public.seq_govio_templates'), 
+		'Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}. Per maggiori informazioni sulle modalità di rinnovo può consultare https://comune.dimostrativo.it.', 
+		'Scadenza CIE n. ${cie.uppercase}', 
+		true, 
+		false) returning id into template_id;
 
-INSERT INTO govio_services(id, id_govio_template, id_govhub_service) VALUES (nextval('public.seq_govio_services'), 1, (select id from public.govhub_services where name='CIE') );
+	INSERT INTO govio_placeholders(id, name, type, example) VALUES (
+		nextval('public.seq_govio_placeholders'), 
+		'cie', 
+		'STRING', 
+		'CA000000AA') returning id into placeholder_id;
 
-INSERT INTO govio_service_instances(id, id_govio_service, id_govhub_organization, id_govio_template,apikey) VALUES (nextval('public.seq_govio_service_instances'), 1, (select id from public.govhub_organizations where tax_code='80015010723') , 1, '17886617e07d47e8b1ba314f2f1e3052');
+	INSERT INTO govio_template_placeholders(id_govio_template, id_govio_placeholder, mandatory, position) VALUES (template_id, placeholder_id, true, 1);
 
-INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'), 'cie', 'STRING', 'CA000000AA');
 
-INSERT INTO govio_template_placeholders(id_govio_template, id_govio_placeholder, mandatory, position) VALUES (1, 1, true, 1);
+	INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template,apikey) VALUES (
+		nextval('public.seq_govio_service_instances'), 
+		(select id from govhub_services where name='CIE'),
+		(select id from govhub_organizations where tax_code='80015010723'),
+		template_id,
+		'17886617e07d47e8b1ba314f2f1e3052');
+end $$
+
+

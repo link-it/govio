@@ -9,10 +9,10 @@
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>msg-batch</artifactId>
+	<artifactId>govio-statistics</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>GovIO - Batch</name>
-	<description>Batch di generazione, spedizione e verifica messaggi IO</description>
+	<name>GovIO - Statistics</name>
+	<description>Batch e endpoint REST per la consultazione di statistiche sui messaggi IO</description>
 
 	<profiles>
 		<profile>
@@ -40,12 +40,21 @@
 	</profiles>
 
 	<dependencies>
+		
 		<dependency>
-			<groupId>it.govhub.govio</groupId>
-			<artifactId>template-utils</artifactId>
-			<version>${project.version}</version>
+			<groupId>it.govhub.govregistry</groupId>
+			<artifactId>commons</artifactId>
+			<version>${govregistry.version}</version>
 		</dependency>
 		
+		<!--  Dipendenza da govio per portarsi dietro lo yaml dell'openapi-->
+		<dependency>
+			<groupId>it.govhub.govio</groupId>
+			<artifactId>api</artifactId>
+			<version>${govregistry.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -95,11 +104,6 @@
 			<artifactId>spring-batch-integration</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>5.3</version>
-		</dependency>
 
 		<!-- Dipendenze client GovPay -->
 
@@ -179,12 +183,14 @@
 	</dependencies>
 
 	<build>
-		<finalName>govio-batch</finalName>
+		<finalName>govio-stats</finalName>
 		<plugins>
+		
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -192,40 +198,7 @@
 					<forceJavacCompilerUse>true</forceJavacCompilerUse>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<groupId>org.openapitools</groupId>
-				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>${openapi.tool.codegen.version}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<id>generate-sources-client-appio-v1</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/appio/v1/appio.yaml</inputSpec>
-							<generatorName>java</generatorName>
-							<configOptions>
-								<booleanGetterPrefix>is</booleanGetterPrefix>
-								<dateLibrary>java8</dateLibrary>
-								<library>resttemplate</library>
-								<serializationLibrary>jackson</serializationLibrary>
-								<sourceFolder>generated-sources/java/</sourceFolder>
-								<apiPackage>it.pagopa.io.v1.api</apiPackage>
-								<invokerPackage>it.pagopa.io.v1.api.impl</invokerPackage>
-								<modelPackage>it.pagopa.io.v1.api.beans</modelPackage>
-								<useAnnotatedBasePath>true</useAnnotatedBasePath>
-								<useBeanValidation>false</useBeanValidation>
-							</configOptions>
-							<output>${project.basedir}/target</output>
-							<generateApiTests>false</generateApiTests>
-							<generateModelTests>false</generateModelTests>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

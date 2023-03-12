@@ -43,7 +43,7 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFil
         BeanUtils.copyProperties(src, ret);
 
         ret.organization(this.orgAssembler.toModel(src.getServiceInstance().getOrganization()))
-        	.service(this.serviceAssembler.toModel(src.getServiceInstance().getService().getGovhubService()))
+        	.service(this.serviceAssembler.toModel(src.getServiceInstance().getService()))
             .user(this.userAssembler.toModel(src.getGovauthUser()))
             .status(src.getStatus())
             .filename(src.getName());

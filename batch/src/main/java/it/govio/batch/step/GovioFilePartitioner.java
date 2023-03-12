@@ -37,10 +37,8 @@ public class GovioFilePartitioner implements Partitioner {
 			ex.putLong("govhubUserId", file.getGovhubUserId());
 			// Se il service_instance non presenta un template, recupero il default dal service
 			GovioTemplateEntity govioTemplate = null;
-			if (file.getGovioServiceInstance().getGovioTemplate() == null) 
-				govioTemplate = file.getGovioServiceInstance().getGovioService().getGovioTemplate();
-			else 
-				govioTemplate = file.getGovioServiceInstance().getGovioTemplate();
+
+			govioTemplate = file.getGovioServiceInstance().getGovioTemplate();
 			
 			List<Placeholder> placeholders = new ArrayList<>();
 			for(GovioTemplatePlaceholderEntity e : govioTemplate.getGovioTemplatePlaceholders()) {
