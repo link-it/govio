@@ -2,16 +2,6 @@
   <div class="breadcrumbs-area">
     <ui-breadcrumb [breadcrumbs]="breadcrumbs" (onClick)="onBreadcrumb($event)"></ui-breadcrumb>
   </div>
-  <div class="flash-container flash-container-page sticky gp-display-block d-none">
-    <div class="flash-notice" data-testid="alert-info">
-      <div class="flash-text">
-        You must sign in to search for specific terms.
-        <div class="close-icon-wrapper">
-          <mat-icon class="fs-6" fontSet="material-icons-outlined">close</mat-icon>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="top-area">
     <div class="tabs gp-tabs d-flex flex-grow-1 p-0 m-0 mobile-separator issuable-state-filters">
       <div class="">
@@ -25,15 +15,6 @@
       </div>
     </div>
     <div class="nav-controls">
-      <!-- <a title="Subscribe to RSS feed" aria-label="Subscribe to RSS feed" href="/gitlab-org/gitlab-ui/-/issues.atom" class="btn btn-default btn-md gl-button btn-icon">
-        <mat-icon fontSet="material-icons-outlined">rss_feed</mat-icon>
-      </a>
-      <a title="Subscribe to calendar" aria-label="Subscribe to calendar" href="/gitlab-org/gitlab-ui/-/issues.ics?due_date=next_month_and_previous_two_weeks&amp;sort=closest_future_date" class="btn btn-default btn-md gl-button btn-icon">
-        <mat-icon fontSet="material-icons-outlined">calendar_today</mat-icon>
-      </a>
-      <a href="/gitlab-org/gitlab-ui/-/issues/new" class="btn btn-confirm btn-md gl-button">
-        <span class="gl-button-text">New issue</span>
-      </a> -->
     </div>
   </div>
   <section class="search-bar container-fluid px-0" *ngIf="_hasFilter">

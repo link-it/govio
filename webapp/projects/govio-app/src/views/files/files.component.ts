@@ -183,15 +183,17 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
         this._links = response._links;
 
         if (response.items) {
+          const _itemRow = this.filesConfig.itemRow;
+          const _options = this.filesConfig.options;
           const _list: any = response.items.map((file: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.text, file, this.filesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.label, file, this.filesConfig.options || null);
+            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, file, _options || null);
+            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, file, _options || null);
             const element = {
               id: file.id,
-              primaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.primaryText, file, this.filesConfig.options || null),
-              secondaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryText, file, this.filesConfig.options || null, ' '),
+              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, file, _options || null),
+              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, file, _options || null, ' '),
               metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryMetadata, file, this.filesConfig.options || null, ' '),
+              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, file, _options || null, ' '),
               editMode: false,
               source: { ...file }
             };

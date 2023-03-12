@@ -14,25 +14,27 @@ import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definition
 
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
 
-import { File } from './file';
+import { Service } from './service';
 
-declare const saveAs: any;
+import * as jsonpatch from 'fast-json-patch';
 
 @Component({
-  selector: 'app-file-details',
-  templateUrl: 'file-details.component.html',
-  styleUrls: ['file-details.component.scss']
+  selector: 'app-service-details',
+  templateUrl: 'service-details.component.html',
+  styleUrls: ['service-details.component.scss']
 })
-export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChecked, OnDestroy {
-  static readonly Name = 'FileDetailsComponent';
-  readonly model: string = 'files';
+export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentChecked, OnDestroy {
+  static readonly Name = 'ServiceDetailsComponent';
+  readonly model: string = 'services';
 
   @Input() id: number | null = null;
-  @Input() file: any = null;
+  @Input() service: any = null;
   @Input() config: any = null;
 
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Output() save: EventEmitter<any> = new EventEmitter<any>();
+
+  _title: string = '';
 
   appConfig: any;
 
@@ -46,15 +48,13 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
 
   _isDetails = true;
 
-  _editable: boolean = false;
-  _deleteable: boolean = false;
   _isEdit = false;
   _closeEdit = true;
   _isNew = false;
   _formGroup: UntypedFormGroup = new UntypedFormGroup({});
-  _file: File = new File({});
+  _service: Service = new Service({});
 
-  fileProviders: any = null;
+  serviceProviders: any = null;
 
   _spin: boolean = true;
   desktop: boolean = false;
@@ -67,14 +67,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _errorMsg: string = '';
 
   _modalConfirmRef!: BsModalRef;
-
-  _filePlaceHolder: string = './assets/images/logo-placeholder.png';
-  _organizationLogoPlaceholder: string = './assets/images/organization-placeholder.png';
-  _serviceLogoPlaceholder: string = './assets/images/service-placeholder.png';
-
-  _organizations: any[] = [];
-  _services: any[] = [];
-  _selectedFile: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -120,18 +112,11 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
         this._initBreadcrumb();
         // this._loadAnagrafiche();
 
-        this.configService.getConfig(this.model).subscribe(
-          (config: any) => {
-            this.config = config;
-            this._translateConfig();
-            if (this._isEdit) {
-              this._loadRegistry();
-              this._initForm({ ...this._file });
-            } else {
-              this._loadAll();
-            }
-          }
-        );
+        if (this._isEdit) {
+          this._initForm({ ...this._service });
+        } else {
+          this._loadAll();
+        }
       }
 
     });
@@ -145,10 +130,10 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       this.id = changes.id.currentValue;
       this._loadAll();
     }
-    if (changes.file) {
-      const file = changes.file.currentValue;
-      this.file = file.source;
-      this.id = this.file.id;
+    if (changes.service) {
+      const service = changes.service.currentValue;
+      this.service = service.source;
+      this.id = this.service.id;
     }
   }
 
@@ -157,8 +142,8 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   }
 
   _loadAll() {
-    this._loadRegistry();
-    this._loadFile();
+    this._loadService();
+    // this._loadServiceProviders();
   }
 
   _hasControlError(name: string) {
@@ -175,9 +160,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       Object.keys(data).forEach((key) => {
         let value = '';
         switch (key) {
-          case 'organization_id':
-          case 'service_id':
-          case 'file':
+          case 'service_name':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
             break;
@@ -191,54 +174,59 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     }
   }
 
-  _onFileLoaded(event: any, field: string) {
-    this._selectedFile = event.target.files[0];
-  }
-
   __onSave(body: any) {
     this._error = false;
-    const formData = new FormData();
-    formData.append('file', this._selectedFile, this._selectedFile.name);
-    const url: string = `files?organization_id=${body.organization_id}&service_id=${body.service_id}`;
-    this.apiService.upload(url, formData)
-      .subscribe({
-        next: (response: any) => {
-          this.id = response.id;
-          this.file = response; // new File({ ...response });
-          this._file = response; // new File({ ...response });
-          this._isNew = false;
+    this.apiService.saveElement(this.model, body).subscribe(
+      (response: any) => {
+        this.service = new Service({ ...response });
+        this._service = new Service({ ...response });
+        this.id = this.service.id;
+        this._initBreadcrumb();
+        this._isEdit = false;
+        this._isNew = false;
+        this.save.emit({ id: this.id, payment: response, update: false });
+      },
+      (error: any) => {
+        this._error = true;
+        this._errorMsg = Tools.GetErrorMsg(error);
+      }
+    );
+  }
 
-          this._initBreadcrumb();
-          this.__initInformazioni();
-          this._onCancelEdit();
-        },
-        error: (error: any) => {
-          this._error = true;
-          this._errorMsg = Tools.GetErrorMsg(error);
-        }
-      });
+  __removeEmpty(obj: any) {
+    const $this = this;
+    return Object.keys(obj)
+      .filter(function (k) {
+        return obj[k] != null;
+      })
+      .reduce(function (acc: any, k: string) {
+        acc[k] = typeof obj[k] === "object" ? $this.__removeEmpty(obj[k]) : obj[k];
+        return acc;
+      }, {});
   }
 
   __onUpdate(id: number, body: any) {
-    // this._error = false;
-    // const _bodyPatch: any[] = jsonpatch.compare(this.file, body);
-    // if (_bodyPatch) {
-    //   this.apiService.updateElement(this.model, id, _bodyPatch).subscribe(
-    //     (response: any) => {
-    //       this._isEdit = !this._closeEdit;
-    //       this.file = new File({ ...response });
-    //       this._file = new File({ ...response });
-    //       this.id = this.file.id;
-    //       this.save.emit({ id: this.id, payment: response, update: true });
-    //     },
-    //     (error: any) => {
-    //       this._error = true;
-    //       this._errorMsg = Tools.GetErrorMsg(error);
-    //     }
-    //   );
-    // } else {
-    //   console.log('No difference');
-    // }
+    this._error = false;
+    const _service = this.__removeEmpty(this.service);
+    const _body = this.__removeEmpty(body);
+    const _bodyPatch: any[] = jsonpatch.compare(_service, _body);
+    if (_bodyPatch) {
+      this.apiService.updateElement(this.model, id, _bodyPatch).subscribe(
+        (response: any) => {
+          this._isEdit = !this._closeEdit;
+          this.service = new Service({ ...response });
+          this._service = new Service({ ...response });
+          this.id = this.service.id;
+          this.save.emit({ id: this.id, payment: response, update: true });
+        },
+        (error: any) => {
+          this._error = true;
+          this._errorMsg = Tools.GetErrorMsg(error);
+        }
+      );
+    } else {
+      console.log('No difference');
+    }
   }
 
   _onSubmit(form: any, close: boolean = true) {
@@ -247,12 +235,12 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       if (this._isNew) {
         this.__onSave(form);
       } else {
-        this.__onUpdate(this.file.id, form);
+        this.__onUpdate(this.service.id, form);
       }
     }
   }
 
-  _deleteFile() {
+  _deleteService() {
     const initialState = {
       title: this.translate.instant('APP.TITLE.Attention'),
       messages: [
@@ -270,9 +258,9 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     this._modalConfirmRef.content.onClose.subscribe(
       (response: any) => {
         if (response) {
-          this.apiService.deleteElement(this.model, this.file.id).subscribe(
+          this.apiService.deleteElement(this.model, this.service.id).subscribe(
             (response) => {
-              this.save.emit({ id: this.id, file: response, update: false });
+              this.save.emit({ id: this.id, service: response, update: false });
             },
             (error) => {
               this._error = true;
@@ -283,66 +271,19 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       }
     );
   }
-
-  _loadRegistry() {
-    this.apiService.getList('organizations').subscribe({
-      next: (response: any) => {
-        this._organizations = response.items;
-      },
-      error: (error: any) => {
-        Tools.OnError(error);
-      }
-    });
-
-    this.apiService.getList('services').subscribe({
-      next: (response: any) => {
-        this._services = response.items;
-      },
-      error: (error: any) => {
-        Tools.OnError(error);
-      }
-    });
-
-    // this.apiService.getList('service-instances').subscribe({
-    //   next: (response: any) => {
-    //     this._services = response.items;
-    //   },
-    //   error: (error: any) => {
-    //     Tools.OnError(error);
-    //   }
-    // });
-  }
-
-  _downloadAction(event: any) {
-    this._downloadContent(event.item);
-  }
-
-  _downloadContent(item: any) {
+  
+  _loadService() {
     if (this.id) {
-      Tools.WaitForResponse(true, false, false);
-      this.apiService.download(this.model, this.id, 'content').subscribe({
-        next: (response: any) => {
-          Tools.WaitForResponse(false);
-          let name: string = this.file.filename ?? 'file_' + this.id + '.txt';
-          saveAs(response, name);
-        },
-        error: (error: any) => {
-          Tools.WaitForResponse(false);
-          Tools.OnError(error);
-        }
-      });
-    }
-  }
-
-  _loadFile() {
-    if (this.id) {
-      this.file = null;
+      this.service = null;
       this.apiService.getDetails(this.model, this.id).subscribe({
         next: (response: any) => {
-          this.file = response; // new File({ ...response });
-          this._file = response; // new File({ ...response });
-
-          this.__initInformazioni();
+          this.service = new Service({ ...response });
+          this._service = new Service({ ...response });
+          this._title = this.service.creditorReferenceId;
+          if (this.config.detailsTitle) {
+            this._title = Tools.simpleItemFormatter(this.config.detailsTitle, this.service);
+          }
+          // this.__initInformazioni();
         },
         error: (error: any) => {
           Tools.OnError(error);
@@ -352,8 +293,8 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   }
 
   __initInformazioni() {
-    if (this.file) {
-      this._informazioni = Tools.generateFields(this.config.details, this.file, true, this.config.options).map((field: FieldClass) => {
+    if (this.service) {
+      this._informazioni = Tools.generateFields(this.config.details, this.service).map((field: FieldClass) => {
         field.label = this.translate.instant(field.label);
         return field;
       });
@@ -378,8 +319,8 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _initBreadcrumb() {
     const _title = this.id ? `#${this.id}` : this.translate.instant('APP.TITLE.New');
     this.breadcrumbs = [
-      { label: '', url: '', type: 'title', icon: 'account_balance' },
-      { label: 'APP.TITLE.Files', url: '/files', type: 'link' },
+      { label: '', url: '', type: 'title', icon: 'apps' },
+      { label: 'APP.TITLE.Services', url: '/services', type: 'link' },
       { label: `${_title}`, url: '', type: 'title' }
     ];
   }
@@ -392,32 +333,30 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     console.log(event, param);
   }
 
-  _editFile() {
-    this._initForm({ ...this._file });
+  _editService() {
+    this._initForm({ ...this._service });
     this._isEdit = true;
     this._error = false;
   }
 
   _onClose() {
-    this.close.emit({ id: this.id, file: this._file });
+    this.close.emit({ id: this.id, service: this._service });
   }
 
   _onSave() {
-    this.save.emit({ id: this.id, file: this._file });
+    this.save.emit({ id: this.id, service: this._service });
   }
 
   _onCancelEdit() {
     this._isEdit = false;
-    this._error = false;
-    this._errorMsg = '';
     if (this._isNew) {
       if (this._useRoute) {
         this.router.navigate([this.model]);
       } else {
-        this.close.emit({ id: this.id, file: null });
+        this.close.emit({ id: this.id, service: null });
       }
     } else {
-      this._file = new File({ ...this.file });
+      this._service = new Service({ ...this.service });
     }
   }
 
@@ -428,26 +367,4 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       this._onClose();
     }
   }
-
-  _orgLogo = (item: any): string => {
-    let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo_small) {
-      logoUrl = item._links.logo_small.href;
-    }
-    return logoUrl;
-  };
-
-  _orgLogoBackground = (item: any): string => {
-    let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo_small && false) {
-      // logoUrl = 'http://172.16.1.121:8083/govio/api/v1/organizations/16/logo_miniature';
-      logoUrl = item._links.logo_small.href;
-    }
-    return `url(${logoUrl})`;
-  };
-
-  _serviceLogoBackground = (item: any): string => {
-    const logoUrl = item.logo || this._serviceLogoPlaceholder;
-    return `url(${logoUrl})`;
-  };
 }

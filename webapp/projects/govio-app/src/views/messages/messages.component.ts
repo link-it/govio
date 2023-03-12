@@ -183,15 +183,17 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
         this._links = response._links;
 
         if (response.items) {
+          const _itemRow = this.messagesConfig.itemRow;
+          const _options = this.messagesConfig.options;
           const _list: any = response.items.map((message: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.text, message, this.messagesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.label, message, this.messagesConfig.options || null);
+            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, message, _options || null);
+            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, message, _options || null);
             const element = {
               id: message.id,
-              primaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.primaryText, message, this.messagesConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryText, message, this.messagesConfig.options || null, ' '),
+              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, message, _options || null, ' '),
+              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, message, _options || null, ' '),
               metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryMetadata, message, this.messagesConfig.options || null, ' '),
+              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, message, _options || null, ' '),
               editMode: false,
               source: { ...message }
             };
