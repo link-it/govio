@@ -1,20 +1,6 @@
-CREATE SEQUENCE seq_govio_file_messages START 1 INCREMENT 1;
-
-CREATE SEQUENCE seq_govio_files START 1 INCREMENT 1;
-
-CREATE SEQUENCE seq_govio_messages START 1 INCREMENT 1;
-
-CREATE SEQUENCE seq_govio_placeholders START 1 INCREMENT 1;
-
-CREATE SEQUENCE seq_govio_service_instances START 1 INCREMENT 1;
-
-CREATE SEQUENCE seq_govio_templates START 1 INCREMENT 1;
-
-CREATE SEQUENCE seq_govio_services START 1 INCREMENT 1;
-
 CREATE TABLE govio_templates
   (
-     id           BIGINT DEFAULT nextval('seq_govio_templates') NOT NULL,
+     id           BIGINT NOT NULL AUTO_INCREMENT,
      description  VARCHAR(255),
      has_due_date BOOLEAN NOT NULL,
      has_payment  BOOLEAN NOT NULL,
@@ -27,7 +13,7 @@ CREATE TABLE govio_templates
 
 CREATE TABLE govio_placeholders
   (
-     id          BIGINT DEFAULT nextval('seq_govio_placeholders') NOT NULL,
+     id          BIGINT NOT NULL AUTO_INCREMENT,
      description TEXT,
      example     VARCHAR(255) NOT NULL,
      name        VARCHAR(255) NOT NULL,
@@ -57,7 +43,7 @@ alter table govio_template_placeholders
 
 CREATE TABLE govio_service_instances
   (
-     id                       BIGINT DEFAULT nextval('seq_govio_service_instances') NOT NULL,
+     id                       BIGINT NOT NULL AUTO_INCREMENT,
      apikey                   VARCHAR(255) NOT NULL,
      id_govhub_service        BIGINT NOT NULL,
      id_govhub_organization   BIGINT NOT NULL,
@@ -87,7 +73,7 @@ ALTER table govio_service_instances
     
 CREATE TABLE govio_files
   (
-     id                        BIGINT DEFAULT nextval('seq_govio_files') NOT NULL,
+     id                        BIGINT NOT NULL AUTO_INCREMENT,
      acquired_messages         BIGINT,
      creation_date             TIMESTAMP NOT NULL,
      processing_date           TIMESTAMP,
@@ -113,7 +99,7 @@ ALTER TABLE govio_files
   
 CREATE TABLE govio_file_messages
   (
-     id               BIGINT DEFAULT nextval('seq_govio_file_messages') NOT NULL,
+     id               BIGINT NOT NULL AUTO_INCREMENT,
      error            TEXT,
      line_number      BIGINT,
      line_record      TEXT,
@@ -124,7 +110,7 @@ CREATE TABLE govio_file_messages
 
 CREATE TABLE govio_messages
   (
-     id                        BIGINT DEFAULT nextval('seq_govio_messages') NOT NULL,
+     id                        BIGINT NOT NULL AUTO_INCREMENT,
      amount                    BIGINT,
      appio_message_id          VARCHAR(255),
      creation_date             TIMESTAMP NOT NULL,

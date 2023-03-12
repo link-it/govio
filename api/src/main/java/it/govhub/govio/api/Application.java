@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -21,28 +22,28 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.fasterxml.jackson.databind.MapperFeature;
 
 import it.govhub.govregistry.commons.config.CommonsExportedBeans;
+import it.govhub.govregistry.commons.config.GovhubApplication;
 import it.govhub.govregistry.commons.config.TimeZoneConfigurer;
 import it.govhub.govregistry.commons.exception.handlers.RequestRejectedExceptionHandler;
 import it.govhub.govregistry.commons.utils.Base64String;
 import it.govhub.govregistry.commons.utils.Base64StringSerializer;
 import it.govhub.govregistry.readops.api.config.ReadOpsExportedBeans;
-import it.govhub.security.config.SecurityExportedBeans;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableCaching
-@Import({ CommonsExportedBeans.class, ReadOpsExportedBeans.class, SecurityExportedBeans.class, TimeZoneConfigurer.class })
+@Import({ ReadOpsExportedBeans.class,  CommonsExportedBeans.class,   TimeZoneConfigurer.class})
 @EnableJpaRepositories("it.govhub.govio.api.repository")
 @EntityScan("it.govhub.govio.api.entity")
 public class Application extends SpringBootServletInitializer {
 	
-	@Value("${govhub.time-zone:Europe/Rome}")
-	String timeZone;
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 	
+	@Value("${govhub.time-zone:Europe/Rome}")
+	String timeZone;
+
 
 	/**
 	 * Gestisce la famiglia di header X-Forwarded o lo header Forwarded.
@@ -63,6 +64,7 @@ public class Application extends SpringBootServletInitializer {
 				timeZone(this.timeZone).
 				serializerByType(Base64String.class, new Base64StringSerializer()).
 				featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+
 	}
 
 	/**
@@ -87,6 +89,4 @@ public class Application extends SpringBootServletInitializer {
 	public RequestRejectedHandler requestRejectedHandler() {
 	   return new RequestRejectedExceptionHandler();
 	}
-	
-	
 }

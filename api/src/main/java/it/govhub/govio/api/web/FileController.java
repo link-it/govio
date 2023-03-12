@@ -7,10 +7,8 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.http.fileupload.FileItemHeaders;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
@@ -33,7 +31,6 @@ import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.FileOrdering;
-import it.govhub.govio.api.beans.FileStatistics;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
@@ -53,6 +50,7 @@ import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
+import it.govhub.govregistry.commons.utils.RequestUtils;
 import it.govhub.security.services.SecurityService;
 
 @V1RestController
@@ -112,7 +110,7 @@ public class FileController implements FileApi {
 			    if (itemStream.isFormField()) {
 			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
 			    } else {
-				    sourceFilename = readFilenameFromHeaders(itemStream.getHeaders());
+				    sourceFilename = RequestUtils.readFilenameFromHeaders(itemStream.getHeaders());
 			    }
 			}
 		} catch (Exception e) {
@@ -128,12 +126,16 @@ public class FileController implements FileApi {
     		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
         			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
     	} else if (serviceId != null && organizationId != null) {
-    		serviceInstance = this.serviceRepo.findByService_GovhubService_IdAndOrganization_Id(serviceId, organizationId)
+    		serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
     				.orElseThrow( () -> new SemanticValidationException("Service Instance for service ["+serviceId+"] and organization ["+organizationId+"] not present"));
     	}
     	
     	if (serviceInstance == null) {
     		throw new BadRequestException("E' necessasrio specificare una service instance");
+    	}
+    	
+    	if (!serviceInstance.getEnabled() ) {
+    		throw new SemanticValidationException("La service instance ["+serviceInstance.getId()+"] è disabilitata.");
     	}
     	/**/
 		
@@ -270,38 +272,6 @@ public class FileController implements FileApi {
 		
 		return ResponseEntity.ok(ret);
 	}
-	
-	
-	
-	private String readFilenameFromHeaders(FileItemHeaders headers) {
-		
-    	String filename = null;
-    	try {
-	    	String contentDisposition = headers.getHeader("Content-Disposition");
-	    	logger.debug("Content Disposition Header: {}", contentDisposition);
-	    	
-	    	String[] headerDirectives = contentDisposition.split(";");
-	    	
-	    	for(String directive : headerDirectives) {
-	    		String[] keyValue = directive.split("=");
-	    		if (StringUtils.equalsIgnoreCase(keyValue[0].trim(), "filename")) {
-	    			// Rimuovo i doppi apici
-	    			filename = keyValue[1].trim().substring(1, keyValue[1].length()-1);
-	    		}
-	    	}
-    	} catch (Exception e) {
-    		logger.error("Exception while reading header: {}", e);
-    		filename = null;
-    	}
-    	
-    	return filename;
-	}
 
-
-	@Override
-	public ResponseEntity<FileStatistics> readFileStats(@Min(0) Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }
