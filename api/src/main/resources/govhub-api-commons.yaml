@@ -460,13 +460,6 @@ components:
       OrganizationCreate:
         allOf:
           - $ref: "#/components/schemas/OrganizationData"
-          - type: object
-            additionalProperties: false
-            properties:
-              logo_miniature:
-               $ref: "#/components/schemas/SmallLogo"
-              logo:
-                $ref: "#/components/schemas/Logo"
 
       Organization:
         allOf:
@@ -538,10 +531,6 @@ components:
               pattern: '[\s\S]*'
               maxLength: 4096
               example: Service for customer management.
-            logo_miniature:
-               $ref: "#/components/schemas/SmallLogo"
-            logo:
-             $ref: "#/components/schemas/Logo"                          
               
       Service:
             type: object

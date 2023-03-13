@@ -444,12 +444,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/GovioServiceInstance'
           links:
-             delete:
-                $ref: "#/components/links/disableServiceInstance"
              upload-file:
                 $ref: "#/components/links/uploadFile"
              send-message:
-                $ref: "#/components/links/sendMessage"                            
+                $ref: "#/components/links/sendMessage"
+             patch:
+                $ref: "#/components/links/updateServiceInstance"
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -503,30 +503,6 @@ paths:
           $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
         default:
           $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"              
-          
-    delete:
-      tags:
-        - service
-      summary: Disables  a service instance.
-      description: Deletes the specified service instance, only and only if there are no pending messages for it.
-      operationId: disableServiceInstance
-      responses:
-        '200':
-          description: Successful operation.
-        '400':
-          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
-        '401':
-          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
-        '403':
-          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
-        '404':
-          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
-        '429':
-          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
-        '503':
-          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
-        default:
-          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'          
           
   /templates:
      post:
@@ -987,13 +963,6 @@ components:
         description: >
           You can assign a new placeholder using The `id` value.
           
-    disableServiceInstance:
-        operationId: disableServiceInstance
-        parameters:
-          id: '$response.body#/id'
-        description: >
-          You can disable the service instance using The `id` value.
-
     uploadFile:
         operationId: uploadFile
         parameters:
@@ -1007,6 +976,13 @@ components:
           id: '$response.body#/id'
         description: >
           You can list the placeholder template using the `id` value.
+          
+    patchServiceInstance:
+        operationId: updateServiceInstance
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          You can update the service instance using The `id` value.
                                           
     readFile:
        description: Retrieve the file.
@@ -1873,6 +1849,9 @@ components:
            type: string
            maxLength: 9999999
            pattern: '[\s\S]*'
+        enabled:
+           type: boolean
+           default: true                     
 
 
     GovioServiceInstance:
@@ -1886,9 +1865,6 @@ components:
            properties:
               id:
                  $ref: '#/components/schemas/GovioServiceInstanceId'
-              enabled:
-                 type: boolean
-                 default: false           
               _links:
                  type: object
                  additionalProperties: false

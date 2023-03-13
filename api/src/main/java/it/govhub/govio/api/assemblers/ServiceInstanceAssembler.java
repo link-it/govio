@@ -138,6 +138,7 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 			.service(service)
 			.template(template)
 			.organization(organization)
+			.enabled(src.getEnabled())
 			.build();
 		
 		return serviceInstance;

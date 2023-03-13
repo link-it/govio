@@ -161,7 +161,7 @@ public class ServiceInstanceController implements ServiceApi {
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
 		
-		GovioServiceInstance ret = this.instanceAssembler.toModel(instance);
+		GovioServiceInstance ret = this.instanceAssembler.toEmbeddedModel(instance, Arrays.asList(EmbedServiceInstanceEnum.values()));
 		return ResponseEntity.ok(ret);
 	}
 
@@ -191,12 +191,14 @@ public class ServiceInstanceController implements ServiceApi {
 		log.info("Patching service instance [{}]: {}", id,  patch);
 		
 		// Convertiamo la entity in json e applichiamo la patch sul json
+		this.instanceAssembler.toModel(instance);
 		GovioServiceInstanceCreate restInstance = new GovioServiceInstanceCreate();
 		restInstance.
 			serviceId(instance.getService().getId()).
 			organizationId(instance.getOrganization().getId()).
 			apiKey(instance.getApiKey()).
-			templateId(instance.getTemplate().getId());
+			templateId(instance.getTemplate().getId()).
+			enabled(instance.getEnabled());
 		
 		JsonNode newJsonInstance;
 		try {
@@ -237,17 +239,5 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		return ResponseEntity.ok(this.instanceAssembler.toModel(newInstance));
 	}
-
-	
-	@Override
-	public ResponseEntity<Void> disableServiceInstance(Long id) {
-		var instance = this.instanceRepo.findById(id)
-				.orElseThrow( () -> new NotFoundException(this.instanceMessages.idNotFound(id)));
-		
-		this.instanceService.disableIntance(instance);
-		
-		return ResponseEntity.status(HttpStatus.OK).build();
-	}
-
 
 }
