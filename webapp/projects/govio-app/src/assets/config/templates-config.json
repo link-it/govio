@@ -3,9 +3,7 @@
     "primaryText": [
       { "field": "subject", "type": "text" }
     ],
-    "secondaryText": [
-      { "field": "description", "type": "text" }
-    ],
+    "secondaryText": [],
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal", "class": "" }
