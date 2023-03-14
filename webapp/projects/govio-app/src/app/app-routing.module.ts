@@ -39,7 +39,7 @@ const routes: Routes = [
         loadChildren: () => import('../views/messages/messages.module').then(m => m.MessagesModule)
       },
       {
-        path: 'services',
+        path: 'service-instances',
         loadChildren: () => import('../views/services/services.module').then(m => m.ServicesModule)
       },
       {
