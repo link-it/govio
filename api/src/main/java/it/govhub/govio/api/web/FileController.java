@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +30,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.govhub.govio.api.assemblers.FileAssembler;
+import it.govhub.govio.api.beans.EmbedFileEnum;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
@@ -51,6 +54,7 @@ import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
+import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.govregistry.commons.utils.RequestUtils;
 import it.govhub.security.services.SecurityService;
 
@@ -146,6 +150,7 @@ public class FileController implements FileApi {
 	}
 	
 	
+	@Transactional
 	@Override
 	public ResponseEntity<FileList> listFiles(
 				Direction sortDirection, 
@@ -158,7 +163,8 @@ public class FileController implements FileApi {
 				 Long organizationId, 
 				 OffsetDateTime creationDateFrom, 
 				 OffsetDateTime creationDateTo,
-				 GovioFileEntity.Status status) {
+				 GovioFileEntity.Status status,
+				 List<EmbedFileEnum> embed) {
 		
 		// Pesco servizi e autorizzazioni che l'utente può leggere
 		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
@@ -198,7 +204,16 @@ public class FileController implements FileApi {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, FileFilters.sort(sortDirection,orderBy));
 		
-		FileList ret = fileService.listFiles(spec, pageRequest);
+		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
+		
+		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
+				.currentRequestAttributes()).getRequest();
+		
+		FileList ret = ListaUtils.buildPaginatedList(files, pageRequest.limit, curRequest, new FileList());
+		
+		for (GovioFileEntity file : files) {
+			ret.addItemsItem(this.fileAssembler.toEmbeddedModel(file, embed));
+		}
 		
 		return ResponseEntity.ok(ret);
 	}

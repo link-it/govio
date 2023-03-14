@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import it.govhub.govio.api.beans.EmbedMessageEnum;
+import it.govhub.govio.api.beans.EmbedServiceInstanceEnum;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessagePaymentItem;
 import it.govhub.govio.api.beans.GovioMessageStatus;
@@ -65,20 +67,19 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 			ret.setPayment(payment);
 		}
 		
-		Link linkToServiceInstance = linkTo(
-				methodOn(ServiceInstanceController.class)
-				.readServiceInstance(src.getGovioServiceInstance().getId()))
-			.withRel("service-instance"); 
-
-		ret.add(linkTo(
-				methodOn(MessageController.class)
-					.readMessage(src.getId())
-				).withSelfRel())
-			.add(linkToServiceInstance)
-		.add(linkTo(
-				methodOn(ReadUserController.class)
-					.readUser(src.getSender().getId()))
-				.withRel("sender"));
+		ret.
+				add(linkTo(
+							methodOn(MessageController.class).
+							readMessage(src.getId())).
+						withSelfRel()).
+				add(linkTo(
+							methodOn(ServiceInstanceController.class).
+							readServiceInstance(src.getGovioServiceInstance().getId())).
+						withRel("service-instance")).
+				add(linkTo(
+							methodOn(ReadUserController.class).
+							readUser(src.getSender().getId())).
+						withRel("sender"));
 		
 		return ret;
 	}
@@ -96,7 +97,9 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 					ret.getEmbedded().put(EmbedMessageEnum.SENDER.getValue(), this.userItemAssembler.toModel(src.getSender()));
 					break;
 				case SERVICE_INSTANCE:
-					ret.getEmbedded().put(EmbedMessageEnum.SERVICE_INSTANCE.getValue(), this.instanceAssembler.toModel(src.getGovioServiceInstance()));
+					ret.getEmbedded().put(
+							EmbedMessageEnum.SERVICE_INSTANCE.getValue(), 
+							this.instanceAssembler.toEmbeddedModel(src.getGovioServiceInstance(), Set.of(EmbedServiceInstanceEnum.values())));
 					break;
 				default:
 					break; 

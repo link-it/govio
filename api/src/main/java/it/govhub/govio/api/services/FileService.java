@@ -141,22 +141,6 @@ public class FileService {
 	
 
 	@Transactional
-	public FileList listFiles(Specification<GovioFileEntity> spec, LimitOffsetPageRequest pageRequest) {
-		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
-		
-		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
-				.currentRequestAttributes()).getRequest();
-		
-		FileList ret = ListaUtils.buildPaginatedList(files, pageRequest.limit, curRequest, new FileList());
-		
-		for (GovioFileEntity file : files) {
-			ret.addItemsItem(this.fileAssembler.toModel(file));
-		}
-		return ret;
-	}
-	
-	
-	@Transactional
 	public FileMessageList listFileMessages(Specification<GovioFileMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
 		
 		// TODO: Qui ho bisogno di un'entity graph che di ogni fileEntity mi peschi anche i
