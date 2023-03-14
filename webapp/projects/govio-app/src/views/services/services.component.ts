@@ -1,10 +1,11 @@
 import { AfterContentChecked, Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
@@ -13,6 +14,7 @@ import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service'
 import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { SearchBarFormComponent } from 'projects/components/src/lib/ui/search-bar-form/search-bar-form.component';
 
+import * as moment from 'moment';
 import * as jsonpatch from 'fast-json-patch';
 
 @Component({
@@ -22,7 +24,7 @@ import * as jsonpatch from 'fast-json-patch';
 })
 export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy {
   static readonly Name = 'ServicesComponent';
-  readonly model: string = 'services';
+  readonly model: string = 'service-instances';
 
   @ViewChild('searchBarForm') searchBarForm!: SearchBarFormComponent;
 
@@ -35,7 +37,7 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
 
   _isEdit: boolean = false;
 
-  _hasFilter: boolean = false;
+  _hasFilter: boolean = true;
   _formGroup: UntypedFormGroup = new UntypedFormGroup({});
   _filterData: any[] = [];
 
@@ -56,19 +58,24 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   showSearch: boolean = true;
   showSorting: boolean = true;
 
-  sortField: string = 'service_name';
+  sortField: string = 'legal_name';
   sortDirection: string = 'asc';
-  sortFields: any[] = [];
+  sortFields: any[] = [
+    { field: 'legal_name', label: 'APP.LABEL.Organization', icon: '' }
+  ];
 
   searchFields: any[] = [];
 
   _useRoute: boolean = true;
 
   breadcrumbs: any[] = [
-    { label: 'APP.TITLE.Services', url: '', type: 'title', icon: 'apps' }
+    { label: 'APP.TITLE.ServiceInstances', url: '', type: 'title', icon: 'apps' }
   ];
 
   _unimplemented: boolean = false;
+
+  groupName: string = '';
+  _organizationLogoPlaceholder: string = './assets/images/organization-placeholder.png';
 
   constructor(
     private route: ActivatedRoute,
@@ -91,10 +98,6 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // Changed
-    });
-
     this.pageloaderService.resetLoader();
     this.pageloaderService.isLoading.subscribe({
       next: (x) => { this._spin = x; },
@@ -145,13 +148,22 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   }
 
   _initSearchForm() {
-    this._formGroup = new UntypedFormGroup({});
+    this._formGroup = new UntypedFormGroup({
+      q: new UntypedFormControl(''),
+    });
   }
 
   _loadServices(query: any = null, url: string = '') {
     this._setErrorMessages(false);
+
     if (!url) { this.services = []; }
-    this.apiService.getList(this.model).subscribe({
+
+    let aux: any;
+    const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+    query = { ...query, embed: ['service','organization','template'], ...sort };
+    aux = { params: this._queryToHttpParams(query) };
+
+    this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         if (response === null) {
           this._unimplemented = true;
@@ -161,18 +173,27 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
           this._links = response._links;
 
           if (response.items) {
-            const _list: any = response.items.map((service: any) => {
-              const metadataText = Tools.simpleItemFormatter(this.servicesConfig.simpleItem.metadata.text, service, this.servicesConfig.simpleItem.options || null);
-              const metadataLabel = Tools.simpleItemFormatter(this.servicesConfig.simpleItem.metadata.label, service, this.servicesConfig.simpleItem.options || null);
+            const _itemRow = this.servicesConfig.itemRow;
+            const _options = this.servicesConfig.options;
+              const _list: any = response.items.map((service: any) => {
+              const _service: any = this.__prepareServiceData(service);
+              const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, _service, _options || null);
+              const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, _service, _options || null);
               const element = {
-                id: service.id,
-                primaryText: Tools.simpleItemFormatter(this.servicesConfig.simpleItem.primaryText, service, this.servicesConfig.simpleItem.options || null),
-                secondaryText: Tools.simpleItemFormatter(this.servicesConfig.simpleItem.secondaryText, service, this.servicesConfig.simpleItem.options || null),
+                id: _service.id,
+                primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, _service, _options || null),
+                secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, _service, _options || null),
                 metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-                secondaryMetadata: Tools.simpleItemFormatter(this.servicesConfig.simpleItem.secondaryMetadata, service, this.servicesConfig.simpleItem.options || null),
+                secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, _service, _options || null),
                 editMode: false,
-                source: { ...service }
+                groupName: _service.organization.legal_name,
+                group: _service.organization,
+                showGroup: (_service.organization.legal_name !== this.groupName) || (this.groupName === ''),
+                source: { ..._service }
               };
+              if (this.groupName !== _service.organization.legal_name) {
+                this.groupName = _service.organization.legal_name;
+              }
               return element;
             });
             this.services = (url) ? [...this.services, ..._list] : [..._list];
@@ -187,6 +208,64 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
         // Tools.OnError(error);
       }
     });
+  }
+
+  __prepareServiceData(service: any) {
+    const _service: any = {
+      id: service.id,
+      service_id: service.service_id,
+      organization_id: service.organization_id,
+      template_id: service.template_id,
+      apiKey: service.apiKey,
+      enabled: service.enabled,
+
+      organization: {
+        id: service._embedded.organization.id,
+        legal_name: service._embedded.organization.legal_name,
+        tax_code: service._embedded.organization.tax_code,
+        logo: service._embedded.organization._links?.logo?.href || null,
+        logo_small: service._embedded.organization._links?.logo_small?.href || null
+      },
+
+      service: {
+        id: service._embedded.service.id,
+        service_name: service._embedded.service.service_name,
+        description: service._embedded.service.description
+      },
+
+      template: {
+        id: service._embedded.template.id,
+        subject: service._embedded.template.subject,
+        description: service._embedded.template.description,
+        message_body: service._embedded.template.message_body,
+        has_payment: service._embedded.template.has_payment,
+        has_due_date: service._embedded.template.has_due_date
+      }
+    };
+
+    return _service;
+  }
+
+  _queryToHttpParams(query: any) : HttpParams {
+    let httpParams = new HttpParams();
+
+    Object.keys(query).forEach(key => {
+      if (query[key]) {
+        let _dateTime = '';
+        switch (key)
+        {
+          case 'data_inizio':
+          case 'data_fine':
+            _dateTime = moment(query[key]).format('YYYY-MM-DD');
+            httpParams = httpParams.set(key, _dateTime);
+            break;
+          default:
+            httpParams = httpParams.set(key, query[key]);
+        }
+      }
+    });
+    
+    return httpParams; 
   }
 
   __loadMoreData() {
@@ -227,6 +306,7 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   }
 
   _onSearch(values: any) {
+    this.groupName = '';
     this._filterData = values;
     this._loadServices(this._filterData);
   }
@@ -237,7 +317,10 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   }
 
   _onSort(event: any) {
-    console.log(event);
+    this.groupName = '';
+    this.sortField = event.sortField;
+    this.sortDirection = event.sortBy;
+    this._loadServices(this._filterData);
   }
 
   onBreadcrumb(event: any) {
@@ -247,4 +330,12 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   _resetScroll() {
     Tools.ScrollElement('container-scroller', 0);
   }
+
+  _orgLogoBackground = (item: any): string => {
+    let logoUrl = this._organizationLogoPlaceholder;
+    if (item && item._links && item._links.logo_small) {
+      logoUrl = item._links.logo_small.href;
+    }
+    return `url(${logoUrl})`;
+  };
 }

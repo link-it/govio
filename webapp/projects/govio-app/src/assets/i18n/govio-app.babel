@@ -999,6 +999,22 @@
 										</translations>
 									</concept_node>
 									<concept_node>
+										<name>ApiKey</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
 										<name>AvailabilityDate</name>
 										<description/>
 										<comment/>
@@ -1160,6 +1176,22 @@
 									</concept_node>
 									<concept_node>
 										<name>Email</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>Enabled</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -1607,6 +1639,22 @@
 										</translations>
 									</concept_node>
 									<concept_node>
+										<name>ServiceInstance</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
 										<name>ServiceName</name>
 										<description/>
 										<comment/>
@@ -1656,6 +1704,22 @@
 									</concept_node>
 									<concept_node>
 										<name>Taxcode</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>Template</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -1938,6 +2002,22 @@
 									</concept_node>
 									<concept_node>
 										<name>Placeholders</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>ServiceInstances</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -2422,6 +2502,22 @@
 									</concept_node>
 									<concept_node>
 										<name>NoResultsHelp</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>NoTemplateSelected</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -2946,6 +3042,22 @@
 											</translation>
 										</translations>
 									</concept_node>
+									<concept_node>
+										<name>SelectServiceInstance</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
 								</children>
 							</folder_node>
 							<folder_node>
@@ -3313,6 +3425,38 @@
 									</concept_node>
 									<concept_node>
 										<name>DENIED</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>DISABLED</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>ENABLED</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -3822,6 +3966,22 @@
 										</translations>
 									</concept_node>
 									<concept_node>
+										<name>EditServiceInstance</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
 										<name>EditTemplate</name>
 										<description/>
 										<comment/>
@@ -3998,6 +4158,22 @@
 										</translations>
 									</concept_node>
 									<concept_node>
+										<name>NewServiceInstance</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
 										<name>NewTemplate</name>
 										<description/>
 										<comment/>
@@ -4062,7 +4238,23 @@
 										</translations>
 									</concept_node>
 									<concept_node>
-										<name>Service (2)</name>
+										<name>ServiceInstance</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>ServiceInstances</name>
 										<description/>
 										<comment/>
 										<default_text/>
@@ -4079,6 +4271,22 @@
 									</concept_node>
 									<concept_node>
 										<name>Services</name>
+										<description/>
+										<comment/>
+										<default_text/>
+										<translations>
+											<translation>
+												<language>en-US</language>
+												<approved>false</approved>
+											</translation>
+											<translation>
+												<language>it-IT</language>
+												<approved>false</approved>
+											</translation>
+										</translations>
+									</concept_node>
+									<concept_node>
+										<name>Template</name>
 										<description/>
 										<comment/>
 										<default_text/>

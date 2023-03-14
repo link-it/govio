@@ -30,9 +30,9 @@ export const navItemsMainMenu: INavData[] = [
   },
   {
     title: true,
-    label: 'APP.MENU.Services',
-    path: 'services',
-    url: '/services',
+    label: 'APP.MENU.ServiceInstances',
+    path: 'service-instances',
+    url: '/service-instances',
     icon: 'apps',
     permission: 'SERVICES',
     attributes: { disabled: false }

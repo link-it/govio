@@ -9,9 +9,8 @@ import { ComponentsModule } from 'projects/components/src/lib/components.module'
 import { LinkLabModule } from 'projects/link-lab/src/lib/link-lab.module';
 import { HasPermissionModule } from '../../../directives/has-permission/has-permission.module';
 
-import { ServiceDetailsComponent } from './service-details.component';
-import { ServiceDetailsRoutingModule } from './service-details-routing.module';
-import { TemplateViewModule } from '../../templates/template-view/template-view.module';
+import { TemplateViewComponent } from './template-view.component';
+import { TemplatePlaceholdersModule } from '../template-placeholders/template-placeholders.module';
 
 @NgModule({
   imports: [
@@ -22,14 +21,13 @@ import { TemplateViewModule } from '../../templates/template-view/template-view.
     ComponentsModule,
     LinkLabModule,
     HasPermissionModule,
-    ServiceDetailsRoutingModule,
-    TemplateViewModule
+    TemplatePlaceholdersModule
   ],
   declarations: [
-    ServiceDetailsComponent
+    TemplateViewComponent
   ],
-  exports: [ServiceDetailsComponent],
+  exports: [TemplateViewComponent],
   providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ServiceDetailsModule { }
+export class TemplateViewModule { }

@@ -1,0 +1,37 @@
+{
+  "editSingleColumn": true,
+
+  "itemRow": {
+    "primaryText": [
+      { "field": "service.service_name", "type": "text" }
+    ],
+    "secondaryText": [
+      { "field": "enabled", "type": "tag", "options": "enabled" }
+    ],
+    "metadata": {
+      "text": [
+        { "field": "id", "type": "cardinal" },
+        { "field": "template.subject", "type": "text" }
+      ],
+      "label": []
+    },
+    "secondaryMetadata": []
+  },
+
+  "details": [
+    { "label": "APP.LABEL.ServiceName", "field": "service_name", "type": "text" },
+    { "label": "APP.LABEL.Description", "field": "description", "type": "text" }
+  ],
+
+  "options": {
+    "enabled": {
+      "label": "APP.LABEL.Enabled",
+      "small": true,
+      "values": {
+        "true": { "label": "APP.STATUS.ENABLED", "background": "#57cc99", "border": "#57cc99", "color": "#1f1f1f" },
+        "false": { "label": "APP.STATUS.DISABLED", "background": "#A4ABB6", "border": "#A4ABB6", "color": "#ffffff" }
+      }
+    }
+  }
+}
+

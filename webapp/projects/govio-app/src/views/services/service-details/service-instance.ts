@@ -1,10 +1,13 @@
 import * as moment from 'moment';
 
-export class Service {
+export class ServiceInstance {
 
   id: number | null = null;
-  service_name: string | null = null;
-  description: string | null = null;
+  service_id: number | null = null;
+  organization_id: number | null = null;
+  template_id: number | null = null;
+  apiKey: string | null = null;
+  enabled: boolean = false;
 
   constructor(_data?: any) {
     if (_data) {
