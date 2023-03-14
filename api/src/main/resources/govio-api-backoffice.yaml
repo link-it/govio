@@ -977,7 +977,7 @@ components:
         description: >
           You can list the placeholder template using the `id` value.
           
-    patchServiceInstance:
+    updateServiceInstance:
         operationId: updateServiceInstance
         parameters:
           id: '$response.body#/id'
