@@ -1,8 +1,9 @@
 import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { HttpParams } from '@angular/common/http';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
@@ -14,7 +15,10 @@ import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definition
 
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
 
-import { Service } from './service';
+import { ServiceInstance } from './service-instance';
+
+import { concat, Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
 
 import * as jsonpatch from 'fast-json-patch';
 
@@ -25,7 +29,7 @@ import * as jsonpatch from 'fast-json-patch';
 })
 export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentChecked, OnDestroy {
   static readonly Name = 'ServiceDetailsComponent';
-  readonly model: string = 'services';
+  readonly model: string = 'service-instances';
 
   @Input() id: number | null = null;
   @Input() service: any = null;
@@ -34,9 +38,8 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Output() save: EventEmitter<any> = new EventEmitter<any>();
 
-  _title: string = '';
-
   appConfig: any;
+  templateConfig: any;
 
   hasTab: boolean = true;
   tabs: any[] = [
@@ -52,9 +55,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
   _closeEdit = true;
   _isNew = false;
   _formGroup: UntypedFormGroup = new UntypedFormGroup({});
-  _service: Service = new Service({});
-
-  serviceProviders: any = null;
+  _service: ServiceInstance = new ServiceInstance({});
 
   _spin: boolean = true;
   desktop: boolean = false;
@@ -67,6 +68,28 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
   _errorMsg: string = '';
 
   _modalConfirmRef!: BsModalRef;
+
+  minLengthTerm = 1;
+
+  rService: any = null;
+  services$!: Observable<any[]>;
+  servicesInput$ = new Subject<string>();
+  servicesLoading: boolean = false;
+  
+  organization: any = null;
+  organizations$!: Observable<any[]>;
+  organizationsInput$ = new Subject<string>();
+  organizationsLoading: boolean = false;
+  
+  template: any = null;
+  templates$!: Observable<any[]>;
+  templatesInput$ = new Subject<string>();
+  templatesLoading: boolean = false;
+
+  _organizationLogoPlaceholder: string = './assets/images/organization-placeholder.png';
+  _serviceLogoPlaceholder: string = './assets/images/service-placeholder.png';
+
+  _singleColumn: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -83,16 +106,6 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // Changed
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.route.params.subscribe(params => {
       if (params['id'] && params['id'] !== 'new') {
         this.id = params['id'];
@@ -101,6 +114,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
         this.configService.getConfig(this.model).subscribe(
           (config: any) => {
             this.config = config;
+            this._singleColumn = config.editSingleColumn || false;
             this._translateConfig();
             this._loadAll();
           }
@@ -114,12 +128,20 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
         if (this._isEdit) {
           this._initForm({ ...this._service });
+          this._initServicesSelect([]);
+          this._initOrganizationsSelect([]);
+          this._initTemplatesSelect([]);
         } else {
           this._loadAll();
         }
       }
-
     });
+
+    this.configService.getConfig('templates').subscribe(
+      (config: any) => {
+        this.templateConfig = config;
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -143,7 +165,6 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   _loadAll() {
     this._loadService();
-    // this._loadServiceProviders();
   }
 
   _hasControlError(name: string) {
@@ -160,9 +181,19 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
       Object.keys(data).forEach((key) => {
         let value = '';
         switch (key) {
-          case 'service_name':
+          case 'service_id':
+          case 'organization_id':
+          case 'template_id':
+            value = data[key] ? data[key] : null;
+            _group[key] = new UntypedFormControl({value: value, disabled: !this._isNew}, [Validators.required]);
+            break;
+          case 'apiKey':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
+            break;
+          case 'enabled':
+            value = data[key] ? data[key] : false;
+            _group[key] = new UntypedFormControl({value: value}, []);
             break;
           default:
             value = data[key] ? data[key] : null;
@@ -176,19 +207,19 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   __onSave(body: any) {
     this._error = false;
+    delete body.id;
     this.apiService.saveElement(this.model, body).subscribe(
       (response: any) => {
-        this.service = new Service({ ...response });
-        this._service = new Service({ ...response });
+        this.service = new ServiceInstance({ ...response });
+        this._service = new ServiceInstance({ ...response });
         this.id = this.service.id;
         this._initBreadcrumb();
-        this._isEdit = false;
-        this._isNew = false;
-        this.save.emit({ id: this.id, payment: response, update: false });
+        this._onCancelEdit();
       },
       (error: any) => {
         this._error = true;
         this._errorMsg = Tools.GetErrorMsg(error);
+        this._spin = false;
       }
     );
   }
@@ -207,15 +238,16 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   __onUpdate(id: number, body: any) {
     this._error = false;
+    const _rawBody: any = this._formGroup.getRawValue();
     const _service = this.__removeEmpty(this.service);
-    const _body = this.__removeEmpty(body);
+    const _body = this.__removeEmpty(_rawBody);
     const _bodyPatch: any[] = jsonpatch.compare(_service, _body);
     if (_bodyPatch) {
       this.apiService.updateElement(this.model, id, _bodyPatch).subscribe(
         (response: any) => {
           this._isEdit = !this._closeEdit;
-          this.service = new Service({ ...response });
-          this._service = new Service({ ...response });
+          this.service = new ServiceInstance({ ...response });
+          this._service = new ServiceInstance({ ...response });
           this.id = this.service.id;
           this.save.emit({ id: this.id, payment: response, update: true });
         },
@@ -274,31 +306,74 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
   
   _loadService() {
     if (this.id) {
+      this._spin = true;
       this.service = null;
-      this.apiService.getDetails(this.model, this.id).subscribe({
+      let aux: any = { params: this._queryToHttpParams({ embed: ['service','organization','template'] }) };
+      this.apiService.getDetails(this.model, this.id, '', aux).subscribe({
         next: (response: any) => {
-          this.service = new Service({ ...response });
-          this._service = new Service({ ...response });
-          this._title = this.service.creditorReferenceId;
-          if (this.config.detailsTitle) {
-            this._title = Tools.simpleItemFormatter(this.config.detailsTitle, this.service);
-          }
-          // this.__initInformazioni();
+          this.service = new ServiceInstance({ ...response });
+          this._service = new ServiceInstance({ ...response });
+          this.loadCurrentData();
+          this._spin = false;
         },
         error: (error: any) => {
           Tools.OnError(error);
+          this._spin = false;
         }
       });
     }
   }
 
-  __initInformazioni() {
-    if (this.service) {
-      this._informazioni = Tools.generateFields(this.config.details, this.service).map((field: FieldClass) => {
-        field.label = this.translate.instant(field.label);
-        return field;
-      });
-    }
+  __prepareServiceData(service: any) {
+    const _service: any = {
+      id: service.id,
+      service_id: service.service_id,
+      organization_id: service.organization_id,
+      template_id: service.template_id,
+      apiKey: service.apiKey,
+      enabled: service.enabled,
+
+      organization: {
+        id: service._embedded.organization.id,
+        legal_name: service._embedded.organization.legal_name,
+        tax_code: service._embedded.organization.tax_code,
+        logo: service._embedded.organization._links?.logo?.href || null,
+        logo_small: service._embedded.organization._links?.logo_small?.href || null
+      },
+
+      service: {
+        id: service._embedded.service.id,
+        service_name: service._embedded.service.service_name,
+        description: service._embedded.service.description
+      },
+
+      template: {
+        id: service._embedded.template.id,
+        subject: service._embedded.template.subject,
+        description: service._embedded.template.description,
+        message_body: service._embedded.template.message_body,
+        has_payment: service._embedded.template.has_payment,
+        has_due_date: service._embedded.template.has_due_date
+      }
+    };
+
+    return _service;
+  }
+
+  _queryToHttpParams(query: any) : HttpParams {
+    let httpParams = new HttpParams();
+
+    Object.keys(query).forEach(key => {
+      if (query[key]) {
+        switch (key)
+        {
+          default:
+            httpParams = httpParams.set(key, query[key]);
+        }
+      }
+    });
+    
+    return httpParams; 
   }
 
   _translateConfig() {
@@ -320,17 +395,13 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
     const _title = this.id ? `#${this.id}` : this.translate.instant('APP.TITLE.New');
     this.breadcrumbs = [
       { label: '', url: '', type: 'title', icon: 'apps' },
-      { label: 'APP.TITLE.Services', url: '/services', type: 'link' },
+      { label: 'APP.TITLE.ServiceInstances', url: '/service-instances', type: 'link' },
       { label: `${_title}`, url: '', type: 'title' }
     ];
   }
 
   _clickTab(tab: string) {
     this._currentTab = tab;
-  }
-
-  _dummyAction(event: any, param: any) {
-    console.log(event, param);
   }
 
   _editService() {
@@ -356,7 +427,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
         this.close.emit({ id: this.id, service: null });
       }
     } else {
-      this._service = new Service({ ...this.service });
+      this._service = new ServiceInstance({ ...this.service });
     }
   }
 
@@ -367,4 +438,145 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
       this._onClose();
     }
   }
+
+  trackByFn(item: any) {
+    return item.id;
+  }
+
+  _initServicesSelect(defaultValue: any[] = []) {
+    this.services$ = concat(
+      of(defaultValue),
+      this.servicesInput$.pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(500),
+        tap(() => this.servicesLoading = true),
+        switchMap((term: any) => {
+          return this.getData('services', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.servicesLoading = false)
+          )
+        })
+      )
+    );
+  }
+
+  _initOrganizationsSelect(defaultValue: any[] = []) {
+    this.organizations$ = concat(
+      of(defaultValue),
+      this.organizationsInput$.pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(500),
+        tap(() => this.organizationsLoading = true),
+        switchMap((term: any) => {
+          return this.getData('organizations', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.organizationsLoading = false)
+          )
+        })
+      )
+    );
+  }
+
+  _initTemplatesSelect(defaultValue: any[] = []) {
+    this.templates$ = concat(
+      of(defaultValue),
+      this.templatesInput$.pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(500),
+        tap(() => this.templatesLoading = true),
+        switchMap((term: any) => {
+          return this.getData('templates', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.templatesLoading = false)
+          )
+        })
+      )
+    );
+  }
+
+  getData(model: string, term: string | null = null): Observable<any> {
+    const _options: any = { params: { q: term, limit: 100 } };
+
+    return this.apiService.getList(model, _options)
+      .pipe(map(resp => {
+        if (resp.Error) {
+          throwError(resp.Error);
+        } else {
+          const _items = resp.items.map((item: any) => {
+            // item.disabled = _.findIndex(this._toExcluded, (excluded) => excluded.name === item.name) !== -1;
+            return item;
+          });
+          return _items;
+        }
+      })
+      );
+  }
+
+  loadCurrentData() {
+    this.rService = null;
+    this.apiService.getDetails('services', this.service.service_id).subscribe({
+      next: (response: any) => {
+        this.rService = response;
+        this._initServicesSelect([this.rService]);
+      },
+      error: (error: any) => {
+        Tools.OnError(error);
+      }
+    });
+
+    this.organization = null;
+    this.apiService.getDetails('organizations', this.service.organization_id).subscribe({
+      next: (response: any) => {
+        this.organization = response;
+        this._initOrganizationsSelect([this.organization]);
+      },
+      error: (error: any) => {
+        Tools.OnError(error);
+      }
+    });
+
+    this.template = null;
+    this.apiService.getDetails('templates', this.service.template_id).subscribe({
+      next: (response: any) => {
+        this.template = response;
+        this._initTemplatesSelect([this.template]);
+      },
+      error: (error: any) => {
+        Tools.OnError(error);
+      }
+    });
+  }
+
+  _orgLogo = (item: any): string => {
+    let logoUrl = this._organizationLogoPlaceholder;
+    if (item._links && item._links.logo_small) {
+      logoUrl = item._links.logo_small.href;
+    }
+    return logoUrl;
+  };
+
+  _orgLogoBackground = (item: any): string => {
+    let logoUrl = this._organizationLogoPlaceholder;
+    if (item && item._links && item._links.logo_small) {
+      logoUrl = item._links.logo_small.href;
+    }
+    return `url(${logoUrl})`;
+  };
+
+  _serviceLogoBackground = (item: any): string => {
+    let logoUrl = this._serviceLogoPlaceholder;
+    if (item && item._links && item._links.logo) {
+      logoUrl = item._links.logo.href;
+    }
+    return `url(${logoUrl})`;
+  };
 }

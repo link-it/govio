@@ -77,6 +77,7 @@
 		"LABEL": {
 			"AcquiredMessages": "Messaggi acquisiti",
 			"All": "Tutti",
+			"ApiKey": "Api Key",
 			"AvailabilityDate": "Data di disponibilità",
 			"Content": "Contenuto",
 			"CreationDate": "Data creazione",
@@ -88,6 +89,7 @@
 			"Description": "Descrizione",
 			"DueDate": "Data di scadenza",
 			"Email": "E-mail",
+			"Enabled": "Abilitato",
 			"ErrorMessages": "Messaggi di errore",
 			"Example": "Esempio",
 			"File": "Tracciato",
@@ -107,7 +109,7 @@
 			"Message": "Messaggio",
 			"MessageBody": "Corpo del messaggio",
 			"Name": "Nome",
-			"Organization": "Nome ente",
+			"Organization": "Organizzazione",
 			"Password": "Password",
 			"Pattern": "Pattern",
 			"Placeholder": "Segnaposto",
@@ -115,10 +117,12 @@
 			"Principal": "Nome utente",
 			"ScheduledExpeditionDate": "Data di spedizione pianificata",
 			"Service": "Servizio",
+			"ServiceInstance": "Istanza di servizio",
 			"ServiceName": "Nome Servizio",
 			"Status": "Stato",
 			"Subject": "Oggetto",
 			"Taxcode": "Codice fiscale",
+			"Template": "Modello",
 			"Type": "Tipo",
 			"User": "Utente",
 			"UserFullName": "Nome utente"
@@ -140,6 +144,7 @@
 			"Logout": "Logout",
 			"Messages": "Messaggi",
 			"Placeholders": "Segnaposto",
+			"ServiceInstances": "Istanze di servizio",
 			"Services": "Servizi",
 			"Templates": "Modelli"
 		},
@@ -177,6 +182,7 @@
 			"NoResponseUnimplemented": "Nessuna risposta o ancora non implementato",
 			"NoResults": "Siamo spiacenti, il tuo filtro non ha prodotto risultati",
 			"NoResultsHelp": "Per ampliare la tua ricerca, cambia o rimuovi i filtri qui sopra",
+			"NoTemplateSelected": "Nessun modello selezionato",
 			"NotFoundItem": "Elemento non trovato",
 			"NotFoundText": "Testo non trovato",
 			"PageNumber": "Pagina {{page}} di {{total}}",
@@ -218,7 +224,8 @@
 		"PLACEHOLDER": {
 			"Search": "Cerca...",
 			"SelectOrganization": "Seleziona un'ente",
-			"SelectService": "Seleziona un servizio"
+			"SelectService": "Seleziona un servizio",
+			"SelectServiceInstance": "Seleziona un'istanza di servizio"
 		},
 		"PLACEHOLDERS": {
 			"FILTER": {
@@ -258,6 +265,8 @@
 			"BAD_REQUEST": "Richiesta non valida",
 			"CREATED": "Creato",
 			"DENIED": "Negato",
+			"DISABLED": "Disabilitato",
+			"ENABLED": "Abilitato",
 			"ERRORE": "Errore",
 			"FORBIDDEN": "Proibito",
 			"PROCESSED": "Elaborato",
@@ -299,6 +308,7 @@
 			"EditFiles": "Modifica tracciato",
 			"EditPlaceholder": "Modifica segnaposto",
 			"EditService": "Modifica servizio",
+			"EditServiceInstance": "Modifica istanza del servizio",
 			"EditTemplate": "Modifica modello",
 			"File": "Tracciato",
 			"Files": "Tracciati",
@@ -310,12 +320,15 @@
 			"NewFile": "Nuovo tracciato",
 			"NewPlaceholder": "Nuovo segnaposto",
 			"NewService": "Nuovo servizio",
+			"NewServiceInstance": "Nuova istanza del servizio",
 			"NewTemplate": "Nuovo modello",
 			"Organization": "Organizzazione",
 			"Placeholders": "Segnaposto",
 			"Service": "Servizio",
-			"Service (2)": "Servizio",
+			"ServiceInstance": "Istanza di servizio",
+			"ServiceInstances": "Istanze di servizio",
 			"Services": "Servizi",
+			"Template": "Modello",
 			"Templates": "Modelli",
 			"Watermark": "Staging"
 		},
