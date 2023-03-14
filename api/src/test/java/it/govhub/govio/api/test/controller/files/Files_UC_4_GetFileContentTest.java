@@ -51,7 +51,7 @@ import it.govhub.security.services.GovhubUserDetailService;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @DisplayName("Test di lettura csv tracciati")
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)*/
 class Files_UC_4_GetFileContentTest {
 
 	private static final String FILES_BASE_PATH = "/v1/files";
