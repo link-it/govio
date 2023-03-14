@@ -33,6 +33,7 @@ import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.entity.UserEntity;
+import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
@@ -124,9 +125,15 @@ public class MessageController implements MessageApi {
 	@Override
 	public ResponseEntity<GovioMessage> readMessage(Long id) {
 		
-		GovioMessage ret = this.messageService.readMessage(id);
+		GovioMessageEntity message = this.messageRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(this.messageMessages.idNotFound(id)));
 		
-		return ResponseEntity.ok(ret);
+		GovioServiceInstanceEntity instance = message.getGovioServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
+
+		return ResponseEntity.ok(this.messageAssembler.toModel(message));
 	}
 	
     

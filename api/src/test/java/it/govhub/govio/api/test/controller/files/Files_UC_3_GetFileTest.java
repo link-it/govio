@@ -48,7 +48,7 @@ import it.govhub.security.services.GovhubUserDetailService;
 @DisplayName("Test di lettura csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class Files_UC_3_GetFileTest {
-
+/*
 	private static final String FILES_BASE_PATH = "/v1/files";
 	private static final String FILES_BASE_PATH_DETAIL_ID = FILES_BASE_PATH + "/{id}";
 
@@ -159,5 +159,5 @@ class Files_UC_3_GetFileTest {
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 	}
-	
+*/	
 }

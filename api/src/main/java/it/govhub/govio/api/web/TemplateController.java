@@ -138,26 +138,22 @@ public class TemplateController implements TemplateApi {
 	public ResponseEntity<GovioTemplateList> listTemplates(Direction sortDirection, Integer limit, Long offset, String q) {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(sortDirection, GovioTemplateEntity_.NAME));
-		
 		Specification<GovioTemplateEntity> spec = TemplateFilters.empty();
-		
 		if (!StringUtils.isBlank(q)) {
 			spec = TemplateFilters.likeDescription(q).
 					or(TemplateFilters.likeName(q));
 		}
 		
-		
-		Page<GovioTemplateEntity> templates = this.templateRepo.findAll(spec, pageRequest.pageable);
-		
+
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 		
+		Page<GovioTemplateEntity> templates = this.templateRepo.findAll(spec, pageRequest.pageable);		
 		GovioTemplateList ret = ListaUtils.buildPaginatedList(templates, pageRequest.limit, curRequest, new GovioTemplateList());
 		
 		for (var t : templates) {
 			ret.addItemsItem(this.templateAssembler.toModel(t));
 		}
-		
 		return ResponseEntity.ok(ret);
 	}
 
@@ -257,9 +253,8 @@ public class TemplateController implements TemplateApi {
 		Set<Long> foundIds = placeholdersFound.stream().map(GovioPlaceholderEntity::getId).collect(Collectors.toSet());
 		requestedIds.removeAll(foundIds);
 		
-		// TODO usare la placeholderMessages per costruire il messaggio di errore
 		if (!requestedIds.isEmpty()) {
-			throw new SemanticValidationException("Placeholders with IDs: " + requestedIds + " not Found");
+			throw new SemanticValidationException(this.placeholderMessages.idsNotFound(requestedIds));
 		}
 
 		template.getGovioTemplatePlaceholders().clear();

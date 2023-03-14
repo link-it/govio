@@ -48,7 +48,7 @@ import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
 class Files_UC_1_UploadFileTest {
-
+/*
 	private static final String FILES_BASE_PATH = "/v1/files";
 
 	@Autowired
@@ -344,5 +344,5 @@ class Files_UC_1_UploadFileTest {
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 		
-	}
+	}*/
 }

@@ -141,37 +141,6 @@ public class FileService {
 	
 
 	@Transactional
-	public GovioFile readFile(Long id) {
-		GovioFileEntity file = this.fileRepo.findById(id)
-				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
-		GovioServiceInstanceEntity instance = file.getServiceInstance();
-		
-		log.debug("Reading file [{}]", file.getLocation());
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
-		
-		GovioFile ret = this.fileAssembler.toModel(file);
-		return ret;
-	}
-
-	
-	@Transactional
-	public FileList listFiles(Specification<GovioFileEntity> spec, LimitOffsetPageRequest pageRequest) {
-		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
-		
-		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
-				.currentRequestAttributes()).getRequest();
-		
-		FileList ret = ListaUtils.buildPaginatedList(files, pageRequest.limit, curRequest, new FileList());
-		
-		for (GovioFileEntity file : files) {
-			ret.addItemsItem(this.fileAssembler.toModel(file));
-		}
-		return ret;
-	}
-	
-	
-	@Transactional
 	public FileMessageList listFileMessages(Specification<GovioFileMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
 		
 		// TODO: Qui ho bisogno di un'entity graph che di ogni fileEntity mi peschi anche i
