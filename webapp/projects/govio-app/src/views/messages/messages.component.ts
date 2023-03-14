@@ -69,9 +69,8 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   sortFields: any[] = [];
 
   searchFields: any[] = [
-    { field: 'creationDateFrom', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
-    { field: 'creationDateTo', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
-    { field: 'taxcode', label: 'APP.LABEL.Taxcode', type: 'string', condition: 'like' },
+    { field: 'scheduled_expedition_date_from', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
+    { field: 'scheduled_expedition_date_to', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
     { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
     { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
   ];
@@ -161,9 +160,8 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
   _initSearchForm() {
     this._formGroup = new UntypedFormGroup({
-      creationDateFrom: new UntypedFormControl(''),
-      creationDateTo: new UntypedFormControl(''),
-      taxcode: new UntypedFormControl(''),
+      scheduled_expedition_date_from: new UntypedFormControl(''),
+      scheduled_expedition_date_to: new UntypedFormControl(''),
       'organization.legal_name': new UntypedFormControl(''),
       'service.service_name': new UntypedFormControl(''),
     });
@@ -183,15 +181,17 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
         this._links = response._links;
 
         if (response.items) {
+          const _itemRow = this.messagesConfig.itemRow;
+          const _options = this.messagesConfig.options;
           const _list: any = response.items.map((message: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.text, message, this.messagesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.label, message, this.messagesConfig.options || null);
+            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, message, _options || null);
+            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, message, _options || null);
             const element = {
               id: message.id,
-              primaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.primaryText, message, this.messagesConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryText, message, this.messagesConfig.options || null, ' '),
+              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, message, _options || null, ' '),
+              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, message, _options || null, ' '),
               metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryMetadata, message, this.messagesConfig.options || null, ' '),
+              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, message, _options || null, ' '),
               editMode: false,
               source: { ...message }
             };

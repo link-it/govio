@@ -5,7 +5,7 @@ import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
@@ -64,20 +64,34 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
   showSearch: boolean = true;
   showSorting: boolean = true;
 
-  sortField: string = 'date';
-  sortDirection: string = 'asc';
-  sortFields: any[] = [];
+  sortField: string = 'id';
+  sortDirection: string = 'desc';
+  sortFields: any[] = [
+    { field: 'id', label: 'APP.LABEL.Id', icon: '' },
+    { field: 'creation_date', label: 'APP.LABEL.CreationDate', icon: '' }
+  ];
 
   searchFields: any[] = [
-    { field: 'creationDateFrom', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
-    { field: 'creationDateTo', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
-    { field: 'fileName', label: 'APP.LABEL.FileName', type: 'string', condition: 'like' },
-    { field: 'status', label: 'APP.LABEL.Status', type: 'enum', condition: 'equal', enumValues: { 'NUOVO': 'APP.STATUS.NUOVO', 'ELABORAZIONE': 'APP.STATUS.ELABORAZIONE', 'COMPLETATO': 'APP.STATUS.COMPLETATO', 'SCARTATO': 'APP.STATUS.SCARTATO' } },
-    { field: 'type', label: 'APP.LABEL.Type', type: 'enum', condition: 'equal', enumValues: { 'CBI': 'CBI' } }
+    { field: 'creation_date_from', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
+    { field: 'creation_date_to', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
+    { field: 'filename', label: 'APP.LABEL.Filename', type: 'string', condition: 'like' },
+    { field: 'status', label: 'APP.LABEL.Status', type: 'enum', condition: 'equal',
+      enumValues: { 
+        'CREATED': 'APP.STATUS.CREATED',
+        'PROCESSING': 'APP.STATUS.PROCESSING',
+        'PROCESSED': 'APP.STATUS.PROCESSED',
+      }
+    }
   ];
 
   breadcrumbs: any[] = [
     { label: 'APP.TITLE.Files', url: '', type: 'title', icon: 'topic' }
+  ];
+
+  statusList: any = [
+    { label: 'APP.STATUS.CREATED', value: 'CREATED', order: 1 },
+    { label: 'APP.STATUS.PROCESSING', value: 'PROCESSING', order: 2 },
+    { label: 'APP.STATUS.PROCESSED', value: 'PROCESSED', order: 3 }
   ];
 
   constructor(
@@ -101,10 +115,6 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // language
-    });
-
     this.pageloaderService.resetLoader();
     this.pageloaderService.isLoading.subscribe({
       next: (x) => { this._spin = x; },
@@ -161,11 +171,10 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
 
   _initSearchForm() {
     this._formGroup = new UntypedFormGroup({
-      creationDateFrom: new UntypedFormControl(''),
-      creationDateTo: new UntypedFormControl(''),
-      fileName: new UntypedFormControl(''),
-      status: new UntypedFormControl(''),
-      type: new UntypedFormControl(''),
+      creation_date_from: new UntypedFormControl(''),
+      creation_date_to: new UntypedFormControl(''),
+      filename: new UntypedFormControl(''),
+      status: new UntypedFormControl('')
     });
   }
 
@@ -175,7 +184,9 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
     if (!url) { this.files = []; }
     
     let aux: any;
-    if (query)  aux = { params: this._queryToHttpParams(query) };
+    const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+    query = { ...query, embed: ['service_instance'], ...sort };
+    aux = { params: this._queryToHttpParams(query) };
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
@@ -183,17 +194,20 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
         this._links = response._links;
 
         if (response.items) {
+          const _itemRow = this.filesConfig.itemRow;
+          const _options = this.filesConfig.options;
           const _list: any = response.items.map((file: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.text, file, this.filesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.filesConfig.simpleItem.metadata.label, file, this.filesConfig.options || null);
+            const _file = this._prepareFileData(file);
+            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, _file, _options || null);
+            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, _file, _options || null);
             const element = {
               id: file.id,
-              primaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.primaryText, file, this.filesConfig.options || null),
-              secondaryText: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryText, file, this.filesConfig.options || null, ' '),
+              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, _file, _options || null),
+              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, _file, _options || null, ' '),
               metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.filesConfig.simpleItem.secondaryMetadata, file, this.filesConfig.options || null, ' '),
+              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, _file, _options || null, ' '),
               editMode: false,
-              source: { ...file }
+              source: { ..._file }
             };
             return element;
           });
@@ -210,6 +224,30 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
     });
   }
 
+  _prepareFileData(data: any) {
+    const _serviceInstance = data._embedded['service-instance'];
+    const _organization: any = {
+      ..._serviceInstance._embedded.organization,
+      logo: _serviceInstance._embedded.organization._links.logo?.href || null,
+      logo_small: _serviceInstance._embedded.organization._links.logo_small?.href || null
+    }
+    const _service: any = {
+      ..._serviceInstance._embedded.service,
+      logo: _serviceInstance._embedded.service._links.logo?.href || null,
+      logo_small: _serviceInstance._embedded.service._links.logo_small?.href || null
+    }
+
+    let _file: any = {
+      ...data,
+      service_instance: _serviceInstance,
+      organization: _organization,
+      service: _service,
+      template: _serviceInstance._embedded.template,
+    };
+    console.log('_prepareFileData', _file);
+    return _file;
+  }
+
   _queryToHttpParams(query: any) : HttpParams {
     let httpParams = new HttpParams();
 
@@ -218,11 +256,6 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
         let _dateTime = '';
         switch (key)
         {
-          case 'data_inizio':
-          case 'data_fine':
-            _dateTime = moment(query[key]).format('YYYY-MM-DD');
-            httpParams = httpParams.set(key, _dateTime);
-            break;
           default:
             httpParams = httpParams.set(key, query[key]);
         }
@@ -284,7 +317,9 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
   }
 
   _onSort(event: any) {
-    console.log(event);
+    this.sortField = event.sortField;
+    this.sortDirection = event.sortBy;
+    this._loadFiles(this._filterData);
   }
 
   _timestampToMoment(value: number) {

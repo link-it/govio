@@ -1,17 +1,13 @@
 import * as moment from 'moment';
 
-export class File {
+export class ServiceInstance {
 
   id: number | null = null;
-  filename: string | null = null;
-  organization_id: number | null = null;
   service_id: number | null = null;
-  service_instance: number | null = null;
-  file: any = null;
-  status: any = null;
-  creation_date: string | null = null;
-  error_messages: number = 0;
-  acquired_messages: number = 0;
+  organization_id: number | null = null;
+  template_id: number | null = null;
+  apiKey: string | null = null;
+  enabled: boolean = false;
 
   constructor(_data?: any) {
     if (_data) {

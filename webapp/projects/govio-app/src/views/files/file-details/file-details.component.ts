@@ -14,6 +14,9 @@ import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definition
 
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
 
+import { concat, Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+
 import { File } from './file';
 
 declare const saveAs: any;
@@ -76,6 +79,13 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _services: any[] = [];
   _selectedFile: any = null;
 
+  minLengthTerm = 1;
+
+  services$!: Observable<any[]>;
+  servicesSelected$!: any;
+  servicesInput$ = new Subject<string>();
+  servicesLoading: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -125,8 +135,9 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
             this.config = config;
             this._translateConfig();
             if (this._isEdit) {
-              this._loadRegistry();
+              // this._loadRegistry();
               this._initForm({ ...this._file });
+              this._initServicesSelect([]);
             } else {
               this._loadAll();
             }
@@ -157,7 +168,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   }
 
   _loadAll() {
-    this._loadRegistry();
+    // this._loadRegistry();
     this._loadFile();
   }
 
@@ -175,8 +186,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       Object.keys(data).forEach((key) => {
         let value = '';
         switch (key) {
-          case 'organization_id':
-          case 'service_id':
+          case 'service_instance':
           case 'file':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
@@ -199,7 +209,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     this._error = false;
     const formData = new FormData();
     formData.append('file', this._selectedFile, this._selectedFile.name);
-    const url: string = `files?organization_id=${body.organization_id}&service_id=${body.service_id}`;
+    const url: string = `files?service_instance=${body.service_instance}`;
     this.apiService.upload(url, formData)
       .subscribe({
         next: (response: any) => {
@@ -285,23 +295,23 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   }
 
   _loadRegistry() {
-    this.apiService.getList('organizations').subscribe({
-      next: (response: any) => {
-        this._organizations = response.items;
-      },
-      error: (error: any) => {
-        Tools.OnError(error);
-      }
-    });
+    // this.apiService.getList('organizations').subscribe({
+    //   next: (response: any) => {
+    //     this._organizations = response.items;
+    //   },
+    //   error: (error: any) => {
+    //     Tools.OnError(error);
+    //   }
+    // });
 
-    this.apiService.getList('services').subscribe({
-      next: (response: any) => {
-        this._services = response.items;
-      },
-      error: (error: any) => {
-        Tools.OnError(error);
-      }
-    });
+    // this.apiService.getList('services').subscribe({
+    //   next: (response: any) => {
+    //     this._services = response.items;
+    //   },
+    //   error: (error: any) => {
+    //     Tools.OnError(error);
+    //   }
+    // });
 
     // this.apiService.getList('service-instances').subscribe({
     //   next: (response: any) => {
@@ -378,7 +388,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _initBreadcrumb() {
     const _title = this.id ? `#${this.id}` : this.translate.instant('APP.TITLE.New');
     this.breadcrumbs = [
-      { label: '', url: '', type: 'title', icon: 'corporate_fare' },
+      { label: '', url: '', type: 'title', icon: 'account_balance' },
       { label: 'APP.TITLE.Files', url: '/files', type: 'link' },
       { label: `${_title}`, url: '', type: 'title' }
     ];
@@ -450,4 +460,57 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     const logoUrl = item.logo || this._serviceLogoPlaceholder;
     return `url(${logoUrl})`;
   };
+
+  trackByFn(item: any) {
+    return item.id;
+  }
+
+  _initServicesSelect(defaultValue: any[] = []) {
+    this.services$ = concat(
+      of(defaultValue),
+      this.servicesInput$.pipe(
+        filter(res => {
+          return res !== null && res.length >= this.minLengthTerm
+        }),
+        distinctUntilChanged(),
+        debounceTime(500),
+        tap(() => this.servicesLoading = true),
+        switchMap((term: any) => {
+          return this.getData('service-instances', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.servicesLoading = false)
+          )
+        })
+      )
+    );
+  }
+
+  getData(model: string, term: string | null = null): Observable<any> {
+    const _options: any = { params: { q: term, limit: 100, embed: ['service','organization','template'] } };
+
+    return this.apiService.getList(model, _options)
+      .pipe(map(resp => {
+        if (resp.Error) {
+          throwError(resp.Error);
+        } else {
+          const _items = resp.items.map((item: any) => {
+            item.organization = item._embedded.organization;
+            item.organization_name = item._embedded.organization.legal_name;
+            item.service = item._embedded.service;
+            item.service_name = item._embedded.service.service_name;
+            item.template = item._embedded.template;
+            item.template_name = item._embedded.template.description;
+            item.label = `${item.service_name} | ${item.template_name}`;
+            // item.disabled = true;
+            return item;
+          });
+          return _items;
+        }
+      })
+      );
+  }
+
+  onChangeService(event: any) {
+    this.servicesSelected$ = event;
+  }
 }
