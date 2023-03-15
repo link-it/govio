@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
-import it.govhub.govio.api.repository.FileFilters;
 import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
@@ -40,16 +39,4 @@ public class ServiceInstanceService {
 		return this.instanceRepo.save(newInstance);
 	}
 	
-
-	public GovioServiceInstanceEntity disableIntance(GovioServiceInstanceEntity instance) {
-		 var spec = FileFilters.byMessageStatus(FileService.IntermediateStatuses).and(FileFilters.byServiceInstanceId(instance.getId()));
-		
-		if (this.fileRepo.exists(spec)) {
-			throw new SemanticValidationException("L'istanza di servizio ["+instance.getId()+"] non può essere disattivata in quanto ci sono ancora messaggi in coda.");
-		} else {
-			instance.setEnabled(false);
-			return this.instanceRepo.save(instance);
-		}
-	}
-
 }

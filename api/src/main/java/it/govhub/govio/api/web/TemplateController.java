@@ -346,6 +346,7 @@ public class TemplateController implements TemplateApi {
 		
 		// Dall'oggetto REST passo alla entity
 		GovioTemplateEntity newTemplate = this.templateAssembler.toEntity(updatedTemplate);
+		newTemplate.setGovioTemplatePlaceholders(template.getGovioTemplatePlaceholders());
 
 		newTemplate = this.templateRepo.save(newTemplate);
 		
