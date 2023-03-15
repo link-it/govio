@@ -26,10 +26,10 @@
               <span class="mt-1 text-break">{{ template.message_body }}</span>
             </div>
           </div>
-          <div class="row mt-4 has_payment has_due_date">
+          <div class="row mt-5 has_payment has_due_date">
             <div class="col-md-6">
               <div class="gl-form-checkbox custom-control custom-checkbox has_payment">
-                <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [value]="template.has_payment" disabled>
+                <input class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [value]="template.has_payment" disabled>
                 <label class="custom-control-label text-dark" for="has_payment">
                   <span>{{ 'APP.LABEL.HasPayment' | translate }}</span>
                 </label>
@@ -37,7 +37,7 @@
             </div>
             <div class="col-md-6">
               <div class="gl-form-checkbox custom-control custom-checkbox has_due_date">
-                <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_due_date" id="has_due_date" [checked]="template.has_due_date" disabled>
+                <input class="custom-control-input" type="checkbox" name="has_due_date" id="has_due_date" [checked]="template.has_due_date" disabled>
                 <label class="custom-control-label text-dark" for="has_due_date">
                   <span>{{ 'APP.LABEL.HasDueDate' | translate }}</span>
                 </label>
