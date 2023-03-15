@@ -21,12 +21,14 @@ import { BreadcrumbModule } from './ui/breadcrumb/breadcrumb.module';
 import { BoxMessageModule } from './ui/box-message/box-message.module';
 import { BoxSpinnerModule } from './ui/box-spinner/box-spinner.module';
 import { FormReadonlyModule } from './ui/form-readonly/form-readonly.module';
+import { DataTypeModule } from './ui/data-type/data-type.module';
 import { DataViewModule } from './ui/data-view/data-view.module';
 import { BoxCollapseModule } from './ui/box-collapse/box-collapse.module';
 import { SearchBarModule } from './ui/search-bar/search-bar.module';
 import { SearchBarFormModule } from './ui/search-bar-form/search-bar-form.module';
 import { SimpleItemModule } from './ui/simple-item/simple-item.module';
 import { CollapseItemModule } from './ui/collapse-item/collapse-item.module';
+import { ItemTypeModule } from './ui/item-type/item-type.module';
 import { ItemRowModule } from './ui/item-row/item-row.module';
 import { InputHelpModule } from './ui/input-help/input-help.module';
 import { AddEditValueModule } from './ui/add-edit-value/add-edit-value.module';
@@ -50,6 +52,7 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { TextUppercaseModule } from './directives/uppercase.module';
 import { TextLowercaseModule } from './directives/lowercase.module';
 import { CountUpeModule } from './directives/count-up.module';
+import { MarkAsteriskModule } from './directives/mark-asterisk.module';
 
 @NgModule({
   imports: [
@@ -63,12 +66,14 @@ import { CountUpeModule } from './directives/count-up.module';
     BoxMessageModule,
     BoxSpinnerModule,
     FormReadonlyModule,
+    DataTypeModule,
     DataViewModule,
     BoxCollapseModule,
     SearchBarModule,
     SearchBarFormModule,
     SimpleItemModule,
     CollapseItemModule,
+    ItemTypeModule,
     ItemRowModule,
     InputHelpModule,
     AddEditValueModule,
@@ -79,7 +84,8 @@ import { CountUpeModule } from './directives/count-up.module';
     // Directives
     TextUppercaseModule,
     TextLowercaseModule,
-    CountUpeModule
+    CountUpeModule,
+    MarkAsteriskModule
   ],
   declarations: [
     HeadBarComponent,
@@ -113,12 +119,14 @@ import { CountUpeModule } from './directives/count-up.module';
     BoxMessageModule,
     BoxSpinnerModule,
     FormReadonlyModule,
+    DataTypeModule,
     DataViewModule,
     BoxCollapseModule,
     SearchBarModule,
     SearchBarFormModule,
     SimpleItemModule,
     CollapseItemModule,
+    ItemTypeModule,
     ItemRowModule,
     InputHelpModule,
     AddEditValueModule,
@@ -152,7 +160,8 @@ import { CountUpeModule } from './directives/count-up.module';
     ClickOutsideDirective,
     TextUppercaseModule,
     TextLowercaseModule,
-    CountUpeModule
+    CountUpeModule,
+    MarkAsteriskModule    
   ]
 })
 export class ComponentsModule { }
