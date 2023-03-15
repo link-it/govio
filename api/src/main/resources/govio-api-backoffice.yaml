@@ -60,10 +60,7 @@ paths:
       description: Allows to upload a csv trace for a GovIO service.
       operationId: uploadFile
       parameters:
-         - $ref: '#/components/parameters/service_instance_id_query_optional'
-#   TODO: Ristabilire la versione con service_instance_id_query e rimuovere dagli schema l' _optional
-         - $ref: "#/components/parameters/service_id_query_optional"
-         - $ref: "#/components/parameters/organization_id_query_optional"
+         - $ref: '#/components/parameters/service_instance_id_query'
       requestBody:
         content:
           multipart/form-data:
