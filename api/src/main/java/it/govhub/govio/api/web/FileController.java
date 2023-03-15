@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,8 +91,7 @@ public class FileController implements FileApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, Long serviceId, Long organizationId, MultipartFile file) {
-	//public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, MultipartFile file) {
+	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId,  MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -118,7 +118,10 @@ public class FileController implements FileApi {
 				    sourceFilename = RequestUtils.readFilenameFromHeaders(itemStream.getHeaders());
 			    }
 			}
-		} catch (Exception e) {
+		} catch(FileUploadException e) {
+			throw new BadRequestException(e);
+		}
+		catch (Exception e) {
 			throw new InternalException(e);
 		}
 		
@@ -127,22 +130,12 @@ public class FileController implements FileApi {
     	}
     	
     	GovioServiceInstanceEntity serviceInstance = null;
-    	if (serviceInstanceId != null) {
-    		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
-        			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
-    	} else if (serviceId != null && organizationId != null) {
-    		serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
-    				.orElseThrow( () -> new SemanticValidationException("Service Instance for service ["+serviceId+"] and organization ["+organizationId+"] not present"));
-    	}
-    	
-    	if (serviceInstance == null) {
-    		throw new BadRequestException("E' necessasrio specificare una service instance");
-    	}
+  		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
+       			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
     	
     	if (!serviceInstance.getEnabled() ) {
     		throw new SemanticValidationException("La service instance ["+serviceInstance.getId()+"] è disabilitata.");
     	}
-    	/**/
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	

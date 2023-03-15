@@ -7,8 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -27,13 +25,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.assemblers.FileMessageAssembler;
 import it.govhub.govio.api.assemblers.MessageAssembler;
-import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
-import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
-import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.FileMessages;
 import it.govhub.govio.api.repository.FileMessageRepository;
@@ -41,7 +36,6 @@ import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.exception.InternalException;
-import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
@@ -82,14 +76,6 @@ public class FileService {
 	
 	Logger log = LoggerFactory.getLogger(FileService.class);
 	
-	// TODO: Chiedi a lorenzo quali sono gli stati intermedi
-	public static final Set<GovioMessageEntity.Status> IntermediateStatuses = Set.of(
-				GovioMessageEntity.Status.THROTTLED,
-				GovioMessageEntity.Status.SCHEDULED,
-				GovioMessageEntity.Status.RECIPIENT_ALLOWED,
-				GovioMessageEntity.Status.CREATED
-			);
-	
 	
 	@Transactional
 	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
@@ -103,8 +89,7 @@ public class FileService {
 		}
 
     	Path destPath = this.fileRepositoryPath
-    				.resolve(instance.getOrganization().getId().toString())
-    				.resolve(instance.getService().getId().toString());
+    				.resolve(instance.getId().toString());
     	
     	File destDir = destPath.toFile();
     	destDir.mkdirs();
