@@ -4,7 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
 
-import { UtilsLib } from '../../../utils/utils.lib';
+import { UtilsLib } from '../../utils/utils.lib';
 
 import * as moment from 'moment';
 

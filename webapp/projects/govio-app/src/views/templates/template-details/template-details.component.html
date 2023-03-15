@@ -68,7 +68,7 @@
               </div>
               <div class="col-lg-8">
                 <div class="form-group description">
-                  <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }}</label>
+                  <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'description'" *ngIf="_isEdit"></span></label>
                   <div class="" *ngIf="_isEdit">
                     <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('description')" type="text" name="description" id="description" formControlName="description">
                     <p *ngIf="f['description'].invalid && (f['description'].dirty || f['description'].touched)" class="form-text text-danger">
@@ -82,7 +82,7 @@
                   </div>
                 </div>
                 <div class="form-group subject">
-                  <label class="label-bold" for="subject">{{ 'APP.LABEL.Subject' | translate }}</label>
+                  <label class="label-bold" for="subject">{{ 'APP.LABEL.Subject' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'subject'" *ngIf="_isEdit"></span></label>
                   <div class="" *ngIf="_isEdit">
                     <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('subject')" type="text" name="subject" id="subject" formControlName="subject">
                     <p *ngIf="f['subject'].invalid && (f['subject'].dirty || f['subject'].touched)" class="form-text text-danger">
@@ -95,7 +95,7 @@
                   </div>
                 </div>
                 <div class="form-group message_body">
-                  <label class="label-bold" for="message_body">{{ 'APP.LABEL.MessageBody' | translate }}</label>
+                  <label class="label-bold" for="message_body">{{ 'APP.LABEL.MessageBody' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'message_body'" *ngIf="_isEdit"></span></label>
                   <div class="" *ngIf="_isEdit">
                     <textarea aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('message_body')" type="text" name="message_body" id="message_body" formControlName="message_body" rows="9"></textarea>
                     <p *ngIf="f['message_body'].invalid && (f['message_body'].dirty || f['message_body'].touched)" class="form-text text-danger">
@@ -113,7 +113,7 @@
                       <div class="gl-form-checkbox custom-control custom-checkbox has_payment">
                         <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" formControlName="has_payment">
                         <label class="custom-control-label" for="has_payment">
-                          <span>{{ 'APP.LABEL.HasPayment' | translate }}</span>
+                          <span>{{ 'APP.LABEL.HasPayment' | translate }}</span> <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'has_payment'" *ngIf="_isEdit"></span>
                         </label>
                       </div>
                     </div>
@@ -121,7 +121,7 @@
                       <div class="gl-form-checkbox custom-control custom-checkbox has_payment">
                         <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [value]="template.has_payment" disabled>
                         <label class="custom-control-label text-dark" for="has_payment">
-                          <span>{{ 'APP.LABEL.HasPayment' | translate }}</span>
+                          <span>{{ 'APP.LABEL.HasPayment' | translate }}</span> 
                         </label>
                       </div>
                     </div>
@@ -131,7 +131,7 @@
                       <div class="gl-form-checkbox custom-control custom-checkbox has_due_date">
                         <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_due_date" id="has_due_date" formControlName="has_due_date">
                         <label class="custom-control-label" for="has_due_date">
-                          <span>{{ 'APP.LABEL.HasDueDate' | translate }}</span>
+                          <span>{{ 'APP.LABEL.HasDueDate' | translate }}</span> <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'HasDueDate'" *ngIf="_isEdit"></span>
                         </label>
                       </div>
                     </div>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataTypeModule } from './data-type/data-type.module';
+import { DataTypeModule } from '../data-type/data-type.module';
 import { DataViewComponent } from './data-view.component';
 
 @NgModule({
