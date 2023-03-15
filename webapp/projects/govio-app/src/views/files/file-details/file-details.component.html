@@ -159,7 +159,7 @@
                 <div class="row">
                   <div class="col-lg-12">
                     <div class="form-group service_instance">
-                      <label class="label-bold" for="service_instance">{{ 'APP.LABEL.ServiceInstance' | translate }}</label>
+                      <label class="label-bold" for="service_instance">{{ 'APP.LABEL.ServiceInstance' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'service_instance'" *ngIf="_isEdit"></span></label>
                       <div class="">
                         <ng-select class="" formControlName="service_instance"
                           [class.gl-field-error-outline]="_hasControlError('service_instance')"
@@ -225,7 +225,7 @@
                 <div class="row">
                   <div class="col-12">
                     <div class="form-group file">
-                      <label class="label-bold" for="logo">{{ 'APP.LABEL.File' | translate }}</label>
+                      <label class="label-bold" for="file">{{ 'APP.LABEL.File' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'file'" *ngIf="_isEdit"></span></label>
                       <div class="" *ngIf="_isEdit">
                         <input type="file" class="form-control form-control-sm" formControlName="file" (change)="_onFileLoaded($event, 'file')" [class.gl-field-error-outline]="_hasControlError('file')">
                       </div>

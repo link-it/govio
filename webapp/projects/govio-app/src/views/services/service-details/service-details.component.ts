@@ -1,4 +1,4 @@
-import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
@@ -18,7 +18,7 @@ import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesn
 import { ServiceInstance } from './service-instance';
 
 import { concat, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap, tap } from 'rxjs/operators';
 
 import * as jsonpatch from 'fast-json-patch';
 
@@ -37,6 +37,8 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Output() save: EventEmitter<any> = new EventEmitter<any>();
+
+  @ViewChild('templateInfo') templateInfo!: any;
 
   appConfig: any;
   templateConfig: any;
@@ -72,24 +74,30 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
   minLengthTerm = 1;
 
   rService: any = null;
+  _servicesData: any[] = [];
   services$!: Observable<any[]>;
   servicesInput$ = new Subject<string>();
   servicesLoading: boolean = false;
   
   organization: any = null;
+  _organizationsData: any[] = [];
   organizations$!: Observable<any[]>;
   organizationsInput$ = new Subject<string>();
   organizationsLoading: boolean = false;
   
   template: any = null;
+  _templatesData: any[] = [];
   templates$!: Observable<any[]>;
   templatesInput$ = new Subject<string>();
   templatesLoading: boolean = false;
+  _currentTemlplateId: number = 0;
 
   _organizationLogoPlaceholder: string = './assets/images/organization-placeholder.png';
   _serviceLogoPlaceholder: string = './assets/images/service-placeholder.png';
 
   _singleColumn: boolean = false;
+
+  _modalInfoRef!: BsModalRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -128,9 +136,11 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
         if (this._isEdit) {
           this._initForm({ ...this._service });
-          this._initServicesSelect([]);
-          this._initOrganizationsSelect([]);
-          this._initTemplatesSelect([]);
+          setTimeout(() => {
+            this._initOrganizationsSelect([]);
+            this._initServicesSelect([]);
+            this._initTemplatesSelect([]);
+          }, 500);
         } else {
           this._loadAll();
         }
@@ -171,6 +181,10 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
     return (this.f[name].errors && this.f[name].touched);
   }
 
+  _hasControlValue(name: string) {
+    return (this.f[name] && this.f[name].value);
+  }
+
   get f(): { [key: string]: AbstractControl } {
     return this._formGroup.controls;
   }
@@ -193,7 +207,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
             break;
           case 'enabled':
             value = data[key] ? data[key] : false;
-            _group[key] = new UntypedFormControl({value: value}, []);
+            _group[key] = new UntypedFormControl(value, []);
             break;
           default:
             value = data[key] ? data[key] : null;
@@ -394,7 +408,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
   _initBreadcrumb() {
     const _title = this.id ? `#${this.id}` : this.translate.instant('APP.TITLE.New');
     this.breadcrumbs = [
-      { label: '', url: '', type: 'title', icon: 'apps' },
+      { label: 'APP.TITLE.Configurations', url: '', type: 'title', iconBs: 'gear' },
       { label: 'APP.TITLE.ServiceInstances', url: '/service-instances', type: 'link' },
       { label: `${_title}`, url: '', type: 'title' }
     ];
@@ -443,35 +457,16 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
     return item.id;
   }
 
-  _initServicesSelect(defaultValue: any[] = []) {
-    this.services$ = concat(
-      of(defaultValue),
-      this.servicesInput$.pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
-        distinctUntilChanged(),
-        debounceTime(500),
-        tap(() => this.servicesLoading = true),
-        switchMap((term: any) => {
-          return this.getData('services', term).pipe(
-            catchError(() => of([])), // empty list on error
-            tap(() => this.servicesLoading = false)
-          )
-        })
-      )
-    );
-  }
-
   _initOrganizationsSelect(defaultValue: any[] = []) {
     this.organizations$ = concat(
       of(defaultValue),
       this.organizationsInput$.pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
         distinctUntilChanged(),
-        debounceTime(500),
         tap(() => this.organizationsLoading = true),
         switchMap((term: any) => {
           return this.getData('organizations', term).pipe(
@@ -483,15 +478,37 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
     );
   }
 
+  _initServicesSelect(defaultValue: any[] = []) {
+    this.services$ = concat(
+      of(defaultValue),
+      this.servicesInput$.pipe(
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => this.servicesLoading = true),
+        switchMap((term: any) => {
+          return this.getData('services', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.servicesLoading = false)
+          )
+        })
+      )
+    );
+  }
+
   _initTemplatesSelect(defaultValue: any[] = []) {
     this.templates$ = concat(
       of(defaultValue),
       this.templatesInput$.pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
         distinctUntilChanged(),
-        debounceTime(500),
         tap(() => this.templatesLoading = true),
         switchMap((term: any) => {
           return this.getData('templates', term).pipe(
@@ -503,8 +520,17 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
     );
   }
 
-  getData(model: string, term: string | null = null): Observable<any> {
-    const _options: any = { params: { q: term, limit: 100 } };
+  getData(model: string, term: any = null): Observable<any> {
+    let _options: any = { params: { limit: 100 } };
+    if (term) {
+      if (typeof term === 'string' ) {
+        _options.params =  { ..._options.params, q: term };
+      }
+      if (typeof term === 'object' ) {
+        console.log('term', term);
+        _options.params =  { ..._options.params, ...term };
+      }
+    }
 
     return this.apiService.getList(model, _options)
       .pipe(map(resp => {
@@ -579,4 +605,16 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
     }
     return `url(${logoUrl})`;
   };
+
+  openTemplateInfo() {
+    this._currentTemlplateId = this._isEdit ? this._formGroup.controls['template_id'].value : this.service.template_id
+    this._modalInfoRef = this.modalService.show(this.templateInfo, {
+      ignoreBackdropClick: false,
+      class: 'modal-lg'
+    });
+  }
+
+  closeModal(){
+    this._modalInfoRef.hide();
+  }
 }

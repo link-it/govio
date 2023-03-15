@@ -69,7 +69,8 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   _useRoute: boolean = true;
 
   breadcrumbs: any[] = [
-    { label: 'APP.TITLE.ServiceInstances', url: '', type: 'title', icon: 'apps' }
+    { label: 'APP.TITLE.Configurations', url: '', type: 'title', iconBs: 'gear' },
+    { label: 'APP.TITLE.ServiceInstances', url: '', type: 'link'}
   ];
 
   _unimplemented: boolean = false;
