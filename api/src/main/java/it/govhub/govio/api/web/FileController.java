@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +119,10 @@ public class FileController implements FileApi {
 				    sourceFilename = RequestUtils.readFilenameFromHeaders(itemStream.getHeaders());
 			    }
 			}
-		} catch (Exception e) {
+		} catch(FileUploadException e) {
+			throw new BadRequestException(e);
+		}
+		catch (Exception e) {
 			throw new InternalException(e);
 		}
 		
