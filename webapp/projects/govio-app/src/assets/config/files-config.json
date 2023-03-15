@@ -5,7 +5,7 @@
     ],
     "secondaryText": [
       { "field": "user.full_name", "type": "avatar", "tooltip": "user.full_name", "blockSpace": true },
-      { "field": "acquired_messages", "type": "number", "icon": "send", "hideZero": false, "tooltip": "APP.TOOLTIP.AcquiredMessages", "blockSpace": true },
+      { "field": "acquired_messages", "type": "number", "icon": "send", "hideZero": true, "tooltip": "APP.TOOLTIP.AcquiredMessages", "blockSpace": true },
       { "field": "error_messages", "type": "number", "icon": "exclamation-triangle", "iconClass": "text-danger", "hideZero": true, "tooltip": "APP.TOOLTIP.ErrorMessages" }
     ],
     "metadata": {
