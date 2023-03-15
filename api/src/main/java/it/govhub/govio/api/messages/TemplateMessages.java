@@ -7,6 +7,6 @@ import it.govhub.govregistry.commons.messages.RestEntityMessageBuilder;
 @Component
 public class TemplateMessages extends RestEntityMessageBuilder{
 
-	public TemplateMessages() { super("Message"); }
+	public TemplateMessages() { super("Template"); }
 
 }

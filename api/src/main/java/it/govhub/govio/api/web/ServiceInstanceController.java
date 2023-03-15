@@ -22,7 +22,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.webjars.NotFoundException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,11 +38,9 @@ import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
-import it.govhub.govio.api.repository.FileFilters;
 import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceFilters;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
-import it.govhub.govio.api.services.FileService;
 import it.govhub.govio.api.services.ServiceInstanceService;
 import it.govhub.govio.api.spec.ServiceApi;
 import it.govhub.govregistry.commons.api.beans.PatchOp;
@@ -52,7 +49,6 @@ import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
 import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
-import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.messages.PatchMessages;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
@@ -107,7 +103,6 @@ public class ServiceInstanceController implements ServiceApi {
 
 		// Pesco servizi e autorizzazioni che l'utente può leggere
 		Set<Long> serviceIds = this.authService.listAuthorizedServices(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
-		
 		if (serviceId != null && serviceIds != null) { 
 			serviceIds.retainAll(Set.of(serviceId));
 		}
@@ -116,7 +111,6 @@ public class ServiceInstanceController implements ServiceApi {
 		}
 
 		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
-		
 		if (organizationId != null && orgIds != null) {
 			orgIds.retainAll(Set.of(organizationId));
 		}
@@ -169,6 +163,11 @@ public class ServiceInstanceController implements ServiceApi {
 	@Override
 	public ResponseEntity<GovioServiceInstance> createServiceInstance(GovioServiceInstanceCreate src) {
 		
+		log.info("Creating new Service Instance: {}", src);
+		
+		this.authService.hasAnyOrganizationAuthority(src.getOrganizationId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR);
+		this.authService.hasAnyServiceAuthority(src.getServiceId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR);
+		
 		var serviceInstance = this.instanceAssembler.toEntity(src);
 		
 		serviceInstance = this.instanceRepo.save(serviceInstance);
@@ -187,6 +186,9 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		GovioServiceInstanceEntity instance = this.instanceRepo.findById(id)
 				.orElseThrow( () -> new ResourceNotFoundException(this.instanceMessages.idNotFound(id)));
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(),  GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR);
 		
 		log.info("Patching service instance [{}]: {}", id,  patch);
 		
