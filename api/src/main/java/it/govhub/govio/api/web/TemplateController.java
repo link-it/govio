@@ -1,5 +1,6 @@
 package it.govhub.govio.api.web;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -279,12 +280,15 @@ public class TemplateController implements TemplateApi {
 	@Override
 	public ResponseEntity<GovioListTemplatePlaceholder> listTemplatePlaceholders(Long templateId, List<EmbedPlaceholderEnum> embeds) {
 		
+		this.templateRepo.findById(templateId)
+				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(templateId)));
+		
 		var spec = TemplatePlaceholderFilters.byTemplateId(templateId);
 		
 		List<GovioTemplatePlaceholderEntity> templatePlaceholders = this.templatePlaceholderRepo.findAll(spec, Sort.by(Direction.ASC, GovioTemplatePlaceholderEntity_.POSITION));
 		
 		GovioListTemplatePlaceholder ret = new GovioListTemplatePlaceholder();
-		
+		ret.setItems(new ArrayList<GovioTemplatePlaceholder>());
 		for (var tp : templatePlaceholders) {
 			GovioTemplatePlaceholder item = this.templatePlaceholderAssembler.toEmbeddedModel(tp, embeds);
 			ret.addItemsItem(item);
