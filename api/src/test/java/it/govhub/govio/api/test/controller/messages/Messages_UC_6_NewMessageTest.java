@@ -63,7 +63,7 @@ class Messages_UC_6_NewMessageTest {
 	}
 
 	@Test
-	void UC_5_01_createMessage() throws Exception {
+	void UC_6_01_createMessage() throws Exception {
 
 		StringBuffer request = new StringBuffer();
 		request.append("{");
