@@ -1,19 +1,21 @@
 {
-  "editSingleColumn": true,
+  "editSingleColumn": false,
 
   "itemRow": {
     "primaryText": [
       { "field": "service.service_name", "type": "text" }
     ],
     "secondaryText": [
-      { "field": "enabled", "type": "tag", "options": "enabled" }
+      { "field": "organization.logo_small", "type": "image", "tooltip": "organization.legal_name" }
     ],
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal" },
         { "field": "template.subject", "type": "text" }
       ],
-      "label": []
+      "label": [
+        { "field": "enabled", "type": "tag", "options": "enabled" }
+      ]
     },
     "secondaryMetadata": []
   },

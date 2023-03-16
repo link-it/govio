@@ -88,14 +88,14 @@
         </ui-simple-item> -->
         <ng-container *ngFor="let service of services">
           <div class="group">
-            <ng-container *ngIf="service.showGroup">
+            <!-- <ng-container *ngIf="service.showGroup">
               <div class="border-bottom ps-3 py-3 row-content-block border-top-0 sticky-top">
                 <div class="d-flex flex-row align-items-center">
                   <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="service.group | mapper: _orgLogoBackground"></div>
                   <span class="flex-shrink-1 ms-3">{{ service.group.legal_name }}</span>
                 </div>
               </div>
-            </ng-container>
+            </ng-container> -->
             <ui-item-row class="border-bottom"
               [data]="service"
               [config]="servicesConfig"

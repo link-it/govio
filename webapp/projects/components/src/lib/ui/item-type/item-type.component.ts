@@ -4,7 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
 
-import { UtilsLib } from '../../../utils/utils.lib';
+import { UtilsLib } from '../../utils/utils.lib';
 
 import * as moment from 'moment';
 
@@ -42,6 +42,7 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
   _color: string = '';
   _class: string = '';
   _showBadged: boolean = false;
+  _tooltip: string = '';
 
   constructor(
     private sanitized: DomSanitizer,
@@ -86,6 +87,9 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
         this._showBadged = (this._elem.badged !== undefined) ? this._elem.badged : true;
         this._class = 'gl-badge badge badge-pill';
       }
+    }
+    if (this._elem.type === 'image') {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
     }
   }
 
