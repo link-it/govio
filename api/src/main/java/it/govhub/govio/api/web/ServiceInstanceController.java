@@ -48,6 +48,7 @@ import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
 import it.govhub.govregistry.commons.exception.BadRequestException;
+import it.govhub.govregistry.commons.exception.ConflictException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.messages.PatchMessages;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
@@ -72,7 +73,7 @@ public class ServiceInstanceController implements ServiceApi {
 	
 	@Autowired
 	ServiceInstanceRepository instanceRepo;
-	
+
 	@Autowired
 	FileRepository fileRepo;
 	
@@ -167,6 +168,14 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		this.authService.hasAnyOrganizationAuthority(src.getOrganizationId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR);
 		this.authService.hasAnyServiceAuthority(src.getServiceId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR);
+		
+		var spec = ServiceInstanceFilters.byOrganizationId(src.getOrganizationId()).
+				and(ServiceInstanceFilters.byServiceId(src.getServiceId())).
+				and(ServiceInstanceFilters.byTemplateId(src.getTemplateId()));
+		
+		this.instanceRepo.findOne(spec).ifPresent( inst -> {
+					throw new ConflictException(this.instanceMessages.conflict());
+			});				
 		
 		var serviceInstance = this.instanceAssembler.toEntity(src);
 		
