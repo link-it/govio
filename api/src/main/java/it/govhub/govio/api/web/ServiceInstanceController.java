@@ -94,6 +94,7 @@ public class ServiceInstanceController implements ServiceApi {
 			Long serviceId,
 			Long organizationId,
 			String q,
+			Boolean enabled,
 			Integer limit,
 			Long offset,
 			 List<EmbedServiceInstanceEnum> embed) {
@@ -132,6 +133,9 @@ public class ServiceInstanceController implements ServiceApi {
 						or(ServiceInstanceFilters.likeOrganizationName(q)).
 						or(ServiceInstanceFilters.likeOrganizationTaxCode(q))
 					);
+		}
+		if (enabled != null) {
+			spec = spec.and(ServiceInstanceFilters.isEnabled(enabled));
 		}
 		
 		Page<GovioServiceInstanceEntity> instances = this.instanceRepo.findAll(spec, pageRequest.pageable);
