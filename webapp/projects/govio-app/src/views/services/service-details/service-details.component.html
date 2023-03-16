@@ -81,10 +81,52 @@
                 <div class="text-break" markdown>{{ 'APP.SERVICES.TITLE.GeneralInformations_sub' | translate }}</div>
               </div>
               <div class="" [class.col-lg-8]="!_singleColumn" [class.col-lg-9]="_singleColumn">
-              <!-- <div class="row">
-                <div class="col-lg-6"> -->
                 <div class="form-group">
-                  <label class="label-bold" for="service_id">{{ 'APP.LABEL.ServiceName' | translate }}</label>
+                  <label class="label-bold" for="organization_id">{{ 'APP.LABEL.Organization' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'organization_id'" *ngIf="_isEdit"></span></label>
+                  <div class="" *ngIf="_isEdit">
+                    <ng-select class="" [class.gl-field-error-outline]="_hasControlError('organization_id')"
+                      [items]="organizations$ | async"
+                      [trackByFn]="trackByFn"
+                      [typeahead]="organizationsInput$"
+                      [minTermLength]="minLengthTerm" 
+                      [notFoundText]="'APP.MESSAGE.NotFoundItem' | translate"
+                      [typeToSearchText]="'APP.MESSAGE.PleaseEnterMin' | translate:{ lengthTerm: minLengthTerm }"
+                      bindValue="id"
+                      bindLabel="legal_name"
+                      labelForId="organization_id"
+                      [editableSearchTerm]="true"
+                      formControlName="organization_id">
+                      <ng-template ng-label-tmp let-item="item">
+                        <div class="d-flex flex-row align-items-center">
+                          <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
+                          <!-- <img height="25" width="25" [src]="item | mapper: _orgLogo" /> -->
+                          <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
+                        </div>
+                      </ng-template>
+                      <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                        <div class="d-flex flex-row align-items-center">
+                          <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
+                          <!-- <img height="25" width="25" [src]="item | mapper: _orgLogo" /> -->
+                          <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                    <p *ngIf="f['organization_id'].invalid && (f['organization_id'].dirty || f['organization_id'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['organization_id'].errors && f['organization_id'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                      <span *ngIf="f['organization_id'].errors && f['organization_id'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Serviceorganization_id' | translate }}</span>
+                    </p>
+                    <ui-input-help field="organization_id" context="SERVICE"></ui-input-help>
+                  </div>
+                  <div class="mt-2" *ngIf="!_isEdit">
+                    <div class="d-flex flex-row align-items-center">
+                      <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="organization | mapper: _orgLogoBackground"></div>
+                      <span class="flex-shrink-1 ms-3">{{organization?.legal_name}}</span>
+                    </div>
+                    <!-- <input type="text" readonly class="form-control-plaintext" id="organization_id" [value]="organization?.legal_name"> -->
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="label-bold" for="service_id">{{ 'APP.LABEL.ServiceName' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'service_id'" *ngIf="_isEdit"></span></label>
                   <div class="" *ngIf="_isEdit">
                     <ng-select class="" [class.gl-field-error-outline]="_hasControlError('service_id')"
                       [items]="services$ | async"
@@ -101,14 +143,14 @@
                       <ng-template ng-label-tmp let-item="item">
                         <div class="d-flex flex-row align-items-center">
                           <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _serviceLogoBackground"></div>
-                          <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                          <!-- <img height="25" width="25" [src]="item | mapper: _serviceLogo" /> -->
                           <span class="flex-shrink-1 ms-3">{{item.service_name}}</span>
                         </div>
                       </ng-template>
                       <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
                         <div class="d-flex flex-row align-items-center">
                           <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _serviceLogoBackground"></div>
-                          <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
+                          <!-- <img height="25" width="25" [src]="item | mapper: _serviceLogo" /> -->
                           <span class="flex-shrink-1 ms-3">{{item.service_name}}</span>
                         </div>
                       </ng-template>
@@ -127,55 +169,10 @@
                     <!-- <input type="text" readonly class="form-control-plaintext" id="service_id" [value]="rService?.service_name"> -->
                   </div>
                 </div>
-              <!-- </div>
-              <div class="col-lg-6"> -->
                 <div class="form-group">
-                  <label class="label-bold" for="organization_id">{{ 'APP.LABEL.Organization' | translate }}</label>
-                  <div class="" *ngIf="_isEdit">
-                    <ng-select class="" [class.gl-field-error-outline]="_hasControlError('organization_id')"
-                      [items]="organizations$ | async"
-                      [trackByFn]="trackByFn"
-                      [typeahead]="organizationsInput$"
-                      [minTermLength]="minLengthTerm" 
-                      [notFoundText]="'APP.MESSAGE.NotFoundItem' | translate"
-                      [typeToSearchText]="'APP.MESSAGE.PleaseEnterMin' | translate:{ lengthTerm: minLengthTerm }"
-                      bindValue="id"
-                      bindLabel="legal_name"
-                      labelForId="organization_id"
-                      [editableSearchTerm]="true"
-                      formControlName="organization_id">
-                      <ng-template ng-label-tmp let-item="item">
-                        <div class="d-flex flex-row align-items-center">
-                          <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
-                          <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
-                          <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
-                        </div>
-                      </ng-template>
-                      <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                        <div class="d-flex flex-row align-items-center">
-                          <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="item | mapper: _orgLogoBackground"></div>
-                          <!-- <img height="25" width="25" [src]="item.logo || _organizationLogoPlaceholder" /> -->
-                          <span class="flex-shrink-1 ms-3">{{item.legal_name}}</span>
-                        </div>
-                      </ng-template>
-                    </ng-select>
-                    <!-- <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('organization_id')" type="text" name="organization_id" id="organization_id" formControlName="organization_id"> -->
-                    <p *ngIf="f['organization_id'].invalid && (f['organization_id'].dirty || f['organization_id'].touched)" class="form-text text-danger">
-                      <span *ngIf="f['organization_id'].errors && f['organization_id'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
-                      <span *ngIf="f['organization_id'].errors && f['organization_id'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Serviceorganization_id' | translate }}</span>
-                    </p>
-                    <ui-input-help field="organization_id" context="SERVICE"></ui-input-help>
-                  </div>
-                  <div class="mt-2" *ngIf="!_isEdit">
-                    <div class="d-flex flex-row align-items-center">
-                      <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="organization | mapper: _orgLogoBackground"></div>
-                      <span class="flex-shrink-1 ms-3">{{organization?.legal_name}}</span>
-                    </div>
-                    <!-- <input type="text" readonly class="form-control-plaintext" id="organization_id" [value]="organization?.legal_name"> -->
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="label-bold" for="template_id">{{ 'APP.LABEL.Template' | translate }}</label>
+                  <label class="label-bold" for="template_id">
+                    <span>{{ 'APP.LABEL.Template' | translate }} </span><span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'template_id'" *ngIf="_isEdit"></span><span class="ms-2" (click)="openTemplateInfo()" [class.d-none]="!template?.subject && !_hasControlValue('template_id')"><i class="bi bi-info-circle"></i></span>
+                  </label>
                   <div class="" *ngIf="_isEdit">
                     <ng-select class="" [class.gl-field-error-outline]="_hasControlError('template_id')"
                       [items]="templates$ | async"
@@ -199,31 +196,18 @@
                         </div>
                       </ng-template>
                     </ng-select>
-                    <!-- <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('template_id')" type="text" name="template_id" id="template_id" formControlName="template_id"> -->
                     <p *ngIf="f['template_id'].invalid && (f['template_id'].dirty || f['template_id'].touched)" class="form-text text-danger">
                       <span *ngIf="f['template_id'].errors && f['template_id'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
                       <span *ngIf="f['template_id'].errors && f['template_id'].errors['pattern']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.Servicetemplate_id' | translate }}</span>
                     </p>
                     <ui-input-help field="template_id" context="SERVICE"></ui-input-help>
-                    <div class="view-template mt-2 mb-5 border p-3 text-bg-light" style="min-height: 150px;">
-                      <app-template-view
-                        [id]="f['template_id'].value"
-                        [config]="templateConfig">
-                      </app-template-view>
-                    </div>
                   </div>
                   <div class="" *ngIf="!_isEdit">
                     <input type="text" readonly class="form-control-plaintext" id="template_id" [value]="template?.subject">
-                    <div class="view-template mt-2 mb-5 border p-3 text-bg-light">
-                      <app-template-view
-                        [id]="service.template_id"
-                        [config]="templateConfig">
-                      </app-template-view>
-                    </div>
                   </div>
                 </div>
                 <div class="form-group mt-5">
-                  <label class="label-bold" for="apiKey">{{ 'APP.LABEL.ApiKey' | translate }}</label>
+                  <label class="label-bold" for="apiKey">{{ 'APP.LABEL.ApiKey' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'apiKey'" *ngIf="_isEdit"></span></label>
                   <div class="" *ngIf="_isEdit">
                     <input aria-required="true" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('apiKey')" type="text" name="apiKey" id="apiKey" formControlName="apiKey">
                     <p *ngIf="f['apiKey'].invalid && (f['apiKey'].dirty || f['apiKey'].touched)" class="form-text text-danger">
@@ -239,15 +223,15 @@
                 <div class="row mt-5 enabled">
                   <div class="col-md-6">
                     <div class="" *ngIf="_isEdit">
-                      <div class="gl-form-checkbox custom-control custom-checkbox enabled">
+                      <div class="gl-form-checkbox custom-control custom-checkbox">
                         <input class="custom-control-input" type="checkbox" name="enabled" id="enabled" formControlName="enabled">
                         <label class="custom-control-label" for="enabled">
-                          <span>{{ 'APP.LABEL.Enabled' | translate }}</span>
+                          <span>{{ 'APP.LABEL.Enabled' | translate }}</span> <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'enabled'" *ngIf="_isEdit"></span>
                         </label>
                       </div>
                     </div>
                     <div class="" *ngIf="!_isEdit">
-                      <div class="gl-form-checkbox custom-control custom-checkbox enabled">
+                      <div class="gl-form-checkbox custom-control custom-checkbox">
                         <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="enabled" id="enabled" [checked]="service.enabled" disabled>
                         <label class="custom-control-label text-dark" for="enabled">
                           <span>{{ 'APP.LABEL.Enabled' | translate }}</span>
@@ -277,3 +261,24 @@
     </div>
   </section>
 </div>
+
+<ng-template #templateInfo>
+  <div class="modal-content">
+    <div class="modal-header pb-2">
+      <h5 class="modal-title pull-left">{{ 'APP.TITLE.Template' | translate }}</h5>
+      <button type="button" class="btn btn-default btn-md gl-tertiary pull-right p-0" aria-label="Close" (click)="closeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="p-3">
+        <div class="view-template" style="min-height: 150px;">
+          <app-template-view
+            [id]="_isEdit ? f['template_id'].value : service.template_id"
+            [config]="templateConfig">
+          </app-template-view>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -43,4 +43,9 @@
       <img class="align-top" ngxGravatar [email]="_value" [size]="20" fallback="retro">
     </span>
   </ng-container>
+  <ng-container *ngSwitchCase="'image'">
+    <span class="position-relative" [tooltip]="_tooltip | translate" container="body" [delay]="500">
+      <img class="align-top border" [src]="_value">
+    </span>
+  </ng-container>
 </ng-container>
