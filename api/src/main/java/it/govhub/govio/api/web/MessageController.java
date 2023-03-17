@@ -166,7 +166,7 @@ public class MessageController implements MessageApi {
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		BaseMessage message = BaseMessage.builder()
-				.dueDate(govioNewMessage.getDueDate().toLocalDateTime())
+				.dueDate(govioNewMessage.getDueDate() == null ? null : govioNewMessage.getDueDate().toLocalDateTime())
 				.email(govioNewMessage.getEmail())
 				.scheduledExpeditionDate(govioNewMessage.getScheduledExpeditionDate().toLocalDateTime())
 				.taxcode(govioNewMessage.getTaxcode())
