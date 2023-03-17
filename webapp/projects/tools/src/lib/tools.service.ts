@@ -201,7 +201,8 @@ export class Tools {
     if (!path) { return obj; }
     const properties: string[] = path.split('.');
     const first = properties.shift() || '';
-    return obj[first] ? Tools.getObjectValue(obj[first], properties.join('.')) : '';
+    const _objFirst = (typeof obj[first] === 'boolean') ? obj[first].toString() : obj[first];
+    return _objFirst ? this.getObjectValue(obj[first], properties.join('.')) : '';
   }
 
   public static ScrollTo(offset: number, callback: Function | null = null) {

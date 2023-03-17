@@ -173,7 +173,8 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     if (!url) { this.messages = []; }
 
     let aux: any;
-    if (query)  aux = { params: this._queryToHttpParams(query) };
+    query = { ...query, embed: ['sender']};
+    aux = { params: this._queryToHttpParams(query) };
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
@@ -186,6 +187,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
           const _list: any = response.items.map((message: any) => {
             const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, message, _options || null);
             const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, message, _options || null);
+            message.sender = message._embedded.sender;
             const element = {
               id: message.id,
               primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, message, _options || null, ' '),
