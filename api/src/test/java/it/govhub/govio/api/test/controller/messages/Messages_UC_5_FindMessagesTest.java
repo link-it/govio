@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.ByteArrayInputStream;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import javax.json.Json;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -64,6 +67,9 @@ class Messages_UC_5_FindMessagesTest {
 	@Autowired
 	EntityManager em;
 	
+	@Value("${govhub.time-zone:Europe/Rome}")
+	private String timeZone;
+	
 	@BeforeEach
 	void emptyGovioMessages() {
 		govioFilesRepository.deleteAll();
@@ -74,21 +80,23 @@ class Messages_UC_5_FindMessagesTest {
 	@Test
 	void UC_5_01_verifyAllFieldsValue() throws Exception {
 		
+		OffsetDateTime now = ZonedDateTime.now(ZoneId.of(this.timeZone)).toOffsetDateTime();
+		
 		GovioMessageEntity msg = GovioMessageEntity.builder()
 				.amount(10099l)
 				.appioMessageId(UUID.randomUUID().toString())
-				.creationDate(OffsetDateTime.now())
-				.dueDate(OffsetDateTime.now())
+				.creationDate(now)
+				.dueDate(now)
 				.email("satoshi@bytc0in.mo")
-				.expeditionDate(OffsetDateTime.now())
+				.expeditionDate(now)
 				.govioServiceInstance(em.getReference(GovioServiceInstanceEntity.class,1l))
 				.id(1l)
 				.invalidAfterDueDate(true)
-				.lastUpdateStatus(OffsetDateTime.now())
+				.lastUpdateStatus(now)
 				.markdown("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
 				.noticeNumber("301000001234512345")
 				.payeeTaxcode("01234567890")
-				.scheduledExpeditionDate(OffsetDateTime.now())
+				.scheduledExpeditionDate(now)
 				.sender(em.getReference(UserEntity.class, 1l))
 				.status(Status.PROCESSED)
 				.subject("Lorem ipsum dolor sit amet.")

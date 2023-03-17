@@ -48,7 +48,7 @@ import it.govhub.security.services.GovhubUserDetailService;
 @DisplayName("Test di lettura csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class Files_UC_3_GetFileTest {
-/*
+
 	private static final String FILES_BASE_PATH = "/v1/files";
 	private static final String FILES_BASE_PATH_DETAIL_ID = FILES_BASE_PATH + "/{id}";
 
@@ -76,7 +76,7 @@ class Files_UC_3_GetFileTest {
 		
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		
-		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
+		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("user_govio_sender")).getUser();
 		
 		List<GovioFileEntity> files = new ArrayList<>();
 		files.add(govioFilesRepository.save(GovioFileUtils.buildFile(this.fileRepositoryPath, serviceInstanceEntity.get(), "01", user)));
@@ -123,8 +123,7 @@ class Files_UC_3_GetFileTest {
 		assertEquals(item.getInt("id"), govioFileEntity.getId());
 		assertEquals(item.getString("filename"), govioFileEntity.getName());
 		assertEquals(item.getJsonObject("user").getString("full_name"), govioFileEntity.getGovauthUser().getFullName());
-		assertEquals(item.getJsonObject("organization").getString("tax_code"), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
-		assertEquals(item.getJsonObject("service").getString("service_name"), govioFileEntity.getServiceInstance().getService().getName());
+		assertEquals(item.getInt("service_instance_id"), govioFileEntity.getServiceInstance().getId());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
 	}
 	
@@ -159,5 +158,5 @@ class Files_UC_3_GetFileTest {
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 	}
-*/	
+	
 }

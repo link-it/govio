@@ -50,7 +50,7 @@ import it.govhub.security.services.GovhubUserDetailService;
 @DisplayName("Test di lettura csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class Files_UC_2_FindFilesTest {
-/*
+
 	private static final String FILES_BASE_PATH = "/v1/files";
 
 	@Value("${govio.filerepository.path}")
@@ -79,7 +79,7 @@ class Files_UC_2_FindFilesTest {
 		
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		
-		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
+		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("user_govio_sender")).getUser();
 		
 		List<GovioFileEntity> files = new ArrayList<>();
 		files.add(govioFilesRepository.save(GovioFileUtils.buildFile(this.fileRepositoryPath, serviceInstanceEntity.get(), "01", user)));
@@ -307,7 +307,7 @@ class Files_UC_2_FindFilesTest {
 	// 8. findAllOk filtro sull'utente che ha caricato il tracciato govio_sender
 	@Test
 	void UC_2_08_FindAllOk_UserID() throws Exception {
-		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
+		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("user_govio_sender")).getUser();
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.FILES_QUERY_PARAM_USER_ID, user.getId()+"");
 		
@@ -552,5 +552,4 @@ class Files_UC_2_FindFilesTest {
 		assertEquals("02.csv", item1.getString("filename"));
 		assertEquals("01.csv", item2.getString("filename"));
 	}
-*/	
 }

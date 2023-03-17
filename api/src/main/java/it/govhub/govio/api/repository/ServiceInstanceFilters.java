@@ -31,6 +31,18 @@ public class ServiceInstanceFilters {
         return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
         	cb.equal(root.get(GovioServiceInstanceEntity_.service).get(ServiceEntity_.id), serviceId); 
 	}
+	
+	
+	public static Specification<GovioServiceInstanceEntity> byTemplateId(Long templateId) {
+        return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+        	cb.equal(root.get(GovioServiceInstanceEntity_.template).get(GovioTemplateEntity_.id), templateId); 
+	}
+	
+	
+	public static Specification<GovioServiceInstanceEntity> isEnabled(Boolean enabled) {
+        return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+        	cb.equal(root.get(GovioServiceInstanceEntity_.enabled), enabled); 
+	}
 
 	
 	public static Specification<GovioServiceInstanceEntity> byOrganizationIds(Collection<Long> orgIds) {
