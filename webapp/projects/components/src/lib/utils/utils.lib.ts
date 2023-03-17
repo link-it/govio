@@ -45,7 +45,8 @@ export class UtilsLib {
     if (!path) { return obj; }
     const properties: string[] = path.split('.');
     const first = properties.shift() || '';
-    return obj[first] ? this.getObjectValue(obj[first], properties.join('.')) : '';
+    const _objFirst = (typeof obj[first] === 'boolean') ? obj[first].toString() : obj[first];
+    return _objFirst ? this.getObjectValue(obj[first], properties.join('.')) : '';
   }
 
   currencyFormatter(value: any) {
