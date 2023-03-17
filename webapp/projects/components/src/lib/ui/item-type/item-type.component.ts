@@ -69,7 +69,7 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
         const _origValue = this._value;
         const _optionsName = this._elem.options;
         this._label = (this._config.options[_optionsName].label) ? this._config.options[_optionsName].label : _optionsName;
-        this._value = this._value ? (this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value) : 'undefined';
+        this._value = this._value ? (this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value) : this._config.options[_optionsName].values[_origValue].label;
         this._background = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].background : '#1f1f1f';
         this._border = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].border : '#1f1f1f';
         this._color = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].color : '#fff';
@@ -78,10 +78,9 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
     }
     if (this._elem.type === 'tag') {
       if (this._config.options) {
-        const _origValue = (typeof this._value === 'boolean') ? (this._value ? 'True' : 'False') : this._value ;
-        if ((typeof this._value === 'boolean')) console.log(_origValue);
+        const _origValue = this._value ;
         const _optionsName = this._elem.options;
-        this._value = this._value ? ((this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value)) : 'undefined';
+        this._value = this._value ? ((this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value)) : this._config.options[_optionsName].values[_origValue].label;
         this._background = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].background : '#1f1f1f';
         this._border = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].border : '#1f1f1f';
         this._color = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].color : '#fff';
@@ -90,6 +89,9 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
       }
     }
     if (this._elem.type === 'image') {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'avatar') {
       this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
     }
   }
