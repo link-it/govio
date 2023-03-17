@@ -244,7 +244,7 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
       service: _service,
       template: _serviceInstance._embedded.template,
     };
-    console.log('_prepareFileData', _file);
+
     return _file;
   }
 

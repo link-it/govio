@@ -6,7 +6,7 @@
       { "field": "taxcode", "type": "text" }
     ],  
     "secondaryText": [
-      { "field": "user.full_name", "type": "avatar", "tooltip": "user.full_name" }
+      { "field": "sender.full_name", "type": "avatar", "tooltip": "sender.full_name" }
     ],
     "metadata": {
       "text": [

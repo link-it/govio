@@ -14,10 +14,10 @@
     </div>
   </ng-container>
   <ng-container *ngSwitchCase="'message'">
-    <span [tooltip]="_elem.tooltip || '' | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">{{ _elem.field }}</span>
+    <span [tooltip]="(_elem.tooltip || '') | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">{{ _elem.field }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'date'">
-    <span [tooltip]="_elem.tooltip || '' | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">{{ utilsLib.dateFormatter(_value, _elem.format) }}</span>
+    <span [tooltip]="(_elem.tooltip || '') | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">{{ utilsLib.dateFormatter(_value, _elem.format) }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'label'">
     <span class="status-label {{_class}} status-label-scoped status-ml-2" style="--label-background-color:{{_background}}; --label-inset-border:inset 0 0 0 1px {{_border}};" [style.color]="_color"> <span class="status-link status-label-link"> <span class="status-label-text">{{_label}}</span> <span class="status-label-text-scoped">{{_value}}</span></span></span>
@@ -30,21 +30,21 @@
     <span class="" *ngIf="!_showBadged">{{_value}}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'cardinal'">
-    <span [tooltip]="_elem.tooltip || '' | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">#{{ _value }}</span>
+    <span [tooltip]="(_elem.tooltip || '') | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">#{{ _value }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'currency'">
-    <span [tooltip]="_elem.tooltip || '' | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">{{ utilsLib.currencyFormatter(_value) }}</span>
+    <span [tooltip]="(_elem.tooltip || '') | translate" container="body" [delay]="500" class="{{ _elem.class || '' }}">{{ utilsLib.currencyFormatter(_value) }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'progress'">
     <span class="progress">{{ _value }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'avatar'">
-    <span class="position-relative" [tooltip]="_value" container="body" [delay]="500">
+    <span class="position-relative" [tooltip]="(_value || '') | translate" container="body" [delay]="500">
       <img class="align-top" ngxGravatar [email]="_value" [size]="20" fallback="retro">
     </span>
   </ng-container>
   <ng-container *ngSwitchCase="'image'">
-    <span class="position-relative border rounded-circle d-flex justify-content-center align-content-center" style="width: 20px;height: 20px;padding: 0.15rem !important;" [tooltip]="_tooltip | translate" container="body" [delay]="500">
+    <span class="position-relative border rounded-circle d-flex justify-content-center align-content-center" style="width: 20px;height: 20px;padding: 0.15rem !important;" [tooltip]="(_tooltip || '') | translate" container="body" [delay]="500">
       <img class="rounded-circle" [src]="_value" style="width: 20px;height: auto;">
     </span>
   </ng-container>
