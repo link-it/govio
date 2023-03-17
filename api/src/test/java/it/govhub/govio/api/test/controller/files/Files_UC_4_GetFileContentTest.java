@@ -53,7 +53,7 @@ import it.govhub.security.services.GovhubUserDetailService;
 @DisplayName("Test di lettura csv tracciati")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 class Files_UC_4_GetFileContentTest {
-/*
+
 	private static final String FILES_BASE_PATH = "/v1/files";
 	private static final String FILES_BASE_PATH_DETAIL_ID = FILES_BASE_PATH + "/{id}/content";
 
@@ -81,7 +81,7 @@ class Files_UC_4_GetFileContentTest {
 		
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		
-		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
+		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("user_govio_sender")).getUser();
 		
 		List<GovioFileEntity> files = new ArrayList<>();
 		files.add(govioFilesRepository.save(GovioFileUtils.buildFile(this.fileRepositoryPath, serviceInstanceEntity.get(), "01", user)));
@@ -215,5 +215,5 @@ class Files_UC_4_GetFileContentTest {
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 		
-	}*/
+	}
 }

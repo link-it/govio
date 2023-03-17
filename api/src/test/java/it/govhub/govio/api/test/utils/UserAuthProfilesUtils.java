@@ -22,7 +22,7 @@ public class UserAuthProfilesUtils {
 	}
 
 	public RequestPostProcessor utenzaGovIOSender() {
-	    return utenzaPrincipal("govio_sender"); 
+	    return utenzaPrincipal("user_govio_sender"); 
 	}
 
 	public RequestPostProcessor utenzaOspite() {

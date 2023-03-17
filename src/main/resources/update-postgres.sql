@@ -30,13 +30,13 @@ alter table govio_service_instances add column enabled boolean not null default 
 
 alter table govio_service_instances drop column id_govio_service;
 
--- PATCH 08-03-2020 - Aggiunta vincolo chiave univoca tax_code e legal_name
+-- PATCH 08-03-2023 - Aggiunta vincolo chiave univoca tax_code e legal_name
 
 alter table govhub_organizations add constraint govhub_organizations_legal_name unique(legal_name);
 alter table govhub_organizations add constraint govhub_organizations_tax_code unique(tax_code);
 
 
--- PATCH 08-03-2020 - Renaming foreign key govio
+-- PATCH 08-03-2023 - Renaming foreign key govio
 
 alter table govio_template_placeholders rename constraint fk_govio_tp_placeholder TO GovioTemplatePlaceholder_GovioPlaceholder;
 alter table govio_template_placeholders rename constraint fk_govio_tp_template TO GovioTemplatePlaceholder_GovioTemplate;
@@ -57,4 +57,5 @@ alter table govio_messages rename constraint fk_govio_msg_hubuser TO GovioMessag
 alter table govio_file_messages rename constraint fk_govio_filemsg_file TO GovioFileMessagess_GovioFle;
 alter table govio_file_messages rename constraint fk_govio_filemsg_msg TO GovioFileMessagess_GovioMessage;
 
-
+-- PATCH 16-03-2023 Vincolo univocità nome servizio
+alter table govhub_services add constraint govhub_services_name unique(name);

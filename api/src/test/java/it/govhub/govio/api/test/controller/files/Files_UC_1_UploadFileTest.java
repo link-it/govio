@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -32,7 +34,10 @@ import org.springframework.util.MultiValueMap;
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileEntity.Status;
+import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.FileRepository;
+import it.govhub.govio.api.repository.ServiceInstanceFilters;
+import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.MultipartUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -48,7 +53,7 @@ import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
 class Files_UC_1_UploadFileTest {
-/*
+
 	private static final String FILES_BASE_PATH = "/v1/files";
 
 	@Autowired
@@ -66,6 +71,9 @@ class Files_UC_1_UploadFileTest {
 	@Autowired
 	private FileRepository govioFileRepository;
 	
+	@Autowired
+	private ServiceInstanceRepository serviceInstanceRepository;
+	
 	private OrganizationEntity leggiEnteDB(String nome) {
 		List<OrganizationEntity> findAll = this.organizationRepository.findAll();
 		return findAll.stream().filter(f -> f.getTaxCode().equals(nome)).collect(Collectors.toList()).get(0);
@@ -74,6 +82,18 @@ class Files_UC_1_UploadFileTest {
 	private ServiceEntity leggiServizioDB(String nome) {
 		List<ServiceEntity> findAll = this.serviceRepository.findAll();
 		return findAll.stream().filter(f -> f.getName().equals(nome)).collect(Collectors.toList()).get(0);
+	}
+	
+	private GovioServiceInstanceEntity leggiServiceInstanceDB(Long idOrganization, Long idService) {
+		
+		Specification<GovioServiceInstanceEntity> spec = ServiceInstanceFilters.empty();
+		
+		spec = spec.and(ServiceInstanceFilters.byOrganizationIds(Arrays.asList(idOrganization)));
+		spec = spec.and(ServiceInstanceFilters.byServiceIds(Arrays.asList(idService)));
+		
+		List<GovioServiceInstanceEntity> findAll = this.serviceInstanceRepository.findAll(spec);
+		
+		return findAll.size() > 0 ? findAll.get(0) : null;
 	}
 	
 	// 1. Upload OK file csv per utenza admin 
@@ -86,8 +106,10 @@ class Files_UC_1_UploadFileTest {
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
+		GovioServiceInstanceEntity serviceInstanceEntity = leggiServiceInstanceDB(ente.getId(), servizio.getId());
+		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1 +"");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
 		
 		MvcResult result = this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -100,13 +122,10 @@ class Files_UC_1_UploadFileTest {
 				.accept(MediaType.APPLICATION_JSON)
 				)
 				.andExpect(status().isOk())
-				
 				.andExpect(jsonPath("$.id").isNumber())
 				.andExpect(jsonPath("$.filename", is(fileName)))
-				.andExpect(jsonPath("$.organization.tax_code", is(ente.getTaxCode())))
-				.andExpect(jsonPath("$.service.service_name", is(servizio.getName())))
+				.andExpect(jsonPath("$.service_instance_id", is((int) serviceInstanceEntity.getId().longValue())))
 				.andExpect(jsonPath("$.status", is(Status.CREATED.toString())))
-				
 				.andReturn();
 		
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -117,6 +136,7 @@ class Files_UC_1_UploadFileTest {
 		assertEquals(id, govioFileEntity.getId());
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("amministratore", govioFileEntity.getGovauthUser().getPrincipal());
+		assertEquals(serviceInstanceEntity.getId(), govioFileEntity.getServiceInstance().getId());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
 		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
@@ -132,8 +152,10 @@ class Files_UC_1_UploadFileTest {
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
+		GovioServiceInstanceEntity serviceInstanceEntity = leggiServiceInstanceDB(ente.getId(), servizio.getId());
+		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1 +"");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
 		
 		MvcResult result = this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -155,7 +177,7 @@ class Files_UC_1_UploadFileTest {
 		
 		assertEquals(id, govioFileEntity.getId());
 		assertEquals(fileName, govioFileEntity.getName());
-		assertEquals("govio_sender", govioFileEntity.getGovauthUser().getPrincipal());
+		assertEquals("user_govio_sender", govioFileEntity.getGovauthUser().getPrincipal());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
 		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
@@ -171,8 +193,10 @@ class Files_UC_1_UploadFileTest {
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
+		GovioServiceInstanceEntity serviceInstanceEntity = leggiServiceInstanceDB(ente.getId(), servizio.getId());
+		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1 +"");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
 		
 		this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -193,14 +217,12 @@ class Files_UC_1_UploadFileTest {
 		
 	}
 	
-	// 4. Upload Fail file csv con parametro service_id non presente
+	// 4. Upload Fail file csv con parametro serviceInstance_id non presente
 	@Test
 	void UC_1_04_UploadCsvFileFail_MissingServiceInstanceID() throws Exception {
 		String fileName = "csv-test-UC104";
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
 		String boundary = MultipartUtils.generateBoundary();
-		
-		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		
@@ -231,7 +253,6 @@ class Files_UC_1_UploadFileTest {
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
 		String boundary = MultipartUtils.generateBoundary();
 		
-		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		int idNonPresente = 10000;
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -267,8 +288,10 @@ class Files_UC_1_UploadFileTest {
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 		
+		GovioServiceInstanceEntity serviceInstanceEntity = leggiServiceInstanceDB(ente.getId(), servizio.getId());
+		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 1+"");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
 
 		MvcResult result = this.mockMvc.perform(
 				multipart(FILES_BASE_PATH)
@@ -291,6 +314,7 @@ class Files_UC_1_UploadFileTest {
 		assertEquals(id, govioFileEntity.getId());
 		assertEquals(fileName, govioFileEntity.getName());
 		assertEquals("amministratore", govioFileEntity.getGovauthUser().getPrincipal());
+		assertEquals(serviceInstanceEntity.getId(), govioFileEntity.getServiceInstance().getId());
 		assertEquals(ente.getTaxCode(), govioFileEntity.getServiceInstance().getOrganization().getTaxCode());
 		assertEquals(servizio.getName(), govioFileEntity.getServiceInstance().getService().getName());
 		assertEquals(Status.CREATED, govioFileEntity.getStatus());
@@ -320,11 +344,15 @@ class Files_UC_1_UploadFileTest {
 		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
 		String boundary = MultipartUtils.generateBoundary();
 		
-		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
-		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
+		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
+		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
+		
+		GovioServiceInstanceEntity serviceInstanceEntity = leggiServiceInstanceDB(ente.getId(), servizio.getId());
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 2+"");
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
+		
+//		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, 2+"");
 
 		
 		this.mockMvc.perform(
@@ -344,5 +372,5 @@ class Files_UC_1_UploadFileTest {
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 		
-	}*/
+	}
 }

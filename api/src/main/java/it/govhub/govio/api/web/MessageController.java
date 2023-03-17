@@ -33,12 +33,14 @@ import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.entity.UserEntity;
+import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
 import it.govhub.security.services.SecurityService;
 import it.govio.template.BaseMessage;
+import it.govio.template.exception.TemplateValidationException;
 
 @V1RestController
 public class MessageController implements MessageApi {
@@ -166,7 +168,7 @@ public class MessageController implements MessageApi {
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		BaseMessage message = BaseMessage.builder()
-				.dueDate(govioNewMessage.getDueDate().toLocalDateTime())
+				.dueDate(govioNewMessage.getDueDate() == null ? null : govioNewMessage.getDueDate().toLocalDateTime())
 				.email(govioNewMessage.getEmail())
 				.scheduledExpeditionDate(govioNewMessage.getScheduledExpeditionDate().toLocalDateTime())
 				.taxcode(govioNewMessage.getTaxcode())
@@ -182,9 +184,14 @@ public class MessageController implements MessageApi {
 			for(var p : govioNewMessage.getPlaceholders()) {
 				placeholderValues.put(p.getName(), p.getValue());
 			}
-		GovioMessageEntity messageEntity = this.messageService.newMessage(SecurityService.getPrincipal().getId(), instance.getId(), message, placeholderValues);
 		
-		return ResponseEntity.ok(this.messageAssembler.toModel(messageEntity));
+		try {
+			GovioMessageEntity messageEntity = this.messageService.newMessage(SecurityService.getPrincipal().getId(), instance.getId(), message, placeholderValues);
+			return ResponseEntity.ok(this.messageAssembler.toModel(messageEntity));
+		} catch (TemplateValidationException e) {
+			throw new SemanticValidationException(e.getMessage());
+		}
+		
 	}
 
 	
