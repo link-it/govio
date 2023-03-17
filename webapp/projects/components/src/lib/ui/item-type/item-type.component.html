@@ -44,8 +44,8 @@
     </span>
   </ng-container>
   <ng-container *ngSwitchCase="'image'">
-    <span class="position-relative" [tooltip]="_tooltip | translate" container="body" [delay]="500">
-      <img class="align-top border" [src]="_value">
+    <span class="position-relative border rounded-circle d-flex justify-content-center align-content-center" style="width: 20px;height: 20px;padding: 0.15rem !important;" [tooltip]="_tooltip | translate" container="body" [delay]="500">
+      <img class="rounded-circle" [src]="_value" style="width: 20px;height: auto;">
     </span>
   </ng-container>
 </ng-container>
