@@ -220,9 +220,12 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
         let _dateTime = '';
         switch (key)
         {
-          case 'data_inizio':
-          case 'data_fine':
-            _dateTime = moment(query[key]).format('YYYY-MM-DD');
+          case 'scheduled_expedition_date_from':
+            _dateTime = moment(query[key]).utc().format();
+            httpParams = httpParams.set(key, _dateTime);
+            break;
+          case 'scheduled_expedition_date_to':
+            _dateTime = moment(query[key]).utc().add(23, 'h').add(59, 'm').add(59, 's').format();
             httpParams = httpParams.set(key, _dateTime);
             break;
           default:

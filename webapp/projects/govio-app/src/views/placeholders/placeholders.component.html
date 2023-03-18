@@ -39,34 +39,13 @@
           [sortDirection]="sortDirection"
           [sortFields]="sortFields"
           [formGroup]="_formGroup"
+          [simple]="true"
           (onSearch)="_onSearch($event)"
           (onSort)="_onSort($event)">
           <div form-search>
             <form class="row" [formGroup]="_formGroup" (submit)="_onSubmit(_formGroup.value)">
               <fieldset>
                 <div class="row">
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="creationDateFrom">{{ 'APP.LABEL.DateFrom' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="creationDateFrom" type="date" formControlName="creationDateFrom" autocomplete="off">
-                  </div>
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="creationDateTo">{{ 'APP.LABEL.DateTo' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="creationDateTo" type="date" formControlName="creationDateTo" autocomplete="off">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="taxcode">{{ 'APP.LABEL.Taxcode' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="taxcode" type="text" formControlName="taxcode" autocomplete="off">
-                  </div>
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="status">{{ 'APP.LABEL.LegalName' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="legal_name" type="text" formControlName="organization.legal_name" autocomplete="off">
-                  </div>
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="type">{{ 'APP.LABEL.ServiceName' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="service_name" type="text" formControlName="service.service_name" autocomplete="off">
-                  </div>
                 </div>
                 <button type="submit" class="d-none">hidden submit</button>
               </fieldset>

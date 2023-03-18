@@ -256,6 +256,14 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
         let _dateTime = '';
         switch (key)
         {
+          case 'creation_date_from':
+            _dateTime = moment(query[key]).utc().format();
+            httpParams = httpParams.set(key, _dateTime);
+            break;
+          case 'creation_date_to':
+            _dateTime = moment(query[key]).utc().add(23, 'h').add(59, 'm').add(59, 's').format();
+            httpParams = httpParams.set(key, _dateTime);
+            break;
           default:
             httpParams = httpParams.set(key, query[key]);
         }
