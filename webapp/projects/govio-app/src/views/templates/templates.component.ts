@@ -68,13 +68,7 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
   sortDirection: string = 'asc';
   sortFields: any[] = [];
 
-  searchFields: any[] = [
-    { field: 'creationDateFrom', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
-    { field: 'creationDateTo', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
-    { field: 'taxcode', label: 'APP.LABEL.Taxcode', type: 'string', condition: 'like' },
-    { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
-    { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
-  ];
+  searchFields: any[] = [];
 
   breadcrumbs: any[] = [
     { label: 'APP.TITLE.Configurations', url: '', type: 'title', iconBs: 'gear' },
