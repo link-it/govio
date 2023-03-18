@@ -162,11 +162,7 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
 
   _initSearchForm() {
     this._formGroup = new UntypedFormGroup({
-      creationDateFrom: new UntypedFormControl(''),
-      creationDateTo: new UntypedFormControl(''),
-      taxcode: new UntypedFormControl(''),
-      'organization.legal_name': new UntypedFormControl(''),
-      'service.service_name': new UntypedFormControl(''),
+      'q': new UntypedFormControl(''),
     });
   }
 
