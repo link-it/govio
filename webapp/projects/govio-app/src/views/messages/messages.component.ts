@@ -64,13 +64,17 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   showSearch: boolean = true;
   showSorting: boolean = true;
 
-  sortField: string = 'date';
+  sortField: string = 'scheduled_expedition_date';
   sortDirection: string = 'asc';
-  sortFields: any[] = [];
+  sortFields: any[] = [
+    { field: 'id', label: 'APP.LABEL.Id', icon: '' },
+    { field: 'scheduled_expedition_date', label: 'APP.LABEL.ScheduledExpeditionDate', icon: '' }
+  ];
 
   searchFields: any[] = [
     { field: 'scheduled_expedition_date_from', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
     { field: 'scheduled_expedition_date_to', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
+    { field: 'tax_code', label: 'APP.LABEL.TaxCode', type: 'string', condition: 'like' },
     { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
     { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
   ];
@@ -162,6 +166,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     this._formGroup = new UntypedFormGroup({
       scheduled_expedition_date_from: new UntypedFormControl(''),
       scheduled_expedition_date_to: new UntypedFormControl(''),
+      'tax_code': new UntypedFormControl(''),
       'organization.legal_name': new UntypedFormControl(''),
       'service.service_name': new UntypedFormControl(''),
     });
@@ -283,7 +288,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   }
 
   _onSort(event: any) {
-    console.log(event);
+    this.sortField = event.sortField;
+    this.sortDirection = event.sortBy;
+    this._loadMessages(this._filterData);
   }
 
   _timestampToMoment(value: number) {
