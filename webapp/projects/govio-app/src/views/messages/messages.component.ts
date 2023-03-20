@@ -170,11 +170,13 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   _loadMessages(query: any = null, url: string = '') {
     this._setErrorMessages(false);
 
-    if (!url) { this.messages = []; }
-
     let aux: any;
-    query = { ...query, embed: ['sender']};
-    aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.messages = [];
+      const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+      query = { ...query, embed: ['sender'], ...sort };
+      aux = { params: this._queryToHttpParams(query) };
+    }
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
