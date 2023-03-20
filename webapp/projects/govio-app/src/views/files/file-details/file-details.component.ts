@@ -15,7 +15,7 @@ import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definition
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
 
 import { concat, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap, tap } from 'rxjs/operators';
 
 import { File } from './file';
 
@@ -469,11 +469,12 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     this.services$ = concat(
       of(defaultValue),
       this.servicesInput$.pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
         distinctUntilChanged(),
-        debounceTime(500),
         tap(() => this.servicesLoading = true),
         switchMap((term: any) => {
           return this.getData('service-instances', term).pipe(
