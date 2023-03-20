@@ -64,13 +64,17 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   showSearch: boolean = true;
   showSorting: boolean = true;
 
-  sortField: string = 'date';
+  sortField: string = 'scheduled_expedition_date';
   sortDirection: string = 'asc';
-  sortFields: any[] = [];
+  sortFields: any[] = [
+    { field: 'id', label: 'APP.LABEL.Id', icon: '' },
+    { field: 'scheduled_expedition_date', label: 'APP.LABEL.ScheduledExpeditionDate', icon: '' }
+  ];
 
   searchFields: any[] = [
     { field: 'scheduled_expedition_date_from', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
     { field: 'scheduled_expedition_date_to', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
+    { field: 'tax_code', label: 'APP.LABEL.TaxCode', type: 'string', condition: 'like' },
     { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
     { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
   ];
@@ -162,6 +166,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     this._formGroup = new UntypedFormGroup({
       scheduled_expedition_date_from: new UntypedFormControl(''),
       scheduled_expedition_date_to: new UntypedFormControl(''),
+      'tax_code': new UntypedFormControl(''),
       'organization.legal_name': new UntypedFormControl(''),
       'service.service_name': new UntypedFormControl(''),
     });
@@ -170,11 +175,13 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   _loadMessages(query: any = null, url: string = '') {
     this._setErrorMessages(false);
 
-    if (!url) { this.messages = []; }
-
     let aux: any;
-    query = { ...query, embed: ['sender']};
-    aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.messages = [];
+      const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+      query = { ...query, embed: ['sender,service_instance'], ...sort };
+      aux = { params: this._queryToHttpParams(query) };
+    }
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
@@ -185,17 +192,17 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
           const _itemRow = this.messagesConfig.itemRow;
           const _options = this.messagesConfig.options;
           const _list: any = response.items.map((message: any) => {
-            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, message, _options || null);
-            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, message, _options || null);
-            message.sender = message._embedded.sender;
+            const _message: any = this.__prepareMessageData(message);
+            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, _message, _options || null);
+            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, _message, _options || null);
             const element = {
-              id: message.id,
-              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, message, _options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, message, _options || null, ' '),
+              id: _message.id,
+              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, _message, _options || null, ' '),
+              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, _message, _options || null, ' '),
               metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, message, _options || null, ' '),
+              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, _message, _options || null, ' '),
               editMode: false,
-              source: { ...message }
+              source: { ..._message }
             };
             return element;
           });
@@ -210,6 +217,59 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
         // Tools.OnError(error);
       }
     });
+  }
+
+  __prepareMessageData(message: any) {
+    const _serviceInstance = message._embedded['service-instance'];
+    const _message: any = {
+      id: message.id,
+      subject: message.subject,
+      markdown: message.markdown,
+      taxcode: message.taxcode,
+      status: message.status,
+      sender_id: message.sender_id,
+      service_instance_id: message.service_instance_id,
+      creation_date: message.creation_date,
+      due_date: message.due_date,
+      last_update_status: message.last_update_status,
+      scheduled_expedition_date: message.scheduled_expedition_date,
+
+      sender: message._embedded.sender,
+
+      service_instance:  {
+        id: _serviceInstance.id,
+        organization_id: _serviceInstance.organization_id,
+        service_id: _serviceInstance.service_id,
+        template_id: _serviceInstance.template_id,
+        apiKey: _serviceInstance.apiKey,
+        enabled: _serviceInstance.enabled
+      },
+
+      organization: {
+        id: _serviceInstance._embedded.organization.id,
+        legal_name: _serviceInstance._embedded.organization.legal_name,
+        tax_code: _serviceInstance._embedded.organization.tax_code,
+        logo: _serviceInstance._embedded.organization._links?.logo?.href || null,
+        logo_small: _serviceInstance._embedded.organization._links?.logo_small?.href || null
+      },
+
+      service: {
+        id: _serviceInstance._embedded.service.id,
+        service_name: _serviceInstance._embedded.service.service_name,
+        description: _serviceInstance._embedded.service.description
+      },
+
+      template: {
+        id: _serviceInstance._embedded.template.id,
+        subject: _serviceInstance._embedded.template.subject,
+        description: _serviceInstance._embedded.template.description,
+        message_body: _serviceInstance._embedded.template.message_body,
+        has_payment: _serviceInstance._embedded.template.has_payment,
+        has_due_date: _serviceInstance._embedded.template.has_due_date
+      }
+    };
+
+    return _message;
   }
 
   _queryToHttpParams(query: any) : HttpParams {
@@ -281,7 +341,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   }
 
   _onSort(event: any) {
-    console.log(event);
+    this.sortField = event.sortField;
+    this.sortDirection = event.sortBy;
+    this._loadMessages(this._filterData);
   }
 
   _timestampToMoment(value: number) {
