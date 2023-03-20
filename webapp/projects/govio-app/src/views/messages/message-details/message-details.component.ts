@@ -1,6 +1,7 @@
 import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { HttpParams } from '@angular/common/http';
 
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
@@ -39,6 +40,12 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   _message: Message = new Message({});
 
+  _sender: any = null;
+  _serviceInstance: any = null;
+  _organization: any = null;
+  _service: any = null;
+  _template: any = null;
+
   _spin: boolean = true;
   desktop: boolean = false;
 
@@ -60,15 +67,11 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // Changed
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
+    // this.pageloaderService.resetLoader();
+    // this.pageloaderService.isLoading.subscribe({
+    //   next: (x) => { this._spin = x; },
+    //   error: (e: any) => { console.log('loader error', e); }
+    // });
 
     this.route.params.subscribe(params => {
       if (params['id'] && params['id'] !== 'new') {
@@ -111,19 +114,79 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   _loadMessage() {
     if (this.id) {
+      this._spin = true;
       this.message = null;
-      this.apiService.getDetails(this.model, this.id).subscribe({
+      let aux: any = { params: this._queryToHttpParams({ embed: ['service-instance'] }) };
+      this.apiService.getDetails(this.model, this.id, '', aux).subscribe({
         next: (response: any) => {
           this.message = response; // new Message({ ...response });
           this._message = new Message({ ...response });
+          // this.__initInformazioni();
 
-          this.__initInformazioni();
+          this._loadSender(this.message.sender_id);
         },
         error: (error: any) => {
+          this._spin = false;
           Tools.OnError(error);
         }
       });
     }
+  }
+
+  _queryToHttpParams(query: any) : HttpParams {
+    let httpParams = new HttpParams();
+
+    Object.keys(query).forEach(key => {
+      if (query[key]) {
+        switch (key)
+        {
+          default:
+            httpParams = httpParams.set(key, query[key]);
+        }
+      }
+    });
+    
+    return httpParams; 
+  }
+
+  _loadSender(id: number) {
+    this._spin = true;
+    this._sender = null;
+    this.apiService.getDetails('users', id).subscribe({
+      next: (response: any) => {
+        this._sender = response;
+        this._loadServiceInstance(this.message.service_instance_id);
+      },
+      error: (error: any) => {
+        this._spin = false;
+        Tools.OnError(error);
+      }
+    });
+  }
+
+  _loadServiceInstance(id: number) {
+    this._spin = true;
+    this._serviceInstance = null;
+    let aux: any = { params: this._queryToHttpParams({ embed: ['organization','service','template'] }) };
+    this.apiService.getDetails('service-instances', id, '', aux).subscribe({
+      next: (response: any) => {
+        this._serviceInstance = response;
+        this._organization = this._serviceInstance._embedded.organization;
+        this._service = this._serviceInstance._embedded.service;
+        this._template = this._serviceInstance._embedded.template;
+
+        this.message.user = this._sender;
+        this.message.organization = this._organization;
+        this.message.service = this._service;
+        this.message.template = this._template;
+
+        this._spin = false;
+      },
+      error: (error: any) => {
+        this._spin = false;
+        Tools.OnError(error);
+      }
+    });
   }
 
   __initInformazioni() {
