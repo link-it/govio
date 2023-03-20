@@ -264,6 +264,9 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
             _dateTime = moment(query[key]).utc().add(23, 'h').add(59, 'm').add(59, 's').format();
             httpParams = httpParams.set(key, _dateTime);
             break;
+          case 'filename':
+            httpParams = httpParams.set('q', query[key]);
+            break;
           default:
             httpParams = httpParams.set(key, query[key]);
         }
