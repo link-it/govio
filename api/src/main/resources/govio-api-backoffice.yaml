@@ -1419,6 +1419,8 @@ components:
             - creation_date
             - markdown
             - subject
+            - sender_id
+            - service_instance_id
           properties:
             id:
               type: integer
@@ -1459,7 +1461,11 @@ components:
                 # Lorem ipsum dolor sit amet
 
                 Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat.            
+                laboris nisi ut aliquip ex ea commodo consequat.
+            sender_id:
+               $ref: "govhub-api-commons.yaml#/components/schemas/UserId"
+            service_instance_id:            
+               $ref: "#/components/schemas/GovioServiceInstanceId"
             _links:
                type: object
                additionalProperties: false
