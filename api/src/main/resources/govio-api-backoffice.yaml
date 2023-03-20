@@ -4,6 +4,18 @@ info:
   x-summary: GovIO Communications
   x-api-id: govio-backoffice
   version: 1.0.1
+  description: >
+    # Warning
+
+    **This is an experimental API that is (most probably) going to change as we
+    evolve the IO platform.**
+
+    # Introduction
+
+    This is the documentation of the GovIO API for 3rd party services. This API
+    enables Public Administration services to send messages directly to citiziens through
+    the  IO platform in a simple and templatized way.
+      
 tags:
   - name: file
   - name: message
@@ -251,7 +263,20 @@ paths:
       parameters:
         - $ref: '#/components/parameters/service_instance_id_query'
       summary: Send a new message.
-      description: Send a message through the service template.
+      description: >
+         Send a message through the service template.
+         <br/>
+         <br/>  
+         The service_instance parameter identifies the IO service through which the message is sent, and it's a configuration
+         parameter provided by the service administrator.
+         The placeholder list is also provided by the service administrator, and the API user has to provide the values.
+         <br/>
+         <br/>
+         Upon receiving a call to this endpoint, GovIO builds the actual message to be sent to the IO services.
+         In the process,  the placeholders values are substituted in the message body and message subject by a template engine.
+         <br/>
+         A 201 response status denotes that the final message is built and scheduled by GovIO for the expedition to the IO services.  
+         
       operationId: sendMessage
       requestBody:
         content:
@@ -1157,14 +1182,14 @@ components:
         $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
         
     service_q:
-      name: service_q
+      name: service
       in: query
       required: false
       schema:
         $ref: 'govhub-api-commons.yaml#/components/schemas/GenericSearchString'
         
     organization_q:
-      name: organization_q
+      name: organization
       in: query
       required: false
       schema:
@@ -1263,9 +1288,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: 'govhub-api-commons.yaml#/components/schemas/TaxCode'
-        
-
+         type: string
+         minLength: 1
+         maxLength: 99999999
+         pattern: '[\s\S]*'
         
     scheduled_expedition_date_to_query:
       name: scheduled_expedition_date_to
@@ -1333,19 +1359,29 @@ components:
           type: string
           maxLength: 16
           minLength: 16
-          description: 'The fiscal code of the user, all upper case.'
+          description: 'The fiscal code of the receiver, all upper case.'
           pattern: >-
             [A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]
+          example: PCRMJV76P12B782Z
         payment:
           $ref: '#/components/schemas/GovioMessagePaymentItem'
         email:
-           $ref: "govhub-api-commons.yaml#/components/schemas/Email"
+           type: string
+           format: email
+           maxLength: 255
+           description: >
+             Default address for notifying the recipient of the message in case
+             no address for the related channel is set in his profile.
         scheduled_expedition_date:
           type: string
           format: date-time
+          description: The date when this message has to be sent to the citizien.
         due_date:
           type: string
           format: date-time
+          description: >
+             The expiration date for the message subject.
+             When set, the IO app shows an expiration date for this message.  
           
     GovioFile:
       type: object
@@ -1419,6 +1455,8 @@ components:
             - creation_date
             - markdown
             - subject
+            - sender_id
+            - service_instance_id
           properties:
             id:
               type: integer
@@ -1459,7 +1497,11 @@ components:
                 # Lorem ipsum dolor sit amet
 
                 Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat.            
+                laboris nisi ut aliquip ex ea commodo consequat.
+            sender_id:
+               $ref: "govhub-api-commons.yaml#/components/schemas/UserId"
+            service_instance_id:            
+               $ref: "#/components/schemas/GovioServiceInstanceId"
             _links:
                type: object
                additionalProperties: false
@@ -1499,17 +1541,26 @@ components:
           format: int64
           minimum: 1
           maximum: 9999999999
+          example: 62.12
         notice_number:
-          description: Payment ID in pagoPA
+          description: >-
+             The field ["Numero Avviso"]  of pagoPa, needed to identify the payment. 
           type: string
           pattern: '^[0123][0-9]{17}$'
+          example: 300012548634478225
         invalid_after_due_date:
           type: boolean
+          description: Optional field. When this field is set, the notice can't be payed after this date.
         payee_taxcode:
+          description: Optional field. Defaults to the organization that is sending this message.
           maxLength: 11
           minLength: 11
           pattern: '[0-9]{11}'
           type: string
+          example: 10000000001
+      description: Optional Field, marks the message as a payment message.
+          
+          
                               
     GovioNewMessage:
       allOf:
@@ -1521,7 +1572,8 @@ components:
               items:
                  $ref: "#/components/schemas/Placeholder"
               minItems: 0
-              maxItems: 2147483647                 
+              maxItems: 2147483647
+              description: The placeholder values to be substituted in the message template.
                  
     GovioNewPlaceholder:
        type: object
@@ -2065,8 +2117,12 @@ components:
            type: string
            pattern: .*
            maxLength: 2000000
+           description: The name of the placeholder to be replaced in the message template.
+           example: cie
          value:
            type: string
            pattern: .*
-           maxLength: 2000000    
+           maxLength: 2000000
+           description: The Value that will replace the placeholder in the message template.
+           example: CA000000AA    
              
