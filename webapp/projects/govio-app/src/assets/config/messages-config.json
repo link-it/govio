@@ -11,7 +11,9 @@
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal", "class": "" },
-        { "field": "organization.legal_name", "type": "text" }
+        { "field": "organization.legal_name", "type": "text" },
+        { "field": "service.service_name", "type": "text" },
+        { "field": "template.subject", "type": "text" }
       ],
       "label": [
         { "field": "status", "type": "label", "options": "status" }
@@ -26,7 +28,7 @@
     { "label": "APP.LABEL.Subject", "field": "subject", "type": "text" },
     { "label": "APP.LABEL.Message", "field": "markdown", "type": "markdown" },
     { "label": "APP.LABEL.User", "field": "user.full_name", "type": "text"},
-    { "label": "APP.LABEL.Taxcode", "field": "taxcode", "type": "text" },
+    { "label": "APP.LABEL.TaxCode", "field": "taxcode", "type": "text" },
     { "label": "APP.LABEL.CreationDate", "field": "creation_date", "type": "date", "format": "DD-MM-YYYY" },
     { "label": "APP.LABEL.DueDate", "field": "due_date", "type": "date", "format": "DD-MM-YYYY" },
     { "label": "APP.LABEL.ScheduledExpeditionDate", "field": "scheduled_expedition_date", "type": "date", "format": "DD-MM-YYYY" },
