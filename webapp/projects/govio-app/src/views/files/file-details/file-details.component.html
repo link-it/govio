@@ -262,11 +262,17 @@
                 [id]="'general-informations'"
                 [title]="'APP.FILES.TITLE.GeneralInformations' | translate"
                 [subTitle]="'APP.FILES.TITLE.GeneralInformations_sub' | translate">
-                <ui-form-readonly
+                <!-- <ui-form-readonly
                   [fields]="_informazioni"
                   [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6"
                   (downloadClick)="_downloadAction($event)">
-                </ui-form-readonly>
+                </ui-form-readonly> -->
+                <ui-data-view
+                  [data]="file"
+                  [config]="config"
+                  [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6"
+                  (downloadClick)="_downloadAction($event)">
+                </ui-data-view>
               </ui-box-collapse>
             </div>
           </div>

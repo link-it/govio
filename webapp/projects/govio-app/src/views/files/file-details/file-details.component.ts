@@ -1,6 +1,7 @@
 import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { HttpParams } from '@angular/common/http';
 
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
@@ -79,6 +80,11 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _services: any[] = [];
   _selectedFile: any = null;
 
+  _serviceInstance: any = null;
+  _organization: any = null;
+  _service: any = null;
+  _template: any = null;
+
   minLengthTerm = 1;
 
   services$!: Observable<any[]>;
@@ -135,7 +141,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
             this.config = config;
             this._translateConfig();
             if (this._isEdit) {
-              // this._loadRegistry();
               this._initForm({ ...this._file });
               this._initServicesSelect([]);
             } else {
@@ -168,7 +173,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   }
 
   _loadAll() {
-    // this._loadRegistry();
     this._loadFile();
   }
 
@@ -219,7 +223,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
           this._isNew = false;
 
           this._initBreadcrumb();
-          this.__initInformazioni();
+          // this.__initInformazioni();
           this._onCancelEdit();
         },
         error: (error: any) => {
@@ -294,35 +298,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     );
   }
 
-  _loadRegistry() {
-    // this.apiService.getList('organizations').subscribe({
-    //   next: (response: any) => {
-    //     this._organizations = response.items;
-    //   },
-    //   error: (error: any) => {
-    //     Tools.OnError(error);
-    //   }
-    // });
-
-    // this.apiService.getList('services').subscribe({
-    //   next: (response: any) => {
-    //     this._services = response.items;
-    //   },
-    //   error: (error: any) => {
-    //     Tools.OnError(error);
-    //   }
-    // });
-
-    // this.apiService.getList('service-instances').subscribe({
-    //   next: (response: any) => {
-    //     this._services = response.items;
-    //   },
-    //   error: (error: any) => {
-    //     Tools.OnError(error);
-    //   }
-    // });
-  }
-
   _downloadAction(event: any) {
     this._downloadContent(event.item);
   }
@@ -352,13 +327,55 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
           this.file = response; // new File({ ...response });
           this._file = response; // new File({ ...response });
 
-          this.__initInformazioni();
+          // this.__initInformazioni();
+
+          this._loadServiceInstance(this.file.service_instance_id);
         },
         error: (error: any) => {
           Tools.OnError(error);
         }
       });
     }
+  }
+
+  _loadServiceInstance(id: number) {
+    this._spin = true;
+    this._serviceInstance = null;
+    let aux: any = { params: this._queryToHttpParams({ embed: ['organization','service','template'] }) };
+    this.apiService.getDetails('service-instances', id, '', aux).subscribe({
+      next: (response: any) => {
+        this._serviceInstance = response;
+        this._organization = this._serviceInstance._embedded.organization;
+        this._service = this._serviceInstance._embedded.service;
+        this._template = this._serviceInstance._embedded.template;
+
+        this.file.organization = this._organization;
+        this.file.service = this._service;
+        this.file.template = this._template;
+
+        this._spin = false;
+      },
+      error: (error: any) => {
+        this._spin = false;
+        Tools.OnError(error);
+      }
+    });
+  }
+
+  _queryToHttpParams(query: any) : HttpParams {
+    let httpParams = new HttpParams();
+
+    Object.keys(query).forEach(key => {
+      if (query[key]) {
+        switch (key)
+        {
+          default:
+            httpParams = httpParams.set(key, query[key]);
+        }
+      }
+    });
+    
+    return httpParams; 
   }
 
   __initInformazioni() {
