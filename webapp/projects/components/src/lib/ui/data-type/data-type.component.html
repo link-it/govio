@@ -9,7 +9,7 @@
     <div class="d-inline-block" *ngIf="!(_elem.hideZero && _value == 0)">
       <span class="{{ _elem.class || '' }}" [tooltip]="_elem.tooltip || '' | translate" container="body" [delay]="500">
         <i class="bi bi-{{ _elem.icon }} {{ _elem.iconClass }}" *ngIf="_elem.icon"></i>
-        {{ utilsLib.formatNumberSuff(_value) }}
+        {{ utilsLib.formatNumberSuff(_value) || 0 }}
       </span>
     </div>
   </ng-container>
@@ -39,8 +39,13 @@
     <span class="progress">{{ _value }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'avatar'">
-    <span class="position-relative" [tooltip]="_value" container="body" [delay]="500">
+    <span class="position-relative" [tooltip]="(_value || '') | translate" container="body" [delay]="500">
       <img class="align-top" ngxGravatar [email]="_value" [size]="20" fallback="retro">
+    </span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'image'">
+    <span class="position-relative border rounded-circle d-flex justify-content-center align-content-center" style="width: 20px;height: 20px;padding: 0.15rem !important;" [tooltip]="(_tooltip || '') | translate" container="body" [delay]="500">
+      <img class="rounded-circle" [src]="_value" style="width: 20px;height: auto;">
     </span>
   </ng-container>
 </ng-container>

@@ -51,7 +51,7 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this._value = this.utilsLib.getObjectValue(this._data.source, this._elem.field);
+    this._value = this.utilsLib.getObjectValue(this._data.source, this._elem.field) || (this._elem.default || '');
     if (this._elem.type === 'status') {
       if (this._config.options) {
         const _origValue = this._value;
