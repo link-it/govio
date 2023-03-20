@@ -180,13 +180,14 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
 
   _loadFiles(query: any = null, url: string = '') {
     this._setErrorMessages(false);
-
-    if (!url) { this.files = []; }
     
     let aux: any;
-    const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
-    query = { ...query, embed: ['service_instance'], ...sort };
-    aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.files = [];
+      const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+      query = { ...query, embed: ['service_instance'], ...sort };
+      aux = { params: this._queryToHttpParams(query) };
+    }
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {

@@ -163,10 +163,11 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
   _loadPlaceholders(query: any = null, url: string = '') {
     this._setErrorPlaceholders(false);
 
-    if (!url) { this.placeholders = []; }
-
     let aux: any;
-    if (query)  aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.placeholders = [];
+      if (query) { aux = { params: this._queryToHttpParams(query) } };
+    }
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
