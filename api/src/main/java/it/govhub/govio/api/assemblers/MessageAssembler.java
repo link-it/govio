@@ -57,6 +57,8 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 
 		BeanUtils.copyProperties(src, ret);
 		ret.setStatus(GovioMessageStatus.valueOf(src.getStatus().toString()));
+		ret.setServiceInstanceId(src.getGovioServiceInstance().getId());
+		ret.setSenderId(src.getSender().getId());
 		
 		if(src.getNoticeNumber() != null) {
 			GovioMessagePaymentItem payment = new GovioMessagePaymentItem();
