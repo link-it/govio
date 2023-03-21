@@ -3,13 +3,13 @@
     <span class="{{ _elem.class || '' }}">{{ _value }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'markdown'">
-    <span markdown class="{{ _elem.class || '' }}">{{ _value }}</span>
+    <span markdown class="text-break {{ _elem.class || '' }}">{{ _value }}</span>
   </ng-container>
   <ng-container *ngSwitchCase="'number'">
     <div class="d-inline-block" *ngIf="!(_elem.hideZero && _value == 0)">
       <span class="{{ _elem.class || '' }}" [tooltip]="_elem.tooltip || '' | translate" container="body" [delay]="500">
         <i class="bi bi-{{ _elem.icon }} {{ _elem.iconClass }}" *ngIf="_elem.icon"></i>
-        {{ utilsLib.formatNumberSuff(_value) }}
+        {{ utilsLib.formatNumberSuff(_value) || 0 }}
       </span>
     </div>
   </ng-container>

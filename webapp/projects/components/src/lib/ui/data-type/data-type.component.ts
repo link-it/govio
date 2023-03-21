@@ -42,6 +42,7 @@ export class DataTypeComponent implements OnInit, AfterViewInit {
   _color: string = '';
   _class: string = '';
   _showBadged: boolean = false;
+  _tooltip: string = '';
 
   constructor(
     private sanitized: DomSanitizer,
@@ -86,6 +87,12 @@ export class DataTypeComponent implements OnInit, AfterViewInit {
         this._showBadged = (this._elem.badged !== undefined) ? this._elem.badged : true;
         this._class = 'gl-badge badge badge-pill';
       }
+    }
+    if (this._elem.type === 'image') {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'avatar') {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
     }
   }
 
