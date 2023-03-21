@@ -33,6 +33,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
+import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.FileRepository;
@@ -101,17 +102,18 @@ class Organization_UC_1_FindOrganizationsTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(4, page.getInt("total"));
 		
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
-		assertEquals(3, items.size());
+		assertEquals(4, items.size());
 		
 		// ordinamento di default ID desc
 		
-		assertEquals("12345678902", items.getJsonObject(0).getString("tax_code"));
-		assertEquals("12345678901", items.getJsonObject(1).getString("tax_code"));
-		assertEquals("80015010723", items.getJsonObject(2).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_3, items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_2, items.getJsonObject(1).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE, items.getJsonObject(2).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_CIE_ORG, items.getJsonObject(3).getString("tax_code"));
 	}
 	
 	@Test
@@ -132,14 +134,14 @@ class Organization_UC_1_FindOrganizationsTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(1, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(4, page.getInt("total"));
 		
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(1, items.size());
 		
 		// ordinamento di default ID desc
-		assertEquals("12345678902", items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_3, items.getJsonObject(0).getString("tax_code"));
 	}
 	
 	@Test
@@ -176,7 +178,7 @@ class Organization_UC_1_FindOrganizationsTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(4, page.getInt("total"));
 		
 		// Controlli sugli items
 //		JsonArray items = userList.getJsonArray("items");
@@ -253,13 +255,14 @@ class Organization_UC_1_FindOrganizationsTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(2, page.getInt("offset"));	
 		assertEquals(2, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(4, page.getInt("total"));
 		
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
-		assertEquals(1, items.size());
+		assertEquals(2, items.size());
 		
-		assertEquals("80015010723", items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE, items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_CIE_ORG, items.getJsonObject(1).getString("tax_code"));
 	}
 	
 	@Test
@@ -282,15 +285,16 @@ class Organization_UC_1_FindOrganizationsTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(4, page.getInt("total"));
 		
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
-		assertEquals(3, items.size());
+		assertEquals(4, items.size());
 
-		assertEquals("12345678902", items.getJsonObject(0).getString("tax_code"));
-		assertEquals("12345678901", items.getJsonObject(1).getString("tax_code"));
-		assertEquals("80015010723", items.getJsonObject(2).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_3, items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_2, items.getJsonObject(1).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE, items.getJsonObject(2).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_CIE_ORG, items.getJsonObject(3).getString("tax_code"));
 	}
 	
 	@Test
@@ -313,15 +317,16 @@ class Organization_UC_1_FindOrganizationsTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(4, page.getInt("total"));
 		
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
-		assertEquals(3, items.size());
+		assertEquals(4, items.size());
 
-		assertEquals("12345678902", items.getJsonObject(0).getString("tax_code"));
-		assertEquals("12345678901", items.getJsonObject(1).getString("tax_code"));
-		assertEquals("80015010723", items.getJsonObject(2).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_3, items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_2, items.getJsonObject(1).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE, items.getJsonObject(2).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_CIE_ORG, items.getJsonObject(3).getString("tax_code"));
 	}
 	
 	@Test
@@ -360,6 +365,90 @@ class Organization_UC_1_FindOrganizationsTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(4, page.getInt("total"));
+		
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(4, items.size());
+
+		
+		assertEquals(Costanti.TAX_CODE_CIE_ORG, items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE, items.getJsonObject(1).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_2, items.getJsonObject(2).getString("tax_code"));
+	}
+
+	@Test
+	void UC_1_12_FindAllOk_WithRoleGovio_SysAdmin() throws Exception {
+		
+		MvcResult result = this.mockMvc.perform(get(ORGANIZATIONS_BASE_PATH).queryParam(Costanti.USERS_QUERY_PARAM_ROLES, GovioRoles.GOVIO_SYSADMIN )
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+		
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(4, page.getInt("total"));
+		
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(4, items.size());
+		
+		// ordinamento di default ID desc
+		
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_3, items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_2, items.getJsonObject(1).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE, items.getJsonObject(2).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_CIE_ORG, items.getJsonObject(3).getString("tax_code"));
+	}
+	
+	@Test
+	void UC_1_13_FindAllOk_WithRoleGovio_Viewer() throws Exception {
+		
+		MvcResult result = this.mockMvc.perform(get(ORGANIZATIONS_BASE_PATH).queryParam(Costanti.USERS_QUERY_PARAM_ROLES, GovioRoles.GOVIO_VIEWER )
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+		
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(0, page.getInt("total"));
+		
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(0, items.size());
+		
+	}
+	
+	@Test
+	void UC_1_14_FindAllOk_WithServiceInstanceTrue() throws Exception {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.USERS_QUERY_PARAM_WITH_SERVICE_INSTANCE, "true");
+		
+		MvcResult result = this.mockMvc.perform(get(ORGANIZATIONS_BASE_PATH).params(params )
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+		
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
 		assertEquals(3, page.getInt("total"));
 		
 		// Controlli sugli items
@@ -367,9 +456,36 @@ class Organization_UC_1_FindOrganizationsTest {
 		assertEquals(3, items.size());
 
 		
-		assertEquals("80015010723", items.getJsonObject(0).getString("tax_code"));
-		assertEquals("12345678901", items.getJsonObject(1).getString("tax_code"));
-		assertEquals("12345678902", items.getJsonObject(2).getString("tax_code"));
+		
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_2, items.getJsonObject(0).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE, items.getJsonObject(1).getString("tax_code"));
+		assertEquals(Costanti.TAX_CODE_CIE_ORG, items.getJsonObject(2).getString("tax_code"));
 	}
 	
+//	@Test
+	void UC_1_15_FindAllOk_WithServiceInstanceFalse() throws Exception {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.USERS_QUERY_PARAM_WITH_SERVICE_INSTANCE, "false");
+		
+		MvcResult result = this.mockMvc.perform(get(ORGANIZATIONS_BASE_PATH).params(params )
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+		
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(1, page.getInt("total"));
+		
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(1, items.size());
+
+		assertEquals(Costanti.TAX_CODE_ENTE_CREDITORE_3, items.getJsonObject(0).getString("tax_code"));
+	}
 }
