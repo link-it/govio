@@ -121,7 +121,7 @@
 			"ServiceName": "Nome Servizio",
 			"Status": "Stato",
 			"Subject": "Oggetto",
-			"Taxcode": "Codice fiscale",
+			"TaxCode": "Codice fiscale",
 			"Template": "Modello",
 			"Type": "Tipo",
 			"User": "Utente",

@@ -19,8 +19,8 @@
     </div>
   </div>
 </header>
-<div class="layout-page hide-when-top-nav-responsive-open" [ngClass]="{ 'page-with-contextual-sidebar': _isGovRegistry, 'page-with-icon-sidebar': _sideBarCollapsed && desktop && _isGovRegistry }">
-  <aside class="nav-sidebar" [ngClass]="{ 'sidebar-collapsed-desktop': _sideBarCollapsed && desktop, 'sidebar-expanded-mobile': !_sideBarCollapsed && !desktop && !mobile || _openSideBar  }" *ngIf="_isGovRegistry">
+<div class="layout-page hide-when-top-nav-responsive-open" [ngClass]="{ 'page-with-contextual-sidebar': _isGovApp, 'page-with-icon-sidebar': _sideBarCollapsed && desktop && _isGovApp }">
+  <aside class="nav-sidebar" [ngClass]="{ 'sidebar-collapsed-desktop': _sideBarCollapsed && desktop, 'sidebar-expanded-mobile': !_sideBarCollapsed && !desktop && !mobile || _openSideBar  }" *ngIf="_isGovApp">
     <div class="nav-sidebar-inner-scroll">
       <ul class="sidebar-top-level-items">
         <ng-container *ngFor="let _item of navItems">
@@ -75,9 +75,9 @@
       </button>
     </div>
   </aside>
-  <div class="content-wrapper" [ngClass]="{'content-wrapper-margin': _isGovRegistry}">
-    <div class="mobile-overlay" [class.mobile-nav-open]="_openSideBar" (click)="__closeSideBar()" *ngIf="_isGovRegistry"></div>
-    <div class="container-fluid" [ngClass]="{'container-limited': _isGovRegistry, 'px-0': !_isGovRegistry, 'py-0': !_isGovRegistry}">
+  <div class="content-wrapper" [ngClass]="{'content-wrapper-margin': _isGovApp}">
+    <div class="mobile-overlay" [class.mobile-nav-open]="_openSideBar" (click)="__closeSideBar()" *ngIf="_isGovApp"></div>
+    <div class="container-fluid" [ngClass]="{'container-limited': _isGovApp, 'px-0': !_isGovApp, 'py-0': !_isGovApp}">
       <main class="content">
         <router-outlet></router-outlet>
       </main>
