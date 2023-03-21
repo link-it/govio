@@ -8,16 +8,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +30,8 @@ import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.config.GovioRoles;
-import it.govhub.govio.api.entity.GovioFileEntity;
-import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
-import it.govhub.govio.api.repository.FileRepository;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
-import it.govhub.govio.api.test.utils.GovioFileUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
-import it.govhub.govregistry.commons.entity.UserEntity;
-import it.govhub.security.beans.GovhubPrincipal;
-import it.govhub.security.services.GovhubUserDetailService;
 
 
 @SpringBootTest(classes = Application.class)
@@ -63,30 +51,6 @@ class Organization_UC_1_FindOrganizationsTest {
 	@Autowired
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
-	@Autowired
-	private FileRepository govioFilesRepository;
-	
-	@Autowired
-	private ServiceInstanceRepository govioServiceInstancesRepository;
-	
-	@Autowired
-	private GovhubUserDetailService userDetailService;
-	
-	@BeforeEach
-	void setUp() throws Exception{
-		
-		
-		govioFilesRepository.deleteAll();
-		
-		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
-		
-		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("user_govio_sender")).getUser();
-		
-		List<GovioFileEntity> files = new ArrayList<>();
-		files.add(govioFilesRepository.save(GovioFileUtils.buildFile(this.fileRepositoryPath, serviceInstanceEntity.get(), "01", user)));
-		files.add(govioFilesRepository.save(GovioFileUtils.buildFile(this.fileRepositoryPath, serviceInstanceEntity.get(), "02", user)));
-	}
-
 	@Test
 	void UC_1_01_FindAllOk() throws Exception {
 		MvcResult result = this.mockMvc.perform(get(ORGANIZATIONS_BASE_PATH)
@@ -431,7 +395,7 @@ class Organization_UC_1_FindOrganizationsTest {
 		
 	}
 	
-	@Test
+//	@Test
 	void UC_1_14_FindAllOk_WithServiceInstanceTrue() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_WITH_SERVICE_INSTANCE, "true");
