@@ -272,8 +272,9 @@ paths:
          The placeholder list is also provided by the service administrator, and the API user has to provide the values.
          <br/>
          <br/>
-         Upon receiving a call to this endpoint, GovIO build the actual message to be sent to the IO services.
-         In the process, a template engine is executed on the  message body and message subject so the placeholders values get substituted.
+         Upon receiving a call to this endpoint, GovIO builds the actual message to be sent to the IO services.
+         In the process,  the placeholders values are substituted in the message body and message subject by a template engine.
+         <br/>
          A 201 response status denotes that the final message is built and scheduled by GovIO for the expedition to the IO services.  
          
       operationId: sendMessage
@@ -1287,9 +1288,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: 'govhub-api-commons.yaml#/components/schemas/TaxCode'
-        
-
+         type: string
+         minLength: 1
+         maxLength: 99999999
+         pattern: '[\s\S]*'
         
     scheduled_expedition_date_to_query:
       name: scheduled_expedition_date_to

@@ -180,13 +180,14 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
 
   _loadFiles(query: any = null, url: string = '') {
     this._setErrorMessages(false);
-
-    if (!url) { this.files = []; }
     
     let aux: any;
-    const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
-    query = { ...query, embed: ['service_instance'], ...sort };
-    aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.files = [];
+      const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+      query = { ...query, embed: ['service_instance'], ...sort };
+      aux = { params: this._queryToHttpParams(query) };
+    }
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
@@ -263,6 +264,9 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
           case 'creation_date_to':
             _dateTime = moment(query[key]).utc().add(23, 'h').add(59, 'm').add(59, 's').format();
             httpParams = httpParams.set(key, _dateTime);
+            break;
+          case 'filename':
+            httpParams = httpParams.set('q', query[key]);
             break;
           default:
             httpParams = httpParams.set(key, query[key]);

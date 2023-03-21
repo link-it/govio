@@ -121,7 +121,7 @@
 			"ServiceName": "Service name",
 			"Status": "Status",
 			"Subject": "Subject",
-			"Taxcode": "Taxcode",
+			"TaxCode": "Tax code",
 			"Template": "Template",
 			"Type": "Type",
 			"User": "User",

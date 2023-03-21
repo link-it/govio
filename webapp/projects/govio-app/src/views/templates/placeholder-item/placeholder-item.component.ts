@@ -12,7 +12,7 @@ import { PlaceholderItem } from './placeholder-item';
 import { Placeholder } from '../../placeholders/placeholder-details/placeholder';
 
 import { concat, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap, tap } from 'rxjs/operators';
 
 import * as jsonpatch from 'fast-json-patch';
 import _ from 'lodash';
@@ -97,11 +97,12 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
     this.placeholders$ = concat(
       of([]), // default items
       this.placeholdersInput$.pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
         distinctUntilChanged(),
-        debounceTime(500),
         tap(() => this.placeholdersLoading = true),
         switchMap((term: any) => {
           return this.getPlaceholders(term).pipe(
@@ -208,7 +209,7 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
     const $this = this;
     return Object.keys(obj)
       .filter(function (k) {
-        return obj[k] != null;
+        return ( obj[k] != null && typeof obj[k] !== "object");
       })
       .reduce(function (acc: any, k: string) {
         acc[k] = typeof obj[k] === "object" ? $this.__removeEmpty(obj[k]) : obj[k];
