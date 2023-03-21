@@ -88,7 +88,8 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
         this._border = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].border : '#1f1f1f';
         this._color = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].color : '#fff';
         this._showBadged = (this._elem.badged !== undefined) ? this._elem.badged : true;
-        this._class = 'gl-badge badge badge-pill';
+        this._class = 'badge badge-pill';
+        this._class += this._config.options[_optionsName].small ? ' gl-badge-sm' : ' gl-badge';
       }
     }
     if (this._elem.type === 'image') {
