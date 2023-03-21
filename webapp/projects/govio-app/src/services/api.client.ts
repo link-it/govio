@@ -65,11 +65,12 @@ export class ApiClient {
    * @param {IRequestOptions} options of the request like headers, body, etc.
    * @returns {Observable<T>}
    */
-  public get<T>(endPoint: string, options?: IRequestOptions): Observable<T> {
-  
+  public get<T>(endPoint: string, options?: IRequestOptions, fullPath: boolean = false): Observable<T> {
+    const _url: string = fullPath ? endPoint : `${this.api_url}${endPoint}`;
+
     if (!options) options = {};
     
-    return this.http.get<T>(this.api_url + endPoint, options);
+    return this.http.get<T>(_url, options);
   }
 
   /**

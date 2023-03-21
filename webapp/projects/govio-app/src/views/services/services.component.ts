@@ -157,12 +157,13 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   _loadServices(query: any = null, url: string = '') {
     this._setErrorMessages(false);
 
-    if (!url) { this.services = []; }
-
     let aux: any;
-    const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
-    query = { ...query, embed: ['service','organization','template'], ...sort };
-    aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.services = [];
+      const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+      query = { ...query, embed: ['service','organization','template'], ...sort };
+      aux = { params: this._queryToHttpParams(query) };
+    }
 
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {

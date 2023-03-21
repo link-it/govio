@@ -99,9 +99,13 @@ p {
   color: var(--item-row-secondary-text-color, inherit);
 }
 
-.meta-data p,
-.meta-data pre {
+.meta-data {
   color: var(--item-row-metadata-color, #333);
+
+  p,
+  pre {
+    color: var(--item-row-metadata-color, #333);
+  }
 }
 
 .action {

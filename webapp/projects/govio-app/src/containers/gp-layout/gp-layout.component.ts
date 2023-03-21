@@ -71,7 +71,7 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
 
   _title: string = '';
 
-  _isGovRegistry: boolean = true;
+  _isGovApp: boolean = true;
 
   constructor(
     private router: Router,
@@ -102,7 +102,7 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
     this._session = this.authenticationService.getCurrentSession();
 
     if (Tools.CurrentApplication && Tools.CurrentApplication.menu) {
-      this._isGovRegistry = Tools.CurrentApplication.menu.action === 'dashboard';
+      this._isGovApp = Tools.CurrentApplication.menu.action === 'dashboard';
     }
 
     this._initLanguages();
@@ -308,11 +308,11 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
     this._title = (Tools.CurrentApplication && Tools.CurrentApplication.menu) ? Tools.CurrentApplication.menu.title : this._config.AppConfig.Layout.Header.title;
     switch (event.menu.action) {
       case 'dashboard':
-        this._isGovRegistry = true;
+        this._isGovApp = true;
         this.router.navigate([event.menu.url]);
         break
       default:
-        this._isGovRegistry = false;
+        this._isGovApp = false;
         this.router.navigate(['/application']);
         break;
     }

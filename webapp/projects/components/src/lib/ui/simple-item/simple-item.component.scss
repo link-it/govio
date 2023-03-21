@@ -120,9 +120,13 @@ pre {
   color: var(--simple-item-secondary-text-color, inherit);
 }
 
-.meta-data p,
-.meta-data pre {
-  color: var(--simple-item-metadata-color, #333);
+.meta-data {
+  color: var(--item-row-metadata-color, #333);
+
+  p,
+  pre {
+    color: var(--item-row-metadata-color, #333);
+  }
 }
 
 .action {
