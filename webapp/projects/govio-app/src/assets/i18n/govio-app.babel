@@ -1703,7 +1703,7 @@
 										</translations>
 									</concept_node>
 									<concept_node>
-										<name>Taxcode</name>
+										<name>TaxCode</name>
 										<description/>
 										<comment/>
 										<default_text/>
