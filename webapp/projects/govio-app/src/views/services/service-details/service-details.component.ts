@@ -325,7 +325,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
       let aux: any = { params: this._queryToHttpParams({ embed: ['service','organization','template'] }) };
       this.apiService.getDetails(this.model, this.id, '', aux).subscribe({
         next: (response: any) => {
-          this.service = new ServiceInstance({ ...response });
+          this.service = this.__prepareServiceData(response); // new ServiceInstance({ ...response });
           this._service = new ServiceInstance({ ...response });
           this.loadCurrentData();
           this._spin = false;
@@ -358,7 +358,9 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
       service: {
         id: service._embedded.service.id,
         service_name: service._embedded.service.service_name,
-        description: service._embedded.service.description
+        description: service._embedded.service.description,
+        logo: service._embedded.service._links?.logo?.href || null,
+        logo_small: service._embedded.service._links?.logo_small?.href || null
       },
 
       template: {
