@@ -30,6 +30,10 @@ public class Costanti {
 	public static final String USERS_QUERY_PARAM_SORT_DIRECTION = "sort_direction";
 	public static final String USERS_QUERY_PARAM_ROLES = "with_roles";
 	public static final String USERS_QUERY_PARAM_WITH_SERVICE_INSTANCE = "with_service_instance";
+	public static final String USERS_QUERY_PARAM_SERVICE_ID = "service_id";
+	public static final String USERS_QUERY_PARAM_ORGANIZATION_ID = "organization_id";
+	public static final String USERS_QUERY_PARAM_EMBED = "embed";
+	
 	
 	public static final Integer USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE = LimitOffsetPageRequest.LIMIT_DEFAULT_VALUE;
 	
