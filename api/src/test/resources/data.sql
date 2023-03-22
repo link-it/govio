@@ -26,6 +26,7 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextva
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '80015010723', 'Cie org');
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678901', 'Ente Creditore');
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678902', 'Ente Creditore 2');
+INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678903', 'Ente Creditore 3');
 
 -- ALTER SEQUENCE SEQ_GOVHUB_ORGANIZATIONS RESTART WITH 3;
 
