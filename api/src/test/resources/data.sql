@@ -28,6 +28,10 @@ INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextv
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678902', 'Ente Creditore 2');
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678903', 'Ente Creditore 3');
 
+UPDATE public.govhub_organizations SET logo = '0x{0}', logo_media_type = 'image/png' WHERE tax_code = '12345678903';
+UPDATE public.govhub_organizations SET logo_miniature = '0x{0}', logo_miniature_media_type = 'image/png' WHERE tax_code = '12345678903';
+
+
 -- ALTER SEQUENCE SEQ_GOVHUB_ORGANIZATIONS RESTART WITH 3;
 
 -- Services
