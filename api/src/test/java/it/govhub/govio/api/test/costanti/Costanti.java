@@ -18,7 +18,9 @@ public class Costanti {
 	public static final String TAX_CODE_ENTE_CREDITORE = "12345678901";
 	public static final String LEGALNAME_ENTE_CREDITORE = "Ente Creditore";
 	
+	public static final String TAX_CODE_ENTE_CREDITORE_3 = "12345678903";
 	public static final String TAX_CODE_ENTE_CREDITORE_2 = "12345678902";
+	public static final String TAX_CODE_CIE_ORG = "80015010723";
 	
 	public static final String USERS_QUERY_PARAM_LIMIT = "limit";
 	public static final String USERS_QUERY_PARAM_OFFSET = "offset";
@@ -26,6 +28,12 @@ public class Costanti {
 	public static final String USERS_QUERY_PARAM_ENABLED = "enabled";
 	public static final String USERS_QUERY_PARAM_SORT = "sort";
 	public static final String USERS_QUERY_PARAM_SORT_DIRECTION = "sort_direction";
+	public static final String USERS_QUERY_PARAM_ROLES = "with_roles";
+	public static final String USERS_QUERY_PARAM_WITH_SERVICE_INSTANCE = "with_service_instance";
+	public static final String USERS_QUERY_PARAM_SERVICE_ID = "service_id";
+	public static final String USERS_QUERY_PARAM_ORGANIZATION_ID = "organization_id";
+	public static final String USERS_QUERY_PARAM_EMBED = "embed";
+	
 	
 	public static final Integer USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE = LimitOffsetPageRequest.LIMIT_DEFAULT_VALUE;
 	
