@@ -46,6 +46,9 @@ INSERT INTO public.govhub_services (id, name, description) VALUES (nextval('publ
 INSERT INTO public.govhub_services (id, name, description) VALUES (nextval('public.seq_govhub_services'), 'Variazione Residenza', 'Richieste di variazione residenza');
 INSERT INTO public.govhub_services (id, name, description) VALUES (nextval('public.seq_govhub_services'), 'Servizi Turistici', 'Portale di riferimento per i turisti');
 
+UPDATE public.govhub_services SET logo = '0x{0}', logo_media_type = 'image/png' WHERE name = 'Servizio Generico';
+UPDATE public.govhub_services SET logo_miniature = '0x{0}', logo_miniature_media_type = 'image/png' WHERE name = 'Servizio Generico';
+
 -- ALTER SEQUENCE SEQ_GOVHUB_SERVICES RESTART WITH 9;
 
 -- Autorizzazioni
