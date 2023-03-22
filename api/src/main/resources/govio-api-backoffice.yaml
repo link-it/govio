@@ -17,10 +17,23 @@ info:
     the  IO platform in a simple and templatized way.
       
 tags:
-  - name: file
-  - name: message
+  - name: user
+    description: Operations on users.
+  - name: organization
+    description: Operations on organizations.
+  - name: system
+    description: System Operations
   - name: service
+    description: Operation on services.
+  - name: profile
+    description: Read User Profile Info
+  - name: file
+    description: Operation on files.
+  - name: message
+    description: Operation on messages.
   - name: template
+    description: Operation on message templates.
+     
   
 servers:
   - url: 'http://localhost:10001'
@@ -29,40 +42,384 @@ security:
   - header-principal: []
 paths:
 
-  /organizations:
+  /status:
     get:
       tags:
-        - organization
-      summary: Retrieve the organization list.
-      description: Retrieve the organization list.
-      operationId: listOrganizations
+        - system
+      summary: Get the system status.
+      description: Get the system status.
+      operationId: status
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'govhub-api-commons.yaml#/components/schemas/Problem'          
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+
+  /profile:
+       get:
+         tags:
+           - profile
+         summary: Retrieve the user profile.
+         description: Retrieve the  logged user profile.
+         operationId: profile
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/json:
+                 schema:
+                   $ref: 'govhub-api-commons.yaml#/components/schemas/Profile'          
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+             
+  /users:
+    get:
+      tags:
+         - user
+      summary: Retrieve the user list.
+      description: Retrieve the user list.
+      operationId: listUsers
       parameters:
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/offset'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/q_query'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/organization_ordering_query'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/with_roles'
-        - $ref: '#/components/parameters/with_service_instance'
+         - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/enabled_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/user_ordering_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
       responses:
         '200':
           description: Successful operation.
           content:
             application/json:
               schema:
-                $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationList'
+                 $ref: "govhub-api-commons.yaml#/components/schemas/UserList"
         '400':
-          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
         '401':
-          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
         '403':
-          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
         '429':
-          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
         '503':
-          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
         default:
-          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"       
+
+  /users/{id}:
+    parameters:
+      - $ref: "govhub-api-commons.yaml#/components/parameters/user_id"    
+    get:
+      tags:
+        - user
+      summary: Retrieve a user.
+      description: Retrieve the user with the provided id.
+      operationId: readUser
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: 'govhub-api-commons.yaml#/components/schemas/User'          
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '404':
+          $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+                       
+  /organizations:
+    get:
+      tags:
+         - organization
+      summary: Retrieve the organization list.
+      description: Retrieve the organization list.
+      operationId: listOrganizations
+      parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_ordering_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/with_roles"
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationList"
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"        
+          
+  /organizations/{id}:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_id"    
+       get:
+         tags:
+           - organization
+         summary: Retrieve an Organization.
+         description: Retrieve the Organization with the provided id.
+         operationId: readOrganization
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/json:
+                 schema:
+                   $ref: 'govhub-api-commons.yaml#/components/schemas/Organization'          
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+             
+  /organizations/{id}/logo:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_id"    
+       get:
+         tags:
+           - organization
+         summary: Retrieve the organization logo.
+         description: Retrieve the logo of the organization with the provided id.
+         operationId: downloadOrganizationLogo
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                              
+             
+  /organizations/{id}/logo-miniature:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_id"    
+       get:
+         tags:
+           - organization
+         summary: Retrieve the organization logo miniature
+         description: Retrieve the logo miniature of the organization with the provided id.
+         operationId: downloadOrganizationLogoMiniature
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                
+             
+  /services:
+    get:
+      tags:
+         - service
+      summary: Retrieve the service list.
+      description: Retrieve the service list.
+      operationId: listServices
+      parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_ordering_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/with_roles"
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/ServiceList"
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"       
+                
+  /services/{id}:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_id"    
+       get:
+         tags:
+           - service
+         summary: Retrieve a service.
+         description: Retrieve the service with the provided id.
+         operationId: readService
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/json:
+                 schema:
+                   $ref: 'govhub-api-commons.yaml#/components/schemas/Service'          
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                
+  
+  /services/{id}/logo:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_id"    
+       get:
+         tags:
+           - service
+         summary: Retrieve the service logo
+         description: Retrieve the logo of the service with the provided id.
+         operationId: downloadServiceLogo
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                              
+             
+  /services/{id}/logo-miniature:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_id"    
+       get:
+         tags:
+           - service
+         summary: Retrieve the service logo miniature
+         description: Retrieve the logo miniature of the service with the provided id.
+         operationId: downloadServiceLogoMiniature
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"             
           
   /files:
     post:
