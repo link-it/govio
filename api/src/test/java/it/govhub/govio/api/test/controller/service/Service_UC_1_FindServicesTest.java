@@ -33,7 +33,7 @@ import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @DisplayName("Test di lettura dei servizi")
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
 class Service_UC_1_FindServicesTest {
 
