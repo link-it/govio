@@ -33,7 +33,6 @@ import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.entity.UserEntity;
-import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;

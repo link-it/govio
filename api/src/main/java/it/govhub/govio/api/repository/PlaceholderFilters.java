@@ -1,6 +1,5 @@
 package it.govhub.govio.api.repository;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
