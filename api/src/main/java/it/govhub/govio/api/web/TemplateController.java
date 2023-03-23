@@ -311,7 +311,7 @@ public class TemplateController implements TemplateApi {
 		List<GovioTemplatePlaceholderEntity> templatePlaceholders = this.templatePlaceholderRepo.findAll(spec, Sort.by(Direction.ASC, GovioTemplatePlaceholderEntity_.POSITION));
 		
 		GovioListTemplatePlaceholder ret = new GovioListTemplatePlaceholder();
-		ret.setItems(new ArrayList<GovioTemplatePlaceholder>());
+		ret.setItems(new ArrayList<>());
 		for (var tp : templatePlaceholders) {
 			GovioTemplatePlaceholder item = this.templatePlaceholderAssembler.toEmbeddedModel(tp, embeds);
 			ret.addItemsItem(item);

@@ -283,6 +283,8 @@
 								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
 								<importMapping>OrganizationAuthItem=it.govhub.govregistry.commons.api.beans.OrganizationAuthItem</importMapping>
 								<importMapping>OrganizationList=it.govhub.govregistry.commons.api.beans.OrganizationList</importMapping>
+								<importMapping>ServiceList=it.govhub.govregistry.commons.api.beans.ServiceList</importMapping>
+								<importMapping>UserList=it.govhub.govregistry.commons.api.beans.UserList</importMapping>
 								<importMapping>OrganizationOrdering=it.govhub.govregistry.commons.api.beans.OrganizationOrdering</importMapping>
 
 								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
@@ -295,6 +297,8 @@
 							</typeMappings>
 							<schemaMappings>
 								<schemaMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</schemaMapping>
+								<schemaMapping>ServiceOrdering=it.govhub.govregistry.commons.api.beans.ServiceOrdering</schemaMapping>
+								<schemaMapping>UserOrdering=it.govhub.govregistry.commons.api.beans.UserOrdering</schemaMapping>
 							</schemaMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>

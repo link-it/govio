@@ -21,9 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.EmbedMessageEnum;
-import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
-import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
@@ -32,7 +30,6 @@ import it.govhub.govio.api.messages.MessageMessages;
 import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.entity.UserEntity;
-import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.security.services.SecurityService;

@@ -815,6 +815,12 @@ components:
          maxLength: 80
          pattern: ^([\x20-\xFF]{1,80})$
          example: Giletti S.R.L.
+         
+      RoleName:
+        type: string
+        pattern: .+
+        maxLength: 256
+        example: govhub_sender 
                
       Role:
          type: object
@@ -826,19 +832,40 @@ components:
             id: 
                $ref: "#/components/schemas/RoleId"
             role_name:
-               type: string
-               pattern: .+
-               maxLength: 256
-               example: govhub-sender
+               $ref: "#/components/schemas/RoleName"
             assignable_roles:
                type: array
                minItems: 0
                maxItems: 256
                items:
-                  type: string
-                  pattern: .+
-                  maxLength: 256
-                  example: govhub-sender
+                  $ref: "#/components/schemas/AssignableRole"
+                  
+      AssignableRole:
+         type: object
+         additionalProperties: false
+         required:
+            - id
+            - role_name
+         properties:
+            id:
+               $ref: "#/components/schemas/RoleId"
+            role_name:
+               $ref: "#/components/schemas/RoleName"
+                  
+      RoleList:
+         allOf:
+            - $ref: "#/components/schemas/List"
+            - type: object
+              properties:              
+                 items:
+                    type: array
+                    items:
+                       $ref: "#/components/schemas/Role"
+                    minItems: 0
+                    maxItems: 2147483647
+              required:
+                 - items 
+              additionalProperties: false
                   
       AuthorizationList:
          allOf:

@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -44,6 +45,9 @@ import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.services.ServiceInstanceService;
 import it.govhub.govio.api.spec.ServiceApi;
 import it.govhub.govregistry.commons.api.beans.PatchOp;
+import it.govhub.govregistry.commons.api.beans.Service;
+import it.govhub.govregistry.commons.api.beans.ServiceList;
+import it.govhub.govregistry.commons.api.beans.ServiceOrdering;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
@@ -55,6 +59,7 @@ import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
 import it.govhub.govregistry.commons.utils.RequestUtils;
+import it.govhub.govregistry.readops.api.web.ReadServiceController;
 import it.govhub.security.services.SecurityService;
 
 @V1RestController
@@ -86,6 +91,9 @@ public class ServiceInstanceController implements ServiceApi {
 	
 	@Autowired
 	ServiceInstanceService instanceService;
+	
+	@Autowired
+	ReadServiceController readServiceController;
 	
 	@Override
 	@Transactional
@@ -253,6 +261,27 @@ public class ServiceInstanceController implements ServiceApi {
 		newInstance = this.instanceService.replaceInstance(instance, newInstance);
 		
 		return ResponseEntity.ok(this.instanceAssembler.toModel(newInstance));
+	}
+
+
+	@Override
+	public ResponseEntity<Resource> downloadServiceLogo(Long id) {
+		return this.readServiceController.downloadServiceLogo(id);
+	}
+
+	@Override
+	public ResponseEntity<Resource> downloadServiceLogoMiniature(Long id) {
+		return this.readServiceController.downloadServiceLogoMiniature(id);
+	}
+
+	@Override
+	public ResponseEntity<ServiceList> listServices(ServiceOrdering sort, Direction sortDirection, Integer limit,	Long offset, String q, List<String> withRoles) {
+		return this.readServiceController.listServices(sort, sortDirection, limit, offset, q, withRoles);
+	}
+
+	@Override
+	public ResponseEntity<Service> readService(Long id) {
+		return this.readServiceController.readService(id);
 	}
 
 }
