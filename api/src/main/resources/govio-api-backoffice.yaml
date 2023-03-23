@@ -2273,6 +2273,7 @@ components:
          - service_id
          - organization_id
          - template_id
+         - apiKey
       properties:
         service_id:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
