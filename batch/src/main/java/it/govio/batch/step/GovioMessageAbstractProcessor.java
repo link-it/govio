@@ -40,7 +40,7 @@ public abstract class GovioMessageAbstractProcessor implements ItemProcessor<Gov
 		case 404:
 			return Status.PROFILE_NOT_EXISTS;
 		case 429:
-			String value = e.getResponseHeaders().getFirst("Retry-After");
+			String value = e.getResponseHeaders() != null ? e.getResponseHeaders().getFirst("Retry-After") : null;
 			int sleepTime;
 			if (value == null) sleepTime = defaultRetryTimer;
 			else {

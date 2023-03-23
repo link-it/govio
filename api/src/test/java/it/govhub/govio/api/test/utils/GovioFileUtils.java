@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileEntity.Status;
@@ -40,5 +41,10 @@ public class GovioFileUtils {
 				.build();
 
 		return govioFile1;
+	}
+	
+	
+	public static String createApiKey() {
+		return UUID.randomUUID().toString().replace("-", "");
 	}
 }
