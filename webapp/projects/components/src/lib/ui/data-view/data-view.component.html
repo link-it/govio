@@ -11,7 +11,7 @@
             </button>
           </div>
         </ng-container>
-        <ng-container *ngIf="_field.type !== 'image' && !_field.download ">
+        <ng-container *ngIf="_field.type !== 'image' && !_field.download && _showEmpty(_field)">
           <label class="label-bold mb-0">{{ _field.label | translate }}</label>
           <span class="form-control-plaintext">
             <ui-data-type
