@@ -292,10 +292,12 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
       }
     } else {
       // Expand the menu
-      this._sideBarCollapsed = false;
-      this._sideBarOpened = true;
-      this._openSideBar = true;
-      item.expanded = true;
+      if (!this.desktop && !this.mobile) {
+        this._sideBarCollapsed = true;
+        this._sideBarOpened = false;
+        this._openSideBar = false;
+      }
+      item.expanded = false;
       this.router.navigate([item.url]);
       if (this.mobile) {
         this._sideBarCollapsed = true;
