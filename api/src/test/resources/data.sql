@@ -19,6 +19,8 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextva
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govio_service_instance_viewer');
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govio_service_instance_editor');
 
+INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govhub_sysadmin');
+
 -- ALTER SEQUENCE SEQ_GOVHUB_ROLES RESTART WITH 4;
 
 -- Organizations
@@ -56,6 +58,10 @@ UPDATE public.govhub_services SET logo_miniature = '0x{0}', logo_miniature_media
 -- amministratore -> govio_sysadmin
 
 INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='amministratore'), (SELECT id FROM public.govhub_roles WHERE name='govio_sysadmin'));
+
+-- amministratore -> govhub_sysadmin
+
+INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='amministratore'), (SELECT id FROM public.govhub_roles WHERE name='govhub_sysadmin'));
 
 -- user_govio_sender -> govio_sender
 
