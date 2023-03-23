@@ -14,13 +14,14 @@ public class GovioConfig  implements ApplicationConfig {
 	private String applicationId;
 	
 	public static Set<String> DEFAULT_READ_ORGANIZATION_ROLES = Set.of(
+
 			GovioRoles.GOVIO_SYSADMIN, 
 			GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, 
 			GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR,
 			GovioRoles.GOVIO_VIEWER, 
 			GovioRoles.GOVIO_SENDER);
 	
-	public static Set<String> DEFAULT_READ_SERVICE_ROLES = Set.of(
+	public static final Set<String> DEFAULT_READ_SERVICE_ROLES = Set.of(
 			GovioRoles.GOVIO_SYSADMIN, 
 			GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER,
 			GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR	);
