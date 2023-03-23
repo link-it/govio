@@ -6,7 +6,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ import it.govhub.govio.api.beans.EmbedFileEnum;
 import it.govhub.govio.api.beans.EmbedMessageEnum;
 import it.govhub.govio.api.beans.EmbedServiceInstanceEnum;
 import it.govhub.govio.api.beans.GovioFile;
-import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.web.FileController;
 import it.govhub.govio.api.web.ServiceInstanceController;
@@ -89,15 +87,11 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFil
 			ret.setEmbedded(new HashMap<>());
 			
 			for(var e : embed) {
-				switch(e) {
-				case SERVICE_INSTANCE:
+				if(e.equals(EmbedFileEnum.SERVICE_INSTANCE)) {
 					ret.getEmbedded().put(
 							EmbedMessageEnum.SERVICE_INSTANCE.getValue(), 
 							this.instanceAssembler.toEmbeddedModel(src.getServiceInstance(), Set.of(EmbedServiceInstanceEnum.values()))
 						);
-					break;
-				default:
-					break; 
 				}
 			}
 		}

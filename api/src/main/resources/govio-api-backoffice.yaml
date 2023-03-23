@@ -2269,6 +2269,10 @@ components:
     GovioServiceInstanceCreate:
       type: object
       additionalProperties: false
+      required:
+         - service_id
+         - organization_id
+         - template_id
       properties:
         service_id:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
