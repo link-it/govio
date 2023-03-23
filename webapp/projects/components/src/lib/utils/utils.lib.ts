@@ -55,7 +55,7 @@ export class UtilsLib {
   }
 
   dateFormatter(value: any, config: any) {
-    const format = config.format || 'DD-MM-YYYY';
+    const format = (typeof config === 'object' ? config.format : config) || 'DD-MM-YYYY';
     const date = value ? moment(value).format(format) : '';
     return date;
   }
