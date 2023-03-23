@@ -135,8 +135,11 @@ public class TemplateController implements TemplateApi {
 	public ResponseEntity<GovioTemplate> readTemplate(Long id) {
 		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		
-		var template = this.templateRepo.findById(id)
-				.orElseThrow( () -> new ResourceNotFoundException(templateMessages.idNotFound(id)));
+		var template = this.templateRepo.findById(id).orElse(null);
+		
+		if (template == null) {
+				throw new ResourceNotFoundException(templateMessages.idNotFound(id));
+		}
 		
 		return ResponseEntity.ok(this.templateAssembler.toModel(template));
 	}
