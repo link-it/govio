@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -40,7 +41,13 @@ public abstract class GovioMessageAbstractProcessor implements ItemProcessor<Gov
 		case 404:
 			return Status.PROFILE_NOT_EXISTS;
 		case 429:
-			String value = e.getResponseHeaders() != null ? e.getResponseHeaders().getFirst("Retry-After") : null;
+			HttpHeaders responseHeaders = e.getResponseHeaders();
+			String value = null;
+			
+			if(responseHeaders != null) {
+				value = responseHeaders.getFirst("Retry-After");
+			}
+
 			int sleepTime;
 			if (value == null) sleepTime = defaultRetryTimer;
 			else {
