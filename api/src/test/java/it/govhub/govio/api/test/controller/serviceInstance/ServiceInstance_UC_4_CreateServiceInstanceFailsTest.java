@@ -312,7 +312,7 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.andReturn();
 	}
 	
-//	@Test
+	@Test
 	void UC_4_08_CreateServiceInstance_MissingApiKey() throws Exception {
 		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
