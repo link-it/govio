@@ -22,7 +22,7 @@ import it.govhub.govio.api.web.TemplateController;
 @Component
 public class TemplatePlaceholderAssembler extends RepresentationModelAssemblerSupport<GovioTemplatePlaceholderEntity, GovioTemplatePlaceholder> {
 	
-	Logger log = LoggerFactory.getLogger(TemplateAssembler.class);
+	Logger log = LoggerFactory.getLogger(TemplatePlaceholderAssembler.class);
 	
 	@Autowired
 	PlaceholderAssembler placeholderAssembler;
