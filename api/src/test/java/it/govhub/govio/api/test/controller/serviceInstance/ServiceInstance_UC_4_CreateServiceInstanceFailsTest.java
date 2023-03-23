@@ -227,7 +227,7 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.andReturn();
 	}
 	
-	//@Test
+	@Test
 	void UC_4_05_CreateServiceInstance_MissingOrganization() throws Exception {
 		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
@@ -247,16 +247,16 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 		
 	}
 	
-	//@Test
+	@Test
 	void UC_4_06_CreateServiceInstance_MissingService() throws Exception {
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
@@ -276,15 +276,15 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 	}
 	
-	//@Test
+	@Test
 	void UC_4_07_CreateServiceInstance_MissingTemplate() throws Exception {
 		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
@@ -304,9 +304,9 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
@@ -333,9 +333,9 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
