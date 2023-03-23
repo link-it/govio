@@ -19,6 +19,8 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextva
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govio_service_instance_viewer');
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govio_service_instance_editor');
 
+INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govhub_sysadmin');
+
 -- ALTER SEQUENCE SEQ_GOVHUB_ROLES RESTART WITH 4;
 
 -- Organizations
@@ -26,6 +28,11 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextva
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '80015010723', 'Cie org');
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678901', 'Ente Creditore');
 INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678902', 'Ente Creditore 2');
+INSERT INTO public.govhub_organizations (id, tax_code, legal_name) VALUES (nextval('public.seq_govhub_organizations'), '12345678903', 'Ente Creditore 3');
+
+UPDATE public.govhub_organizations SET logo = '0x{0}', logo_media_type = 'image/png' WHERE tax_code = '12345678903';
+UPDATE public.govhub_organizations SET logo_miniature = '0x{0}', logo_miniature_media_type = 'image/png' WHERE tax_code = '12345678903';
+
 
 -- ALTER SEQUENCE SEQ_GOVHUB_ORGANIZATIONS RESTART WITH 3;
 
@@ -41,6 +48,9 @@ INSERT INTO public.govhub_services (id, name, description) VALUES (nextval('publ
 INSERT INTO public.govhub_services (id, name, description) VALUES (nextval('public.seq_govhub_services'), 'Variazione Residenza', 'Richieste di variazione residenza');
 INSERT INTO public.govhub_services (id, name, description) VALUES (nextval('public.seq_govhub_services'), 'Servizi Turistici', 'Portale di riferimento per i turisti');
 
+UPDATE public.govhub_services SET logo = '0x{0}', logo_media_type = 'image/png' WHERE name = 'Servizio Generico';
+UPDATE public.govhub_services SET logo_miniature = '0x{0}', logo_miniature_media_type = 'image/png' WHERE name = 'Servizio Generico';
+
 -- ALTER SEQUENCE SEQ_GOVHUB_SERVICES RESTART WITH 9;
 
 -- Autorizzazioni
@@ -48,6 +58,10 @@ INSERT INTO public.govhub_services (id, name, description) VALUES (nextval('publ
 -- amministratore -> govio_sysadmin
 
 INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='amministratore'), (SELECT id FROM public.govhub_roles WHERE name='govio_sysadmin'));
+
+-- amministratore -> govhub_sysadmin
+
+INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='amministratore'), (SELECT id FROM public.govhub_roles WHERE name='govhub_sysadmin'));
 
 -- user_govio_sender -> govio_sender
 
