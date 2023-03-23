@@ -11,6 +11,7 @@
         "dist/vendors/vendors",
         "dist/vendors"
       ],
+      "@app/*": ["projects/govio-app/src/*"],
       "@env": ["projects/govio-app/src/environments/environment"],
       "@services/*": ["projects/govio-app/src/services/*"]
     },

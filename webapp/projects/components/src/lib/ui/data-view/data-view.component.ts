@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FieldClass } from '../classes/definitions';
-import { FieldType } from '../classes/definitions';
 
 @Component({
   selector: 'ui-data-view',
@@ -32,5 +30,9 @@ export class DataViewComponent implements OnInit {
 
   _sanitizeHtml(html: string) {
     return this.sanitized.bypassSecurityTrustHtml(html)
+  }
+
+  _showEmpty(field: any) {
+    return (!this._data[field.field] && field.hideEmpty) ? false : true;;
   }
 }
