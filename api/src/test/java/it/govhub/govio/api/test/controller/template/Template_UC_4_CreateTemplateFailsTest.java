@@ -285,7 +285,7 @@ class Template_UC_4_CreateTemplateFailsTest {
 		
 	}
 	
-	//@Test
+	@Test
 	void UC_4_10_CreateTemplate_EmptySubject() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", "NuovoTemplate")
@@ -313,7 +313,7 @@ class Template_UC_4_CreateTemplateFailsTest {
 	}
 	
 	
-	//@Test
+	@Test
 	void UC_4_11_CreateTemplate_EmptyBody() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", "NuovoTemplate")
