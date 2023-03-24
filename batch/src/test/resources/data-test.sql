@@ -1,6 +1,6 @@
 -- Servizio di test
 
-INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment) VALUES (1,'Il Comune la informa che il ${duedate.date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment.verbose} presso {at}.','Scadenza CIE ${taxcode}',true,false);
+INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (1,'Il Comune la informa che il ${duedate.date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment.verbose} presso {at}.','Scadenza CIE ${taxcode}',true,false,'Template CIE','Template CIE');
 ALTER SEQUENCE seq_govio_templates RESTART WITH 2;
 
 -- Ai fini del batch i govhub_services non servono
