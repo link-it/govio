@@ -66,3 +66,8 @@ alter table govhub_services add constraint govhub_services_name unique(name);
 alter table govio_template_placeholders 
        add constraint UniqueTemplatePlaceholderPosition unique (id_govio_template, position);
 
+
+-- PATCH 24-03-2023 Template Name not Null
+UPDATE govio_templates SET name = 'Template Demo' WHERE name IS NULL;
+
+ALTER TABLE govio_templates ALTER COLUMN name SET NOT NULL;
