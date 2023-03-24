@@ -13,7 +13,7 @@ public class GovioConfig  implements ApplicationConfig {
 	@Value("${application-id:govio")
 	private String applicationId;
 	
-	public static Set<String> DEFAULT_READ_ORGANIZATION_ROLES = Set.of(
+	public static final Set<String> DEFAULT_READ_ORGANIZATION_ROLES = Set.of(
 
 			GovioRoles.GOVIO_SYSADMIN, 
 			GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, 

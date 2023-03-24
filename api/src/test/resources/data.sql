@@ -75,19 +75,21 @@ INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VA
 
 
 -- inserimento dati per la configurazione di un template per la spedizione di un messaggio
-INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment) VALUES (
+INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment, name) VALUES (
 	nextval('public.seq_govio_templates'),
 	'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
 	'Lorem ipsum dolor sit amet.',
 	false,
-	false);
+	false,
+	'Lorem');
 
-INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment) VALUES (
+INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment, name) VALUES (
 		nextval('public.seq_govio_templates'), 
 		'Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}. Per maggiori informazioni sulle modalità di rinnovo può consultare https://comune.dimostrativo.it.', 
 		'Scadenza CIE n. ${cie.uppercase}', 
 		true, 
-		false);
+		false,
+		'CIE');
 		
 -- INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'appointment','DATE','2100-12-31T12:00');
 -- INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'at','STRING','Ufficio numero 1');
