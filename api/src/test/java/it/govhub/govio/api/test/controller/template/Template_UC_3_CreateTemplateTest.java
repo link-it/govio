@@ -53,7 +53,7 @@ class Template_UC_3_CreateTemplateTest {
 	ServiceInstanceRepository instanceRepo;
 	
 	@Test
-	void UC_3_01_CreateServiceInstanceOk() throws Exception {
+	void UC_3_01_CreateTemplateOk() throws Exception {
 
 		String json = Json.createObjectBuilder()
 				.add("name", "NuovoTemplate")
