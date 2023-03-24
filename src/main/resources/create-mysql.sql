@@ -41,6 +41,9 @@ alter table govio_template_placeholders
    foreign key (id_govio_template) 
    references govio_templates;  
 
+alter table govio_template_placeholders 
+       add constraint UniqueTemplatePlaceholderPosition unique (id_govio_template, position);
+
 CREATE TABLE govio_service_instances
   (
      id                       BIGINT NOT NULL AUTO_INCREMENT,

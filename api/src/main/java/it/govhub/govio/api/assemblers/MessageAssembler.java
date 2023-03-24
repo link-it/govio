@@ -25,6 +25,7 @@ import it.govhub.govio.api.web.MessageController;
 import it.govhub.govio.api.web.ServiceInstanceController;
 import it.govhub.govregistry.readops.api.assemblers.OrganizationAuthItemAssembler;
 import it.govhub.govregistry.readops.api.assemblers.ServiceAuthItemAssembler;
+import it.govhub.govregistry.readops.api.spec.UserApi;
 import it.govhub.govregistry.readops.api.web.ReadUserController;
 
 @Component
@@ -78,7 +79,7 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 							readServiceInstance(src.getGovioServiceInstance().getId())).
 						withRel("service-instance")).
 				add(linkTo(
-							methodOn(ReadUserController.class).
+							methodOn(UserApi.class).
 							readUser(src.getSender().getId())).
 						withRel("sender"));
 		
