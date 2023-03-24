@@ -23,7 +23,7 @@ public abstract class Item<T> {
 	
 	protected void validateValue(String value) throws TemplateValidationException {
 		if(mandatory && (value == null))
-			throw new TemplateValidationException(String.format("Il valore %s è obbligatorio", name));		
+			throw new TemplateValidationException(String.format("Il valore per il placeholder %s è obbligatorio", name));		
 	}
 	
 	public T getValueFromCsv(String[] values) throws TemplateValidationException {
