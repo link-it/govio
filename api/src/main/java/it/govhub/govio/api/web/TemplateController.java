@@ -78,7 +78,6 @@ import it.govhub.security.services.SecurityService;
 
 @V1RestController
 public class TemplateController implements TemplateApi {
-	// TODO: Autorizzazioni
 	
 	@Autowired
 	TemplateRepository templateRepo;
@@ -306,8 +305,10 @@ public class TemplateController implements TemplateApi {
 		
 		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		
-		this.templateRepo.findById(templateId)
-				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(templateId)));
+		var template = this.templateRepo.findById(templateId).orElse(null);
+		if (template == null) {
+				throw new ResourceNotFoundException(this.templateMessages.idNotFound(templateId));
+		}
 		
 		var spec = TemplatePlaceholderFilters.byTemplateId(templateId);
 		
