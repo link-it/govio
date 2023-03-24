@@ -77,7 +77,6 @@
     [infiniteScrollThrottle]="50"
     (scrolled)="__loadMoreData()"
     [scrollWindow]="false">
-    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
 
     <ui-box-message *ngIf="messages.length == 0 && !_spin"
       [size]="64"
@@ -89,15 +88,7 @@
 
     <div class="row">
       <div class="col-12">
-        <!-- <ui-simple-item class="border-bottom" *ngFor="let message of messages"
-          [primaryText]="message.primaryText"
-          [secondaryText]="message.secondaryText"
-          [metadata]="message.metadata"
-          [secondaryMetadata]="message.secondaryMetadata"
-          [hasLink]="true"
-          (simpleClick)="_onEdit($event, message)">
-        </ui-simple-item> -->
-        <ui-item-row class="border-bottom" *ngFor="let message of messages"
+        <ui-item-row class="border-bottom" *ngFor="let message of messages;trackBy: trackByFn;"
           [data]="message"
           [config]="messagesConfig"
           [hasLink]="true"
@@ -105,5 +96,8 @@
         </ui-item-row>
       </div>
     </div>
+
+    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
+
   </section>
 </div>>

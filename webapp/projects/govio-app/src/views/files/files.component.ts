@@ -115,16 +115,9 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
   }
 
   ngOnInit() {
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.configService.getConfig('files').subscribe(
       (config: any) => {
         this.filesConfig = config;
-        this._translateConfig();
       }
     );
   }
@@ -141,21 +134,6 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
 
   ngAfterContentChecked(): void {
     this.desktop = (window.innerWidth >= 992);
-  }
-
-  _translateConfig() {
-    if (this.filesConfig && this.filesConfig.options) {
-      Object.keys(this.filesConfig.options).forEach((key: string) => {
-        if (this.filesConfig.options[key].label) {
-          this.filesConfig.options[key].label = this.translate.instant(this.filesConfig.options[key].label);
-        }
-        if (this.filesConfig.options[key].values) {
-          Object.keys(this.filesConfig.options[key].values).forEach((key2: string) => {
-            this.filesConfig.options[key].values[key2].label = this.translate.instant(this.filesConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _setErrorMessages(error: boolean) {
@@ -189,37 +167,31 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
       aux = { params: this._queryToHttpParams(query) };
     }
 
+    this._spin = true;
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         this.page = response.page;
         this._links = response._links;
 
         if (response.items) {
-          const _itemRow = this.filesConfig.itemRow;
-          const _options = this.filesConfig.options;
           const _list: any = response.items.map((file: any) => {
             const _file = this._prepareFileData(file);
-            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, _file, _options || null);
-            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, _file, _options || null);
             const element = {
               id: file.id,
-              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, _file, _options || null),
-              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, _file, _options || null, ' '),
-              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, _file, _options || null, ' '),
-              editMode: false,
               source: { ..._file }
             };
             return element;
           });
           this.files = (url) ? [...this.files, ..._list] : [..._list];
           this._preventMultiCall = false;
+          this._spin = false;
         }
         Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorMessages(true);
         this._preventMultiCall = false;
+        this._spin = false;
         // Tools.OnError(error);
       }
     });
@@ -344,5 +316,9 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
 
   _resetScroll() {
     Tools.ScrollElement('container-scroller', 0);
+  }
+
+  trackByFn(index: number, item: any): number {
+    return item.id;
   }
 }
