@@ -99,4 +99,8 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFil
 		return ret;
 	}
 	
+	public GovioFile toEmbeddedModel(GovioFileEntity src) {
+		return this.toEmbeddedModel(src, Set.of(EmbedFileEnum.values()));
+	}
+	
 }

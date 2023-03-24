@@ -21,7 +21,7 @@ public class StringItem extends Item<String>{
 		super.validateValue(value);
 		// Se c'e' un pattern ed un valore, controllo che sia compatibile.
 		if(pattern != null && !Pattern.matches(pattern, value)) {
-			throw new TemplateValidationException(String.format("Il valore %s del campo %s non rispetta il pattern %s", value, name, pattern));
+			throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non rispetta il pattern %s", value, name, pattern));
 		}
 		return value;
 	}

@@ -35,4 +35,6 @@ public class PlaceholderFilters {
 			root.get(GovioPlaceholderEntity_.id).in(requestedIds);
 	}
 	
+	
+	private PlaceholderFilters() {}
 }

@@ -16,7 +16,7 @@ public class BooleanItem extends Item<Boolean> {
 	public Boolean getValue(String stringValue) throws TemplateValidationException {
 		super.validateValue(stringValue);
 		if (!stringValue.equalsIgnoreCase("true") && !stringValue.equalsIgnoreCase("false") && !stringValue.isBlank())
-			throw new TemplateValidationException(String.format("Il valore %s del campo %s non è un booleano", stringValue, name));
+			throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non è un booleano", stringValue, name));
 		return Boolean.parseBoolean(stringValue);
 	}
 
