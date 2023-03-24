@@ -1,9 +1,7 @@
 package it.govhub.govio.api.web;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,7 +45,6 @@ import it.govhub.govio.api.beans.GovioPlaceholderList;
 import it.govhub.govio.api.beans.GovioTemplate;
 import it.govhub.govio.api.beans.GovioTemplateList;
 import it.govhub.govio.api.beans.GovioTemplatePlaceholder;
-import it.govhub.govio.api.beans.GovioTemplatePlaceholderUpdateItem;
 import it.govhub.govio.api.beans.GovioTemplatePlaceholderUpdateList;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioPlaceholderEntity;

@@ -1994,7 +1994,7 @@ components:
              example: Spedizione Messaggio CIE
           description:
              type: string
-             pattern: '[\s\S]'
+             pattern: '[\s\S]*'
              maxLength: 9223372036854776000
              example: Segnala la scadenza della proprià C.I.E. 
           subject:
