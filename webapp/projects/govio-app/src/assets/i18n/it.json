@@ -19,6 +19,7 @@
 			"Download": "Scarica",
 			"Entra": "Entra",
 			"Expand": "Espandi",
+			"Export": "Esporta",
 			"Go": "Vai",
 			"Login": "Accedi",
 			"MoreInfo": "Ulteriori informazioni",
@@ -45,6 +46,8 @@
 			"TITLE": {
 				"ContentFile": "Contenuto",
 				"ContentFile_sub": "",
+				"FileMessages": "File messaggi",
+				"FileMessages_sub": "Esporta i messaggi di errore in un file csv",
 				"GeneralInformations": "Informazioni generali",
 				"GeneralInformations_sub": "",
 				"ShowMessages": "Messaggi",

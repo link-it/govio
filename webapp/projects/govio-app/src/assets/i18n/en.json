@@ -19,6 +19,7 @@
 			"Download": "Download",
 			"Entra": "Enter",
 			"Expand": "Expand",
+			"Export": "Export",
 			"Go": "Go",
 			"Login": "Login",
 			"MoreInfo": "More info",
@@ -45,6 +46,8 @@
 			"TITLE": {
 				"ContentFile": "Content",
 				"ContentFile_sub": "",
+				"FileMessages": "File messages",
+				"FileMessages_sub": "Export error messages to csv file",
 				"GeneralInformations": "General informations",
 				"GeneralInformations_sub": "",
 				"ShowMessages": "Messages",
