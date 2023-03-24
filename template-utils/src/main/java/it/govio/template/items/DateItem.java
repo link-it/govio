@@ -33,7 +33,7 @@ public class DateItem extends Item<LocalDate>{
 				return LocalDate.parse(stringValue);
 			} catch (DateTimeParseException e) {
 				logger.debug("Validazione della data fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore %s del campo %s non presenta una data valida.", stringValue, name));
+				throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non presenta una data valida.", stringValue, name));
 			}
 		}
 		return null;
