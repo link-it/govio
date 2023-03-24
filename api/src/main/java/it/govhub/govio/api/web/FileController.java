@@ -225,7 +225,7 @@ public class FileController implements FileApi {
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 		
-		GovioFile ret = this.fileAssembler.toModel(file);
+		GovioFile ret = this.fileAssembler.toEmbeddedModel(file);
 		return ResponseEntity.ok(	ret);
 	}
 

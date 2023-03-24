@@ -3,6 +3,7 @@ package it.govhub.govio.api.assemblers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,6 @@ import it.govhub.govio.api.web.ServiceInstanceController;
 import it.govhub.govregistry.readops.api.assemblers.OrganizationAuthItemAssembler;
 import it.govhub.govregistry.readops.api.assemblers.ServiceAuthItemAssembler;
 import it.govhub.govregistry.readops.api.spec.UserApi;
-import it.govhub.govregistry.readops.api.web.ReadUserController;
 
 @Component
 public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioMessageEntity, GovioMessage> {
@@ -86,7 +86,7 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 		return ret;
 	}
 
-	public GovioMessage toEmbeddedModel(GovioMessageEntity src, List<EmbedMessageEnum> embed) {
+	public GovioMessage toEmbeddedModel(GovioMessageEntity src, Collection<EmbedMessageEnum> embed) {
 		
 		GovioMessage ret = this.toModel(src);
 		
@@ -105,12 +105,15 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 					break;
 				default:
 					break; 
-				
 				}
 			}
 		}
 		
 		return ret;
+	}
+	
+	public GovioMessage toEmbeddedModel(GovioMessageEntity src) {
+		return this.toEmbeddedModel(src,  Set.of(EmbedMessageEnum.values()));
 	}
 }
 
