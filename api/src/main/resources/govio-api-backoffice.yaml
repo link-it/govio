@@ -1984,6 +1984,7 @@ components:
        type: object
        additionalProperties: false
        required: 
+          - name
           - subject
           - message_body
           - has_payment

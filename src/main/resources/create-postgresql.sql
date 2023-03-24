@@ -19,7 +19,7 @@ CREATE TABLE govio_templates
      has_due_date BOOLEAN NOT NULL,
      has_payment  BOOLEAN NOT NULL,
      message_body VARCHAR(255) NOT NULL,
-     name         VARCHAR(255),
+     name         VARCHAR(255) NOT NULL,
      subject      VARCHAR(255) NOT NULL,
      PRIMARY KEY (id)
   );
