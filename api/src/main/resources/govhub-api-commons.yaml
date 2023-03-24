@@ -1,20 +1,3 @@
-openapi: 3.0.3
-
-info:
-  title: GovHub Commons API - OpenAPI 3.0
-  x-summary: GovHub Commons API
-  description: This API Describes the common beans of the GovHub ecosystem
-  x-api-id: govhub-commons
-  termsOfService: TODO
-  version: 1.0.1
-  contact:
-    name: TODO
-    email: TODO@TODO.it
-
-  license:
-    name: Apache 2.0 ( TODO )
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-
 components:
 
    parameters:
