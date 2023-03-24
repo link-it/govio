@@ -100,7 +100,7 @@ public class FileAssembler  extends RepresentationModelAssemblerSupport<GovioFil
 	}
 	
 	public GovioFile toEmbeddedModel(GovioFileEntity src) {
-		return this.toEmbeddedModel(src, Set.Of(EmbedFileEnum.values()));
+		return this.toEmbeddedModel(src, Set.of(EmbedFileEnum.values()));
 	}
 	
 }
