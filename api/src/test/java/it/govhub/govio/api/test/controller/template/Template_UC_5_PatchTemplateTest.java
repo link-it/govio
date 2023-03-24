@@ -1,4 +1,4 @@
-package it.govhub.govio.api.test.controller.serviceInstance;
+package it.govhub.govio.api.test.controller.template;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,8 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -17,7 +15,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,27 +27,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
-import it.govhub.govio.api.test.utils.GovioFileUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.api.beans.PatchOp.OpEnum;
-import it.govhub.govregistry.commons.entity.OrganizationEntity;
-import it.govhub.govregistry.commons.entity.ServiceEntity;
-import it.govhub.govregistry.readops.api.repository.ReadOrganizationRepository;
-import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-@DisplayName("Test di modifica Service Instance")
+@DisplayName("Test di modifica Template")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
-class ServiceInstance_UC_5_PatchServiceInstanceTest {
+class Template_UC_5_PatchTemplateTest {
 
-	private static final String SERVICE_INSTANCES_BASE_PATH = "/v1/service-instances";
-	private static final String SERVICE_INSTANCES_BASE_PATH_DETAIL_ID = SERVICE_INSTANCES_BASE_PATH + "/{id}";
+	private static final String TEMPLATES_BASE_PATH = "/v1/templates";
+	private static final String TEMPLATES_BASE_PATH_DETAIL_ID = TEMPLATES_BASE_PATH + "/{id}";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -59,45 +50,27 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 
 	@Autowired
-	ReadServiceRepository serviceRepository;
-
-	@Autowired
-	ReadOrganizationRepository organizationRepository;
-
-	@Autowired
 	TemplateRepository templateRepository;
 
 	@Autowired
 	ServiceInstanceRepository instanceRepo;
 
-
-	private ServiceEntity leggiServizioDB(String nome) {
-		List<ServiceEntity> findAll = this.serviceRepository.findAll();
-		return findAll.stream().filter(f -> f.getName().equals(nome)).collect(Collectors.toList()).get(0);
-	}
-
-	private OrganizationEntity leggiEnteDB(String nome) {
-		List<OrganizationEntity> findAll = this.organizationRepository.findAll();
-		return findAll.stream().filter(f -> f.getTaxCode().equals(nome)).collect(Collectors.toList()).get(0);
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = {"/service_id","/organization_id","/template_id"})
-	void UC_5_01_PatchServiceInstance_RefIdNotFound(String patchField) throws Exception {
-		int idUser1 = 10000;
+//	@ParameterizedTest
+//	@ValueSource(strings = {"/description","/subject","/name"})
+	void UC_5_01_PatchTemplate_InvalidValue(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
 				.add("path", patchField)
-				.add("value", idUser1);
+				.add("value", Costanti.STRING_256);
 
 		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
+		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -112,8 +85,8 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"/service_id","/organization_id","/template_id"})
-	void UC_5_02_PatchServiceInstance_RefIdInvalid(String patchField) throws Exception {
+	@ValueSource(strings = {"/has_payment","/has_due_date"})
+	void UC_5_02_PatchTemplate_InvalidBooleanValue(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -126,7 +99,7 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
+		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -141,8 +114,8 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "apiKey", "enabled"})
-	void UC_5_03_PatchServiceInstance_RemoveMandatoryField(String patchField) throws Exception {
+	@ValueSource(strings = {"/subject","/message_body", "has_payment", "has_due_date"})
+	void UC_5_03_PatchTemplate_RemoveMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -155,7 +128,7 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
+		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -170,8 +143,9 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "apiKey", "enabled"})
-	void UC_5_04_PatchServiceInstance_EmptyMandatoryField(String patchField) throws Exception {
+//	@ValueSource(strings = {"/subject","/message_body", "has_payment", "has_due_date"})
+	@ValueSource(strings = { "/has_payment", "/has_due_date"})
+	void UC_5_04_PatchTemplate_EmptyMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -184,7 +158,7 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
+		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -198,110 +172,22 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 		.andReturn();
 	}
 	
-	@Test
-	void UC_5_05_PatchServiceInstance_ServiceId() throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
+	@ParameterizedTest
+	@ValueSource(strings = {"/description","/subject","/name","/message_body"})
+	void UC_5_05_PatchTemplate_StringValuesOk(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
-				.add("path", "/service_id")
-				.add("value", serviceEntity.getId());
+				.add("path", patchField)
+				.add("value", "Updated");
 
 		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType("application/json-patch+json")
-				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isUnprocessableEntity())
-		.andExpect(jsonPath("$.status", is(422)))
-		.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
-		.andExpect(jsonPath("$.type").isString())
-		.andExpect(jsonPath("$.detail").isString())
-		.andReturn();
-	}
-	
-	@Test
-	void UC_5_06_PatchServiceInstance_OrganizationId() throws Exception {
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		int id = 1;
-		
-		JsonObjectBuilder patchOp = Json.createObjectBuilder()
-				.add("op", OpEnum.REPLACE.toString())
-				.add("path", "/organization_id")
-				.add("value", organizationEntity.getId());
-
-		String json = Json.createArrayBuilder()
-				.add(patchOp)
-				.build()
-				.toString();
-
-		this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType("application/json-patch+json")
-				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isUnprocessableEntity())
-		.andExpect(jsonPath("$.status", is(422)))
-		.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
-		.andExpect(jsonPath("$.type").isString())
-		.andExpect(jsonPath("$.detail").isString())
-		.andReturn();
-	}
-	
-	@Test
-	void UC_5_07_PatchServiceInstance_TemplateId() throws Exception {
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(2l).get();
-
-		int id = 1;
-		
-		JsonObjectBuilder patchOp = Json.createObjectBuilder()
-				.add("op", OpEnum.REPLACE.toString())
-				.add("path", "/template_id")
-				.add("value", templateEntity.getId());
-
-		String json = Json.createArrayBuilder()
-				.add(patchOp)
-				.build()
-				.toString();
-
-		this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType("application/json-patch+json")
-				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isUnprocessableEntity())
-		.andExpect(jsonPath("$.status", is(422)))
-		.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
-		.andExpect(jsonPath("$.type").isString())
-		.andExpect(jsonPath("$.detail").isString())
-		.andReturn();
-	}
-	
-	@Test
-	void UC_5_08_PatchServiceInstance_ApiKey() throws Exception {
-		int id = 1;
-		String apiKey2 = GovioFileUtils.createApiKey();
-		
-		JsonObjectBuilder patchOp = Json.createObjectBuilder()
-				.add("op", OpEnum.REPLACE.toString())
-				.add("path", "/apiKey")
-				.add("value", apiKey2);
-
-		String json = Json.createArrayBuilder()
-				.add(patchOp)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
+		MvcResult result = this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -311,8 +197,38 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 		.andReturn();
 		
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
+		JsonObject item = reader.readObject();
 		
-		assertEquals(apiKey2, si.getString("apiKey"));
+		assertEquals("Updated", item.getString(patchField.substring(1)));
+	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = { "/has_payment", "/has_due_date"})
+	void UC_5_06_PatchTemplate_BooleanValuesOk(String patchField) throws Exception {
+		int id = 1;
+		
+		JsonObjectBuilder patchOp = Json.createObjectBuilder()
+				.add("op", OpEnum.REPLACE.toString())
+				.add("path", patchField)
+				.add("value", false);
+
+		String json = Json.createArrayBuilder()
+				.add(patchOp)
+				.build()
+				.toString();
+
+		MvcResult result = this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType("application/json-patch+json")
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject item = reader.readObject();
+		
+		assertEquals(false, item.getBoolean(patchField.substring(1)));
 	}
 }

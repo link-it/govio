@@ -37,7 +37,7 @@ public class DateTimeItem extends Item<LocalDateTime> {
 				return LocalDateTime.parse(stringValue);
 			} catch (DateTimeParseException e) {
 				logger.debug("Validazione della data con ora fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore %s del campo %s non presenta una data con ora valida.", stringValue, name));
+				throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non presenta una data con ora valida.", stringValue, name));
 			}
 		}
 		return null;

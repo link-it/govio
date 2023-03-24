@@ -123,4 +123,63 @@ class ServiceInstance_UC_3_CreateServiceInstanceTest {
 		assertEquals(templateEntity.getId(), govioServiceInstanceEntity.getTemplate().getId());
 	}
 	
+	@Test
+	void UC_3_02_CreateServiceInstance_Conflict() throws Exception {
+		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
+		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
+		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
+		
+		String apiKey = GovioFileUtils.createApiKey();
+		String json = Json.createObjectBuilder()
+				.add("service_id", serviceEntity.getId())
+				.add("organization_id", organizationEntity.getId())
+				.add("template_id", templateEntity.getId())
+				.add("apiKey", apiKey)
+				.add("enabled", true)
+				.build()
+				.toString();
+		
+		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").isNumber())
+				.andExpect(jsonPath("$.apiKey", is(apiKey)))
+				.andExpect(jsonPath("$.enabled", is(true)))
+				.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject si = reader.readObject();
+		int id = si.getInt("id");
+		
+		assertEquals(si.getInt("organization_id"), organizationEntity.getId());
+		assertEquals(si.getInt("service_id"), serviceEntity.getId());
+		assertEquals(si.getInt("template_id"), templateEntity.getId());
+		
+		GovioServiceInstanceEntity govioServiceInstanceEntity = this.instanceRepo.findById((long) id).get();
+		
+		assertEquals(id, govioServiceInstanceEntity.getId());
+		assertEquals(si.getString("apiKey"), govioServiceInstanceEntity.getApiKey());
+		assertEquals(si.getBoolean("enabled"), govioServiceInstanceEntity.getEnabled());
+		assertEquals(organizationEntity.getId(), govioServiceInstanceEntity.getOrganization().getId());
+		assertEquals(serviceEntity.getId(), govioServiceInstanceEntity.getService().getId());
+		assertEquals(templateEntity.getId(), govioServiceInstanceEntity.getTemplate().getId());
+		
+		this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.status", is(409)))
+				.andExpect(jsonPath("$.title", is("Conflict")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+	}
+	
 }

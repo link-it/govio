@@ -134,7 +134,7 @@ public class MessageController implements MessageApi {
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 
-		return ResponseEntity.ok(this.messageAssembler.toModel(message));
+		return ResponseEntity.ok(this.messageAssembler.toEmbeddedModel(message));
 	}
 	
     
