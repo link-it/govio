@@ -7,8 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -29,15 +27,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.beans.EmbedServiceInstanceEnum;
-import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
-import it.govhub.govregistry.commons.entity.OrganizationEntity;
-import it.govhub.govregistry.commons.entity.ServiceEntity;
-import it.govhub.govregistry.readops.api.repository.ReadOrganizationRepository;
-import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
@@ -55,24 +47,8 @@ class Template_UC_1_FindTemplatesTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Autowired
-	ReadServiceRepository serviceRepository;
-	
-	@Autowired
-	ReadOrganizationRepository organizationRepository;
-	
-	@Autowired
 	TemplateRepository templateRepository;
 	
-	private OrganizationEntity leggiEnteDB(String nome) {
-		List<OrganizationEntity> findAll = this.organizationRepository.findAll();
-		return findAll.stream().filter(f -> f.getTaxCode().equals(nome)).collect(Collectors.toList()).get(0);
-	}
-	
-	private ServiceEntity leggiServizioDB(String nome) {
-		List<ServiceEntity> findAll = this.serviceRepository.findAll();
-		return findAll.stream().filter(f -> f.getName().equals(nome)).collect(Collectors.toList()).get(0);
-	}
-
 	@Test
 	void UC_4_01_FindAllOk() throws Exception {
 		MvcResult result = this.mockMvc.perform(get(TEMPLATES_BASE_PATH)
