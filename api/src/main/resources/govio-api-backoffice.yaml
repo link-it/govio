@@ -431,6 +431,7 @@ paths:
       parameters:
          - $ref: '#/components/parameters/service_instance_id_query'
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
@@ -744,6 +745,7 @@ paths:
          clients can send messages to the IO service using the service instance.
       operationId: createServiceInstance
       requestBody:
+        required: true
         content:
           application/json:
              schema:
