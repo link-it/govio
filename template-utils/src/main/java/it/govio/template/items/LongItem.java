@@ -31,7 +31,7 @@ public class LongItem extends Item<Long>{
 				return Long.parseLong(stringValue);
 			} catch (NumberFormatException e) {
 				logger.debug("Validazione del numero fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore %s del campo %s non presenta un numero valido.", stringValue, name));
+				throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non presenta un numero valido.", stringValue, name));
 			}
 		}
 		return null;
