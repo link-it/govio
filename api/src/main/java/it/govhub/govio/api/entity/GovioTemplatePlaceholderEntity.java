@@ -1,6 +1,8 @@
 package it.govhub.govio.api.entity;
 
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -33,8 +35,10 @@ import lombok.Setter;
 		uniqueConstraints = {
 				   @UniqueConstraint(name = "UniqueTemplatePlaceholderPosition", columnNames = {"id_govio_template", "position"})
 				})
-public class GovioTemplatePlaceholderEntity {
+public class GovioTemplatePlaceholderEntity implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	@EqualsAndHashCode.Include
 	@EmbeddedId
 	private GovioTemplatePlaceholderKey id;

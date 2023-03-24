@@ -31,8 +31,6 @@ import it.govhub.govregistry.readops.api.repository.ReadOrganizationRepository;
 import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 import it.govhub.govregistry.readops.api.spec.OrganizationApi;
 import it.govhub.govregistry.readops.api.spec.ServiceApi;
-import it.govhub.govregistry.readops.api.web.ReadOrganizationController;
-import it.govhub.govregistry.readops.api.web.ReadServiceController;
 
 @Component
 public class ServiceInstanceAssembler extends RepresentationModelAssemblerSupport<GovioServiceInstanceEntity, GovioServiceInstance>{
@@ -134,7 +132,7 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 		var template = this.templateRepo.findById(src.getTemplateId())
 				.orElseThrow( () -> new SemanticValidationException(templateMessages.idNotFound(src.getTemplateId())));
 		
-		var serviceInstance = GovioServiceInstanceEntity.builder()
+		return GovioServiceInstanceEntity.builder()
 			.apiKey(src.getApiKey())
 			.service(service)
 			.template(template)
@@ -142,7 +140,6 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 			.enabled(src.getEnabled())
 			.build();
 		
-		return serviceInstance;
 	}
 
 }

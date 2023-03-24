@@ -24,7 +24,7 @@ public class BasicTemplateApplier extends TemplateApplier {
 		if(placeholders == null)
 			placeholders = new HashMap<String,String>();
 		if(message.getAmount() != null)
-			placeholders.put(ItemKeys.AMOUNT.toString().toString(), message.getAmount().toString());
+			placeholders.put(ItemKeys.AMOUNT.toString(), message.getAmount().toString());
 		if(message.getDueDate() != null)
 			placeholders.put(ItemKeys.DUEDATE.toString(), message.getDueDate().toString());
 		if(message.getScheduledExpeditionDate() != null)

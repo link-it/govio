@@ -253,9 +253,7 @@ public class FileController implements FileApi {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentLength(file.getSize());
-		ResponseEntity<Resource> ret =   new ResponseEntity<>(fileStream, headers, HttpStatus.OK); 
-		
-		return ret;
+		return new ResponseEntity<>(fileStream, headers, HttpStatus.OK); 
 	}
 
 
@@ -272,7 +270,7 @@ public class FileController implements FileApi {
 		GovioServiceInstanceEntity instance = file.getServiceInstance();
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;;
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 
 		Specification<GovioFileMessageEntity> spec = FileMessageFilters.ofFile(file.getId());
 
