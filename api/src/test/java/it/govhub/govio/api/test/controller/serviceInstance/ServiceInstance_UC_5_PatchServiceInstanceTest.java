@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,7 +45,7 @@ import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @DisplayName("Test di modifica Service Instance")
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
 class ServiceInstance_UC_5_PatchServiceInstanceTest {
 
@@ -86,42 +85,14 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	@ValueSource(strings = {"/service_id","/organization_id","/template_id"})
 	void UC_5_01_PatchServiceInstance_RefIdNotFound(String patchField) throws Exception {
 		int idUser1 = 10000;
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
+		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
 				.add("path", patchField)
 				.add("value", idUser1);
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
@@ -143,42 +114,14 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"/service_id","/organization_id","/template_id"})
 	void UC_5_02_PatchServiceInstance_RefIdInvalid(String patchField) throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
+		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
 				.add("path", patchField)
 				.add("value", "XXXX");
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
@@ -200,42 +143,14 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "apiKey", "enabled"})
 	void UC_5_03_PatchServiceInstance_RemoveMandatoryField(String patchField) throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
+		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REMOVE.toString())
 				.add("path", patchField)
 				.add("value", "");
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
@@ -257,42 +172,14 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "apiKey", "enabled"})
 	void UC_5_04_PatchServiceInstance_EmptyMandatoryField(String patchField) throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
+		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
 				.add("path", patchField)
 				.add("value", "");
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
@@ -314,43 +201,14 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	@Test
 	void UC_5_05_PatchServiceInstance_ServiceId() throws Exception {
 		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
-		
-		serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
+		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
 				.add("path", "/service_id")
 				.add("value", serviceEntity.getId());
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
@@ -371,44 +229,15 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	
 	@Test
 	void UC_5_06_PatchServiceInstance_OrganizationId() throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
-		
-		organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
+		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
 				.add("path", "/organization_id")
 				.add("value", organizationEntity.getId());
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
@@ -429,44 +258,16 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	
 	@Test
 	void UC_5_07_PatchServiceInstance_TemplateId() throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
+		GovioTemplateEntity templateEntity = this.templateRepository.findById(2l).get();
 
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
-		
-		templateEntity = this.templateRepository.findById(2l).get();
+		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
 				.add("path", "/template_id")
 				.add("value", templateEntity.getId());
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
@@ -487,36 +288,7 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	
 	@Test
 	void UC_5_08_PatchServiceInstance_ApiKey() throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
-		
+		int id = 1;
 		String apiKey2 = GovioFileUtils.createApiKey();
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -524,12 +296,12 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 				.add("path", "/apiKey")
 				.add("value", apiKey2);
 
-		json = Json.createArrayBuilder()
+		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
 
-		result = this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
+		MvcResult result = this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -538,8 +310,8 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 		.andExpect(status().isOk())
 		.andReturn();
 		
-		reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		si = reader.readObject();
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject si = reader.readObject();
 		
 		assertEquals(apiKey2, si.getString("apiKey"));
 	}

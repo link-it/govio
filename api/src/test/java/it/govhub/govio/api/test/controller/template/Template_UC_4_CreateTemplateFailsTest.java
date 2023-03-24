@@ -1,19 +1,12 @@
 package it.govhub.govio.api.test.controller.template;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,20 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
-import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
-import it.govhub.govio.api.test.utils.GovioFileUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
-import it.govhub.govregistry.commons.entity.OrganizationEntity;
-import it.govhub.govregistry.commons.entity.ServiceEntity;
-import it.govhub.govregistry.readops.api.repository.ReadOrganizationRepository;
-import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
@@ -53,12 +38,6 @@ class Template_UC_4_CreateTemplateFailsTest {
 
 	@Autowired
 	private UserAuthProfilesUtils userAuthProfilesUtils;
-	
-	@Autowired
-	ReadServiceRepository serviceRepository;
-	
-	@Autowired
-	ReadOrganizationRepository organizationRepository;
 	
 	@Autowired
 	TemplateRepository templateRepository;
