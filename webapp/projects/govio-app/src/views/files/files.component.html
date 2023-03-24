@@ -94,15 +94,7 @@
 
       <div class="row">
         <div class="col-12">
-          <!-- <ui-simple-item class="border-bottom" *ngFor="let file of files"
-            [primaryText]="file.primaryText"
-            [secondaryText]="file.secondaryText"
-            [metadata]="file.metadata"
-            [secondaryMetadata]="file.secondaryMetadata"
-            [hasLink]="true"
-            (simpleClick)="_onEdit($event, file)">
-          </ui-simple-item> -->
-          <ui-item-row class="border-bottom" *ngFor="let file of files"
+          <ui-item-row class="border-bottom" *ngFor="let file of files;trackBy: trackByFn;"
             [data]="file"
             [config]="filesConfig"
             [hasLink]="true"

@@ -192,7 +192,8 @@ export class TemplateDetailsComponent implements OnInit, OnChanges, AfterContent
         this._initBreadcrumb();
         this._isEdit = false;
         this._isNew = false;
-        this.save.emit({ id: this.id, payment: response, update: false });
+        this.save.emit({ id: this.id, template: response, update: false });
+        this.router.navigate([this.model, this.template.id], { replaceUrl: true });
       },
       (error: any) => {
         this._error = true;
@@ -225,7 +226,7 @@ export class TemplateDetailsComponent implements OnInit, OnChanges, AfterContent
           this.template = new Template({ ...response });
           this._template = new Template({ ...response });
           this.id = this.template.id;
-          this.save.emit({ id: this.id, payment: response, update: true });
+          this.save.emit({ id: this.id, template: response, update: true });
         },
         (error: any) => {
           this._error = true;
