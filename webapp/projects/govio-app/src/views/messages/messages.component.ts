@@ -5,7 +5,7 @@ import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
@@ -104,20 +104,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // language
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.configService.getConfig('messages').subscribe(
       (config: any) => {
         this.messagesConfig = config;
-        this._translateConfig();
       }
     );
   }
@@ -134,21 +123,6 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
   ngAfterContentChecked(): void {
     this.desktop = (window.innerWidth >= 992);
-  }
-
-  _translateConfig() {
-    if (this.messagesConfig && this.messagesConfig.options) {
-      Object.keys(this.messagesConfig.options).forEach((key: string) => {
-        if (this.messagesConfig.options[key].label) {
-          this.messagesConfig.options[key].label = this.translate.instant(this.messagesConfig.options[key].label);
-        }
-        if (this.messagesConfig.options[key].values) {
-          Object.keys(this.messagesConfig.options[key].values).forEach((key2: string) => {
-            this.messagesConfig.options[key].values[key2].label = this.translate.instant(this.messagesConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _setErrorMessages(error: boolean) {
@@ -183,37 +157,31 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
       aux = { params: this._queryToHttpParams(query) };
     }
 
+    this._spin = true;
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         this.page = response.page;
         this._links = response._links;
 
         if (response.items) {
-          const _itemRow = this.messagesConfig.itemRow;
-          const _options = this.messagesConfig.options;
           const _list: any = response.items.map((message: any) => {
             const _message: any = this.__prepareMessageData(message);
-            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, _message, _options || null);
-            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, _message, _options || null);
             const element = {
               id: _message.id,
-              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, _message, _options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, _message, _options || null, ' '),
-              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, _message, _options || null, ' '),
-              editMode: false,
               source: { ..._message }
             };
             return element;
           });
           this.messages = (url) ? [...this.messages, ..._list] : [..._list];
           this._preventMultiCall = false;
+          this._spin = false;
         }
         Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorMessages(true);
         this._preventMultiCall = false;
+        this._spin = false;
         // Tools.OnError(error);
       }
     });
@@ -356,5 +324,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
   _resetScroll() {
     Tools.ScrollElement('container-scroller', 0);
+  }
+
+  trackByFn(index: number, item: any): number {
+    return item.id;
   }
 }

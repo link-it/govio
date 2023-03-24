@@ -108,7 +108,6 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
     this.configService.getConfig(this.model).subscribe(
       (config: any) => {
         this.servicesConfig = config;
-        this._translateConfig();
         this._loadServices();
       }
     );
@@ -120,21 +119,6 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
 
   ngAfterContentChecked(): void {
     this.desktop = (window.innerWidth >= 992);
-  }
-
-  _translateConfig() {
-    if (this.servicesConfig && this.servicesConfig.options) {
-      Object.keys(this.servicesConfig.options).forEach((key: string) => {
-        if (this.servicesConfig.options[key].label) {
-          this.servicesConfig.options[key].label = this.translate.instant(this.servicesConfig.options[key].label);
-        }
-        if (this.servicesConfig.options[key].values) {
-          Object.keys(this.servicesConfig.options[key].values).forEach((key2: string) => {
-            this.servicesConfig.options[key].values[key2].label = this.translate.instant(this.servicesConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _setErrorMessages(error: boolean) {
@@ -175,19 +159,10 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
           this._links = response._links;
 
           if (response.items) {
-            const _itemRow = this.servicesConfig.itemRow;
-            const _options = this.servicesConfig.options;
-              const _list: any = response.items.map((service: any) => {
+            const _list: any = response.items.map((service: any) => {
               const _service: any = this.__prepareServiceData(service);
-              const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, _service, _options || null);
-              const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, _service, _options || null);
               const element = {
                 id: _service.id,
-                primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, _service, _options || null),
-                secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, _service, _options || null),
-                metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-                secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, _service, _options || null),
-                editMode: false,
                 groupName: _service.organization.legal_name,
                 group: _service.organization,
                 showGroup: (_service.organization.legal_name !== this.groupName) || (this.groupName === ''),
@@ -340,4 +315,8 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
     }
     return `url(${logoUrl})`;
   };
+
+  trackByFn(index: number, item: any): number {
+    return item.id;
+  }
 }

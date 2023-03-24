@@ -78,15 +78,7 @@
       </ui-box-message>
 
       <div class="col-12">
-        <!-- <ui-simple-item class="border-bottom" *ngFor="let service of services"
-          [primaryText]="service.primaryText"
-          [secondaryText]="service.secondaryText"
-          [metadata]="service.metadata"
-          [secondaryMetadata]="service.secondaryMetadata"
-          [hasLink]="true"
-          (simpleClick)="_onEdit($event, service)">
-        </ui-simple-item> -->
-        <ng-container *ngFor="let service of services">
+        <ng-container *ngFor="let service of services;trackBy: trackByFn;">
           <div class="group">
             <!-- <ng-container *ngIf="service.showGroup">
               <div class="border-bottom ps-3 py-3 row-content-block border-top-0 sticky-top">
