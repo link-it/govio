@@ -48,7 +48,7 @@ class Template_UC_2_GetTemplateTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Test
-	void UC_5_01_GetUserOk() throws Exception {
+	void UC_5_01_GetTemplateOk() throws Exception {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 		long idService1 = templateEntity.getId();
@@ -70,7 +70,7 @@ class Template_UC_2_GetTemplateTest {
 	}
 	
 	@Test
-	void UC_5_02_GetUser_NotFound() throws Exception {
+	void UC_5_02_GetTemplate_NotFound() throws Exception {
 		int idService1 = 10000;
 		
 		this.mockMvc.perform(get(TEMPLATES_BASE_PATH_DETAIL_ID,idService1)
@@ -85,7 +85,7 @@ class Template_UC_2_GetTemplateTest {
 	}
 	
 	@Test	
-	void UC_5_03_GetUser_InvalidId() throws Exception {
+	void UC_5_03_GetTemplate_InvalidId() throws Exception {
 		String idService1 = "XXX";
 		
 		this.mockMvc.perform(get(TEMPLATES_BASE_PATH_DETAIL_ID,idService1)
