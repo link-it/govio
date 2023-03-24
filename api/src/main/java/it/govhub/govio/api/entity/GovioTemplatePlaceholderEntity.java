@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,7 +28,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "govio_template_placeholders")
+@Table(
+		name = "govio_template_placeholders",
+		uniqueConstraints = {
+				   @UniqueConstraint(name = "UniqueTemplatePlaceholderPosition", columnNames = {"id_govio_template", "position"})
+				})
 public class GovioTemplatePlaceholderEntity {
 	
 	@EqualsAndHashCode.Include
