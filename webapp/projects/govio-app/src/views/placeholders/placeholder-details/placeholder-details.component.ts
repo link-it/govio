@@ -194,7 +194,8 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
         this._initBreadcrumb();
         this._isEdit = false;
         this._isNew = false;
-        this.save.emit({ id: this.id, payment: response, update: false });
+        this.save.emit({ id: this.id, placeholder: response, update: false });
+        this.router.navigate([this.model, this.placeholder.id], { replaceUrl: true });
       },
       (error: any) => {
         this._error = true;

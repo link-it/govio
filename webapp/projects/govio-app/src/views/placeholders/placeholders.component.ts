@@ -109,7 +109,6 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
     this.configService.getConfig('placeholders').subscribe(
       (config: any) => {
         this.placeholdersConfig = config;
-        this._translateConfig();
       }
     );
   }
@@ -126,21 +125,6 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
 
   ngAfterContentChecked(): void {
     this.desktop = (window.innerWidth >= 992);
-  }
-
-  _translateConfig() {
-    if (this.placeholdersConfig && this.placeholdersConfig.options) {
-      Object.keys(this.placeholdersConfig.options).forEach((key: string) => {
-        if (this.placeholdersConfig.options[key].label) {
-          this.placeholdersConfig.options[key].label = this.translate.instant(this.placeholdersConfig.options[key].label);
-        }
-        if (this.placeholdersConfig.options[key].values) {
-          Object.keys(this.placeholdersConfig.options[key].values).forEach((key2: string) => {
-            this.placeholdersConfig.options[key].values[key2].label = this.translate.instant(this.placeholdersConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _setErrorPlaceholders(error: boolean) {
@@ -176,15 +160,8 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
 
         if (response.items) {
           const _list: any = response.items.map((placeholder: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.metadata.text, placeholder, this.placeholdersConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.metadata.label, placeholder, this.placeholdersConfig.options || null);
             const element = {
               id: placeholder.id,
-              primaryText: Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.primaryText, placeholder, this.placeholdersConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.secondaryText, placeholder, this.placeholdersConfig.options || null, ' '),
-              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.secondaryMetadata, placeholder, this.placeholdersConfig.options || null, ' '),
-              editMode: false,
               source: { ...placeholder }
             };
             return element;
@@ -289,5 +266,9 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
 
   _resetScroll() {
     Tools.ScrollElement('container-scroller', 0);
+  }
+
+  trackByFn(index: number, item: any): number {
+    return item.id;
   }
 }
