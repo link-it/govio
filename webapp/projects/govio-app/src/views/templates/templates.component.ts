@@ -109,7 +109,6 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
     this.configService.getConfig('templates').subscribe(
       (config: any) => {
         this.templatesConfig = config;
-        this._translateConfig();
       }
     );
   }
@@ -126,21 +125,6 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
 
   ngAfterContentChecked(): void {
     this.desktop = (window.innerWidth >= 992);
-  }
-
-  _translateConfig() {
-    if (this.templatesConfig && this.templatesConfig.options) {
-      Object.keys(this.templatesConfig.options).forEach((key: string) => {
-        if (this.templatesConfig.options[key].label) {
-          this.templatesConfig.options[key].label = this.translate.instant(this.templatesConfig.options[key].label);
-        }
-        if (this.templatesConfig.options[key].values) {
-          Object.keys(this.templatesConfig.options[key].values).forEach((key2: string) => {
-            this.templatesConfig.options[key].values[key2].label = this.translate.instant(this.templatesConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _setErrorTemplates(error: boolean) {
@@ -176,17 +160,9 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
         this._links = response._links;
 
         if (response.items) {
-          const _itemRow = this.templatesConfig.itemRow;
           const _list: any = response.items.map((template: any) => {
-            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, template, this.templatesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, template, this.templatesConfig.options || null);
             const element = {
               id: template.id,
-              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, template, this.templatesConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, template, this.templatesConfig.options || null, ' '),
-              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, template, this.templatesConfig.options || null, ' '),
-              editMode: false,
               source: { ...template }
             };
             return element;
