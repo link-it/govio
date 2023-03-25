@@ -141,8 +141,8 @@ export class SearchBarFormComponent implements OnInit, OnChanges, AfterViewInit 
       const _oldValues = this._currentValues;
       this._currentValues = this.formGroup.value;
       this._tokens = this.__createTokens();
+      this.onSearch.emit(this._currentValues);
       if (_oldValues !== this._currentValues) {
-        this.onSearch.emit(this._currentValues);
         if (!this.__isEmptyValues(this._currentValues) && save) {
           this._addHistory(this._currentValues);
           this._history = this._getHistory();
