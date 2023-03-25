@@ -431,6 +431,7 @@ paths:
       parameters:
          - $ref: '#/components/parameters/service_instance_id_query'
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
@@ -744,6 +745,7 @@ paths:
          clients can send messages to the IO service using the service instance.
       operationId: createServiceInstance
       requestBody:
+        required: true
         content:
           application/json:
              schema:
@@ -1825,7 +1827,7 @@ components:
             status_detail:
               maxLength: 2000000
               minLength: 0
-              pattern: .*
+              pattern: '[\s\S]*'
               type: string
             appio_message_id:
               maxLength: 1024
@@ -1952,7 +1954,7 @@ components:
              example: Numero carta d'identità elettronica.
           example:
              type: string
-             pattern: .*
+             pattern: '[\s\S]*'
              maxLength:  9223372036854776000
              example: CA000000AA
           pattern:
@@ -1982,6 +1984,7 @@ components:
        type: object
        additionalProperties: false
        required: 
+          - name
           - subject
           - message_body
           - has_payment
@@ -1994,17 +1997,17 @@ components:
              example: Spedizione Messaggio CIE
           description:
              type: string
-             pattern: .*
+             pattern: '[\s\S]*'
              maxLength: 9223372036854776000
              example: Segnala la scadenza della proprià C.I.E. 
           subject:
              type: string
-             pattern: .*
+             pattern: .+
              maxLength: 9223372036854776000
              example: Scadenza CIE n. ${cie.uppercase}
           message_body:
              type: string
-             pattern: '[\s\S]*'
+             pattern: '[\s\S]+'
              maxLength: 9223372036854776000
              example: Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}.             
           has_payment:
@@ -2259,7 +2262,7 @@ components:
         full_name:
           type: string
           maxLength: 255
-          pattern: ^.*$
+          pattern: .*
           example: Antonio Giscardi
       required:
         - id
@@ -2273,6 +2276,7 @@ components:
          - service_id
          - organization_id
          - template_id
+         - apiKey
       properties:
         service_id:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
@@ -2406,13 +2410,13 @@ components:
           example: 1
         line_record:
           type: string
-          pattern: .*
+          pattern: '[\s\S]*'
           maxLength: 20000000
         message:
           $ref: '#/components/schemas/GovioMessageItem'
         error:
            type: string
-           pattern: .*
+           pattern: '[\s\S]*'
            maxLength: 20000000 
         status:
           $ref: '#/components/schemas/FileMessageStatusEnum'
@@ -2482,7 +2486,7 @@ components:
            example: cie
          value:
            type: string
-           pattern: .*
+           pattern: '[\s\S]*'
            maxLength: 2000000
            description: The Value that will replace the placeholder in the message template.
            example: CA000000AA    
