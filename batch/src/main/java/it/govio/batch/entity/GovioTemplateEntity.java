@@ -32,7 +32,7 @@ public class GovioTemplateEntity  {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_templates")
 	private Long id;
 	
-	@Column(name = "name")
+	@Column(name = "name", nullable = false)
 	private String name;
 	
 	@Column(name = "description")

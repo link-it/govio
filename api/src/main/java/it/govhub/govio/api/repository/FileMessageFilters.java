@@ -50,5 +50,7 @@ public class FileMessageFilters {
 	       public static Sort sortByLineNumber() {
 	               return Sort.by(Direction.ASC, GovioFileMessageEntity_.LINE_NUMBER);
 	       }
+	       
+	       private FileMessageFilters() {}
 
 }

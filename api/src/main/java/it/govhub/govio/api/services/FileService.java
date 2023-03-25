@@ -96,7 +96,7 @@ public class FileService {
     	
     	if (!destDir.isDirectory()) {
     		log.error("Impossibile creare la directory per conservare i files: {}", destDir);
-    		throw new RuntimeException("Non è stato possibile creare la directory per conservare i files");
+    		throw new InternalException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
     	Path destFile =  destPath
@@ -132,15 +132,15 @@ public class FileService {
 		// fileMessages, altrimenti pago altre
 		// N query quando vado a convertire i files
 		
-		Page<GovioFileMessageEntity> fileMessages = this.fileMessageRepo.findAll(spec, pageRequest.pageable);
+		Page<GovioFileMessageEntity> fileList = this.fileMessageRepo.findAll(spec, pageRequest.pageable);
 
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 				.getRequest();
 
-		FileMessageList ret = ListaUtils.buildPaginatedList(fileMessages, pageRequest.limit, curRequest,
+		FileMessageList ret = ListaUtils.buildPaginatedList(fileList, pageRequest.limit, curRequest,
 				new FileMessageList());
 
-		for (GovioFileMessageEntity fileMessage : fileMessages) {
+		for (GovioFileMessageEntity fileMessage : fileList) {
 			ret.addItemsItem(this.fileMessageAssembler.toModel(fileMessage));
 		}
 		

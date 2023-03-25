@@ -1,6 +1,8 @@
 package it.govhub.govio.api.entity;
 
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -10,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,9 +30,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "govio_template_placeholders")
-public class GovioTemplatePlaceholderEntity {
+@Table(
+		name = "govio_template_placeholders",
+		uniqueConstraints = {
+				   @UniqueConstraint(name = "UniqueTemplatePlaceholderPosition", columnNames = {"id_govio_template", "position"})
+				})
+public class GovioTemplatePlaceholderEntity implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	@EqualsAndHashCode.Include
 	@EmbeddedId
 	private GovioTemplatePlaceholderKey id;

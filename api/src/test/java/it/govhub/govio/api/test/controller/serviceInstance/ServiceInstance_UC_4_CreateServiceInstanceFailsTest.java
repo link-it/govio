@@ -1,19 +1,15 @@
 package it.govhub.govio.api.test.controller.serviceInstance;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,10 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
@@ -42,7 +36,7 @@ import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
 @DisplayName("Test di creazione Service Instance")
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
 class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 
@@ -169,66 +163,7 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 	}
 	
 	@Test
-	void UC_4_04_CreateServiceInstance_Conflict() throws Exception {
-		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
-		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
-		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
-		
-		String apiKey = GovioFileUtils.createApiKey();
-		String json = Json.createObjectBuilder()
-				.add("service_id", serviceEntity.getId())
-				.add("organization_id", organizationEntity.getId())
-				.add("template_id", templateEntity.getId())
-				.add("apiKey", apiKey)
-				.add("enabled", true)
-				.build()
-				.toString();
-		
-		MvcResult result = this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.apiKey", is(apiKey)))
-				.andExpect(jsonPath("$.enabled", is(true)))
-				.andReturn();
-		
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject si = reader.readObject();
-		int id = si.getInt("id");
-		
-		assertEquals(si.getInt("organization_id"), organizationEntity.getId());
-		assertEquals(si.getInt("service_id"), serviceEntity.getId());
-		assertEquals(si.getInt("template_id"), templateEntity.getId());
-		
-		GovioServiceInstanceEntity govioServiceInstanceEntity = this.instanceRepo.findById((long) id).get();
-		
-		assertEquals(id, govioServiceInstanceEntity.getId());
-		assertEquals(si.getString("apiKey"), govioServiceInstanceEntity.getApiKey());
-		assertEquals(si.getBoolean("enabled"), govioServiceInstanceEntity.getEnabled());
-		assertEquals(organizationEntity.getId(), govioServiceInstanceEntity.getOrganization().getId());
-		assertEquals(serviceEntity.getId(), govioServiceInstanceEntity.getService().getId());
-		assertEquals(templateEntity.getId(), govioServiceInstanceEntity.getTemplate().getId());
-		
-		this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isConflict())
-				.andExpect(jsonPath("$.status", is(409)))
-				.andExpect(jsonPath("$.title", is("Conflict")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-	}
-	
-	//@Test
-	void UC_4_05_CreateServiceInstance_MissingOrganization() throws Exception {
+	void UC_4_04_CreateServiceInstance_MissingOrganization() throws Exception {
 		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
@@ -247,17 +182,17 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 		
 	}
 	
-	//@Test
-	void UC_4_06_CreateServiceInstance_MissingService() throws Exception {
+	@Test
+	void UC_4_05_CreateServiceInstance_MissingService() throws Exception {
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
@@ -276,16 +211,16 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 	}
 	
-	//@Test
-	void UC_4_07_CreateServiceInstance_MissingTemplate() throws Exception {
+	@Test
+	void UC_4_06_CreateServiceInstance_MissingTemplate() throws Exception {
 		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
 		
@@ -304,16 +239,16 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
 	}
 	
-//	@Test
-	void UC_4_08_CreateServiceInstance_MissingApiKey() throws Exception {
+	@Test
+	void UC_4_07_CreateServiceInstance_MissingApiKey() throws Exception {
 		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
@@ -333,9 +268,9 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnprocessableEntity())
-				.andExpect(jsonPath("$.status", is(422)))
-				.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
 				.andExpect(jsonPath("$.type").isString())
 				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();

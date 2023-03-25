@@ -1,5 +1,7 @@
 package it.govhub.govio.api.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,7 +25,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "govio_placeholders")
-public class GovioPlaceholderEntity {
+public class GovioPlaceholderEntity implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public enum Type { STRING, DATE, DATETIME }
 
