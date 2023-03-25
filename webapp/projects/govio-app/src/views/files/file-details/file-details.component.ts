@@ -330,27 +330,38 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   }
 
   _loadServiceInstance(id: number) {
-    this._spin = true;
-    this._serviceInstance = null;
-    let aux: any = { params: this._queryToHttpParams({ embed: ['organization','service','template'] }) };
-    this.apiService.getDetails('service-instances', id, '', aux).subscribe({
-      next: (response: any) => {
-        this._serviceInstance = response;
-        this._organization = this._serviceInstance._embedded.organization;
-        this._service = this._serviceInstance._embedded.service;
-        this._template = this._serviceInstance._embedded.template;
+    if (this.file && this.file._embedded && this.file._embedded['service-instance']) {
+      this._serviceInstance = this.file._embedded['service-instance'];
+      this._organization = this._serviceInstance._embedded.organization;
+      this._service = this._serviceInstance._embedded.service;
+      this._template = this._serviceInstance._embedded.template;
 
-        this.file.organization = this._organization;
-        this.file.service = this._service;
-        this.file.template = this._template;
-
-        this._spin = false;
-      },
-      error: (error: any) => {
-        this._spin = false;
-        Tools.OnError(error);
-      }
-    });
+      this.file.organization = this._organization;
+      this.file.service = this._service;
+      this.file.template = this._template;
+    } else {
+      this._spin = true;
+      this._serviceInstance = null;
+      let aux: any = { params: this._queryToHttpParams({ embed: ['organization','service','template'] }) };
+      this.apiService.getDetails('service-instances', id, '', aux).subscribe({
+        next: (response: any) => {
+          this._serviceInstance = response;
+          this._organization = this._serviceInstance._embedded.organization;
+          this._service = this._serviceInstance._embedded.service;
+          this._template = this._serviceInstance._embedded.template;
+  
+          this.file.organization = this._organization;
+          this.file.service = this._service;
+          this.file.template = this._template;
+  
+          this._spin = false;
+        },
+        error: (error: any) => {
+          this._spin = false;
+          Tools.OnError(error);
+        }
+      });
+    }
   }
 
   _queryToHttpParams(query: any) : HttpParams {

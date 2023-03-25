@@ -129,7 +129,7 @@
 			"Template": "Template",
 			"Type": "Type",
 			"User": "User",
-			"UserFullName": "User fullname"
+			"UserFullName": "User full name"
 		},
 		"LABEL_HELP": {
 			"All": ""
