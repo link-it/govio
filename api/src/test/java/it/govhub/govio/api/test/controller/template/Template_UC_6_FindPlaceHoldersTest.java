@@ -50,7 +50,7 @@ class Template_UC_6_FindPlaceHoldersTest {
 	TemplateRepository templateRepository;
 	
 	@Test
-	void UC_4_01_FindAllOk() throws Exception {
+	void UC_6_01_FindAllOk() throws Exception {
 		MvcResult result = this.mockMvc.perform(get(PLACEHOLDER_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
@@ -80,7 +80,7 @@ class Template_UC_6_FindPlaceHoldersTest {
 	}
 
 	@Test
-	void UC_4_02_FindAllOk_Limit() throws Exception {
+	void UC_6_02_FindAllOk_Limit() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_LIMIT, "1");
 
@@ -108,7 +108,7 @@ class Template_UC_6_FindPlaceHoldersTest {
 	}
 
 	@Test
-	void UC_4_03_FindAllOk_InvalidLimit() throws Exception {
+	void UC_6_03_FindAllOk_InvalidLimit() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_LIMIT, "XXX");
 
@@ -124,7 +124,7 @@ class Template_UC_6_FindPlaceHoldersTest {
 	}
 
 	@Test
-	void UC_4_04_FindAllOk_Offset() throws Exception {
+	void UC_6_04_FindAllOk_Offset() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_OFFSET, "1");
 
@@ -149,7 +149,7 @@ class Template_UC_6_FindPlaceHoldersTest {
 	}
 
 	@Test
-	void UC_4_05_FindAllOk_InvalidOffset() throws Exception {
+	void UC_6_05_FindAllOk_InvalidOffset() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_OFFSET, "XXX");
 
@@ -165,7 +165,7 @@ class Template_UC_6_FindPlaceHoldersTest {
 	}
 
 	@Test
-	void UC_4_06_FindAllOk_Q() throws Exception {
+	void UC_6_06_FindAllOk_Q() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_Q, "otor");
 
@@ -192,7 +192,7 @@ class Template_UC_6_FindPlaceHoldersTest {
 	}
 
 	@Test
-	void UC_4_07_FindAllOk_OffsetLimit() throws Exception {
+	void UC_6_07_FindAllOk_OffsetLimit() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_OFFSET, "2");
 		params.add(Costanti.USERS_QUERY_PARAM_LIMIT, "2");
