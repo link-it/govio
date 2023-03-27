@@ -421,7 +421,7 @@ class Files_UC_1_UploadFileTest {
 
 	}
 
-	// 11. Upload Fail Invio di un file per un service istance associato ad una organition e service non autorizzati per l'utenza chiamante
+	// 11. Upload Fail Invio di un file per un service istance associato ad una organization e service non autorizzati per l'utenza chiamante
 	@Test
 	void UC_1_12_UploadCsvFileOk_OrganizationNotAuthorized() throws Exception {
 		String fileName = "csv-test-UC111";
