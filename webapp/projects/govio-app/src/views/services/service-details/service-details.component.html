@@ -119,10 +119,10 @@
                   </div>
                   <div class="mt-2" *ngIf="!_isEdit">
                     <div class="d-flex flex-row align-items-center">
-                      <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="organization | mapper: _orgLogoBackground"></div>
-                      <span class="flex-shrink-1 ms-3">{{organization?.legal_name}}</span>
+                      <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="service.organization | mapper: _orgLogoBackground"></div>
+                      <span class="flex-shrink-1 ms-3">{{service.organization?.legal_name}}</span>
                     </div>
-                    <!-- <input type="text" readonly class="form-control-plaintext" id="organization_id" [value]="organization?.legal_name"> -->
+                    <!-- <input type="text" readonly class="form-control-plaintext" id="organization_id" [value]="service.organization?.legal_name"> -->
                   </div>
                 </div>
                 <div class="form-group">
@@ -163,10 +163,10 @@
                   </div>
                   <div class="mt-2" *ngIf="!_isEdit">
                     <div class="d-flex flex-row align-items-center">
-                      <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="rService | mapper: _serviceLogoBackground"></div>
-                      <span class="flex-shrink-1 ms-3">{{rService?.service_name}}</span>
+                      <div class="flex-shrink-0 menu-logo logo-miniature" [style.backgroundImage]="service.service | mapper: _serviceLogoBackground"></div>
+                      <span class="flex-shrink-1 ms-3">{{service.service?.service_name}}</span>
                     </div>
-                    <!-- <input type="text" readonly class="form-control-plaintext" id="service_id" [value]="rService?.service_name"> -->
+                    <!-- <input type="text" readonly class="form-control-plaintext" id="service_id" [value]="service?.service_name"> -->
                   </div>
                 </div>
                 <div class="form-group">
@@ -203,7 +203,7 @@
                     <ui-input-help field="template_id" context="SERVICE"></ui-input-help>
                   </div>
                   <div class="" *ngIf="!_isEdit">
-                    <input type="text" readonly class="form-control-plaintext" id="template_id" [value]="template?.subject">
+                    <input type="text" readonly class="form-control-plaintext" id="template_id" [value]="service.template?.subject">
                   </div>
                 </div>
                 <div class="form-group mt-5">

@@ -327,7 +327,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
         next: (response: any) => {
           this.service = this.__prepareServiceData(response); // new ServiceInstance({ ...response });
           this._service = new ServiceInstance({ ...response });
-          this.loadCurrentData();
+          // this.loadCurrentData();
           this._spin = false;
         },
         error: (error: any) => {
