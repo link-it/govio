@@ -218,7 +218,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
         legal_name: _serviceInstance._embedded.organization.legal_name,
         tax_code: _serviceInstance._embedded.organization.tax_code,
         logo: _serviceInstance._embedded.organization._links?.logo?.href || null,
-        logo_small: _serviceInstance._embedded.organization._links?.logo_small?.href || null
+        logo_small: _serviceInstance._embedded.organization._links['logo-miniature']?.href || null
       },
 
       service: {
