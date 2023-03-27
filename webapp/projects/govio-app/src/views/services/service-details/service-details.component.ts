@@ -352,7 +352,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
         legal_name: service._embedded.organization.legal_name,
         tax_code: service._embedded.organization.tax_code,
         logo: service._embedded.organization._links?.logo?.href || null,
-        logo_small: service._embedded.organization._links?.logo_small?.href || null
+        logo_small: service._embedded.organization._links['logo-miniature']?.href || null
       },
 
       service: {
@@ -360,7 +360,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
         service_name: service._embedded.service.service_name,
         description: service._embedded.service.description,
         logo: service._embedded.service._links?.logo?.href || null,
-        logo_small: service._embedded.service._links?.logo_small?.href || null
+        logo_small: service._embedded.service._links['logo-miniature']?.href || null
       },
 
       template: {

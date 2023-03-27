@@ -99,12 +99,6 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
   }
 
   ngOnInit() {
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.configService.getConfig(this.model).subscribe(
       (config: any) => {
         this.servicesConfig = config;
@@ -149,39 +143,37 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
       aux = { params: this._queryToHttpParams(query) };
     }
 
+    this._spin = true;
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
-        if (response === null) {
-          this._unimplemented = true;
-        } else {
+        this.page = response.page;
+        this._links = response._links;
 
-          this.page = response.page;
-          this._links = response._links;
-
-          if (response.items) {
-            const _list: any = response.items.map((service: any) => {
-              const _service: any = this.__prepareServiceData(service);
-              const element = {
-                id: _service.id,
-                groupName: _service.organization.legal_name,
-                group: _service.organization,
-                showGroup: (_service.organization.legal_name !== this.groupName) || (this.groupName === ''),
-                source: { ..._service }
-              };
-              if (this.groupName !== _service.organization.legal_name) {
-                this.groupName = _service.organization.legal_name;
-              }
-              return element;
-            });
-            this.services = (url) ? [...this.services, ..._list] : [..._list];
-            this._preventMultiCall = false;
-          }
-          Tools.ScrollTo(0);
+        if (response.items) {
+          const _list: any = response.items.map((service: any) => {
+            const _service: any = this.__prepareServiceData(service);
+            const element = {
+              id: _service.id,
+              groupName: _service.organization.legal_name,
+              group: _service.organization,
+              showGroup: (_service.organization.legal_name !== this.groupName) || (this.groupName === ''),
+              source: { ..._service }
+            };
+            if (this.groupName !== _service.organization.legal_name) {
+              this.groupName = _service.organization.legal_name;
+            }
+            return element;
+          });
+          this.services = (url) ? [...this.services, ..._list] : [..._list];
+          this._preventMultiCall = false;
         }
+        this._spin = false;
+        Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorMessages(true);
         this._preventMultiCall = false;
+        this._spin = false;
         // Tools.OnError(error);
       }
     });
@@ -201,7 +193,7 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
         legal_name: service._embedded.organization.legal_name,
         tax_code: service._embedded.organization.tax_code,
         logo: service._embedded.organization._links?.logo?.href || null,
-        logo_small: service._embedded.organization._links?.logo_small?.href || null
+        logo_small: service._embedded.organization._links['logo-miniature']?.href || null
       },
 
       service: {
@@ -310,8 +302,8 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
 
   _orgLogoBackground = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item && item._links && item._links.logo_small) {
-      logoUrl = item._links.logo_small.href;
+    if (item && item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };
