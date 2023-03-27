@@ -107,14 +107,17 @@ INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment
 		false,
 		'CIE', 'Description...');
 		
--- INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'appointment','DATE','2100-12-31T12:00');
--- INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'at','STRING','Ufficio numero 1');
-
 INSERT INTO govio_placeholders(id, name, type, example) VALUES (
 		nextval('public.seq_govio_placeholders'), 
 		'cie', 
 		'STRING', 
 		'CA000000AA');
+		
+INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'appointment','DATE','2100-12-31T12:00');
+INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'at','STRING','Ufficio numero 1');
+INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'indirizzo','STRING','Palazzo Vecchio 1');
+INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'patente','STRING','PAT 43der54');
+INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'motor','STRING','Motorizzazione di Pisa');
 
 -- template Lorem
 -- INSERT INTO govio_template_placeholders(id_govio_template, id_govio_placeholder, mandatory, position) VALUES (1, 1, true, 1);
