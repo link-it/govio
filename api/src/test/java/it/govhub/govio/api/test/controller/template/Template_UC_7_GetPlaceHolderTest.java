@@ -26,9 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioPlaceholderEntity;
-import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.repository.PlaceholderRepository;
-import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 
 @SpringBootTest(classes = Application.class)
@@ -51,7 +49,7 @@ class Template_UC_7_GetPlaceHolderTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Test
-	void UC_5_01_GetTemplateOk() throws Exception {
+	void UC_7_01_GetTemplateOk() throws Exception {
 		GovioPlaceholderEntity placeholderEntity = this.placeholderRepository.findById(1l).get();
 		
 		long idService1 = placeholderEntity.getId();
@@ -74,7 +72,7 @@ class Template_UC_7_GetPlaceHolderTest {
 	}
 	
 	@Test
-	void UC_5_02_GetTemplate_NotFound() throws Exception {
+	void UC_7_02_GetTemplate_NotFound() throws Exception {
 		int idService1 = 10000;
 		
 		this.mockMvc.perform(get(PLACEHOLDERS_BASE_PATH_DETAIL_ID,idService1)
@@ -89,7 +87,7 @@ class Template_UC_7_GetPlaceHolderTest {
 	}
 	
 	@Test	
-	void UC_5_03_GetTemplate_InvalidId() throws Exception {
+	void UC_7_03_GetTemplate_InvalidId() throws Exception {
 		String idService1 = "XXX";
 		
 		this.mockMvc.perform(get(PLACEHOLDERS_BASE_PATH_DETAIL_ID,idService1)

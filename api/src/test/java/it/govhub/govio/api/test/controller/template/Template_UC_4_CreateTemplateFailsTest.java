@@ -19,7 +19,6 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -41,9 +40,6 @@ class Template_UC_4_CreateTemplateFailsTest {
 	
 	@Autowired
 	TemplateRepository templateRepository;
-	
-	@Autowired
-	ServiceInstanceRepository instanceRepo;
 	
 	@Test
 	void UC_4_01_CreateTemplate_InvalidName() throws Exception {
