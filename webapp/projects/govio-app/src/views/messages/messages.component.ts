@@ -75,8 +75,8 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     { field: 'scheduled_expedition_date_from', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
     { field: 'scheduled_expedition_date_to', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
     { field: 'tax_code', label: 'APP.LABEL.TaxCode', type: 'string', condition: 'like' },
-    { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
-    { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
+    { field: 'organization_q', label: 'APP.LABEL.Organization', type: 'string', condition: 'like' },
+    { field: 'service_q', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
   ];
 
   breadcrumbs: any[] = [
@@ -141,8 +141,8 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
       scheduled_expedition_date_from: new UntypedFormControl(''),
       scheduled_expedition_date_to: new UntypedFormControl(''),
       'tax_code': new UntypedFormControl(''),
-      'organization.legal_name': new UntypedFormControl(''),
-      'service.service_name': new UntypedFormControl(''),
+      'organization_q': new UntypedFormControl(''),
+      'service_q': new UntypedFormControl(''),
     });
   }
 
@@ -218,7 +218,7 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
         legal_name: _serviceInstance._embedded.organization.legal_name,
         tax_code: _serviceInstance._embedded.organization.tax_code,
         logo: _serviceInstance._embedded.organization._links?.logo?.href || null,
-        logo_small: _serviceInstance._embedded.organization._links?.logo_small?.href || null
+        logo_small: _serviceInstance._embedded.organization._links['logo-miniature']?.href || null
       },
 
       service: {

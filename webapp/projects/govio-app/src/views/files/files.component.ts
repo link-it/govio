@@ -202,12 +202,12 @@ export class FilesComponent implements OnInit, AfterViewInit, AfterContentChecke
     const _organization: any = {
       ..._serviceInstance._embedded.organization,
       logo: _serviceInstance._embedded.organization._links.logo?.href || null,
-      logo_small: _serviceInstance._embedded.organization._links.logo_small?.href || null
+      logo_small: _serviceInstance._embedded.organization._links['logo-miniature']?.href || null
     }
     const _service: any = {
       ..._serviceInstance._embedded.service,
       logo: _serviceInstance._embedded.service._links.logo?.href || null,
-      logo_small: _serviceInstance._embedded.service._links.logo_small?.href || null
+      logo_small: _serviceInstance._embedded.service._links['logo-miniature']?.href || null
     }
 
     let _file: any = {
