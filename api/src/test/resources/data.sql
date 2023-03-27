@@ -8,6 +8,7 @@ INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (next
 INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'user_govio_viewer', 'Angovio Visore', 'govio_viewer@govio.it', true);
 INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'amministratore', 'Giovadmin', 'sysadmin@govio.it', true);
 INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'ospite', 'Antonio Rossi', 'guest@govio.it', true);
+INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'disabiledUser', 'Mario Rossi', 'utente_disabled@govio.it', false);
 
 -- ALTER SEQUENCE SEQ_GOVHUB_USERS RESTART WITH 4;
 
