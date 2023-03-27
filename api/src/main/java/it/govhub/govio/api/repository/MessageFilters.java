@@ -57,9 +57,11 @@ public class MessageFilters {
 	}
 
 
-	public static Specification<GovioMessageEntity> byTaxCode(String taxCode) {
+	public static Specification<GovioMessageEntity> likeTaxcode(String taxCode) {
 		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
-			cb.equal(root.get(GovioMessageEntity_.taxcode), taxCode);
+			cb.like(
+					cb.lower(root.get(GovioMessageEntity_.taxcode)),
+					"%"+taxCode.toLowerCase()+"%");
 	}
 
 
@@ -106,6 +108,39 @@ public class MessageFilters {
 		}
 	}
 	
+	
+	public static Specification<GovioMessageEntity> likeServiceName(String serviceQ) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+			cb.like(
+					cb.lower(
+							root.get(GovioMessageEntity_.govioServiceInstance)
+							.get(GovioServiceInstanceEntity_.service)
+							.get(ServiceEntity_.name)),
+					"%"+serviceQ.toLowerCase()+"%");
+	}
+
+
+	public static Specification<GovioMessageEntity> likeOrganizationName(String organizationQ) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+		cb.like(
+				cb.lower(
+						root.get(GovioMessageEntity_.govioServiceInstance)
+						.get(GovioServiceInstanceEntity_.organization)
+						.get(OrganizationEntity_.legalName)),
+				"%"+organizationQ.toLowerCase()+"%");
+	}
+
+
+	public static Specification<GovioMessageEntity> likeOrganizationTaxCode(String organizationQ) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+		cb.like(
+				cb.lower(
+						root.get(GovioMessageEntity_.govioServiceInstance)
+						.get(GovioServiceInstanceEntity_.organization)
+						.get(OrganizationEntity_.taxCode)),
+				"%"+organizationQ.toLowerCase()+"%");
+	}
+	
 
 	public static Sort sort(MessageOrdering sort, Direction direction) {
 		
@@ -123,5 +158,8 @@ public class MessageFilters {
 
 	
 	private MessageFilters() { }
+
+
+
 	
 }

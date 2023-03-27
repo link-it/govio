@@ -676,6 +676,8 @@ paths:
         - $ref: '#/components/parameters/tax_code_query'
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
+        - $ref: '#/components/parameters/service_q'
+        - $ref: '#/components/parameters/organization_q'
         - $ref: '#/components/parameters/message_ordering_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
@@ -1541,14 +1543,14 @@ components:
         $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
         
     service_q:
-      name: service
+      name: service_q
       in: query
       required: false
       schema:
         $ref: 'govhub-api-commons.yaml#/components/schemas/GenericSearchString'
         
     organization_q:
-      name: organization
+      name: organization_q
       in: query
       required: false
       schema:
