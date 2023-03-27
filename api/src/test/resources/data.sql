@@ -9,6 +9,7 @@ INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (next
 INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'amministratore', 'Giovadmin', 'sysadmin@govio.it', true);
 INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'ospite', 'Antonio Rossi', 'guest@govio.it', true);
 INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'disabiledUser', 'Mario Rossi', 'utente_disabled@govio.it', false);
+INSERT INTO govhub_users (id, principal, full_name, email, enabled) VALUES (nextval('public.seq_govhub_users'), 'user_govio_sender_si', 'Silvio Innocenti', 'govio_sender_si@govio.it', true);
 
 -- ALTER SEQUENCE SEQ_GOVHUB_USERS RESTART WITH 4;
 
@@ -21,6 +22,8 @@ INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextva
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govio_service_instance_editor');
 
 INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govhub_sysadmin');
+
+-- INSERT INTO public.govhub_roles (id, id_govhub_application, name) VALUES (nextval('public.seq_govhub_roles'), (SELECT id FROM govhub_applications WHERE application_id='govio'), 'govio_sender_si1');
 
 -- ALTER SEQUENCE SEQ_GOVHUB_ROLES RESTART WITH 4;
 
@@ -71,6 +74,18 @@ INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VA
 -- user_govio_viewer -> govio_viewer
 
 INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='user_govio_viewer'), (SELECT id FROM public.govhub_roles WHERE name='govio_viewer'));
+
+-- user_govio_sender_si -> govio_sender_si1
+
+INSERT INTO public.govhub_authorizations (id, id_govhub_user, id_govhub_role) VALUES (nextval('public.seq_govhub_authorizations'), (SELECT id FROM public.govhub_users WHERE principal='user_govio_sender_si'), (SELECT id FROM public.govhub_roles WHERE name='govio_sender'));
+
+
+-- Autorizzazione esplicita su organization e service
+
+INSERT INTO public.govhub_auth_organizations (id_govhub_authorization, id_govhub_organization) VALUES (5, (SELECT id FROM public.govhub_organizations WHERE tax_code='80015010723'));
+
+INSERT INTO public.govhub_auth_services (id_govhub_authorization, id_govhub_service) VALUES (5, (SELECT id FROM public.govhub_services WHERE name='CIE'));
+
 
 -- ALTER SEQUENCE SEQ_GOVHUB_AUTHORIZATIONS RESTART WITH 3;
 
