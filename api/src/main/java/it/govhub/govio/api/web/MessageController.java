@@ -78,6 +78,8 @@ public class MessageController implements MessageApi {
 			String taxCode,
 			Long serviceId,
 			Long organizationId,
+			String serviceQ,
+			String organizationQ,
 			Integer limit,
 			Long offset,
 			List<EmbedMessageEnum> embeds) {
@@ -109,13 +111,19 @@ public class MessageController implements MessageApi {
 			spec = spec.and(MessageFilters.toExpeditionDate(expeditionDateTo));
 		}
 		if (taxCode != null) {
-			spec = spec.and(MessageFilters.byTaxCode(taxCode));
+			spec = spec.and(MessageFilters.likeTaxcode(taxCode));
 		}
 		if (serviceId != null) {
 			spec = spec.and(MessageFilters.byServiceId(serviceId));
 		}
 		if (organizationId != null) {
 			spec = spec.and(MessageFilters.byOrganizationId(organizationId));
+		}
+		if (serviceQ != null) {
+			spec = spec.and(MessageFilters.likeServiceName(serviceQ));
+		}
+		if (organizationQ != null) {
+			spec = spec.and(MessageFilters.likeOrganizationName(organizationQ).or(MessageFilters.likeOrganizationTaxCode(organizationQ))); 
 		}
 		
 		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest, embeds);

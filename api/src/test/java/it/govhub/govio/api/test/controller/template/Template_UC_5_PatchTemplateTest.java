@@ -143,8 +143,8 @@ class Template_UC_5_PatchTemplateTest {
 	}
 	
 	@ParameterizedTest
-//	@ValueSource(strings = {"/subject","/message_body", "has_payment", "has_due_date"})
-	@ValueSource(strings = { "/has_payment", "/has_due_date"})
+	@ValueSource(strings = {"/subject","/message_body", "has_payment", "has_due_date"})
+//	@ValueSource(strings = { "/has_payment", "/has_due_date"})
 	void UC_5_04_PatchTemplate_EmptyMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
