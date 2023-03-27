@@ -327,7 +327,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
         next: (response: any) => {
           this.service = this.__prepareServiceData(response); // new ServiceInstance({ ...response });
           this._service = new ServiceInstance({ ...response });
-          this.loadCurrentData();
+          // this.loadCurrentData();
           this._spin = false;
         },
         error: (error: any) => {
@@ -372,6 +372,15 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
         has_due_date: service._embedded.template.has_due_date
       }
     };
+
+    this.rService = _service.service;
+    this._initServicesSelect([this.rService]);
+
+    this.organization = _service.organization;
+    this._initOrganizationsSelect([this.organization]);
+
+    this.template = _service.template;
+    this._initTemplatesSelect([this.template]);
 
     return _service;
   }
