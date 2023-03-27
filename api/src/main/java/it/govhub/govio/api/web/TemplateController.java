@@ -319,7 +319,6 @@ public class TemplateController implements TemplateApi {
 	
 
 
-	@Transactional
 	@Override
 	public ResponseEntity<GovioListTemplatePlaceholder> listTemplatePlaceholders(Long templateId, List<EmbedPlaceholderEnum> embeds) {
 		
