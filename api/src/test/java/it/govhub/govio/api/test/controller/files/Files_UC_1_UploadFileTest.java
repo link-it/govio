@@ -446,8 +446,43 @@ class Files_UC_1_UploadFileTest {
 				.with(csrf())
 				.accept(MediaType.APPLICATION_JSON)
 				)
-				.andExpect(status().isUnauthorized())
-				.andReturn();
+		.andExpect(status().isUnauthorized())
+		.andReturn();
+
+
+	}
+
+	// Upload Fail Service Instance disabilitato
+	@Test
+	void UC_1_12_UploadCsvFileFail_ServiceInstanceDisabled() throws Exception {
+		String fileName = "csv-test-UC112";
+		byte[] content = FileUtils.readFileToByteArray(new ClassPathResource("csv-test").getFile());
+		String boundary = MultipartUtils.generateBoundary();
+
+		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
+		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_IMU);
+
+		GovioServiceInstanceEntity serviceInstanceEntity = leggiServiceInstanceDB(ente.getId(), servizio.getId());
+
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
+
+		this.mockMvc.perform(
+				multipart(FILES_BASE_PATH)
+				.content(MultipartUtils.createFileContent(content, boundary,  Costanti.TEXT_CSV_CONTENT_TYPE, fileName))
+				.params(params)
+				.contentType("multipart/form-data; boundary=" + boundary)
+				.characterEncoding("UTF-8")
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.accept(MediaType.APPLICATION_JSON)
+				)
+		.andExpect(status().isUnprocessableEntity())
+		.andExpect(jsonPath("$.status", is(422)))
+		.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+		.andExpect(jsonPath("$.type").isString())
+		.andExpect(jsonPath("$.detail").isString())
+		.andReturn();
 
 
 	}

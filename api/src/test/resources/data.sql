@@ -130,12 +130,12 @@ INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organizatio
 		1,
 		'17886617e07d47e8b1ba314f2f1e3052');
 		
-INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template,apikey) VALUES (
+INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template,apikey, enabled) VALUES (
 		nextval('public.seq_govio_service_instances'), 
 		(select id from govhub_services where name='IMU-ImpostaMunicipaleUnica'),
 		(select id from govhub_organizations where tax_code='12345678902'),
 		1,
-		'17886617e07d47e8b1ba314f2f1e3053');
+		'17886617e07d47e8b1ba314f2f1e3053', false);
 
 INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template,apikey) VALUES (
 		nextval('public.seq_govio_service_instances'), 
