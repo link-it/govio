@@ -758,7 +758,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GovioServiceInstance'
+                $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
              self:
                 $ref: "#/components/links/readServiceInstance"
@@ -827,7 +827,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GovioServiceInstance'
+                $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
              upload-file:
                 $ref: "#/components/links/uploadFile"
@@ -868,7 +868,7 @@ paths:
           content:
              application/json:
                 schema:
-                   $ref: '#/components/schemas/GovioServiceInstance'
+                   $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
              self:
                 $ref: "#/components/links/readServiceInstance"
@@ -2270,15 +2270,14 @@ components:
         - id
         - full_name
 
-        
-    GovioServiceInstanceCreate:
+    GovioServiceInstanceData:
       type: object
       additionalProperties: false
       required:
          - service_id
          - organization_id
          - template_id
-         - apiKey
+         - enabled
       properties:
         service_id:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
@@ -2286,57 +2285,110 @@ components:
           $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationId'
         template_id:
           $ref: '#/components/schemas/GovioTemplateId'
-        apiKey:
-           type: string
-           maxLength: 9999999
-           pattern: '[\s\S]*'
         enabled:
            type: boolean
-           default: true                     
-
-
-    GovioServiceInstance:
+           default: true   
+           
+    GovioServiceInstanceCreate:
       allOf:
-         - $ref: '#/components/schemas/GovioServiceInstanceCreate'
-         - type: object
-           additionalProperties: false
-           required:
-              - id
-              - enabled
-           properties:
-              id:
-                 $ref: '#/components/schemas/GovioServiceInstanceId'
-              _links:
-                 type: object
-                 additionalProperties: false
-                 properties:
-                    self:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                    service:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                    organization:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                    template:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"                                                                     
-                 example:
-                    self:
-                       href: "https://govhub.it/govio/service-instances/1"                                   
-                    service:
-                       href: "https://govhub.it/govio/services/1"
-                    organization:
-                       href: "https://govhub.it/govio/organizations/1"
-                    template:
-                       href: "https://govhub.it/govio/templates/1"
-              _embedded:
-                 type: object
-                 additionalProperties: false
-                 properties:
-                    service:
-                      $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
-                    organization:
-                      $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
-                    template:
-                      $ref: '#/components/schemas/GovioTemplate'           
+        - $ref: "#/components/schemas/GovioServiceInstanceData"
+        - type: object
+          additionalProperties: false
+          required:
+           - apiKey
+          properties:
+           apiKey:
+              type: string
+              maxLength: 9999999
+              pattern: '[\s\S]*'
+
+
+    GovioServiceInstanceFull:
+        allOf:
+           - $ref: "#/components/schemas/GovioServiceInstanceCreate" 
+           - type: object
+             additionalProperties: false
+             required:
+                 - id
+             properties:
+                 id:
+                    $ref: '#/components/schemas/GovioServiceInstanceId'                             
+                 _links:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       self:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       service:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       organization:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       template:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"                                                                     
+                    example:
+                       self:
+                          href: "https://govhub.it/govio/service-instances/1"                                   
+                       service:
+                          href: "https://govhub.it/govio/services/1"
+                       organization:
+                          href: "https://govhub.it/govio/organizations/1"
+                       template:
+                          href: "https://govhub.it/govio/templates/1"
+                 _embedded:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       service:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
+                       organization:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
+                       template:
+                         $ref: '#/components/schemas/GovioTemplate'
+                         
+                         
+    GovioServiceInstance:
+        allOf:
+           - $ref: "#/components/schemas/GovioServiceInstanceData" 
+           - type: object
+             additionalProperties: false
+             required:
+                 - id
+             properties:
+                 id:
+                    $ref: '#/components/schemas/GovioServiceInstanceId'                             
+                 _links:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       self:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       service:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       organization:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       template:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"                                                                     
+                    example:
+                       self:
+                          href: "https://govhub.it/govio/service-instances/1"                                   
+                       service:
+                          href: "https://govhub.it/govio/services/1"
+                       organization:
+                          href: "https://govhub.it/govio/organizations/1"
+                       template:
+                          href: "https://govhub.it/govio/templates/1"
+                 _embedded:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       service:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
+                       organization:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
+                       template:
+                         $ref: '#/components/schemas/GovioTemplate'
+                                                  
+                                 
     FileList:
       allOf:
         - $ref: 'govhub-api-commons.yaml#/components/schemas/List'
