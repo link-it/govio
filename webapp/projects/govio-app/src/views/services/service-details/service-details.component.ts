@@ -373,6 +373,15 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
       }
     };
 
+    this.rService = _service.service;
+    this._initServicesSelect([this.rService]);
+
+    this.organization = _service.organization;
+    this._initOrganizationsSelect([this.organization]);
+
+    this.template = _service.template;
+    this._initTemplatesSelect([this.template]);
+
     return _service;
   }
 
