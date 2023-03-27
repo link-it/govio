@@ -68,6 +68,12 @@ alter table govio_template_placeholders
 
 
 -- PATCH 24-03-2023 Template Name not Null
+
 UPDATE govio_templates SET name = 'Template Demo' WHERE name IS NULL;
 
 ALTER TABLE govio_templates ALTER COLUMN name SET NOT NULL;
+
+-- PATCH 27-03-2023 Template Description TEXT
+
+ALTER TABLE govio_templates ALTER COLUMN description TYPE TEXT;
+ALTER TABLE govio_templates ALTER COLUMN message_body TYPE TEXT;

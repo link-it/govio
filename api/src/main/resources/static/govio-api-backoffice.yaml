@@ -1995,7 +1995,7 @@ components:
           name:
              type: string
              pattern: .*
-             maxLength: 9223372036854776000
+             maxLength: 255
              example: Spedizione Messaggio CIE
           description:
              type: string
@@ -2005,7 +2005,7 @@ components:
           subject:
              type: string
              pattern: .+
-             maxLength: 9223372036854776000
+             maxLength: 255
              example: Scadenza CIE n. ${cie.uppercase}
           message_body:
              type: string
