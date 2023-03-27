@@ -46,6 +46,7 @@ public class Costanti {
 	public static final String SERVICE_DESCRIPTION_SERVIZIO_GENERICO = "Esempio di servizio";
 	
 	public static final String SERVICE_NAME_TARI = "TARI";
+	public static final String SERVICE_NAME_CIE = "CIE";
 	
 	public static final String FILES_QUERY_PARAM_CREATION_DATE_FROM = "creation_date_from";
 	public static final String FILES_QUERY_PARAM_CREATION_DATE_TO = "creation_date_to";
