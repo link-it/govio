@@ -67,12 +67,6 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
   }
 
   ngOnInit() {
-    // this.pageloaderService.resetLoader();
-    // this.pageloaderService.isLoading.subscribe({
-    //   next: (x) => { this._spin = x; },
-    //   error: (e: any) => { console.log('loader error', e); }
-    // });
-
     this.route.params.subscribe(params => {
       if (params['id'] && params['id'] !== 'new') {
         this.id = params['id'];
@@ -81,7 +75,6 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
         this.configService.getConfig(this.model).subscribe(
           (config: any) => {
             this.config = config;
-            this._translateConfig();
             this._loadAll();
           }
         );
@@ -116,14 +109,25 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
     if (this.id) {
       this._spin = true;
       this.message = null;
-      let aux: any = { params: this._queryToHttpParams({ embed: ['service-instance'] }) };
+      let aux: any = null; // { params: this._queryToHttpParams({ embed: ['service-instance'] }) };
       this.apiService.getDetails(this.model, this.id, '', aux).subscribe({
         next: (response: any) => {
           this.message = response; // new Message({ ...response });
           this._message = new Message({ ...response });
-          // this.__initInformazioni();
 
-          this._loadSender(this.message.sender_id);
+          this._sender = this.message._embedded.sender;
+
+          this._serviceInstance = this.message._embedded['service-instance'];
+          this._organization = this._serviceInstance._embedded.organization;
+          this._service = this._serviceInstance._embedded.service;
+          this._template = this._serviceInstance._embedded.template;
+  
+          this.message.user = this._sender;
+          this.message.organization = this._organization;
+          this.message.service = this._service;
+          this.message.template = this._template;
+
+          this._spin = false;
         },
         error: (error: any) => {
           this._spin = false;
@@ -147,70 +151,6 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
     });
     
     return httpParams; 
-  }
-
-  _loadSender(id: number) {
-    this._spin = true;
-    this._sender = null;
-    this.apiService.getDetails('users', id).subscribe({
-      next: (response: any) => {
-        this._sender = response;
-        this._loadServiceInstance(this.message.service_instance_id);
-      },
-      error: (error: any) => {
-        this._spin = false;
-        Tools.OnError(error);
-      }
-    });
-  }
-
-  _loadServiceInstance(id: number) {
-    this._spin = true;
-    this._serviceInstance = null;
-    let aux: any = { params: this._queryToHttpParams({ embed: ['organization','service','template'] }) };
-    this.apiService.getDetails('service-instances', id, '', aux).subscribe({
-      next: (response: any) => {
-        this._serviceInstance = response;
-        this._organization = this._serviceInstance._embedded.organization;
-        this._service = this._serviceInstance._embedded.service;
-        this._template = this._serviceInstance._embedded.template;
-
-        this.message.user = this._sender;
-        this.message.organization = this._organization;
-        this.message.service = this._service;
-        this.message.template = this._template;
-
-        this._spin = false;
-      },
-      error: (error: any) => {
-        this._spin = false;
-        Tools.OnError(error);
-      }
-    });
-  }
-
-  __initInformazioni() {
-    if (this.message) {
-      this._informazioni = Tools.generateFields(this.config.details, this.message, true, this.config.options).map((field: FieldClass) => {
-        field.label = this.translate.instant(field.label);
-        return field;
-      });
-    }
-  }
-
-  _translateConfig() {
-    if (this.config && this.config.options) {
-      Object.keys(this.config.options).forEach((key: string) => {
-        if (this.config.options[key].label) {
-          this.config.options[key].label = this.translate.instant(this.config.options[key].label);
-        }
-        if (this.config.options[key].values) {
-          Object.keys(this.config.options[key].values).forEach((key2: string) => {
-            this.config.options[key].values[key2].label = this.translate.instant(this.config.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _initBreadcrumb() {
