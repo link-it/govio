@@ -55,8 +55,8 @@ class Template_UC_5_PatchTemplateTest {
 	@Autowired
 	ServiceInstanceRepository instanceRepo;
 
-//	@ParameterizedTest
-//	@ValueSource(strings = {"/description","/subject","/name"})
+	@ParameterizedTest
+	@ValueSource(strings = {"/subject","/name"})
 	void UC_5_01_PatchTemplate_InvalidValue(String patchField) throws Exception {
 		int id = 1;
 		
@@ -76,9 +76,9 @@ class Template_UC_5_PatchTemplateTest {
 				.content(json)
 				.contentType("application/json-patch+json")
 				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isUnprocessableEntity())
-		.andExpect(jsonPath("$.status", is(422)))
-		.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+		.andExpect(status().isBadRequest())
+		.andExpect(jsonPath("$.status", is(400)))
+		.andExpect(jsonPath("$.title", is("Bad Request")))
 		.andExpect(jsonPath("$.type").isString())
 		.andExpect(jsonPath("$.detail").isString())
 		.andReturn();
@@ -143,8 +143,7 @@ class Template_UC_5_PatchTemplateTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"/subject","/message_body", "has_payment", "has_due_date"})
-//	@ValueSource(strings = { "/has_payment", "/has_due_date"})
+	@ValueSource(strings = {"/subject","/message_body", "/has_payment", "/has_due_date"})
 	void UC_5_04_PatchTemplate_EmptyMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
