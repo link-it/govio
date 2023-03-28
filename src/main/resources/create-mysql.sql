@@ -1,10 +1,10 @@
 CREATE TABLE govio_templates
   (
      id           BIGINT NOT NULL AUTO_INCREMENT,
-     description  VARCHAR(255),
+     description  TEXT,
      has_due_date BOOLEAN NOT NULL,
      has_payment  BOOLEAN NOT NULL,
-     message_body VARCHAR(255) NOT NULL,
+     message_body TEXT NOT NULL,
      name         VARCHAR(255) NOT NULL,
      subject      VARCHAR(255) NOT NULL,
      PRIMARY KEY (id)

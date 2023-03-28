@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -48,9 +47,6 @@ class Template_UC_3_CreateTemplateTest {
 	
 	@Autowired
 	TemplateRepository templateRepository;
-	
-	@Autowired
-	ServiceInstanceRepository instanceRepo;
 	
 	@Test
 	void UC_3_01_CreateTemplateOk() throws Exception {
