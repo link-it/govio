@@ -93,10 +93,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(3, items.size());
-
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", items.getJsonObject(0).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3052", items.getJsonObject(1).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3054", items.getJsonObject(2).getString("apiKey"));
 	}
 
 	@Test
@@ -122,8 +118,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(1, items.size());
-
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", items.getJsonObject(0).getString("apiKey"));
 
 	}
 
@@ -208,7 +202,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(1, items.size());
 
-		assertEquals("17886617e07d47e8b1ba314f2f1e3054", items.getJsonObject(0).getString("apiKey"));
 	}
 
 	// servizio ordina per GovioServiceInstanceEntity_.ORGANIZATION +"."+OrganizationEntity_.LEGAL_NAME, GovioServiceInstanceEntity_.SERVICE + "." + ServiceEntity_.NAME)
@@ -236,9 +229,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(3, items.size());
 
-		assertEquals("17886617e07d47e8b1ba314f2f1e3054", items.getJsonObject(0).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3052", items.getJsonObject(1).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", items.getJsonObject(2).getString("apiKey"));
 	}
 
 	@Test
@@ -265,9 +255,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(3, items.size());
 
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", items.getJsonObject(0).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3052", items.getJsonObject(1).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3054", items.getJsonObject(2).getString("apiKey"));
 	}
 
 	@Test
@@ -295,7 +282,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(1, items.size());
 
-		assertEquals("17886617e07d47e8b1ba314f2f1e3054", items.getJsonObject(0).getString("apiKey"));
 	}
 
 	@Test
@@ -322,9 +308,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(3, items.size());
 
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", items.getJsonObject(0).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3052", items.getJsonObject(1).getString("apiKey"));
-		assertEquals("17886617e07d47e8b1ba314f2f1e3054", items.getJsonObject(2).getString("apiKey"));
 	}
 	
 	@Test
@@ -378,7 +361,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(1, items.size());
 
-		assertEquals("17886617e07d47e8b1ba314f2f1e3052", items.getJsonObject(0).getString("apiKey"));
 	}
 	
 	@Test
@@ -407,7 +389,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonArray items = userList.getJsonArray("items");
 		assertEquals(1, items.size());
 
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", items.getJsonObject(0).getString("apiKey"));
 	}
 	
 	@Test
@@ -490,7 +471,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		assertEquals(3, items.size());
 
 		JsonObject item1 = items.getJsonObject(0);
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", item1.getString("apiKey"));
 		
 		JsonObject embedded = item1.getJsonObject("_embedded");
 		JsonObject service = embedded.getJsonObject("service");
@@ -528,7 +508,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		assertEquals(3, items.size());
 
 		JsonObject item1 = items.getJsonObject(0);
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", item1.getString("apiKey"));
 		
 		JsonObject embedded = item1.getJsonObject("_embedded");
 		JsonObject organization = embedded.getJsonObject("organization");
@@ -564,7 +543,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		assertEquals(3, items.size());
 
 		JsonObject item1 = items.getJsonObject(0);
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", item1.getString("apiKey"));
 		
 		JsonObject embedded = item1.getJsonObject("_embedded");
 		JsonObject template = embedded.getJsonObject("template");
@@ -602,7 +580,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		assertEquals(3, items.size());
 
 		JsonObject item1 = items.getJsonObject(0);
-		assertEquals("17886617e07d47e8b1ba314f2f1e3053", item1.getString("apiKey"));
 		
 		JsonObject embedded = item1.getJsonObject("_embedded");
 		JsonObject template = embedded.getJsonObject("template");

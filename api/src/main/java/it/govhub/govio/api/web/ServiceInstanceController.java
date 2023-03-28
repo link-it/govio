@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ import it.govhub.govio.api.assemblers.ServiceInstanceAssembler;
 import it.govhub.govio.api.beans.EmbedServiceInstanceEnum;
 import it.govhub.govio.api.beans.GovioServiceInstance;
 import it.govhub.govio.api.beans.GovioServiceInstanceCreate;
+import it.govhub.govio.api.beans.GovioServiceInstanceFull;
 import it.govhub.govio.api.beans.GovioServiceInstanceList;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
@@ -160,7 +162,7 @@ public class ServiceInstanceController implements ServiceApi {
 
 	@Override
 	@Transactional
-	public ResponseEntity<GovioServiceInstance> readServiceInstance(Long id) {
+	public ResponseEntity<GovioServiceInstanceFull> readServiceInstance(Long id) {
 		
 		GovioServiceInstanceEntity instance = this.instanceRepo.findById(id)
 			.orElseThrow( () -> new ResourceNotFoundException(this.instanceMessages.idNotFound(id)));
@@ -168,13 +170,18 @@ public class ServiceInstanceController implements ServiceApi {
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER);
 		
-		GovioServiceInstance ret = this.instanceAssembler.toEmbeddedModel(instance, Arrays.asList(EmbedServiceInstanceEnum.values()));
-		return ResponseEntity.ok(ret);
+		GovioServiceInstance instanceRest = this.instanceAssembler.toEmbeddedModel(instance, Arrays.asList(EmbedServiceInstanceEnum.values()));
+		GovioServiceInstanceFull fullInstanceRest = new GovioServiceInstanceFull();
+		
+		BeanUtils.copyProperties(instanceRest, fullInstanceRest);
+		fullInstanceRest.setApiKey(instance.getApiKey());
+		
+		return ResponseEntity.ok(fullInstanceRest);
 	}
 
 	@Transactional
 	@Override
-	public ResponseEntity<GovioServiceInstance> createServiceInstance(GovioServiceInstanceCreate src) {
+	public ResponseEntity<GovioServiceInstanceFull> createServiceInstance(GovioServiceInstanceCreate src) {
 		
 		log.info("Creating new Service Instance: {}", src);
 		
@@ -193,14 +200,18 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		serviceInstance = this.instanceRepo.save(serviceInstance);
 		
-		var ret = this.instanceAssembler.toEmbeddedModel(serviceInstance,  Arrays.asList(EmbedServiceInstanceEnum.values()));
+		GovioServiceInstance instanceRest = this.instanceAssembler.toEmbeddedModel(serviceInstance, Arrays.asList(EmbedServiceInstanceEnum.values()));
+		GovioServiceInstanceFull fullInstanceRest = new GovioServiceInstanceFull();
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(ret);
+		BeanUtils.copyProperties(instanceRest, fullInstanceRest);
+		fullInstanceRest.setApiKey(serviceInstance.getApiKey());
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(fullInstanceRest);
 	}
 	
 	
 	@Override
-	public ResponseEntity<GovioServiceInstance> updateServiceInstance(Long id, List<PatchOp> patchOp) {
+	public ResponseEntity<GovioServiceInstanceFull> updateServiceInstance(Long id, List<PatchOp> patchOp) {
 		
 		// Otteniamo l'oggetto JsonPatch
 		JsonPatch patch = RequestUtils.toJsonPatch(patchOp);
@@ -260,7 +271,13 @@ public class ServiceInstanceController implements ServiceApi {
 		
 		newInstance = this.instanceService.replaceInstance(instance, newInstance);
 		
-		return ResponseEntity.ok(this.instanceAssembler.toModel(newInstance));
+		GovioServiceInstance instanceRest = this.instanceAssembler.toModel(newInstance);		
+		GovioServiceInstanceFull fullInstanceRest = new GovioServiceInstanceFull();
+		
+		BeanUtils.copyProperties(instanceRest, fullInstanceRest);
+		fullInstanceRest.setApiKey(newInstance.getApiKey());
+		
+		return ResponseEntity.ok(fullInstanceRest);
 	}
 
 
