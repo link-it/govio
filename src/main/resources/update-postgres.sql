@@ -77,3 +77,11 @@ ALTER TABLE govio_templates ALTER COLUMN name SET NOT NULL;
 
 ALTER TABLE govio_templates ALTER COLUMN description TYPE TEXT;
 ALTER TABLE govio_templates ALTER COLUMN message_body TYPE TEXT;
+
+
+-- PATCH 28-03-2023 Placeholder Description TEXT
+
+ALTER TABLE govio_placeholders ALTER COLUMN description TYPE TEXT;
+
+UPDATE govhub_users SET full_name = 'Utente Demo' WHERE full_name IS NULL;
+ALTER TABLE govhub_users ALTER column full_name SET NOT NULL;
