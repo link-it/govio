@@ -27,21 +27,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.repository.ServiceInstanceRepository;
-import it.govhub.govio.api.repository.TemplateRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.api.beans.PatchOp.OpEnum;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-@DisplayName("Test di modifica Template")
+@DisplayName("Test di modifica Place Holder")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
-class Template_UC_5_PatchTemplateTest {
+class Template_UC_10_PatchPlaceHolderTest {
 
-	private static final String TEMPLATES_BASE_PATH = "/v1/templates";
-	private static final String TEMPLATES_BASE_PATH_DETAIL_ID = TEMPLATES_BASE_PATH + "/{id}";
+	private static final String PLACEHOLDERS_BASE_PATH = "/v1/placeholders";
+	private static final String PLACEHOLDERS_BASE_PATH_DETAIL_ID = PLACEHOLDERS_BASE_PATH + "/{id}";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -49,15 +47,10 @@ class Template_UC_5_PatchTemplateTest {
 	@Autowired
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 
-	@Autowired
-	TemplateRepository templateRepository;
-
-	@Autowired
-	ServiceInstanceRepository instanceRepo;
-
 	@ParameterizedTest
-	@ValueSource(strings = {"/subject","/name"})
-	void UC_5_01_PatchTemplate_InvalidValue(String patchField) throws Exception {
+//	@ValueSource(strings = {"/example","/name", "/type"})
+	@ValueSource(strings = {"/type"})
+	void UC_10_01_PatchTemplate_InvalidValue(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -70,7 +63,7 @@ class Template_UC_5_PatchTemplateTest {
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
+		this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -85,37 +78,8 @@ class Template_UC_5_PatchTemplateTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"/has_payment","/has_due_date"})
-	void UC_5_02_PatchTemplate_InvalidBooleanValue(String patchField) throws Exception {
-		int id = 1;
-		
-		JsonObjectBuilder patchOp = Json.createObjectBuilder()
-				.add("op", OpEnum.REPLACE.toString())
-				.add("path", patchField)
-				.add("value", "XXXX");
-
-		String json = Json.createArrayBuilder()
-				.add(patchOp)
-				.build()
-				.toString();
-
-		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType("application/json-patch+json")
-				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isBadRequest())
-		.andExpect(jsonPath("$.status", is(400)))
-		.andExpect(jsonPath("$.title", is("Bad Request")))
-		.andExpect(jsonPath("$.type").isString())
-		.andExpect(jsonPath("$.detail").isString())
-		.andReturn();
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = {"/subject","/message_body", "has_payment", "has_due_date"})
-	void UC_5_03_PatchTemplate_RemoveMandatoryField(String patchField) throws Exception {
+	@ValueSource(strings = {"/example","/name", "/type"})
+	void UC_10_02_PatchTemplate_RemoveMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -128,7 +92,7 @@ class Template_UC_5_PatchTemplateTest {
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
+		this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -143,8 +107,9 @@ class Template_UC_5_PatchTemplateTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"/subject","/message_body", "/has_payment", "/has_due_date"})
-	void UC_5_04_PatchTemplate_EmptyMandatoryField(String patchField) throws Exception {
+//	@ValueSource(strings = {"/example","/name", "/type"})
+	@ValueSource(strings = {"/type"})
+	void UC_10_03_PatchTemplate_EmptyMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -157,7 +122,7 @@ class Template_UC_5_PatchTemplateTest {
 				.build()
 				.toString();
 
-		this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
+		this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -172,8 +137,8 @@ class Template_UC_5_PatchTemplateTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"/description","/subject","/name","/message_body"})
-	void UC_5_05_PatchTemplate_StringValuesOk(String patchField) throws Exception {
+	@ValueSource(strings = {"/description","/example","/name"})
+	void UC_10_04_PatchTemplate_StringValuesOk(String patchField) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -186,7 +151,7 @@ class Template_UC_5_PatchTemplateTest {
 				.build()
 				.toString();
 
-		MvcResult result = this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
+		MvcResult result = this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -202,21 +167,21 @@ class Template_UC_5_PatchTemplateTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = { "/has_payment", "/has_due_date"})
-	void UC_5_06_PatchTemplate_BooleanValuesOk(String patchField) throws Exception {
+	@ValueSource(strings = { "STRING", "DATE", "DATETIME"})
+	void UC_10_05_PatchTemplate_TypeValuesOk(String patchValue) throws Exception {
 		int id = 1;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
-				.add("path", patchField)
-				.add("value", false);
+				.add("path", "/type")
+				.add("value", patchValue);
 
 		String json = Json.createArrayBuilder()
 				.add(patchOp)
 				.build()
 				.toString();
 
-		MvcResult result = this.mockMvc.perform(patch(TEMPLATES_BASE_PATH_DETAIL_ID, id)
+		MvcResult result = this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, id)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -228,6 +193,35 @@ class Template_UC_5_PatchTemplateTest {
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
 		JsonObject item = reader.readObject();
 		
-		assertEquals(false, item.getBoolean(patchField.substring(1)));
+		assertEquals(patchValue, item.getString("type"));
+	}
+	
+	@ParameterizedTest
+	@ValueSource(strings = { "XXXX", "1234", "false"})
+	void UC_10_06_PatchTemplate_InvalidTypeValues(String patchValue) throws Exception {
+		int id = 1;
+		
+		JsonObjectBuilder patchOp = Json.createObjectBuilder()
+				.add("op", OpEnum.REPLACE.toString())
+				.add("path", "/type")
+				.add("value", patchValue);
+
+		String json = Json.createArrayBuilder()
+				.add(patchOp)
+				.build()
+				.toString();
+
+		this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, id)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType("application/json-patch+json")
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isBadRequest())
+		.andExpect(jsonPath("$.status", is(400)))
+		.andExpect(jsonPath("$.title", is("Bad Request")))
+		.andExpect(jsonPath("$.type").isString())
+		.andExpect(jsonPath("$.detail").isString())
+		.andReturn();
 	}
 }

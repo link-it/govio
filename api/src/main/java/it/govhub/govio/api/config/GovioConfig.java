@@ -24,7 +24,9 @@ public class GovioConfig  implements ApplicationConfig {
 	public static final Set<String> DEFAULT_READ_SERVICE_ROLES = Set.of(
 			GovioRoles.GOVIO_SYSADMIN, 
 			GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER,
-			GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR	);
+			GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR,
+			GovioRoles.GOVIO_VIEWER, 
+			GovioRoles.GOVIO_SENDER);
 
 	@Override
 	public String getApplicationId() {
