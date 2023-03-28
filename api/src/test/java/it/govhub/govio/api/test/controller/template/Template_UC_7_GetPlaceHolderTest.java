@@ -49,7 +49,7 @@ class Template_UC_7_GetPlaceHolderTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Test
-	void UC_7_01_GetTemplateOk() throws Exception {
+	void UC_7_01_GetPlaceHolderOk() throws Exception {
 		GovioPlaceholderEntity placeholderEntity = this.placeholderRepository.findById(1l).get();
 		
 		long idService1 = placeholderEntity.getId();
@@ -66,7 +66,7 @@ class Template_UC_7_GetPlaceHolderTest {
 		assertEquals(placeholderEntity.getName(), item.getString("name"));
 		assertEquals(placeholderEntity.getType().toString(), item.getString("type"));
 		assertEquals(placeholderEntity.getExample(), item.getString("example"));
-		assertNull(placeholderEntity.getDescription());
+		assertEquals(placeholderEntity.getDescription(), item.getString("description"));
 		assertNull(placeholderEntity.getPattern());
 		
 	}

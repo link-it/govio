@@ -107,11 +107,11 @@ INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment
 		false,
 		'CIE', 'Description...');
 		
-INSERT INTO govio_placeholders(id, name, type, example) VALUES (
+INSERT INTO govio_placeholders(id, name, type, example, description) VALUES (
 		nextval('public.seq_govio_placeholders'), 
 		'cie', 
 		'STRING', 
-		'CA000000AA');
+		'CA000000AA', 'CIE Serial Number');
 		
 INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'appointment','DATE','2100-12-31T12:00');
 INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.seq_govio_placeholders'),'at','STRING','Ufficio numero 1');
