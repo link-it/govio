@@ -88,5 +88,73 @@ class Template_UC_8_CreatePlaceHolderTest {
 		assertEquals(si.getString("type"), govioPlaceholderEntity.getType().toString());
 		assertEquals(si.getString("pattern"), govioPlaceholderEntity.getPattern());
 	}
-	
+
+	@Test
+	void UC_8_02_CreatePlaceHolderOk_PlaceHolderDuplicato() throws Exception {
+
+		String json = Json.createObjectBuilder()
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
+				.build()
+				.toString();
+		
+		MvcResult result = this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").isNumber())
+				.andExpect(jsonPath("$.name", is("NuovoPlaceHolder")))
+				.andExpect(jsonPath("$.description", is("PlaceHolder di test")))
+				.andExpect(jsonPath("$.example", is("PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")))
+				.andExpect(jsonPath("$.type", is(Type.STRING.toString())))
+				.andExpect(jsonPath("$.pattern", is("[\\s\\S]*")))
+				.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject si = reader.readObject();
+		int id = si.getInt("id");
+		
+		GovioPlaceholderEntity govioPlaceholderEntity = this.placeholderRepository.findById((long) id).get();
+		
+		assertEquals(id, govioPlaceholderEntity.getId());
+		assertEquals(si.getString("name"), govioPlaceholderEntity.getName());
+		assertEquals(si.getString("description"), govioPlaceholderEntity.getDescription());
+		assertEquals(si.getString("example"), govioPlaceholderEntity.getExample());
+		assertEquals(si.getString("type"), govioPlaceholderEntity.getType().toString());
+		assertEquals(si.getString("pattern"), govioPlaceholderEntity.getPattern());
+		
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").isNumber())
+				.andExpect(jsonPath("$.name", is("NuovoPlaceHolder")))
+				.andExpect(jsonPath("$.description", is("PlaceHolder di test")))
+				.andExpect(jsonPath("$.example", is("PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")))
+				.andExpect(jsonPath("$.type", is(Type.STRING.toString())))
+				.andExpect(jsonPath("$.pattern", is("[\\s\\S]*")))
+				.andReturn();
+		
+		reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		si = reader.readObject();
+		id = si.getInt("id");
+		
+		govioPlaceholderEntity = this.placeholderRepository.findById((long) id).get();
+		
+		assertEquals(id, govioPlaceholderEntity.getId());
+		assertEquals(si.getString("name"), govioPlaceholderEntity.getName());
+		assertEquals(si.getString("description"), govioPlaceholderEntity.getDescription());
+		assertEquals(si.getString("example"), govioPlaceholderEntity.getExample());
+		assertEquals(si.getString("type"), govioPlaceholderEntity.getType().toString());
+		assertEquals(si.getString("pattern"), govioPlaceholderEntity.getPattern());
+	}
 }
