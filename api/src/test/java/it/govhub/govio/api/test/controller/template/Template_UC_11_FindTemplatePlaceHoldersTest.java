@@ -41,7 +41,7 @@ class Template_UC_11_FindTemplatePlaceHoldersTest {
 
 	private static final String TEMPLATES_BASE_PATH = "/v1/templates";
 	private static final String TEMPLATES_BASE_PATH_DETAIL_ID = TEMPLATES_BASE_PATH + "/{id}";
-	private static final String PLACEHOLDER_BASE_PATH = TEMPLATES_BASE_PATH_DETAIL_ID + "/placeholders";
+	private static final String PLACEHOLDERS_BASE_PATH = TEMPLATES_BASE_PATH_DETAIL_ID + "/placeholders";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -60,7 +60,7 @@ class Template_UC_11_FindTemplatePlaceHoldersTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(2l).get();
 		long idTemplate1 = templateEntity.getId();
 		
-		MvcResult result = this.mockMvc.perform(get(PLACEHOLDER_BASE_PATH, idTemplate1)
+		MvcResult result = this.mockMvc.perform(get(PLACEHOLDERS_BASE_PATH, idTemplate1)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -85,7 +85,7 @@ class Template_UC_11_FindTemplatePlaceHoldersTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(2l).get();
 		long idTemplate1 = templateEntity.getId();
 		
-		MvcResult result = this.mockMvc.perform(get(PLACEHOLDER_BASE_PATH, idTemplate1).queryParam(Costanti.USERS_QUERY_PARAM_EMBED, EmbedPlaceholderEnum.PLACEHOLDER.getValue(), EmbedPlaceholderEnum.TEMPLATE.getValue() )
+		MvcResult result = this.mockMvc.perform(get(PLACEHOLDERS_BASE_PATH, idTemplate1).queryParam(Costanti.USERS_QUERY_PARAM_EMBED, EmbedPlaceholderEnum.PLACEHOLDER.getValue(), EmbedPlaceholderEnum.TEMPLATE.getValue() )
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
