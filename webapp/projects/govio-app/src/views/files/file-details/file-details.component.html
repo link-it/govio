@@ -208,7 +208,7 @@
           </div>
         </div>
       </div>
-      <div class="settings border-top mt-3">
+      <div class="settings border-top mt-3" *ngIf="!_isNew">
         <div class="settings-header">
           <h4 class="settings-title">{{ 'APP.FILES.TITLE.FileMessages' | translate }}</h4>
           <button class="btn gl-button btn-default" type="button" (click)="onExport()" [disabled]="_exportSpin">
