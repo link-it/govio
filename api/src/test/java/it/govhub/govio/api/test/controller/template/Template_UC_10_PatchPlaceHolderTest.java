@@ -48,8 +48,8 @@ class Template_UC_10_PatchPlaceHolderTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 
 	@ParameterizedTest
-//	@ValueSource(strings = {"/example","/name", "/type"})
-	@ValueSource(strings = {"/type"})
+	@ValueSource(strings = {"/example","/name", "/type"})
+//	@ValueSource(strings = {"/type"})
 	void UC_10_01_PatchTemplate_InvalidValue(String patchField) throws Exception {
 		int id = 1;
 		
@@ -107,8 +107,8 @@ class Template_UC_10_PatchPlaceHolderTest {
 	}
 	
 	@ParameterizedTest
-//	@ValueSource(strings = {"/example","/name", "/type"})
-	@ValueSource(strings = {"/type"})
+	@ValueSource(strings = {"/example","/name", "/type"})
+//	@ValueSource(strings = {"/type"})
 	void UC_10_03_PatchTemplate_EmptyMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		

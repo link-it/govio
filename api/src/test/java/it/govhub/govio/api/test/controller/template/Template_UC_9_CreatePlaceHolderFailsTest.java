@@ -38,7 +38,7 @@ class Template_UC_9_CreatePlaceHolderFailsTest {
 	@Autowired
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
-//	@Test
+	@Test
 	void UC_9_01_CreatePlaceHolder_InvalidName() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", Costanti.STRING_256)
@@ -64,7 +64,7 @@ class Template_UC_9_CreatePlaceHolderFailsTest {
 		
 	}
 	
-//	@Test
+	@Test
 	void UC_9_02_CreatePlaceHolder_InvalidExample() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", "NuovoPlaceHolder")
@@ -90,7 +90,7 @@ class Template_UC_9_CreatePlaceHolderFailsTest {
 		
 	}
 	
-//	@Test
+	@Test
 	void UC_9_03_CreatePlaceHolder_InvalidPattern() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", "NuovoPlaceHolder")
@@ -218,7 +218,7 @@ class Template_UC_9_CreatePlaceHolderFailsTest {
 		
 	}
 	
-//	@Test
+	@Test
 	void UC_9_08_CreatePlaceHolder_EmptyName() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", "")
@@ -244,7 +244,7 @@ class Template_UC_9_CreatePlaceHolderFailsTest {
 		
 	}
 	
-//	@Test
+	@Test
 	void UC_9_09_CreatePlaceHolder_EmptyExample() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", "NuovoPlaceHolder")

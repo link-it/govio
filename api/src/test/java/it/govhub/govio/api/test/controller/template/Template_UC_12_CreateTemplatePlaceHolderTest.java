@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -31,7 +30,6 @@ import it.govhub.govio.api.Application;
 import it.govhub.govio.api.entity.GovioPlaceholderEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
 import it.govhub.govio.api.entity.GovioTemplatePlaceholderEntity;
-import it.govhub.govio.api.entity.GovioPlaceholderEntity.Type;
 import it.govhub.govio.api.repository.PlaceholderRepository;
 import it.govhub.govio.api.repository.TemplatePlaceholderRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
