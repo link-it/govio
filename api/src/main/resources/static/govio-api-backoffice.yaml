@@ -1946,8 +1946,8 @@ components:
        properties:
           name:
              type: string
-             pattern: .*
-             maxLength:  9223372036854776000
+             pattern: .+
+             maxLength:  255
              example: cie
           description:
              type: string
@@ -1956,13 +1956,13 @@ components:
              example: Numero carta d'identità elettronica.
           example:
              type: string
-             pattern: '[\s\S]*'
-             maxLength:  9223372036854776000
+             pattern: '[\s\S]+'
+             maxLength:  255
              example: CA000000AA
           pattern:
              type: string
              pattern: '[\s\S]*'
-             maxLength:  9223372036854776000
+             maxLength:  255
              example:  "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]" 
           type:
              $ref: "#/components/schemas/GovioPlaceholderType"
