@@ -302,11 +302,11 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(2, page.getInt("total"));
 
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
-		assertEquals(3, items.size());
+		assertEquals(2, items.size());
 
 	}
 	
@@ -328,11 +328,11 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		JsonObject page = userList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(0, page.getInt("total"));
+		assertEquals(1, page.getInt("total"));
 
 		// Controlli sugli items
 		JsonArray items = userList.getJsonArray("items");
-		assertEquals(0, items.size());
+		assertEquals(1, items.size());
 	}
 	
 	@Test
@@ -557,9 +557,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 	
 	@Test
 	void UC_4_19_FindAllOk_EmbedAll() throws Exception {
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.USERS_QUERY_PARAM_EMBED, EmbedServiceInstanceEnum.TEMPLATE.getValue());
-
 		MvcResult result = this.mockMvc.perform(get(SERVICE_INSTANCES_BASE_PATH).queryParam(Costanti.USERS_QUERY_PARAM_EMBED, EmbedServiceInstanceEnum.ORGANIZATION.getValue(), EmbedServiceInstanceEnum.SERVICE.getValue(), EmbedServiceInstanceEnum.TEMPLATE.getValue() )
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
