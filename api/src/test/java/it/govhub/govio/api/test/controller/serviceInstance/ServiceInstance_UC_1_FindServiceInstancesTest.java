@@ -557,9 +557,6 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 	
 	@Test
 	void UC_4_19_FindAllOk_EmbedAll() throws Exception {
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.USERS_QUERY_PARAM_EMBED, EmbedServiceInstanceEnum.TEMPLATE.getValue());
-
 		MvcResult result = this.mockMvc.perform(get(SERVICE_INSTANCES_BASE_PATH).queryParam(Costanti.USERS_QUERY_PARAM_EMBED, EmbedServiceInstanceEnum.ORGANIZATION.getValue(), EmbedServiceInstanceEnum.SERVICE.getValue(), EmbedServiceInstanceEnum.TEMPLATE.getValue() )
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
