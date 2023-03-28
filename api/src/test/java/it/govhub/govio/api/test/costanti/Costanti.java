@@ -35,7 +35,7 @@ public class Costanti {
 	public static final String USERS_QUERY_PARAM_SERVICE_ID = "service_id";
 	public static final String USERS_QUERY_PARAM_ORGANIZATION_ID = "organization_id";
 	public static final String USERS_QUERY_PARAM_EMBED = "embed";
-	
+	public static final String USERS_QUERY_PARAM_PLACEHOLDER_ID = "placeholder_id";
 	
 	public static final Integer USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE = LimitOffsetPageRequest.LIMIT_DEFAULT_VALUE;
 	
