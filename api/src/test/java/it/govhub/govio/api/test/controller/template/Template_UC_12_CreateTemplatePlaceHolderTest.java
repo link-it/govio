@@ -197,4 +197,58 @@ class Template_UC_12_CreateTemplatePlaceHolderTest {
 		.andExpect(jsonPath("$.detail").isString())
 		.andReturn();
 	}
+	
+	@Test
+	void UC_12_03_CreatePlaceHolderFail_PlaceHolderNotFound() throws Exception {
+
+		GovioTemplateEntity templateEntity = this.templateRepository.findById(2l).get();
+		long idTemplate1 = templateEntity.getId();
+
+		String json = Json.createObjectBuilder()
+				.add("mandatory", true)
+				.add("position", 3)
+				.build()
+				.toString();
+
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH, idTemplate1).queryParam(Costanti.USERS_QUERY_PARAM_PLACEHOLDER_ID, ""+10000)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isUnprocessableEntity())
+		.andExpect(jsonPath("$.status", is(422)))
+		.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+		.andExpect(jsonPath("$.type").isString())
+		.andExpect(jsonPath("$.detail").isString())
+		.andReturn();
+	}
+	
+	@Test
+	void UC_12_04_CreatePlaceHolderFail_TemplateNotFound() throws Exception {
+
+		long idTemplate1 = 10000l;
+
+		GovioPlaceholderEntity govioPlaceholderEntity = this.placeholderRepository.findById(3l).get();
+		long idPlaceHolder = govioPlaceholderEntity.getId();
+
+		String json = Json.createObjectBuilder()
+				.add("mandatory", true)
+				.add("position", 3)
+				.build()
+				.toString();
+
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH, idTemplate1).queryParam(Costanti.USERS_QUERY_PARAM_PLACEHOLDER_ID, ""+idPlaceHolder)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound())
+		.andExpect(jsonPath("$.status", is(404)))
+		.andExpect(jsonPath("$.title", is("Not Found")))
+		.andExpect(jsonPath("$.type").isString())
+		.andExpect(jsonPath("$.detail").isString())
+		.andReturn();
+	}
 }
