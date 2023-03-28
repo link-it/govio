@@ -160,6 +160,7 @@ public class ServiceInstanceController implements ServiceApi {
 		return ResponseEntity.ok(ret);
 	}
 
+	
 	@Override
 	@Transactional
 	public ResponseEntity<GovioServiceInstanceFull> readServiceInstance(Long id) {
@@ -179,6 +180,7 @@ public class ServiceInstanceController implements ServiceApi {
 		return ResponseEntity.ok(fullInstanceRest);
 	}
 
+	
 	@Transactional
 	@Override
 	public ResponseEntity<GovioServiceInstanceFull> createServiceInstance(GovioServiceInstanceCreate src) {
@@ -296,9 +298,32 @@ public class ServiceInstanceController implements ServiceApi {
 		return this.readServiceController.listServices(sort, sortDirection, limit, offset, q, withRoles);
 	}
 
+	
 	@Override
 	public ResponseEntity<Service> readService(Long id) {
 		return this.readServiceController.readService(id);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
