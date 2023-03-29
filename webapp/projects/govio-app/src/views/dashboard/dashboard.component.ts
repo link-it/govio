@@ -1,12 +1,11 @@
 import { AfterContentChecked, Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
 import { EventType } from 'projects/tools/src/lib/classes/events';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { AuthenticationService } from '../../services/authentication.service';
 
 import { INavData } from '../../containers/gp-layout/gp-sidebar-nav';
@@ -51,7 +50,6 @@ export class DashboardComponent implements OnInit, AfterContentChecked {
     private translate: TranslateService,
     private configService: ConfigService,
     public eventsManagerService: EventsManagerService,
-    public pageloaderService: PageloaderService,
     public authenticationService: AuthenticationService,
     public sidebarNavHelper: GpSidebarNavHelper
   ) {
@@ -67,15 +65,6 @@ export class DashboardComponent implements OnInit, AfterContentChecked {
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // language changed
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
   }
 
   ngOnDestroy() {

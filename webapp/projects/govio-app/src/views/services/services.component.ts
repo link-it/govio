@@ -11,7 +11,6 @@ import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { SearchBarFormComponent } from 'projects/components/src/lib/ui/search-bar-form/search-bar-form.component';
 
 import * as moment from 'moment';
@@ -43,7 +42,7 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
 
   _preventMultiCall: boolean = false;
 
-  _spin: boolean = false;
+  _spin: boolean = true;
   desktop: boolean = false;
 
   _materialAppearance: MatFormFieldAppearance = 'fill';
@@ -85,8 +84,7 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
     private configService: ConfigService,
     public tools: Tools,
     private eventsManagerService: EventsManagerService,
-    public apiService: OpenAPIService,
-    public pageloaderService: PageloaderService
+    public apiService: OpenAPIService
   ) {
     this.config = this.configService.getConfiguration();
     this._materialAppearance = this.config.materialAppearance;

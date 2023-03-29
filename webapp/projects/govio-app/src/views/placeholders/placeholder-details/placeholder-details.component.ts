@@ -2,15 +2,13 @@ import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestr
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
-import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definitions';
 
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
 
@@ -43,8 +41,6 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
     { label: 'Details', icon: 'details', link: 'details', enabled: true }
   ];
   _currentTab: string = 'details';
-
-  _informazioni: FieldClass[] = [];
 
   _isDetails = true;
 
@@ -84,23 +80,12 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
     private configService: ConfigService,
     public tools: Tools,
     public eventsManagerService: EventsManagerService,
-    public apiService: OpenAPIService,
-    public pageloaderService: PageloaderService
+    public apiService: OpenAPIService
   ) {
     this.appConfig = this.configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // Changed
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.route.params.subscribe(params => {
       if (params['id'] && params['id'] !== 'new') {
         this.id = params['id'];
@@ -109,7 +94,6 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
         this.configService.getConfig(this.model).subscribe(
           (config: any) => {
             this.config = config;
-            this._translateConfig();
             this._loadAll();
           }
         );
@@ -275,6 +259,7 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
   _loadPlaceholder() {
     if (this.id) {
       this.placeholder = null;
+      this._spin = true;
       this.apiService.getDetails(this.model, this.id).subscribe({
         next: (response: any) => {
           this.placeholder = new Placeholder({ ...response });
@@ -283,35 +268,12 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
           if (this.config.detailsTitle) {
             this._title = Tools.simpleItemFormatter(this.config.detailsTitle, this.placeholder);
           }
-          // this.__initInformazioni();
           this._initForm({ ...this._placeholder });
+          this._spin = false;
         },
         error: (error: any) => {
           Tools.OnError(error);
-        }
-      });
-    }
-  }
-
-  __initInformazioni() {
-    if (this.placeholder) {
-      this._informazioni = Tools.generateFields(this.config.details, this.placeholder).map((field: FieldClass) => {
-        field.label = this.translate.instant(field.label);
-        return field;
-      });
-    }
-  }
-
-  _translateConfig() {
-    if (this.config && this.config.options) {
-      Object.keys(this.config.options).forEach((key: string) => {
-        if (this.config.options[key].label) {
-          this.config.options[key].label = this.translate.instant(this.config.options[key].label);
-        }
-        if (this.config.options[key].values) {
-          Object.keys(this.config.options[key].values).forEach((key2: string) => {
-            this.config.options[key].values[key2].label = this.translate.instant(this.config.options[key].values[key2].label);
-          });
+          this._spin = false;
         }
       });
     }
