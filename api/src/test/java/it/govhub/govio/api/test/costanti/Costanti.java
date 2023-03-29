@@ -55,6 +55,10 @@ public class Costanti {
 	public static final String FILES_QUERY_PARAM_SERVICE_ID = "service_id";
 	public static final String FILES_QUERY_PARAM_ORGANIZATION_ID = "organization_id";
 	
+	public static final String FILES_QUERY_PARAM_LINE_NUMBER_FROM = "line_number_from";
+	public static final String FILES_QUERY_PARAM_FILE_MESSAGE_STATUS = "file_message_status";
+	
+	
 	/* ORGANIZATIONS */
 	
 	public static OrganizationEntity getEnteCreditore() {
