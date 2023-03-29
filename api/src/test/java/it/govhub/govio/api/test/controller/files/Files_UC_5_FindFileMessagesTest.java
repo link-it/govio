@@ -29,8 +29,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
+import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.FileRepository;
@@ -186,7 +189,10 @@ class Files_UC_5_FindFileMessagesTest {
 		JsonObject item1 = items.getJsonObject(0);
 		int idFile = item1.getInt("id");
 		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.FILES_QUERY_PARAM_FILE_MESSAGE_STATUS, FileMessageStatusEnum.ACQUIRED.toString());
+		
+		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -233,7 +239,10 @@ class Files_UC_5_FindFileMessagesTest {
 		JsonObject item1 = items.getJsonObject(0);
 		int idFile = item1.getInt("id");
 		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.FILES_QUERY_PARAM_FILE_MESSAGE_STATUS, FileMessageStatusEnum.ERROR.toString());
+		
+		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -279,7 +288,10 @@ class Files_UC_5_FindFileMessagesTest {
 		JsonObject item1 = items.getJsonObject(0);
 		int idFile = item1.getInt("id");
 		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.FILES_QUERY_PARAM_FILE_MESSAGE_STATUS, FileMessageStatusEnum.ANY.toString());
+		
+		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -325,7 +337,10 @@ class Files_UC_5_FindFileMessagesTest {
 		JsonObject item1 = items.getJsonObject(0);
 		int idFile = item1.getInt("id");
 		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, "1");
+		
+		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -371,24 +386,18 @@ class Files_UC_5_FindFileMessagesTest {
 		JsonObject item1 = items.getJsonObject(0);
 		int idFile = item1.getInt("id");
 		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, "-1");
+		
+		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail", is("readFileMessages.lineNumberFrom: must be greater than or equal to 0")))
 				.andReturn();
-		
-		reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		userList = reader.readObject();
-		
-		// Controlli sulla paginazione
-		page = userList.getJsonObject("page");
-		assertEquals(0, page.getInt("offset"));
-		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(0, page.getInt("total"));
-		
-		// Controlli sugli items
-		items = userList.getJsonArray("items");
-		assertEquals(0, items.size());
 	}
 	
 	// 9. getFileMessages Filtro sulla linea del file da restiuire l = 0
@@ -417,7 +426,10 @@ class Files_UC_5_FindFileMessagesTest {
 		JsonObject item1 = items.getJsonObject(0);
 		int idFile = item1.getInt("id");
 		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, "0");
+		
+		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -463,7 +475,10 @@ class Files_UC_5_FindFileMessagesTest {
 		JsonObject item1 = items.getJsonObject(0);
 		int idFile = item1.getInt("id");
 		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile)
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, "1");
+		
+		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
