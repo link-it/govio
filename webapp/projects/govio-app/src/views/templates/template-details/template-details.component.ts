@@ -2,14 +2,13 @@ import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestr
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definitions';
 
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
@@ -78,23 +77,12 @@ export class TemplateDetailsComponent implements OnInit, OnChanges, AfterContent
     private configService: ConfigService,
     public tools: Tools,
     public eventsManagerService: EventsManagerService,
-    public apiService: OpenAPIService,
-    public pageloaderService: PageloaderService
+    public apiService: OpenAPIService
   ) {
     this.appConfig = this.configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // Changed
-    });
-
-    // this.pageloaderService.resetLoader();
-    // this.pageloaderService.isLoading.subscribe({
-    //   next: (x) => { this._spin = x; },
-    //   error: (e: any) => { console.log('loader error', e); }
-    // });
-
     this.route.params.subscribe(params => {
       if (params['id'] && params['id'] !== 'new') {
         this.id = params['id'];
