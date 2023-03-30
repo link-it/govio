@@ -10,7 +10,7 @@ import it.govhub.govregistry.commons.config.ApplicationConfig;
 @Component
 public class GovioConfig  implements ApplicationConfig {
 	
-	@Value("${application-id:govio")
+	@Value("${application-id:govio}")
 	private String applicationId;
 	
 	public static final Set<String> DEFAULT_READ_ORGANIZATION_ROLES = Set.of(

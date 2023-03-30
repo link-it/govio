@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -33,12 +35,15 @@ public class TemplateService {
 	
 	@Autowired
 	TemplatePlaceholderAssembler templatePlaceholderAssembler;
+	
+	Logger log = LoggerFactory.getLogger(TemplateService.class);
 
 	@Transactional
 	public GovioTemplateEntity updatePlaceHolders(GovioTemplateEntity template, Set<GovioTemplatePlaceholderEntity> placeholders) {
+		log.info("Setting new placeholders for template [{}]", template.getId());
 		
 		template.getGovioTemplatePlaceholders().clear();
-		template.setGovioTemplatePlaceholders(placeholders);
+		template.getGovioTemplatePlaceholders().addAll(placeholders);
 		
 		return this.templateRepo.save(template);
 	}

@@ -64,7 +64,7 @@ class Template_UC_13_PatchTemplatePlaceHolderTest {
 	@Autowired
 	TemplatePlaceholderRepository templatePlaceholderRepository;
 
-//	@Test
+	@Test
 	void UC_13_01_PatchPlaceHolderOk() throws Exception {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(2l).get();
 		long idTemplate1 = templateEntity.getId();
