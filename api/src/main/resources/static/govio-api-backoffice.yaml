@@ -80,7 +80,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: 'govhub-api-commons.yaml#/components/schemas/Profile'          
            '400':
@@ -116,7 +116,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                  $ref: "govhub-api-commons.yaml#/components/schemas/UserList"
         '400':
@@ -145,7 +145,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: 'govhub-api-commons.yaml#/components/schemas/User'          
         '400':
@@ -181,7 +181,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                  $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationList"
         '400':
@@ -210,7 +210,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: 'govhub-api-commons.yaml#/components/schemas/Organization'          
            '400':
@@ -310,7 +310,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                  $ref: "govhub-api-commons.yaml#/components/schemas/ServiceList"
         '400':
@@ -339,7 +339,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: 'govhub-api-commons.yaml#/components/schemas/Service'          
            '400':
@@ -447,7 +447,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioFile'
           links:
@@ -494,7 +494,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/FileList'
         '400':
@@ -523,7 +523,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioFile'
           links:
@@ -596,7 +596,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/FileMessageList'
         '400':
@@ -646,7 +646,7 @@ paths:
         '201':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioMessage'
           links:
@@ -690,7 +690,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioMessageList'
         '400':
@@ -719,7 +719,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioMessage'               
         '400':
@@ -756,7 +756,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
@@ -796,7 +796,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioServiceInstanceList'
         '400':
@@ -825,7 +825,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
@@ -866,7 +866,7 @@ paths:
         '200':
           description: Succsessful operation.
           content:
-             application/json:
+             application/hal+json:
                 schema:
                    $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
@@ -906,7 +906,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplate'
              links:
@@ -940,7 +940,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplateList'
            '400':
@@ -969,7 +969,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplate'
              links:
@@ -1013,7 +1013,7 @@ paths:
          '200':
            description: Succsessful operation.
            content:
-              application/json:
+              application/hal+json:
                  schema:
                     $ref: '#/components/schemas/GovioTemplate'
            links:
@@ -1056,7 +1056,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplatePlaceholder'
            '400':
@@ -1103,7 +1103,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioListTemplatePlaceholder'
                  example:
@@ -1144,7 +1144,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioListTemplatePlaceholder'
            '400':
@@ -1207,7 +1207,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioPlaceholder'
              links:
@@ -1242,7 +1242,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioPlaceholderList'
            '400':
@@ -1272,7 +1272,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioPlaceholder'
            '400':
@@ -1310,7 +1310,7 @@ paths:
          '200':
            description: Succsessful operation.
            content:
-              application/json:
+              application/hal+json:
                  schema:
                     $ref: '#/components/schemas/GovioPlaceholder'
            links:
