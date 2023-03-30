@@ -45,6 +45,8 @@ public class TemplateService {
 		template.getGovioTemplatePlaceholders().clear();
 		template.getGovioTemplatePlaceholders().addAll(placeholders);
 		
+		template = this.templateRepo.save(template);
+		
 		return this.templateRepo.save(template);
 	}
 
