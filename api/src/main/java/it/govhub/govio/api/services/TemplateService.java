@@ -43,9 +43,10 @@ public class TemplateService {
 		log.info("Setting new placeholders for template [{}]", template.getId());
 		
 		template.getGovioTemplatePlaceholders().clear();
-		template.getGovioTemplatePlaceholders().addAll(placeholders);
 		
-		template = this.templateRepo.save(template);
+		template = this.templateRepo.saveAndFlush(template);
+
+		template.getGovioTemplatePlaceholders().addAll(placeholders);
 		
 		return this.templateRepo.save(template);
 	}
