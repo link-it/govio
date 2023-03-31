@@ -20,7 +20,7 @@ import { CustomFormsModule } from 'projects/tools/src/lib/custom-forms-validator
 import { GpLayoutModule } from '../containers/gp-layout/gp-layout.module';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
-import { AuthGuard } from '../guard/auth.guard';
+import { AuthGuard, PermissionGuard } from '../guard';
 
 import { httpInterceptorProviders } from 'projects/tools/src/lib/interceptors/index';
 
@@ -85,6 +85,7 @@ export function ConfigLoader(configService: ConfigService) {
       multi: true
     },
     AuthGuard,
+    PermissionGuard,
     { provide: MAT_DATE_LOCALE, useValue: 'it-IT' },
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
