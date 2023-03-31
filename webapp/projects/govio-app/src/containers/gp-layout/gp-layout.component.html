@@ -20,11 +20,11 @@
   </div>
 </header>
 <div class="layout-page hide-when-top-nav-responsive-open" [ngClass]="{ 'page-with-contextual-sidebar': _isGovApp, 'page-with-icon-sidebar': _sideBarCollapsed && desktop && _isGovApp }">
-  <aside class="nav-sidebar" [ngClass]="{ 'sidebar-collapsed-desktop': _sideBarCollapsed && desktop, 'sidebar-expanded-mobile': !_sideBarCollapsed && !desktop && !mobile || _openSideBar  }" *ngIf="_isGovApp">
+  <aside class="nav-sidebar" [ngClass]="{ 'sidebar-collapsed-desktop': _sideBarCollapsed && desktop, 'sidebar-expanded-mobile': !_sideBarCollapsed && !desktop && !mobile || _openSideBar  }" *ngIf="_isGovApp && !_spin">
     <div class="nav-sidebar-inner-scroll">
       <ul class="sidebar-top-level-items">
         <ng-container *ngFor="let _item of navItems">
-          <ng-container *ngIf="true">
+          <ng-template [appHasPermission]="_item.permission + ''" [action]="'view'">
             <li class="" [ngClass]="{ 'js-collapsed-desktop': _sideBarCollapsed && desktop, 'js-expanded-mobile': _sideBarCollapsed && !desktop, 'js-mobile': mobile, 'expanded': (_item.expanded && mobile) || _forceMenuOpen, 'force-menu-open': _forceMenuOpen }" [appRouterLinkMatch]="{ 'active': _item.path + '' }" appFlyOut>
               <ng-container [ngSwitch]="sidebarNavHelper.itemType(_item)">
                 <ng-container *ngSwitchCase="'divider'">
@@ -46,20 +46,24 @@
                       </span>
                     </li>
                     <li class="divider fly-out-top-item"></li>
-                    <li class="" *ngFor="let _subItem of _item.children" [appRouterLinkMatch]="{ 'active': _subItem.path + '' }">
-                      <a class="gl-link cursor-pointer" (click)="_onClickMenu($event, _subItem)">
-                        <!-- <span class="nav-icon-container">
-                          <mat-icon fontSet="material-icons-outlined" *ngIf="sidebarNavHelper.hasIcon(_subItem)">{{ _subItem.icon}}</mat-icon>
-                        </span> -->
-                        <span class="">{{ _subItem.label + '' | translate }}</span>
-                        <!-- <span class="gl-badge badge rounded-pill badge-info text-dark sm count issue_counter">580</span> -->
-                      </a>
-                    </li>
+                    <ng-container *ngFor="let _subItem of _item.children">
+                      <ng-template [appHasPermission]="_subItem.permission + ''" [action]="'view'">
+                        <li class="" [appRouterLinkMatch]="{ 'active': _subItem.path + '' }">
+                          <a class="gl-link cursor-pointer" (click)="_onClickMenu($event, _subItem)">
+                            <!-- <span class="nav-icon-container">
+                              <mat-icon fontSet="material-icons-outlined" *ngIf="sidebarNavHelper.hasIcon(_subItem)">{{ _subItem.icon}}</mat-icon>
+                            </span> -->
+                            <span class="">{{ _subItem.label + '' | translate }}</span>
+                            <!-- <span class="gl-badge badge rounded-pill badge-info text-dark sm count issue_counter">580</span> -->
+                          </a>
+                        </li>
+                      </ng-template>
+                    </ng-container>
                   </ul>
                 </ng-container>
               </ng-container>
             </li>
-          </ng-container>
+          </ng-template>
         </ng-container>
       </ul>
 
@@ -84,7 +88,7 @@
     </div>
   </div>
 </div>
-<app-spinner *ngIf="_spin"></app-spinner>
+<!-- <app-spinner *ngIf="_spin"></app-spinner> -->
 <app-multi-snackbar></app-multi-snackbar>
 <div #watermark class="staging-box d-flex align-items-center justify-content-center" *ngIf="_config.AppConfig?.Watermark && _config.AppConfig?.WatermarkText">
   <span class="text-truncate">{{ _config.AppConfig?.WatermarkText }}</span>
