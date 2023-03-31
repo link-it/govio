@@ -54,7 +54,7 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
   _menuActions: MenuAction[] = [];
   _menuAppActions: MenuAction[] = [];
 
-  _spin = false;
+  _spin = true;
 
   _sideBarOpened: boolean = false;
   _sideBarCollapsed: boolean = false;
@@ -149,7 +149,7 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
   }
 
   ngAfterContentChecked() {
-    this._spin = this.tools.getSpinner() && this.tools.isSpinnerGlobal();
+    // this._spin = this.tools.getSpinner() && this.tools.isSpinnerGlobal();
 
     if (this._config.AppConfig.Watermark) {
       this.__once = false;
@@ -161,13 +161,18 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
   }
 
   loadProfile() {
+    this._spin = true;
     this.apiService.getList('profile').subscribe(
       (response: any) => {
         // console.log('profile response', response);
+        this.authenticationService.setCurrentSession(response);
+        this.authenticationService.reloadSession();
         this._initMenuActions();
+        this._spin = false;
       },
       (error: any) => {
         console.log('loadProfile error', error.error.status, error);
+        this._spin = false;
       }
     );
   }
