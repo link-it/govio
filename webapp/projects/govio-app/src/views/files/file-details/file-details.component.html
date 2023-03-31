@@ -165,7 +165,7 @@
             </div>
 
             <div class="row-content-block footer-block" *ngIf="_isEdit">
-              <button aria-label="Save" type="submit" class="gl-button btn btn-confirm gl-mr-2" [disabled]="_formGroup.invalid || _spin">
+              <button aria-label="Save" type="submit" class="gl-button btn btn-confirm gl-mr-2" [disabled]="_formGroup.invalid">
                 {{ 'APP.BUTTON.Save' | translate }}
               </button>
               <button aria-label="Cancel" type="button" class="btn gl-button btn-default" (click)="_onCancelEdit()">
