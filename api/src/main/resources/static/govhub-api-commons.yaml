@@ -820,7 +820,13 @@ components:
         type: string
         pattern: .+
         maxLength: 256
-        example: govhub_sender 
+        example: govhub_sender
+        
+      ApplicationName:
+        type: string
+        pattern: ^[a-zA-Z0-9_\-]+$
+        maxLength: 256
+        example: govregistry         
                
       Role:
          type: object
@@ -828,11 +834,14 @@ components:
          required:
             - id
             - role_name
+            - application
          properties:
             id: 
                $ref: "#/components/schemas/RoleId"
             role_name:
                $ref: "#/components/schemas/RoleName"
+            application:
+               $ref: "#/components/schemas/ApplicationName"
             assignable_roles:
                type: array
                minItems: 0

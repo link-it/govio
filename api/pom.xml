@@ -229,6 +229,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
+			<!--  Copia il govhub-api-commons.yaml dal package commons e lo mette sotto src/main/resources-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -243,12 +244,13 @@
 							<type>jar</type>
 							<includeArtifactIds>commons</includeArtifactIds>
 							<includes>govhub-api-commons.yaml</includes>
-							<outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
+							<outputDirectory>${project.basedir}/src/main/resources/static</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 
+			<!--  Genera specifica e modelli per l'openapi di GovRegistry -->
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
@@ -262,7 +264,7 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<ignoreFileOverride>${project.basedir}/.openapi-generator-ignore</ignoreFileOverride>
-							<inputSpec>${project.basedir}/src/main/resources/govio-api-backoffice.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/static/govio-api-backoffice.yaml</inputSpec>
 							<generatorName>govhub-codegen</generatorName>
 							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
 							<importMappings>
@@ -310,10 +312,6 @@
 								<skipDefaultInterface>true</skipDefaultInterface>
 								<interfaceOnly>true</interfaceOnly>
 								<hateoas>true</hateoas>
-								<!-- Metto il booleanGetterPrefix a get, e.g.: getEnabled invece 
-									di isEnabled. questo in modo da far riconoscere e copiare le proprietà booleane 
-									alla BeanUtils.copyProperties -->
-								<booleanGetterPrefix>get</booleanGetterPrefix>
 								<useTags>true</useTags>
 							</configOptions>
 							<output>${project.basedir}/target</output>
@@ -335,6 +333,7 @@
 			</plugin>
 
 
+			<!-- Genera il metamodel JPA -->		
 			<plugin>
 				<groupId>org.bsc.maven</groupId>
 				<artifactId>maven-processor-plugin</artifactId>
@@ -362,7 +361,7 @@
 				</dependencies>
 			</plugin>
 
-
+			<!-- Code Coverage Plugin -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
