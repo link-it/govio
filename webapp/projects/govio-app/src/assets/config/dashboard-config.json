@@ -1,3 +1,7 @@
 {
-  "newDashboard": false
+  "newDashboard": false,
+
+  "image": "./assets/images/illustrations/dashboard.png",
+  "title": "GovIO",
+  "subTitle": "Pianifica e spedisci messaggi sull'AppIO"
 }

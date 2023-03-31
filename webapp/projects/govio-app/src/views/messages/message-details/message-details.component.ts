@@ -3,14 +3,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
-import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definitions';
 
 import { Message } from './message';
 
@@ -33,8 +31,6 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
   _title: string = '';
 
   appConfig: any;
-
-  _informazioni: FieldClass[] = [];
 
   _isDetails = true;
 
@@ -60,8 +56,7 @@ export class MessageDetailsComponent implements OnInit, OnChanges, AfterContentC
     private configService: ConfigService,
     private tools: Tools,
     private eventsManagerService: EventsManagerService,
-    private apiService: OpenAPIService,
-    private pageloaderService: PageloaderService
+    private apiService: OpenAPIService
   ) {
     this.appConfig = this.configService.getConfiguration();
   }

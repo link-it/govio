@@ -5,12 +5,11 @@ import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
 
 import { SearchBarFormComponent } from 'projects/components/src/lib/ui/search-bar-form/search-bar-form.component';
@@ -82,7 +81,6 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
     private configService: ConfigService,
     public tools: Tools,
     private eventsManagerService: EventsManagerService,
-    private pageloaderService: PageloaderService,
     public apiService: OpenAPIService
   ) {
     this.config = this.configService.getConfiguration();
@@ -96,16 +94,6 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // language
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.configService.getConfig('templates').subscribe(
       (config: any) => {
         this.templatesConfig = config;
@@ -154,6 +142,7 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
     let aux: any;
     if (query)  aux = { params: this._queryToHttpParams(query) };
 
+    this._spin = true;
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         this.page = response.page;
@@ -170,11 +159,13 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
           this.templates = (url) ? [...this.templates, ..._list] : [..._list];
           this._preventMultiCall = false;
         }
+        this._spin = false;
         Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorTemplates(true);
         this._preventMultiCall = false;
+        this._spin = false;
         // Tools.OnError(error);
       }
     });
