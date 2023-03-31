@@ -145,7 +145,9 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
       }
     });
 
-    this.loadProfile();
+    setTimeout(() => {
+      this.loadProfile();
+    }, 200);
   }
 
   ngAfterContentChecked() {
@@ -165,6 +167,7 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
     this.apiService.getList('profile').subscribe(
       (response: any) => {
         // console.log('profile response', response);
+        this.authenticationService.setNoProfile(false);
         this.authenticationService.setCurrentSession(response);
         this.authenticationService.reloadSession();
         this._initMenuActions();
@@ -172,6 +175,7 @@ export class GpLayoutComponent implements OnInit, AfterContentChecked, OnDestroy
       },
       (error: any) => {
         console.log('loadProfile error', error.error.status, error);
+        this.authenticationService.setNoProfile(true);
         this._spin = false;
       }
     );

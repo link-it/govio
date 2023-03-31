@@ -66,6 +66,8 @@ export class AuthenticationService {
   API_PROFILE: string = '/profile';
   API_LOGOUT: string = '/logout';
 
+  _noProfile: boolean = false;
+
   constructor(
     private http: HttpClient,
     public configService: ConfigService,
@@ -104,6 +106,10 @@ export class AuthenticationService {
     localStorage.removeItem(AUTH_CONST.storageSession);
     let url = `${this.appConfig.GOVAPI['HOST']}${this.API_LOGOUT}`;
     return this.http.get(url);
+  }
+
+  setNoProfile(value: boolean) {
+    this._noProfile = value;
   }
 
   setCurrentSession(data: any) {
@@ -172,7 +178,7 @@ export class AuthenticationService {
 
   hasPermission(value: string, grant = 'view') {
     const uValue = value;
-    if (this.isAdmin() || uValue === 'PUBLIC') { return true; }
+    if (this.isAdmin() || uValue === 'PUBLIC' || this._noProfile) { return true; }
     const permissions = this.getPermissions();
     const idx = permissions.findIndex((auth: any) => auth.name === uValue);
     const permission = (idx > -1) ? permissions[idx] : null;
