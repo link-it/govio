@@ -55,9 +55,14 @@ export class DashboardComponent implements OnInit, AfterContentChecked {
   ) {
     this.appConfig = this.configService.getConfiguration();
 
+    this._spin = true;
     this.configService.getConfig('dashboard').subscribe(
       (config: any) => {
         this.config = config;
+        this._spin = false;
+      },
+      (error: any) => {
+        this._spin = false;
       }
     );
 
