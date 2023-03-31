@@ -28,6 +28,10 @@ public class UserAuthProfilesUtils {
 	public RequestPostProcessor utenzaOspite() {
 	    return utenzaPrincipal("ospite"); 
 	}
+	
+	public RequestPostProcessor utenzaAutorizzataSI() {
+	    return utenzaPrincipal("user_govio_sender_si"); 
+	}
 
 	public RequestPostProcessor utenzaPrincipal(String principal) {
 		return user(this.userDetailService.loadUserByUsername(principal));

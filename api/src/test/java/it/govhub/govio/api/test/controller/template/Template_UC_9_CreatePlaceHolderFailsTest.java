@@ -19,17 +19,18 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
 
 import it.govhub.govio.api.Application;
+import it.govhub.govio.api.entity.GovioPlaceholderEntity.Type;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-@DisplayName("Test di creazione Template")
+@DisplayName("Test di creazione PlaceHolder")
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 
-class Template_UC_4_CreateTemplateFailsTest {
+class Template_UC_9_CreatePlaceHolderFailsTest {
 
-	private static final String TEMPLATES_BASE_PATH = "/v1/templates";
+	private static final String PLACEHOLDERS_BASE_PATH = "/v1/placeholders";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -38,18 +39,17 @@ class Template_UC_4_CreateTemplateFailsTest {
 	private UserAuthProfilesUtils userAuthProfilesUtils;
 	
 	@Test
-	void UC_4_01_CreateTemplate_InvalidName() throws Exception {
+	void UC_9_01_CreatePlaceHolder_InvalidName() throws Exception {
 		String json = Json.createObjectBuilder()
 				.add("name", Costanti.STRING_256)
-				.add("description", "Template di test")
-				.add("subject", "Nuova Notifica di pagamento")
-				.add("message_body", Costanti.STRING_256)
-				.add("has_payment", true)
-				.add("has_due_date", true)
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
 				.build()
 				.toString();
 		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -65,18 +65,17 @@ class Template_UC_4_CreateTemplateFailsTest {
 	}
 	
 	@Test
-	void UC_4_02_CreateTemplate_InvalidSubject() throws Exception {
+	void UC_9_02_CreatePlaceHolder_InvalidExample() throws Exception {
 		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", Costanti.STRING_256)
-				.add("message_body", Costanti.STRING_256)
-				.add("has_payment", true)
-				.add("has_due_date", true)
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", Costanti.STRING_256)
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
 				.build()
 				.toString();
 		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -92,44 +91,17 @@ class Template_UC_4_CreateTemplateFailsTest {
 	}
 	
 	@Test
-	void UC_4_03_CreateTemplate_MissingSubject() throws Exception {
+	void UC_9_03_CreatePlaceHolder_InvalidPattern() throws Exception {
 		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("message_body", Costanti.STRING_256)
-				.add("has_payment", true)
-				.add("has_due_date", true)
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", Type.STRING.toString())
+				.add("pattern", Costanti.STRING_256)
 				.build()
 				.toString();
 		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status", is(400)))
-				.andExpect(jsonPath("$.title", is("Bad Request")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-		
-	}
-	
-	
-	@Test
-	void UC_4_04_CreateTemplate_MissingBody() throws Exception {
-		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", "Nuova Notifica di pagamento")
-				.add("has_payment", true)
-				.add("has_due_date", true)
-				.build()
-				.toString();
-		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -145,17 +117,17 @@ class Template_UC_4_CreateTemplateFailsTest {
 	}
 	
 	@Test
-	void UC_4_05_CreateTemplate_MissingHasPayment() throws Exception {
+	void UC_9_04_CreatePlaceHolder_InvalidType() throws Exception {
 		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", "Nuova Notifica di pagamento")
-				.add("message_body", Costanti.STRING_256)
-				.add("has_due_date", true)
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", Costanti.STRING_256)
+				.add("pattern", "[\\s\\S]*")
 				.build()
 				.toString();
 		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -171,98 +143,16 @@ class Template_UC_4_CreateTemplateFailsTest {
 	}
 	
 	@Test
-	void UC_4_06_CreateTemplate_MissingHasDueDate() throws Exception {
+	void UC_9_05_CreatePlaceHolder_MissingName() throws Exception {
 		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", "Nuova Notifica di pagamento")
-				.add("message_body", Costanti.STRING_256)
-				.add("has_payment", true)
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
 				.build()
 				.toString();
 		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status", is(400)))
-				.andExpect(jsonPath("$.title", is("Bad Request")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-		
-	}
-	
-	@Test
-	void UC_4_07_CreateTemplate_InvalidHasPayment() throws Exception {
-		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", "Nuova Notifica di pagamento")
-				.add("message_body", Costanti.STRING_256)
-				.add("has_payment", "XXXX")
-				.add("has_due_date", true)
-				.build()
-				.toString();
-		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status", is(400)))
-				.andExpect(jsonPath("$.title", is("Bad Request")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-		
-	}
-	
-	@Test
-	void UC_4_08_CreateTemplate_InvalidHasDueDate() throws Exception {
-		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", "Nuova Notifica di pagamento")
-				.add("message_body", Costanti.STRING_256)
-				.add("has_payment", true)
-				.add("has_due_date", "XXX")
-				.build()
-				.toString();
-		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.with(csrf())
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status", is(400)))
-				.andExpect(jsonPath("$.title", is("Bad Request")))
-				.andExpect(jsonPath("$.type").isString())
-				.andExpect(jsonPath("$.detail").isString())
-				.andReturn();
-		
-	}
-	
-	@Test
-	void UC_4_09_CreateTemplate_EmptySubject() throws Exception {
-		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", "")
-				.add("message_body", Costanti.STRING_256)
-				.add("has_payment", true)
-				.add("has_due_date", true)
-				.build()
-				.toString();
-		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -279,18 +169,16 @@ class Template_UC_4_CreateTemplateFailsTest {
 	
 	
 	@Test
-	void UC_4_10_CreateTemplate_EmptyBody() throws Exception {
+	void UC_9_06_CreatePlaceHolder_MissingExample() throws Exception {
 		String json = Json.createObjectBuilder()
-				.add("name", "NuovoTemplate")
-				.add("description", "Template di test")
-				.add("subject", "Nuova Notifica di pagamento")
-				.add("message_body", "")
-				.add("has_payment", true)
-				.add("has_due_date", true)
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
 				.build()
 				.toString();
 		
-		this.mockMvc.perform(post(TEMPLATES_BASE_PATH)
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -304,4 +192,108 @@ class Template_UC_4_CreateTemplateFailsTest {
 				.andReturn();
 		
 	}
+	
+	@Test
+	void UC_9_07_CreatePlaceHolder_MissingType() throws Exception {
+		String json = Json.createObjectBuilder()
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("pattern", "[\\s\\S]*")
+				.build()
+				.toString();
+		
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
+	
+	@Test
+	void UC_9_08_CreatePlaceHolder_EmptyName() throws Exception {
+		String json = Json.createObjectBuilder()
+				.add("name", "")
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
+				.build()
+				.toString();
+		
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
+	
+	@Test
+	void UC_9_09_CreatePlaceHolder_EmptyExample() throws Exception {
+		String json = Json.createObjectBuilder()
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", "")
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
+				.build()
+				.toString();
+		
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
+	
+	@Test
+	void UC_9_10_CreatePlaceHolder_EmptyType() throws Exception {
+		String json = Json.createObjectBuilder()
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", "")
+				.add("pattern", "[\\s\\S]*")
+				.build()
+				.toString();
+		
+		this.mockMvc.perform(post(PLACEHOLDERS_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
+	
 }
