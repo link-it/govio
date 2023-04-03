@@ -131,25 +131,48 @@ class Messages_UC_3_GetMessageTest {
 		assertEquals(noticeNumber, payment.getString("notice_number"));
 		assertEquals(payEETaxCode, payment.getString("payee_taxcode"));
 
+		verificaDettaglioDB(idMessaggio, messaggio, payment, false);
+
+	}
+
+	private void verificaDettaglioDB(long idMessaggio, JsonObject messaggio, JsonObject payment, boolean onlyRequired) {
 		GovioMessageEntity govioMessageEntity = this.messageRepo.findById(idMessaggio).get();
 
 		assertEquals(govioMessageEntity.getTaxcode(), messaggio.getString("taxcode"));
-		assertEquals(govioMessageEntity.getSubject(), messaggio.getString("subject"));
-		assertEquals(govioMessageEntity.getMarkdown(), messaggio.getString("markdown"));
-		assertEquals(govioMessageEntity.getEmail(), messaggio.getString("email"));
-		//assertEquals(govioMessageEntity.getAppioMessageId(), messaggio.getString("appio_message_id"));
-		assertEquals(dt.format(govioMessageEntity.getCreationDate()), messaggio.getString("creation_date"));
-		// assertEquals(dt.format(govioMessageEntity.getExpeditionDate()), messaggio.getString("expedition_date"));
-		assertEquals(dt.format(govioMessageEntity.getDueDate()), messaggio.getString("due_date"));
-		assertEquals(dt.format(govioMessageEntity.getLastUpdateStatus()), messaggio.getString("last_update_status"));
 		assertEquals(dt.format(govioMessageEntity.getScheduledExpeditionDate()), messaggio.getString("scheduled_expedition_date"));
-		assertEquals(GovioMessageStatus.valueOf(govioMessageEntity.getStatus().toString()).toString(), messaggio.getString("status"));
 
-		assertEquals(govioMessageEntity.getAmount(), payment.getJsonNumber("amount").longValueExact());
-		assertEquals(govioMessageEntity.getInvalidAfterDueDate(), payment.getBoolean("invalid_after_due_date"));
-		assertEquals(govioMessageEntity.getNoticeNumber(), payment.getString("notice_number"));
-		assertEquals(govioMessageEntity.getPayeeTaxcode(), payment.getString("payee_taxcode"));
+		if(!onlyRequired) {
+			assertEquals(govioMessageEntity.getSubject(), messaggio.getString("subject"));
+			assertEquals(govioMessageEntity.getMarkdown(), messaggio.getString("markdown"));
+			assertEquals(govioMessageEntity.getEmail(), messaggio.getString("email"));
+			//assertEquals(govioMessageEntity.getAppioMessageId(), messaggio.getString("appio_message_id"));
+			assertEquals(dt.format(govioMessageEntity.getCreationDate()), messaggio.getString("creation_date"));
+			// assertEquals(dt.format(govioMessageEntity.getExpeditionDate()), messaggio.getString("expedition_date"));
+			assertEquals(dt.format(govioMessageEntity.getDueDate()), messaggio.getString("due_date"));
+			assertEquals(dt.format(govioMessageEntity.getLastUpdateStatus()), messaggio.getString("last_update_status"));
+			assertEquals(GovioMessageStatus.valueOf(govioMessageEntity.getStatus().toString()).toString(), messaggio.getString("status"));
+		}
+		
+		if(payment != null) {
+			assertEquals(govioMessageEntity.getAmount(), payment.getJsonNumber("amount").longValueExact());
+			assertEquals(govioMessageEntity.getNoticeNumber(), payment.getString("notice_number"));
 
+			if(!onlyRequired) {
+				assertEquals(govioMessageEntity.getInvalidAfterDueDate(), payment.getBoolean("invalid_after_due_date"));
+				assertEquals(govioMessageEntity.getPayeeTaxcode(), payment.getString("payee_taxcode"));
+			} else {
+				JsonValue payee_taxcode = payment.get("payee_taxcode");
+				assertNull(payee_taxcode);
+
+				JsonValue invalid_after_due_date = payment.get("invalid_after_due_date");
+				assertNull(invalid_after_due_date);
+			}
+		} else {
+			assertNull(govioMessageEntity.getAmount());
+			assertNull(govioMessageEntity.getInvalidAfterDueDate());
+			assertNull(govioMessageEntity.getNoticeNumber());
+			assertNull(govioMessageEntity.getPayeeTaxcode());
+		}
 	}
 
 	@Test
@@ -200,24 +223,7 @@ class Messages_UC_3_GetMessageTest {
 		JsonObject payment = messaggio.getJsonObject("payment");
 		assertNull(payment);
 
-		GovioMessageEntity govioMessageEntity = this.messageRepo.findById(idMessaggio).get();
-
-		assertEquals(govioMessageEntity.getTaxcode(), messaggio.getString("taxcode"));
-		assertEquals(govioMessageEntity.getSubject(), messaggio.getString("subject"));
-		assertEquals(govioMessageEntity.getMarkdown(), messaggio.getString("markdown"));
-		assertEquals(govioMessageEntity.getEmail(), messaggio.getString("email"));
-		//assertEquals(govioMessageEntity.getAppioMessageId(), messaggio.getString("appio_message_id"));
-		assertEquals(dt.format(govioMessageEntity.getCreationDate()), messaggio.getString("creation_date"));
-		// assertEquals(dt.format(govioMessageEntity.getExpeditionDate()), messaggio.getString("expedition_date"));
-		assertEquals(dt.format(govioMessageEntity.getDueDate()), messaggio.getString("due_date"));
-		assertEquals(dt.format(govioMessageEntity.getLastUpdateStatus()), messaggio.getString("last_update_status"));
-		assertEquals(dt.format(govioMessageEntity.getScheduledExpeditionDate()), messaggio.getString("scheduled_expedition_date"));
-		assertEquals(GovioMessageStatus.valueOf(govioMessageEntity.getStatus().toString()).toString(), messaggio.getString("status"));
-
-		assertNull(govioMessageEntity.getAmount());
-		assertNull(govioMessageEntity.getInvalidAfterDueDate());
-		assertNull(govioMessageEntity.getNoticeNumber());
-		assertNull(govioMessageEntity.getPayeeTaxcode());
+		verificaDettaglioDB(idMessaggio, messaggio, payment, false);
 
 	}
 
@@ -292,27 +298,7 @@ class Messages_UC_3_GetMessageTest {
 		assertEquals(noticeNumber, payment.getString("notice_number"));
 		assertEquals(payEETaxCode, payment.getString("payee_taxcode"));
 
-		GovioMessageEntity govioMessageEntity = this.messageRepo.findById(idMessaggio).get();
-
-		assertEquals(govioMessageEntity.getTaxcode(), messaggio.getString("taxcode"));
-		assertEquals(govioMessageEntity.getSubject(), messaggio.getString("subject"));
-		assertEquals(govioMessageEntity.getMarkdown(), messaggio.getString("markdown"));
-		assertEquals(govioMessageEntity.getEmail(), messaggio.getString("email"));
-		//assertEquals(govioMessageEntity.getAppioMessageId(), messaggio.getString("appio_message_id"));
-		assertEquals(dt.format(govioMessageEntity.getCreationDate()), messaggio.getString("creation_date"));
-		// assertEquals(dt.format(govioMessageEntity.getExpeditionDate()), messaggio.getString("expedition_date"));
-		assertEquals(dt.format(govioMessageEntity.getDueDate()), messaggio.getString("due_date"));
-		assertEquals(dt.format(govioMessageEntity.getLastUpdateStatus()), messaggio.getString("last_update_status"));
-		assertEquals(dt.format(govioMessageEntity.getScheduledExpeditionDate()), messaggio.getString("scheduled_expedition_date"));
-		assertEquals(GovioMessageStatus.valueOf(govioMessageEntity.getStatus().toString()).toString(), messaggio.getString("status"));
-
-		payment = messaggio.getJsonObject("payment");
-		assertNotNull(payment);
-		assertEquals(govioMessageEntity.getAmount(), payment.getJsonNumber("amount").longValueExact());
-		assertEquals(govioMessageEntity.getInvalidAfterDueDate(), payment.getBoolean("invalid_after_due_date"));
-		assertEquals(govioMessageEntity.getNoticeNumber(), payment.getString("notice_number"));
-		assertEquals(govioMessageEntity.getPayeeTaxcode(), payment.getString("payee_taxcode"));
-
+		verificaDettaglioDB(idMessaggio, messaggio, payment, false);
 	}
 
 	//	@Test
@@ -362,24 +348,7 @@ class Messages_UC_3_GetMessageTest {
 		JsonObject payment = messaggio.getJsonObject("payment");
 		assertNull(payment); 
 
-		GovioMessageEntity govioMessageEntity = this.messageRepo.findById(idMessaggio).get();
-
-		assertEquals(govioMessageEntity.getTaxcode(), messaggio.getString("taxcode"));
-		assertEquals(govioMessageEntity.getSubject(), messaggio.getString("subject"));
-		assertEquals(govioMessageEntity.getMarkdown(), messaggio.getString("markdown"));
-		assertEquals(govioMessageEntity.getEmail(), messaggio.getString("email"));
-		//assertEquals(govioMessageEntity.getAppioMessageId(), messaggio.getString("appio_message_id"));
-		assertEquals(dt.format(govioMessageEntity.getCreationDate()), messaggio.getString("creation_date"));
-		// assertEquals(dt.format(govioMessageEntity.getExpeditionDate()), messaggio.getString("expedition_date"));
-		assertEquals(dt.format(govioMessageEntity.getDueDate()), messaggio.getString("due_date"));
-		assertEquals(dt.format(govioMessageEntity.getLastUpdateStatus()), messaggio.getString("last_update_status"));
-		assertEquals(dt.format(govioMessageEntity.getScheduledExpeditionDate()), messaggio.getString("scheduled_expedition_date"));
-		assertEquals(GovioMessageStatus.valueOf(govioMessageEntity.getStatus().toString()).toString(), messaggio.getString("status"));
-
-		assertNull(govioMessageEntity.getAmount());
-		assertNull(govioMessageEntity.getInvalidAfterDueDate());
-		assertNull(govioMessageEntity.getNoticeNumber());
-		assertNull(govioMessageEntity.getPayeeTaxcode());
+		verificaDettaglioDB(idMessaggio, messaggio, payment, true);
 
 	}
 
@@ -416,26 +385,6 @@ class Messages_UC_3_GetMessageTest {
 
 		long idMessaggio = response.getInt("id");
 
-		assertNotNull(response.get("id"));
-		assertEquals(taxCode, response.getString("taxcode"));
-		assertEquals("Lorem ipsum dolor sit amet.", response.getString("subject"));
-		assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur", response.getString("markdown"));
-		assertEquals(email, response.getString("email"));
-		assertNotNull(response.get("creation_date"));
-		assertEquals(dt.format(dueDate), response.getString("due_date"));
-		assertEquals("scheduled", response.getString("status"));
-		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
-		JsonObject payment = response.getJsonObject("payment");
-		assertNotNull(payment);
-		assertEquals(amount,payment.getJsonNumber("amount").longValueExact());
-		assertEquals(noticeNumber, payment.getString("notice_number"));
-
-		JsonValue payee_taxcode = payment.get("payee_taxcode");
-		assertNull(payee_taxcode);
-
-		JsonValue invalid_after_due_date = payment.get("invalid_after_due_date");
-		assertNull(invalid_after_due_date);
-
 		result = this.mockMvc.perform(get(MESSAGES_BASE_PATH_DETAIL_ID, idMessaggio)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
@@ -454,38 +403,18 @@ class Messages_UC_3_GetMessageTest {
 		//assertEquals(dt.format(dueDate), messaggio.getString("due_date"));
 		assertEquals("scheduled", messaggio.getString("status"));
 		//	assertEquals(dt.format(scheduledExpeditionDate), messaggio.getString("scheduled_expedition_date"));
-		payment = messaggio.getJsonObject("payment");
+		JsonObject payment = messaggio.getJsonObject("payment");
 		assertNotNull(payment);
 		assertEquals(amount,payment.getJsonNumber("amount").longValueExact());
 		assertEquals(noticeNumber, payment.getString("notice_number"));
 
-		payee_taxcode = payment.get("payee_taxcode");
+		JsonValue payee_taxcode = payment.get("payee_taxcode");
 		assertNull(payee_taxcode);
 
-		invalid_after_due_date = payment.get("invalid_after_due_date");
+		JsonValue invalid_after_due_date = payment.get("invalid_after_due_date");
 		assertNull(invalid_after_due_date);
 
-		GovioMessageEntity govioMessageEntity = this.messageRepo.findById(idMessaggio).get();
-
-		assertEquals(govioMessageEntity.getTaxcode(), messaggio.getString("taxcode"));
-		assertEquals(govioMessageEntity.getSubject(), messaggio.getString("subject"));
-		assertEquals(govioMessageEntity.getMarkdown(), messaggio.getString("markdown"));
-		assertEquals(govioMessageEntity.getEmail(), messaggio.getString("email"));
-		//assertEquals(govioMessageEntity.getAppioMessageId(), messaggio.getString("appio_message_id"));
-		assertEquals(dt.format(govioMessageEntity.getCreationDate()), messaggio.getString("creation_date"));
-		// assertEquals(dt.format(govioMessageEntity.getExpeditionDate()), messaggio.getString("expedition_date"));
-		assertEquals(dt.format(govioMessageEntity.getDueDate()), messaggio.getString("due_date"));
-		assertEquals(dt.format(govioMessageEntity.getLastUpdateStatus()), messaggio.getString("last_update_status"));
-		assertEquals(dt.format(govioMessageEntity.getScheduledExpeditionDate()), messaggio.getString("scheduled_expedition_date"));
-		assertEquals(GovioMessageStatus.valueOf(govioMessageEntity.getStatus().toString()).toString(), messaggio.getString("status"));
-
-		payment = messaggio.getJsonObject("payment");
-		assertNotNull(payment);
-		assertEquals(govioMessageEntity.getAmount(), payment.getJsonNumber("amount").longValueExact());
-		assertEquals(govioMessageEntity.getNoticeNumber(), payment.getString("notice_number"));
-		
-		assertNull(govioMessageEntity.getInvalidAfterDueDate());
-		assertNull(govioMessageEntity.getPayeeTaxcode());
+		verificaDettaglioDB(idMessaggio, messaggio, payment, true);
 
 	}
 
