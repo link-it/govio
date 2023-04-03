@@ -33,7 +33,7 @@ public class TemplatePlaceholderFilters {
 	     	cb.equal(root.get(GovioTemplatePlaceholderEntity_.position), position); 
 		}
 	
-	public TemplatePlaceholderFilters() {
+	private TemplatePlaceholderFilters() {
 		// donothing
 	}
 	
