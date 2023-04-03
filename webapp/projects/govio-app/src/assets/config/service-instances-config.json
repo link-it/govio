@@ -3,15 +3,15 @@
 
   "itemRow": {
     "primaryText": [
-      { "field": "service.service_name", "type": "text" }
+      { "field": "template.name", "type": "text" }
     ],
-    "secondaryText": [
-      { "field": "organization.logo_small", "type": "image", "tooltip": "organization.legal_name" }
-    ],
+    "secondaryText": [],
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal" },
-        { "field": "template.name", "type": "text" }
+        { "field": "service.service_name", "type": "text", "emptySpace": true },
+        { "field": "per", "type": "message", "emptySpace": true },
+        { "field": "organization.legal_name", "type": "text" }
       ],
       "label": [
         { "field": "enabled", "type": "tag", "options": "enabled" }
