@@ -48,4 +48,14 @@
       <img class="rounded-circle" [src]="_value" style="width: 20px;height: auto;">
     </span>
   </ng-container>
+  <ng-container *ngSwitchCase="'avatar-image'">
+    <span class="position-relative border rounded-circle d-flex justify-content-center align-content-center" style="width: 48px;height: 48px;padding: 0.15rem !important;" [tooltip]="(_tooltip || '') | translate" container="body" [delay]="500">
+      <img class="rounded-circle" [src]="_value" style="width: 46px;height: auto;">
+    </span>
+  </ng-container>
+  <ng-container *ngSwitchCase="'gravatar-image'">
+    <span class="position-relative border rounded-circle d-flex justify-content-center align-content-center" style="width: 48px;height: 48px;" [tooltip]="(_tooltip || '') | translate" container="body" [delay]="500">
+      <img class="align-top" ngxGravatar [email]="_value" [size]="46" fallback="retro">
+    </span>
+  </ng-container>
 </ng-container>
