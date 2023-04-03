@@ -16,6 +16,8 @@ export class PhotoBase64Component implements OnInit, OnChanges {
   @Input() maxSize: number = 200000;
   @Input() removeLabel: string = 'Remove';
   @Input() fileTypes: string[] = ['image/png', 'image/jpeg'];
+  @Input() asDataUrl: boolean = true;
+  @Input() isEdit: boolean = true;
 
   @Output() imageLoaded: EventEmitter<any> = new EventEmitter();
 
@@ -28,7 +30,7 @@ export class PhotoBase64Component implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.imageSaved && changes.imageSaved.currentValue && changes.isImageSaved.currentValue) {
+    if (changes.imageSaved && changes.imageSaved.currentValue) {
       this.cardImageBase64 = changes.imageSaved.currentValue;
     }
   }
@@ -54,31 +56,60 @@ export class PhotoBase64Component implements OnInit, OnChanges {
       }
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        const image = new Image();
-        image.src = e.target.result;
-        image.onload = (rs: any) => {
-          const img_height = rs.currentTarget['height'];
-          const img_width = rs.currentTarget['width'];
+        if (this.asDataUrl) {
+          const image = new Image();
+          image.src = e.target.result;
+          image.onload = (rs: any) => {
+            const img_height = rs.currentTarget['height'];
+            const img_width = rs.currentTarget['width'];
 
-          if (img_height > max_height && img_width > max_width) {
-            this.imageError =
-              'Maximum dimentions allowed ' +
-              max_height +
-              '*' +
-              max_width +
-              'px';
-            return false;
-          } else {
-            const imgBase64Path = e.target.result;
-            this.cardImageBase64 = imgBase64Path;
-            this.isImageSaved = true;
-            this.imageLoaded.emit(imgBase64Path);
-            return true;
-          }
-        };
+            if (img_height > max_height && img_width > max_width) {
+              this.imageError =
+                'Maximum dimentions allowed ' +
+                max_height +
+                '*' +
+                max_width +
+                'px';
+              return false;
+            } else {
+              const imgBase64Path = e.target.result;
+              this.cardImageBase64 = imgBase64Path;
+              this.isImageSaved = true;
+              this.imageLoaded.emit(imgBase64Path);
+              return true;
+            }
+          };
+        } else {
+          const imageData = e.target.result;
+          this.imageLoaded.emit(imageData);
+          // var buffer = e.target.result;
+          // var int32View = new Int32Array(buffer);
+          // var tipoImmagine = 'sconosciuto';
+          // switch(int32View[0]) {
+          //   case 1196314761:
+          //     tipoImmagine = "png";
+          //     break;
+          //   case 944130375:
+          //     tipoImmagine = "gif";
+          //     break;
+          //   case 544099650:
+          //     tipoImmagine = "bmp";
+          //     break;
+          //   case -520103681:
+          //     tipoImmagine = "jpg";
+          //     break;
+          //   default:
+          //     tipoImmagine= "sconosciuto";
+          //     break;
+          // }
+        }
       };
 
-      reader.readAsDataURL(fileInput.target.files[0]);
+      if (this.asDataUrl) {
+        reader.readAsDataURL(fileInput.target.files[0]);
+      } else {
+        reader.readAsArrayBuffer(fileInput.target.files[0]);
+      }
       return true;
     }
     return false;
