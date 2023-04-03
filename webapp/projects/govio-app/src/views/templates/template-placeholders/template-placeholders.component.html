@@ -6,7 +6,7 @@
       <!-- <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-3" (click)="_onCreatePlcaholder()" *ngIf="_editPlaceholders" [disabled]="_createPlaceholder">
         <span class="">{{ 'APP.BUTTON.CreateNewPlaceholder' | translate }}</span>
       </button> -->
-      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon" [class.me-3]="templatePlaceholders?.length" (click)="_onNew()" *ngIf="(_editPlaceholders && !(_isNew || _createPlaceholder)) || !templatePlaceholders?.length" [disabled]="_createPlaceholder">
+      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon" [class.me-3]="templatePlaceholders.length" (click)="_onNew()" *ngIf="(_editPlaceholders && !(_isNew || _createPlaceholder)) || !templatePlaceholders?.length" [disabled]="_createPlaceholder">
         <span class="">{{ 'APP.BUTTON.AddPlaceholder' | translate }}</span>
       </button>
       <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onEditPlaceholders($event)" [tooltip]="(_editPlaceholders ? '' : 'APP.TOOLTIP.EditPlaceholders') | translate" placement="left" *ngIf="templatePlaceholders?.length">
