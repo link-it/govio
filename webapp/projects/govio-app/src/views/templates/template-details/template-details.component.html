@@ -133,7 +133,7 @@
                     </div>
                     <div class="" *ngIf="!_isEdit">
                       <div class="gl-form-checkbox custom-control custom-checkbox has_payment">
-                        <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [value]="template.has_payment" disabled>
+                        <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [checked]="template.has_payment" disabled>
                         <label class="custom-control-label text-dark" for="has_payment">
                           <span>{{ 'APP.LABEL.HasPayment' | translate }}</span> 
                         </label>
