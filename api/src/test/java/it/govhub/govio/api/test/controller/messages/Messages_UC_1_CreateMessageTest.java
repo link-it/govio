@@ -19,6 +19,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -258,5 +259,57 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals(noticeNumber, payment.getString("notice_number"));
 		assertEquals(payEETaxCode, payment.getString("payee_taxcode"));
 		
+	}
+	
+	@Test
+	void UC_1_05_createMessage_PaymentOnlyRequired() throws Exception {
+		Long amount = 9999999999L;
+		String noticeNumber = "159981576728496290";
+		Boolean invalidAfterDueDate = null;
+		String payEETaxCode = null;
+		
+		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
+		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
+		
+		String taxCode = "AYCSFK56HUQE969O";
+		String email = "s.nakamoto@xxxxx.xx";
+		
+		JsonObject message = MessageUtils.createMessage(amount, noticeNumber, invalidAfterDueDate, payEETaxCode, scheduledExpeditionDate,
+				dueDate, taxCode, email, null, this.dt);
+		
+		String json = message.toString();
+		
+		MvcResult result = this.mockMvc.perform(
+				post(MESSAGES_BASE_PATH)
+				.param("service_instance", "1")
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject response = reader.readObject();
+		
+		assertNotNull(response.get("id"));
+		assertEquals(taxCode, response.getString("taxcode"));
+		assertEquals("Lorem ipsum dolor sit amet.", response.getString("subject"));
+		assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur", response.getString("markdown"));
+		assertEquals(email, response.getString("email"));
+		assertNotNull(response.get("creation_date"));
+		assertEquals(dt.format(dueDate), response.getString("due_date"));
+		assertEquals("scheduled", response.getString("status"));
+		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
+		JsonObject payment = response.getJsonObject("payment");
+		assertNotNull(payment);
+		assertEquals(amount,payment.getJsonNumber("amount").longValueExact());
+		assertEquals(noticeNumber, payment.getString("notice_number"));
+		
+		JsonValue payee_taxcode = payment.get("payee_taxcode");
+		assertNull(payee_taxcode);
+		
+		JsonValue invalid_after_due_date = payment.get("invalid_after_due_date");
+		assertNull(invalid_after_due_date);
 	}
 }
