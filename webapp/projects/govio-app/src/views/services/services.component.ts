@@ -202,8 +202,9 @@ export class ServicesComponent implements OnInit, AfterContentChecked, OnDestroy
 
       template: {
         id: service._embedded.template.id,
-        subject: service._embedded.template.subject,
+        name: service._embedded.template.name,
         description: service._embedded.template.description,
+        subject: service._embedded.template.subject,
         message_body: service._embedded.template.message_body,
         has_payment: service._embedded.template.has_payment,
         has_due_date: service._embedded.template.has_due_date
