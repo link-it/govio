@@ -61,7 +61,7 @@ class Messages_UC_1_CreateMessageTest {
 	private String timeZone;
 
 	@Test
-	void UC_1_01_createMessage_NoPlaceholders() throws Exception {
+	void UC_1_01_CreateMessage_NoPlaceholders() throws Exception {
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -110,7 +110,7 @@ class Messages_UC_1_CreateMessageTest {
 	}
 	
 	@Test
-	void UC_1_02_createMessage_NoPayment() throws Exception {
+	void UC_1_02_CreateMessage_NoPayment() throws Exception {
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		
@@ -149,7 +149,7 @@ class Messages_UC_1_CreateMessageTest {
 	}
 	
 	@Test
-	void UC_1_03_createMessage_WithPlaceholders() throws Exception {
+	void UC_1_03_CreateMessage_WithPlaceholders() throws Exception {
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -214,11 +214,7 @@ class Messages_UC_1_CreateMessageTest {
 	}
 
 //	@Test
-	void UC_1_04_createMessage_OnlyRequired() throws Exception {
-		Long amount = 9999999999L;
-		String noticeNumber = "159981576728496290";
-		Boolean invalidAfterDueDate = true;
-		String payEETaxCode = "50751457039";
+	void UC_1_04_CreateMessage_OnlyRequired() throws Exception {
 		
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
@@ -253,16 +249,12 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals("scheduled", response.getString("status"));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
-		assertNotNull(payment);
-		assertEquals(amount,payment.getJsonNumber("amount").longValueExact());
-		assertEquals(invalidAfterDueDate, payment.getBoolean("invalid_after_due_date"));
-		assertEquals(noticeNumber, payment.getString("notice_number"));
-		assertEquals(payEETaxCode, payment.getString("payee_taxcode"));
-		
+		assertNull(payment);
+
 	}
 	
 	@Test
-	void UC_1_05_createMessage_PaymentOnlyRequired() throws Exception {
+	void UC_1_05_CreateMessage_PaymentOnlyRequired() throws Exception {
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = null;
