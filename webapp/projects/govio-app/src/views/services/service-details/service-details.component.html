@@ -171,7 +171,7 @@
                 </div>
                 <div class="form-group">
                   <label class="label-bold" for="template_id">
-                    <span>{{ 'APP.LABEL.Template' | translate }} </span><span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'template_id'" *ngIf="_isEdit"></span><span class="ms-2" (click)="openTemplateInfo()" [class.d-none]="!template?.subject && !_hasControlValue('template_id')"><i class="bi bi-info-circle"></i></span>
+                    <span>{{ 'APP.LABEL.Template' | translate }} </span><span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'template_id'" *ngIf="_isEdit"></span><span class="ms-2" (click)="openTemplateInfo()" [class.d-none]="!template?.name && !_hasControlValue('template_id')"><i class="bi bi-info-circle"></i></span>
                   </label>
                   <div class="" *ngIf="_isEdit">
                     <ng-select class="" [class.gl-field-error-outline]="_hasControlError('template_id')"
@@ -182,15 +182,15 @@
                       [notFoundText]="'APP.MESSAGE.NotFoundItem' | translate"
                       [typeToSearchText]="'APP.MESSAGE.PleaseEnterMin' | translate:{ lengthTerm: minLengthTerm }"
                       bindValue="id"
-                      bindLabel="subject"
+                      bindLabel="name"
                       labelForId="template_id"
                       [editableSearchTerm]="true"
                       formControlName="template_id">
                       <ng-template ng-label-tmp let-item="item">
-                        {{ item.subject }}
+                        {{ item.name }}
                       </ng-template>
                       <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                        <div class="fw-bold">{{ item.subject }}</div>
+                        <div class="fw-bold">{{ item.name }}</div>
                         <div class="">
                           <span class="small text-muted">{{ item.description }}</span>
                         </div>
@@ -203,7 +203,7 @@
                     <ui-input-help field="template_id" context="SERVICE"></ui-input-help>
                   </div>
                   <div class="" *ngIf="!_isEdit">
-                    <input type="text" readonly class="form-control-plaintext" id="template_id" [value]="service.template?.subject">
+                    <input type="text" readonly class="form-control-plaintext" id="template_id" [value]="service.template?.name">
                   </div>
                 </div>
                 <div class="form-group mt-5">
