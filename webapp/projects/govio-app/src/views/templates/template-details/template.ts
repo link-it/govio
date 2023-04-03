@@ -3,6 +3,7 @@ import * as moment from 'moment';
 export class Template {
 
   id: number | null = null;
+  name: string | null = null;
   description: string | null = null;
   subject: string | null = null;
   message_body: string | null = null;

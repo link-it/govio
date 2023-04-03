@@ -174,6 +174,7 @@
 				"login_400": "Username o password errati. Controlla la corretta scrittura dei dati.",
 				"login_401": "Username o password errati. Controlla la corretta scrittura dei dati.",
 				"login_403": "Username o password errati. Controlla la corretta scrittura dei dati.",
+				"login_404": "Resource not found.",
 				"login_422": "Username o password errati. Oppure non sei autorizzato ad accedere.",
 				"valid_email": "Insert valid email",
 				"wrong_username_password": "Username e/o Password errati."
@@ -201,6 +202,7 @@
 				"LessThanEqual": "The amount must have a value less or equal to {{value}}",
 				"MaxAmount": "The amount can have a maximum value of {{value}}",
 				"MinAmount": "The amount must be a value greater than {{value}}",
+				"NameMaxLength": "The length of the name must be less than or equal to {{length}}.",
 				"NoticeLenght": "The notice number must have {{value}} char",
 				"Number": "The value must be a number",
 				"OneOfLength": "The length must be one of the following values",

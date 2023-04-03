@@ -11,7 +11,7 @@
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal" },
-        { "field": "template.subject", "type": "text" }
+        { "field": "template.name", "type": "text" }
       ],
       "label": [
         { "field": "enabled", "type": "tag", "options": "enabled" }

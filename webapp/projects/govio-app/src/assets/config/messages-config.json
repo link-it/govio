@@ -13,7 +13,7 @@
         { "field": "id", "type": "cardinal", "class": "" },
         { "field": "organization.legal_name", "type": "text" },
         { "field": "service.service_name", "type": "text" },
-        { "field": "template.subject", "type": "text" }
+        { "field": "template.name", "type": "text" }
       ],
       "label": [
         { "field": "status", "type": "label", "options": "status" }
@@ -37,7 +37,7 @@
     { "label": "APP.LABEL.Id", "field": "id", "type": "number" },
     { "label": "APP.LABEL.Organization", "field": "organization.legal_name", "type": "text" },
     { "label": "APP.LABEL.ServiceName", "field": "service.service_name", "type": "text" },
-    { "label": "APP.LABEL.Template", "field": "template.subject", "type": "text" },
+    { "label": "APP.LABEL.Template", "field": "template.name", "type": "text" },
     { "label": "APP.LABEL.AppioMessageId", "field": "appio_message_id", "type": "text", "hideEmpty": true }
   ],
 
