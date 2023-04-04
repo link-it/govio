@@ -153,6 +153,7 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
         switch (key) {
           case 'name':
           case 'type':
+          case 'example':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
             break;
@@ -169,7 +170,6 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
   __onSave(body: any) {
     this._error = false;
     const _body = Tools.RemoveEmpty(body);
-    if (!_body.example) { _body.example = ''; }
     this.apiService.saveElement(this.model, _body).subscribe(
       (response: any) => {
         this.placeholder = new Placeholder({ ...response });
@@ -192,7 +192,6 @@ export class PlaceholderDetailsComponent implements OnInit, OnChanges, AfterCont
     this._error = false;
     const _placeholder = Tools.RemoveEmpty(this.placeholder);
     const _body = Tools.RemoveEmpty(body);
-    if (!_body.example) { _body.example = ''; }
     const _bodyPatch: any[] = jsonpatch.compare(_placeholder, _body);
     if (_bodyPatch) {
       this.apiService.updateElement(this.model, id, _bodyPatch).subscribe(
