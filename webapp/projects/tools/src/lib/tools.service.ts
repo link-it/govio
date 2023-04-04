@@ -397,7 +397,7 @@ export class Tools {
   public static RemoveEmpty(obj: any) {
     return Object.keys(obj)
       .filter(function (k) {
-        return obj[k] != null;
+        return (obj[k] != null) && (obj[k] != '');
       })
       .reduce(function (acc: any, k: string) {
         acc[k] = typeof obj[k] === "object" ? Tools.RemoveEmpty(obj[k]) : obj[k];
