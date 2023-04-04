@@ -23,7 +23,17 @@ public class MessageUtils {
 	}
 
 	public static JsonObject createPlaceHolder(String name, String value) {
-		return Json.createObjectBuilder().add("name", name).add("value", value).build();
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		
+		if(name != null) {
+			objectBuilder = objectBuilder.add("name", name);
+		}
+		
+		if(value != null) {
+			objectBuilder = objectBuilder.add("value", value);
+		}
+		
+		return objectBuilder.build();
 	}
 
 	public static JsonObject createMessage(Long amount, String noticeNumber, Boolean invalidAfterDueDate, String payEETaxCode,
@@ -34,9 +44,15 @@ public class MessageUtils {
 	}
 
 	public static JsonObject createMessage(OffsetDateTime scheduledExpeditionDate, OffsetDateTime dueDate, String taxCode, String email, JsonObject payment, JsonArray placeHolders, DateTimeFormatter dt) {
-		JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
-				.add("taxcode", taxCode)
-				.add("scheduled_expedition_date",  dt.format(scheduledExpeditionDate));
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		
+		if(taxCode != null) {
+			objectBuilder = objectBuilder.add("taxcode", taxCode);
+		}
+		
+		if(scheduledExpeditionDate != null) {
+			objectBuilder = objectBuilder.add("scheduled_expedition_date",  dt.format(scheduledExpeditionDate));
+		}
 		
 		if(payment != null) {
 			objectBuilder = objectBuilder.add("payment", payment);
@@ -58,12 +74,25 @@ public class MessageUtils {
 	}
 
 	public static JsonObject createPaymentObject(Long amount, String noticeNumber, Boolean invalidAfterDueDate, String payEETaxCode) {
-		return Json.createObjectBuilder()
-				.add("amount", amount)
-				.add("notice_number", noticeNumber)
-				.add("invalid_after_due_date", invalidAfterDueDate)
-				.add("payee_taxcode", payEETaxCode)
-				.build();
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		
+		if(amount != null) {
+			objectBuilder = objectBuilder.add("amount", amount);
+		}
+		
+		if(noticeNumber != null) {
+			objectBuilder = objectBuilder.add("notice_number", noticeNumber);
+		}
+		
+		if(invalidAfterDueDate != null) {
+			objectBuilder = objectBuilder.add("invalid_after_due_date", invalidAfterDueDate);
+		}
+		
+		if(payEETaxCode != null) {
+			objectBuilder = objectBuilder.add("payee_taxcode", payEETaxCode);
+		}
+		
+		return objectBuilder.build();
 	}
 	
 	public static String applyPlaceHolders(String template, Map<String,String> placholders ) {
@@ -78,4 +107,55 @@ public class MessageUtils {
 		return template;
 	}
 	
+	public static JsonObject createInvalidDateMessage(String scheduledExpeditionDate, String dueDate, String taxCode, String email, JsonObject payment, JsonArray placeHolders) {
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		
+		if(taxCode != null) {
+			objectBuilder = objectBuilder.add("taxcode", taxCode);
+		}
+		
+		if(scheduledExpeditionDate != null) {
+			objectBuilder = objectBuilder.add("scheduled_expedition_date",  scheduledExpeditionDate);
+		}
+		
+		if(payment != null) {
+			objectBuilder = objectBuilder.add("payment", payment);
+		}
+		
+		if(placeHolders != null) {
+			objectBuilder = objectBuilder.add("placeholders", placeHolders);
+		}
+		
+		if(email != null) {
+			objectBuilder = objectBuilder.add("email", email);
+		}
+		
+		if(dueDate != null) {
+			objectBuilder = objectBuilder.add("due_date", dueDate);
+		}
+		
+		return objectBuilder.build();
+	}
+
+	public static JsonObject createInvalidPaymentObject(String amount, String noticeNumber, String invalidAfterDueDate, String payEETaxCode) {
+		JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+		
+		if(amount != null) {
+			objectBuilder = objectBuilder.add("amount", amount);
+		}
+		
+		if(noticeNumber != null) {
+			objectBuilder = objectBuilder.add("notice_number", noticeNumber);
+		}
+		
+		if(invalidAfterDueDate != null) {
+			objectBuilder = objectBuilder.add("invalid_after_due_date", invalidAfterDueDate);
+		}
+		
+		if(payEETaxCode != null) {
+			objectBuilder = objectBuilder.add("payee_taxcode", payEETaxCode);
+		}
+		
+		return objectBuilder.build();
+	}
 }
