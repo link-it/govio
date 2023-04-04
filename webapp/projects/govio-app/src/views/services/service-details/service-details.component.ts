@@ -594,24 +594,24 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   _orgLogo = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo) {
-      logoUrl = item._links.logo.href;
+    if (item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return logoUrl;
   };
 
   _orgLogoBackground = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item && item._links && item._links.logo) {
-      logoUrl = item._links.logo.href;
+    if (item && item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };
 
   _serviceLogoBackground = (item: any): string => {
     let logoUrl = this._serviceLogoPlaceholder;
-    if (item && item._links && item._links.logo) {
-      logoUrl = item._links.logo.href;
+    if (item && item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };
