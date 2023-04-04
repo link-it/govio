@@ -212,7 +212,7 @@ class Messages_UC_1_CreateMessageTest {
 		
 	}
 
-//	@Test
+	@Test
 	void UC_1_04_createMessage_OnlyRequired() throws Exception {
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";

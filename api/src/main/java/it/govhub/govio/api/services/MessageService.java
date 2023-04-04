@@ -111,10 +111,12 @@ public class MessageService {
 		String markdown = templateApplier.getMarkdown(message, placeholderValues);
 		
 		OffsetDateTime now = OffsetDateTime.now();
+		OffsetDateTime dueDate = message.getDueDate() == null ? null : message.getDueDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime();
+		
 		GovioMessageEntity newMessage = GovioMessageEntity.builder()
 				.amount(message.getAmount())
 				.creationDate(now)
-				.dueDate(message.getDueDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime())
+				.dueDate(dueDate)
 				.email(message.getEmail())
 				.govioServiceInstance(serviceInstance)
 				.invalidAfterDueDate(message.getInvalidAfterDueDate())
