@@ -296,4 +296,32 @@ class Template_UC_9_CreatePlaceHolderFailsTest {
 		
 	}
 	
+	@Test
+	void UC_9_11_CreatePlaceHolder_InvalidURL() throws Exception {
+
+		String json = Json.createObjectBuilder()
+				.add("name", "NuovoPlaceHolder")
+				.add("description", "PlaceHolder di test")
+				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
+				.add("type", Type.STRING.toString())
+				.add("pattern", "[\\s\\S]*")
+				.build()
+				.toString();
+		
+	 this.mockMvc.perform(post("/v1//placeholders")
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").isNumber())
+				.andExpect(jsonPath("$.name", is("NuovoPlaceHolder")))
+				.andExpect(jsonPath("$.description", is("PlaceHolder di test")))
+				.andExpect(jsonPath("$.example", is("PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")))
+				.andExpect(jsonPath("$.type", is(Type.STRING.toString())))
+				.andExpect(jsonPath("$.pattern", is("[\\s\\S]*")))
+				.andReturn();
+		
+	}
 }
