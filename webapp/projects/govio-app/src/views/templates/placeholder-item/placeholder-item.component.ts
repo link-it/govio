@@ -317,7 +317,7 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
     delete _body.mandatory;
     if (!_body.example) { _body.example  = ''; }
     this._savingPlaceHolder = true;
-    this.apiService.saveElement(`/placeholders`, _body).subscribe(
+    this.apiService.saveElement(`placeholders`, _body).subscribe(
       (response: any) => {
         this._isNewPlaceholder = false;
         this._savingPlaceHolder = false;
