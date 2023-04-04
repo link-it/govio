@@ -431,22 +431,22 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
 
   _orgLogo = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo) {
-      logoUrl = item._links.logo.href;
+    if (item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return logoUrl;
   };
 
   _orgLogoBackground = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo && false) {
-      logoUrl = item._links.logo.href;
+    if (item._links && item._links['logo-miniature'] && false) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };
 
   _serviceLogoBackground = (item: any): string => {
-    const logoUrl = item.logo || this._serviceLogoPlaceholder;
+    const logoUrl = item['logo-miniature'] || this._serviceLogoPlaceholder;
     return `url(${logoUrl})`;
   };
 
