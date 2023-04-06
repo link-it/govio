@@ -51,8 +51,8 @@ public class StringItem extends Item<String>{
 		if(value == null) return valuesMap;
 				
 		valuesMap.put(name, value);
-		valuesMap.put(name + ".lower", value.toLowerCase());
-		valuesMap.put(name + ".upper", value.toUpperCase());
+		valuesMap.put(name + "_lower", value.toLowerCase());
+		valuesMap.put(name + "_upper", value.toUpperCase());
 		return valuesMap;
 	}
 }

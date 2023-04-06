@@ -24,11 +24,10 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.text.StringSubstitutor;
-
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 
+import freemarker.template.TemplateException;
 import it.govio.template.exception.TemplateValidationException;
 import it.govio.template.items.BooleanItem;
 import it.govio.template.items.DateTimeItem;
@@ -42,7 +41,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class CsvTemplateApplier extends TemplateApplier {
 	
-	public Message buildMessage(String csvline) {
+	public Message buildMessage(String csvline) throws IOException, TemplateException {
 		CSVParser build = new CSVParserBuilder().build();
 		String[] splitted;
 		try {
@@ -62,18 +61,17 @@ public class CsvTemplateApplier extends TemplateApplier {
 		for(Item<?> item : items.values()) {
 			placeholderValues.putAll(item.getPlaceholderValues(item.getStringValueFromCsv(splitted)));
 		}
-		StringSubstitutor substitutor = new StringSubstitutor(placeholderValues);
 
 		return Message.builder()
 				.amount(amount)
 				.dueDate(dueDate)
 				.email(null)
 				.invalidAfterDueDate(invalidAfterDueDate)
-				.markdown(getMessage(substitutor))
+				.markdown(getMessage(placeholderValues))
 				.noticeNumber(noticeNumber)
 				.payee(payee)
 				.scheduledExpeditionDate(scheduledExpeditionDate)
-				.subject(getSubject(substitutor))
+				.subject(getSubject(placeholderValues))
 				.taxcode(taxcode)
 				.build();
 	}

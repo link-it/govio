@@ -25,6 +25,7 @@ import it.govio.template.Placeholder.Type;
 import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import freemarker.template.TemplateException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -53,7 +57,7 @@ class UC2_BasicTemplateTest {
 	
 	@Test
 	@DisplayName("template con messaggio statico")
-	void UC_1_1_STATIC_OK(){
+	void UC_1_1_STATIC_OK() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Template template = Template
 				.builder()
@@ -72,7 +76,7 @@ class UC2_BasicTemplateTest {
 	
 	@Test
 	@DisplayName("Placeholder string")
-	void UC_1_2_CUSTOM_STRING_PLACEHOLDER(){
+	void UC_1_2_CUSTOM_STRING_PLACEHOLDER() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder fullname = Placeholder.builder()
 				.mandatory(true)
