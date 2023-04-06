@@ -18,11 +18,9 @@
  */
 package it.govio.template;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import freemarker.template.TemplateException;
 import it.govio.template.items.Item;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -31,11 +29,11 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class BasicTemplateApplier extends TemplateApplier {
 	
-	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) throws IOException, TemplateException {
+	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) {
 		return getMessage(getPlaceholderValues(message, placeholders));
 	}
 	
-	public String getSubject(BaseMessage message, Map<String, String> placeholders) throws IOException, TemplateException {
+	public String getSubject(BaseMessage message, Map<String, String> placeholders) {
 		return getSubject(getPlaceholderValues(message, placeholders));
 	}
 	

@@ -43,7 +43,7 @@ public class DateItem extends Item<LocalDate>{
 	}
 	
 	@Override
-	public LocalDate getValue(String stringValue) throws TemplateValidationException {
+	public LocalDate getValue(String stringValue) {
 		validateValue(stringValue);
 		// Se c'e' un valore, controllo che sia compatibile.
 		if(stringValue != null && !stringValue.isBlank()) {
@@ -58,7 +58,7 @@ public class DateItem extends Item<LocalDate>{
 	}
 
 	@Override
-	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
+	public Map<String, String> getPlaceholderValues(String stringValue) {
 		LocalDate value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();
