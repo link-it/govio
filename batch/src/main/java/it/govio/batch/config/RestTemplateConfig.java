@@ -18,6 +18,8 @@
  */
 package it.govio.batch.config;
 
+import java.util.TimeZone;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
@@ -49,6 +51,7 @@ public class RestTemplateConfig {
 		// Il backend IO non accetta i null values
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setSerializationInclusion(Include.NON_NULL);
+		// La data nel backend io deve essere ISO-8601 in UTC
 		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
 		messageConverter.setObjectMapper(objectMapper);

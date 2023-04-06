@@ -37,7 +37,7 @@ public class DateTimeItem extends Item<LocalDateTime> {
 	
 	private Logger logger = LoggerFactory.getLogger(DateTimeItem.class);
 	protected static final DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.ITALY);
-	protected static final DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("E dd M yyyy 'alle ore' HH:mm", Locale.ITALY);
+	protected static final DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("EEEE dd LLLL yyyy 'alle ore' HH:mm", Locale.ITALY);
 	protected static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm", Locale.ITALY);
 
 	public DateTimeItem(int position, String name, boolean mandatory) {
@@ -69,10 +69,10 @@ public class DateTimeItem extends Item<LocalDateTime> {
 		if(value == null) return valuesMap;
 		
 		valuesMap.put(name, value.format(baseFormat));
-		valuesMap.put(name + ".verbose", value.format(longFormat));
-		valuesMap.put(name + ".date", value.format(DateItem.baseFormat));
-		valuesMap.put(name + ".date.verbose", value.format(DateItem.longFormat));
-		valuesMap.put(name + ".time", value.format(timeFormat));
+		valuesMap.put(name + "_verbose", value.format(longFormat));
+		valuesMap.put(name + "_date", value.format(DateItem.baseFormat));
+		valuesMap.put(name + "_date_verbose", value.format(DateItem.longFormat));
+		valuesMap.put(name + "_time", value.format(timeFormat));
 		return valuesMap;
 	}
 }

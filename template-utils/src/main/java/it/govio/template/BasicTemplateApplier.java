@@ -18,10 +18,11 @@
  */
 package it.govio.template;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.text.StringSubstitutor;
+import freemarker.template.TemplateException;
 import it.govio.template.items.Item;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -30,15 +31,15 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class BasicTemplateApplier extends TemplateApplier {
 	
-	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) {
-		return getMessage(getStringSubstitutor(message, placeholders));
+	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) throws IOException, TemplateException {
+		return getMessage(getPlaceholderValues(message, placeholders));
 	}
 	
-	public String getSubject(BaseMessage message, Map<String, String> placeholders) {
-		return getSubject(getStringSubstitutor(message, placeholders));
+	public String getSubject(BaseMessage message, Map<String, String> placeholders) throws IOException, TemplateException {
+		return getSubject(getPlaceholderValues(message, placeholders));
 	}
 	
-	private StringSubstitutor getStringSubstitutor(BaseMessage message, Map<String, String> placeholders) {
+	private Map<String, String> getPlaceholderValues(BaseMessage message, Map<String, String> placeholders) {
 		if(placeholders == null)
 			placeholders = new HashMap<String,String>();
 		if(message.getAmount() != null)
@@ -60,7 +61,7 @@ public class BasicTemplateApplier extends TemplateApplier {
 		for(Item<?> item : items.values()) {
 			placeholderValues.putAll(item.getPlaceholderValues(placeholders.get(item.getName())));
 		}
-		return new StringSubstitutor(placeholderValues);
+		return placeholderValues;
 	}
 	
 }

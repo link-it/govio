@@ -19,7 +19,7 @@
 package it.govio.batch.step;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
@@ -82,7 +82,8 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		
 		// setto i dati rimanenti del content
 		if(item.getDueDate() != null) {
-			mc.setDueDate(dtf.format(item.getDueDate().atOffset(ZoneOffset.UTC)));
+			// IO richiede la data in UTC
+			mc.setDueDate(dtf.format(item.getDueDate().atZone(ZoneId.of("Europe/Rome")).withZoneSameInstant(ZoneId.of("UTC"))));
 		}
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());

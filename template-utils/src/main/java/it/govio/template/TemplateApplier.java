@@ -18,31 +18,40 @@
  */
 package it.govio.template;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Map;
-import org.apache.commons.text.StringSubstitutor;
+import java.util.TimeZone;
+
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import it.govio.template.exception.TemplateValidationException;
 import it.govio.template.items.Item;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 public abstract class TemplateApplier {
-	
+
 	protected String message;
 	protected String subject;
+
 	protected Map<String, Item<?>> items;
-	
-	protected String getSubject(StringSubstitutor substitutor) {
-		String subjectString = substitutor.replace(subject);
+
+	protected String getSubject(Map<String, String> placeholderValues) throws IOException, TemplateException {
+		String subjectString = applyFreemarkerTemplate(subject, placeholderValues);
 		if (subjectString.length() < 10) {
 			throw new TemplateValidationException(String.format("Il subject di dimensione %d, è minore della dimensione minima ammessa.", subjectString.length()));
 		}
 		if  (subjectString.length() > 120) 
 			throw new TemplateValidationException(String.format("Il subject di dimensione %d, supera la dimensione massima ammessa.", subjectString.length()));
-		return substitutor.replace(subject);
+		return subjectString;
 	}
 
-	protected String getMessage(StringSubstitutor substitutor) {
-		String markdown = substitutor.replace(message);
+	protected String getMessage(Map<String, String> placeholderValues) throws IOException, TemplateException {
+		String markdown = applyFreemarkerTemplate(message, placeholderValues);
 		if (markdown.length() < 80)
 			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, è minore della dimensione minima ammessa.", markdown.length()));
 		if (markdown.length() > 10000)
@@ -50,4 +59,17 @@ public abstract class TemplateApplier {
 		return markdown;
 	}
 
+	private String applyFreemarkerTemplate(String template, Map<String, String> placeholderValues) throws IOException, TemplateException {
+		Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
+		cfg.setDefaultEncoding("UTF-8");
+		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+		cfg.setLogTemplateExceptions(false);
+		cfg.setWrapUncheckedExceptions(true);
+		cfg.setFallbackOnNullLoopVariable(false);
+		cfg.setSQLDateAndTimeTimeZone(TimeZone.getDefault());
+		freemarker.template.Template t = new freemarker.template.Template("name", new StringReader(template), cfg);
+		Writer out = new StringWriter();
+		t.process(placeholderValues, out);
+		return out.toString();
+	}
 }

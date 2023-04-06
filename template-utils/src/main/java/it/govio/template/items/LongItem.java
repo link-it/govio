@@ -67,7 +67,7 @@ public class LongItem extends Item<Long>{
 			    .doubleValue();
 		NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.ITALY);
 		valuesMap.put(name, value.toString());
-		valuesMap.put(name + ".currency", formatter.format(truncatedDouble));
+		valuesMap.put(name + "_currency", formatter.format(truncatedDouble));
 		return valuesMap;
 	}
 }

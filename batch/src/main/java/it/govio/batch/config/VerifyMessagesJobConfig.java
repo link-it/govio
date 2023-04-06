@@ -68,19 +68,23 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 		.build();
 	}
 	
-	@Value( "${govio.batch.verify-messages.delay-window:30}" )
-	protected int delayWindow;
+	@Value( "${govio.batch.verify-messages.delay-mins:30}" )
+	protected int delay;
+	
+	@Value( "${govio.batch.verify-messages.window-days:14}" )
+	protected int window;	
 	
 	@Bean
 	@Qualifier("expiredExpeditionDateMessageCursor")
 	protected ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor(Status[] statuses) {
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
-        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.expeditionDate < :t0");
+        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.expeditionDate < :t0 AND msg.expeditionDate > :t1");
         itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
         itemReader.setSaveState(true);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("statuses", Arrays.asList(statuses));
-        parameters.put("t0", LocalDateTime.now().minusMinutes(delayWindow));
+        parameters.put("t0", LocalDateTime.now().minusMinutes(delay));        
+        parameters.put("t1", LocalDateTime.now().minusDays(window));
         itemReader.setParameterValues(parameters);
         return itemReader;
     }

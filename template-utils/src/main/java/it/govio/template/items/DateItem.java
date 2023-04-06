@@ -36,7 +36,7 @@ public class DateItem extends Item<LocalDate>{
 	
 	private Logger logger = LoggerFactory.getLogger(DateItem.class);
 	protected static DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ITALY);
-	protected static DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("E dd M yyyy", Locale.ITALY);
+	protected static DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("EEEE dd LLLL yyyy", Locale.ITALY);
 	
 	public DateItem(int position, String name, boolean mandatory) {
 		super(name, mandatory, position);
@@ -65,7 +65,7 @@ public class DateItem extends Item<LocalDate>{
 		if(value == null) return valuesMap;
 		
 		valuesMap.put(name, value.format(baseFormat));
-		valuesMap.put(name + ".verbose", value.format(longFormat));
+		valuesMap.put(name + "_verbose", value.format(longFormat));
 		return valuesMap;
 	}
 }

@@ -26,11 +26,15 @@ import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
 import it.govio.template.exception.TemplateValidationException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import freemarker.template.TemplateException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -96,7 +100,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("Messaggio senza due date, senza payment, senza placeholder")
-	void UC_1_4_OnlyTaxcodeExpeditionDate(){
+	void UC_1_4_OnlyTaxcodeExpeditionDate() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Template template = Template
 				.builder()
@@ -114,14 +118,14 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due_date e data valida")
-	void UC_1_5_DueDateValido(){
+	void UC_1_5_DueDateValido() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(false)
-				.messageBody("il comune di Empoli lo avvisa che la data di scadenza è ${due_date.date} alle ${due_date.time},il markdown deve essere di almeno 80 caratteri")
+				.messageBody("il comune di Empoli lo avvisa che la data di scadenza è ${due_date_date} alle ${due_date_time},il markdown deve essere di almeno 80 caratteri")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -140,7 +144,7 @@ class UC1_CsvTemplateTest {
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(false)
-				.messageBody("il comune di Empoli lo avvisa che la data di scadenza è ${due_date.date} alle ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che la data di scadenza è ${due_date_date} alle ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -160,7 +164,7 @@ class UC1_CsvTemplateTest {
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(false)
-				.messageBody("il comune di Empoli lo avvisa che la data di scadenza è ${due_date.date} alle ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che la data di scadenza è ${due_date_date} alle ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -173,14 +177,14 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con payment valido")
-	void UC_1_8_PaymentValido(){
+	void UC_1_8_PaymentValido() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(true)
-				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date.date} alle ore ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -200,7 +204,7 @@ class UC1_CsvTemplateTest {
 				.builder()
 				.hasDueDate(false)
 				.hasPayment(true)
-				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date.date} alle ore ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -213,14 +217,14 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due date e payment e invalid_after_due_date true")
-	void UC_1_10_DueDatePaymentInvalidAfterDueDateTrue(){
+	void UC_1_10_DueDatePaymentInvalidAfterDueDateTrue() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(true)
-				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date.date} alle ore ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -235,14 +239,14 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due date e payment e invalid_after_due_date false")
-	void UC_1_12_DueDatePaymentInvalidAfterDueDateFalse(){
+	void UC_1_12_DueDatePaymentInvalidAfterDueDateFalse() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(true)
-				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date.date} alle ore ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -256,14 +260,14 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due date e payment e invalid_after_due_date assente")
-	void UC_1_13_DueDatePaymentInvalidAfterDueDateAssente(){
+	void UC_1_13_DueDatePaymentInvalidAfterDueDateAssente() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(true)
-				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date.date} alle ore ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -284,7 +288,7 @@ class UC1_CsvTemplateTest {
 				.builder()
 				.hasDueDate(true)
 				.hasPayment(true)
-				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date.date} alle ore ${due_date.time}")
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -300,7 +304,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con placeholder stringa senza pattern")
-	void UC_1_15_PlaceholderStringaSenzaPattern(){
+	void UC_1_15_PlaceholderStringaSenzaPattern() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -331,7 +335,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("Template con placeholder stringa con pattern rispettato")
-	void UC_1_16_PlaceholderStringaConPatternOK(){
+	void UC_1_16_PlaceholderStringaConPatternOK() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -390,7 +394,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con placeholder data valida")
-	void UC_1_18_PlaceholderDate(){
+	void UC_1_18_PlaceholderDate() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -449,7 +453,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con placeholder data verbosa")
-	void UC_1_20_PlaceholderDateVerbosa(){
+	void UC_1_20_PlaceholderDateVerbosa() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -465,7 +469,7 @@ class UC1_CsvTemplateTest {
 				.builder()
 				.hasDueDate(false)
 				.hasPayment(false)
-				.messageBody("messaggio semplice con un placeholder con data :  ${place_holder_date.verbose},il markdown deve essere di almeno 80 caratteri")
+				.messageBody("messaggio semplice con un placeholder con data :  ${place_holder_date_verbose},il markdown deve essere di almeno 80 caratteri")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -473,12 +477,12 @@ class UC1_CsvTemplateTest {
 		CsvTemplateApplier templateApplier = TemplateApplierFactory.buildCSVTemplateApplier(template);
 		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-12");
 
-		assertEquals("messaggio semplice con un placeholder con data :  mer 12 12 2007,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
+		assertEquals("messaggio semplice con un placeholder con data :  mercoledì 12 dicembre 2007,il markdown deve essere di almeno 80 caratteri",messaggio.getMarkdown());
 	}
 
 	@Test
 	@DisplayName("template con placeholder date time in tutti i formati")
-	void UC_1_21_PlaceholderEveryDateTime(){
+	void UC_1_21_PlaceholderEveryDateTime() throws IOException, TemplateException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -493,7 +497,7 @@ class UC1_CsvTemplateTest {
 				.builder()
 				.hasDueDate(false)
 				.hasPayment(false)
-				.messageBody("messaggio semplice con un placeholder con date time :  ${appointment}, ${appointment.date}, ${appointment.date.verbose}, ${appointment.time}, ${appointment.verbose}")
+				.messageBody("messaggio semplice con un placeholder con date time :  ${appointment}, ${appointment_date}, ${appointment_date_verbose}, ${appointment_time}, ${appointment_verbose}")
 				.subject("hello, il subject deve essere almeno dieci caratteri")
 				.placeholders(placeholders)
 				.build();
@@ -501,6 +505,6 @@ class UC1_CsvTemplateTest {
 		CsvTemplateApplier templateApplier = TemplateApplierFactory.buildCSVTemplateApplier(template);
 		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30");
 
-		assertEquals("messaggio semplice con un placeholder con date time :  03/12/2007 10:15, 03/12/2007, lun 03 12 2007, 10:15, lun 03 12 2007 alle ore 10:15",messaggio.getMarkdown());
+		assertEquals("messaggio semplice con un placeholder con date time :  03/12/2007 10:15, 03/12/2007, lunedì 03 dicembre 2007, 10:15, lunedì 03 dicembre 2007 alle ore 10:15",messaggio.getMarkdown());
 	}
 }
