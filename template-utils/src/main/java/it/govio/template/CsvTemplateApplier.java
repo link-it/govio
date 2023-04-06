@@ -27,7 +27,6 @@ import java.util.Map;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 
-import freemarker.template.TemplateException;
 import it.govio.template.exception.TemplateValidationException;
 import it.govio.template.items.BooleanItem;
 import it.govio.template.items.DateTimeItem;
@@ -41,7 +40,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class CsvTemplateApplier extends TemplateApplier {
 	
-	public Message buildMessage(String csvline) throws IOException, TemplateException {
+	public Message buildMessage(String csvline) {
 		CSVParser build = new CSVParserBuilder().build();
 		String[] splitted;
 		try {
@@ -76,7 +75,7 @@ public class CsvTemplateApplier extends TemplateApplier {
 				.build();
 	}
 
-	private LocalDateTime getScheduledExpeditionDate(String[] splitted) {
+	private LocalDateTime getScheduledExpeditionDate(String[] splitted) throws TemplateValidationException {
 		DateTimeItem item = (DateTimeItem) items.get( ItemKeys.EXPEDITIONDATE.toString());
 		if(item != null)
 			return item.getValueFromCsv(splitted);
@@ -84,32 +83,32 @@ public class CsvTemplateApplier extends TemplateApplier {
 			throw new TemplateValidationException("La data di spedizione è obbligatoria");
 	}
 
-	private Boolean getInvalidAfterDueDate(String[] splitted) {
+	private Boolean getInvalidAfterDueDate(String[] splitted) throws TemplateValidationException {
 		BooleanItem item = (BooleanItem) items.get( ItemKeys.INVALIDAFTERDUEDATE.toString());
 		return item != null ? item.getValueFromCsv(splitted) : null;
 	}
 
-	private Long getAmount(String[] splitted) {
+	private Long getAmount(String[] splitted) throws TemplateValidationException {
 		LongItem item = (LongItem) items.get( ItemKeys.AMOUNT.toString());
 		return item != null ? item.getValueFromCsv(splitted) : null;
 	}
 
-	private String getPayee(String[] splitted) {
+	private String getPayee(String[] splitted) throws TemplateValidationException {
 		StringItem item = (StringItem) items.get( ItemKeys.PAYEE.toString());
 		return item != null ? item.getValueFromCsv(splitted) : null;
 	}
 
-	private String getNoticeNumber(String[] splitted) {
+	private String getNoticeNumber(String[] splitted) throws TemplateValidationException {
 		StringItem item = (StringItem) items.get( ItemKeys.NOTICENUMBER.toString());
 		return item != null ? item.getValueFromCsv(splitted) : null;
 	}
 
-	private LocalDateTime getDuedate(String[] splitted) {
+	private LocalDateTime getDuedate(String[] splitted) throws TemplateValidationException {
 		DateTimeItem item = (DateTimeItem) items.get( ItemKeys.DUEDATE.toString());
 		return item != null ? item.getValueFromCsv(splitted) : null;
 	}
 
-	private String getTaxcode(String[] splitted) {
+	private String getTaxcode(String[] splitted) throws TemplateValidationException {
 		StringItem item = (StringItem) items.get( ItemKeys.TAXCODE.toString());
 		if(item != null)
 			return item.getValueFromCsv(splitted);

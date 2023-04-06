@@ -40,7 +40,7 @@ public class LongItem extends Item<Long>{
 	}
 	
 	@Override
-	public Long getValue(String stringValue) throws TemplateValidationException {
+	public Long getValue(String stringValue) {
 		super.validateValue(stringValue);
 		
 		// Se c'e' un valore, controllo che sia compatibile.
@@ -56,7 +56,7 @@ public class LongItem extends Item<Long>{
 	}
 
 	@Override
-	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
+	public Map<String, String> getPlaceholderValues(String stringValue) {
 		Long value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();

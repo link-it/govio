@@ -18,8 +18,6 @@
  */
 package it.govio.batch.config;
 
-import java.util.TimeZone;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;

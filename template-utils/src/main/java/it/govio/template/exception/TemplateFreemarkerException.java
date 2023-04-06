@@ -23,12 +23,12 @@ package it.govio.template.exception;
  * @author nardi
  *
  */
-public class TemplateValidationException extends RuntimeException {
+public class TemplateFreemarkerException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 	
-	public TemplateValidationException(String cause) {
-		super();
+	public TemplateFreemarkerException(Throwable cause) {
+		super(cause);
 	}
 
 }

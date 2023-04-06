@@ -30,6 +30,7 @@ import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.template.CsvTemplateApplier;
 import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
+import it.govio.template.exception.TemplateFreemarkerException;
 import it.govio.template.exception.TemplateValidationException;
 import it.govio.template.Message;
 
@@ -64,7 +65,7 @@ public class GovioFileItemProcessor implements ItemProcessor<GovioFileMessageEnt
 					.build();
 			
 			item.setGovioMessage(govioMessageEntity);
-		} catch (TemplateValidationException e) {
+		} catch (TemplateValidationException | TemplateFreemarkerException e) {
 			item.setError(e.getMessage());
 			logger.info("Errore nell'applicazione del template [numlinea: {}] [record: {}] : {}", item.getLineNumber(), item.getLineRecord(), e.getMessage());
 		}
