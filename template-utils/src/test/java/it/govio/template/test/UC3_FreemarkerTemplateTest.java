@@ -41,7 +41,7 @@ import freemarker.template.TemplateException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class UC2_BasicTemplateTest {
+class UC3_FreemarkerTemplateTest {
 	
 	private BaseMessage getDefaultMessage() {
 		return BaseMessage.builder()
@@ -105,4 +105,51 @@ class UC2_BasicTemplateTest {
 		assertEquals("hello, il subject deve essere almeno dieci caratteri Satoshi Nakamoto", templateApplier.getSubject(message, values));
 	}
 
+	@Test
+	@DisplayName("Placeholder string")
+	void UC_1_3_IFPATTERN() throws IOException, TemplateException, TemplateValidationException{
+		List<Placeholder> placeholders = new ArrayList<> ();
+		Placeholder fullname = Placeholder.builder()
+				.mandatory(true)
+				.name("full_name")
+				.type(Type.STRING)
+				.build();
+		placeholders.add(fullname);
+		
+		
+		{
+		Template template = Template
+				.builder()
+				.hasDueDate(false)
+				.hasPayment(false)
+				.messageBody("Il Comune di Empoli le dice hello, <#if (full_name?length > 5) >aaaa<#else>bbbb</#if>, il markdown deve essere di almeno 80 caratteri")
+				.subject("hello, il subject deve essere almeno dieci caratteri ${full_name}")
+				.placeholders(placeholders)
+				.build();
+		
+		BasicTemplateApplier templateApplier = TemplateApplierFactory.buildBasicTemplateApplier(template);
+		BaseMessage message = getDefaultMessage();
+		Map<String, String> values = new HashMap<>();
+		values.put(fullname.getName(), "Satoshi Nakamoto");
+		assertEquals("Il Comune di Empoli le dice hello, aaaa, il markdown deve essere di almeno 80 caratteri", templateApplier.getMarkdown(message, values));
+		assertEquals("hello, il subject deve essere almeno dieci caratteri Satoshi Nakamoto", templateApplier.getSubject(message, values));
+		}
+		{
+		Template template = Template
+				.builder()
+				.hasDueDate(false)
+				.hasPayment(false)
+				.messageBody("Il Comune di Empoli le dice hello, <#if (full_name?length<5) >aaaa<#else>bbbb</#if>, il markdown deve essere di almeno 80 caratteri")
+				.subject("hello, il subject deve essere almeno dieci caratteri ${full_name}")
+				.placeholders(placeholders)
+				.build();
+		
+		BasicTemplateApplier templateApplier = TemplateApplierFactory.buildBasicTemplateApplier(template);
+		BaseMessage message = getDefaultMessage();
+		Map<String, String> values = new HashMap<>();
+		values.put(fullname.getName(), "Satoshi Nakamoto");
+		assertEquals("Il Comune di Empoli le dice hello, bbbb, il markdown deve essere di almeno 80 caratteri", templateApplier.getMarkdown(message, values));
+		assertEquals("hello, il subject deve essere almeno dieci caratteri Satoshi Nakamoto", templateApplier.getSubject(message, values));
+		}
+	}
 }
