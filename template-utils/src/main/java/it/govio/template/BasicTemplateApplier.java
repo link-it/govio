@@ -1,9 +1,26 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.template;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.text.StringSubstitutor;
 import it.govio.template.items.Item;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -13,14 +30,14 @@ import lombok.experimental.SuperBuilder;
 public class BasicTemplateApplier extends TemplateApplier {
 	
 	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) {
-		return getMessage(getStringSubstitutor(message, placeholders));
+		return getMessage(getPlaceholderValues(message, placeholders));
 	}
 	
 	public String getSubject(BaseMessage message, Map<String, String> placeholders) {
-		return getSubject(getStringSubstitutor(message, placeholders));
+		return getSubject(getPlaceholderValues(message, placeholders));
 	}
 	
-	private StringSubstitutor getStringSubstitutor(BaseMessage message, Map<String, String> placeholders) {
+	private Map<String, String> getPlaceholderValues(BaseMessage message, Map<String, String> placeholders) {
 		if(placeholders == null)
 			placeholders = new HashMap<String,String>();
 		if(message.getAmount() != null)
@@ -42,7 +59,7 @@ public class BasicTemplateApplier extends TemplateApplier {
 		for(Item<?> item : items.values()) {
 			placeholderValues.putAll(item.getPlaceholderValues(placeholders.get(item.getName())));
 		}
-		return new StringSubstitutor(placeholderValues);
+		return placeholderValues;
 	}
 	
 }

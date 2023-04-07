@@ -16,15 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package it.govhub.govio.api.messages;
+package it.govio.template.exception;
 
-import org.springframework.stereotype.Component;
+/**
+ * Errore in invocazione del servizio di backend IO
+ * @author nardi
+ *
+ */
+public class TemplateFreemarkerException extends RuntimeException {
 
-import it.govhub.govregistry.commons.messages.RestEntityMessageBuilder;
-
-@Component
-public class MessageMessages extends RestEntityMessageBuilder{
-
-	public MessageMessages() { super("Message"); }
+	private static final long serialVersionUID = 1L;
+	
+	public TemplateFreemarkerException(Throwable cause) {
+		super(cause);
+	}
 
 }

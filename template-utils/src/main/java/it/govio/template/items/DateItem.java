@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.template.items;
 
 
@@ -18,14 +36,14 @@ public class DateItem extends Item<LocalDate>{
 	
 	private Logger logger = LoggerFactory.getLogger(DateItem.class);
 	protected static DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ITALY);
-	protected static DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("E dd M yyyy", Locale.ITALY);
+	protected static DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("EEEE dd LLLL yyyy", Locale.ITALY);
 	
 	public DateItem(int position, String name, boolean mandatory) {
 		super(name, mandatory, position);
 	}
 	
 	@Override
-	public LocalDate getValue(String stringValue) throws TemplateValidationException {
+	public LocalDate getValue(String stringValue) {
 		validateValue(stringValue);
 		// Se c'e' un valore, controllo che sia compatibile.
 		if(stringValue != null && !stringValue.isBlank()) {
@@ -40,14 +58,14 @@ public class DateItem extends Item<LocalDate>{
 	}
 
 	@Override
-	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
+	public Map<String, String> getPlaceholderValues(String stringValue) {
 		LocalDate value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();
 		if(value == null) return valuesMap;
 		
 		valuesMap.put(name, value.format(baseFormat));
-		valuesMap.put(name + ".verbose", value.format(longFormat));
+		valuesMap.put(name + "_verbose", value.format(longFormat));
 		return valuesMap;
 	}
 }
