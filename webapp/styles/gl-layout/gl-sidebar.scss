@@ -599,8 +599,8 @@
 
 .close-nav-button:hover,
 .toggle-sidebar-button:hover {
-  background-color: var(--navbar-toggle-over-color, #dbdbdb);
-  color: #303030;
+  background-color: var(--navbar-toggle-back-over-color, #dbdbdb);
+  color: var(--navbar-toggle-over-color, #303030);
 }
 
 .close-nav-button .collapse-text,
