@@ -301,7 +301,7 @@ class Messages_UC_3_GetMessageTest {
 		verificaDettaglioDB(idMessaggio, messaggio, payment, false);
 	}
 
-	//	@Test
+	@Test
 	void UC_3_04_GetMessage_OnlyRequired() throws Exception {
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
@@ -336,17 +336,23 @@ class Messages_UC_3_GetMessageTest {
 		reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
 		JsonObject messaggio = reader.readObject();
 
-		assertNotNull(messaggio.get("id"));
-		assertEquals(taxCode, messaggio.getString("taxcode"));
-		assertEquals("Lorem ipsum dolor sit amet.", messaggio.getString("subject"));
-		assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur", messaggio.getString("markdown"));
-		assertEquals(email, messaggio.getString("email"));
-		assertNotNull(messaggio.get("creation_date"));
-		//assertEquals(dt.format(dueDate), messaggio.getString("due_date"));
-		assertEquals("scheduled", messaggio.getString("status"));
-		//	assertEquals(dt.format(scheduledExpeditionDate), messaggio.getString("scheduled_expedition_date"));
-		JsonObject payment = messaggio.getJsonObject("payment");
-		assertNull(payment); 
+		assertNotNull(response.get("id"));
+		assertEquals(taxCode, response.getString("taxcode"));
+		assertEquals("Lorem ipsum dolor sit amet.", response.getString("subject"));
+		assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur", response.getString("markdown"));
+		
+		JsonValue emailJson = response.get("email");
+		assertNull(emailJson);
+		
+		assertNotNull(response.get("creation_date"));
+		
+		JsonValue dueDateJson = response.get("due_date");
+		assertNull(dueDateJson);
+		
+		assertEquals("scheduled", response.getString("status"));
+		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
+		JsonObject payment = response.getJsonObject("payment");
+		assertNull(payment);
 
 		verificaDettaglioDB(idMessaggio, messaggio, payment, true);
 
