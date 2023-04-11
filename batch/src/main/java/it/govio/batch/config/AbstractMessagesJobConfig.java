@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -41,6 +43,8 @@ public abstract class AbstractMessagesJobConfig  {
 	@Autowired
 	EntityManager entityManager;
 	
+	private Logger log = LoggerFactory.getLogger(AbstractMessagesJobConfig.class);
+	
 	protected TaskExecutor taskExecutor() {
 	    return new SimpleAsyncTaskExecutor("spring_batch_msgsender");
 	}
@@ -66,7 +70,7 @@ public abstract class AbstractMessagesJobConfig  {
     }
 	
 	protected ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status[] statuses) {
-		
+		log.info("Configuring ItemReader expiredScheduledDateMessageCursor");
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
         itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < :now");
         itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
