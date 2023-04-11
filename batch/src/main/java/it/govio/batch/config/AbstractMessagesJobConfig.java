@@ -30,16 +30,16 @@ import it.govio.batch.step.GovioMessageAbstractProcessor;
 public abstract class AbstractMessagesJobConfig  {
 
 	@Autowired
-	protected JobBuilderFactory jobs;
+	JobBuilderFactory jobs;
 
 	@Autowired
-	protected StepBuilderFactory steps;
+	StepBuilderFactory steps;
 	
 	@Autowired
-	protected GovioMessagesRepository govioMessagesRepository;
+	GovioMessagesRepository govioMessagesRepository;
 	
 	@Autowired
-	protected EntityManager entityManager;
+	EntityManager entityManager;
 	
 	protected TaskExecutor taskExecutor() {
 	    return new SimpleAsyncTaskExecutor("spring_batch_msgsender");
@@ -66,6 +66,7 @@ public abstract class AbstractMessagesJobConfig  {
     }
 	
 	protected ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status[] statuses) {
+		
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
         itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < :now");
         itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
