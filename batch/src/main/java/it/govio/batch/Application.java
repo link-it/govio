@@ -18,6 +18,8 @@
  */
 package it.govio.batch;
 
+import java.util.Date;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -74,6 +76,7 @@ public class Application extends SpringBootServletInitializer {
 	public void verifyMessagesJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))
+				.addDate("CurrentDate",new Date())
 				.toJobParameters();
 		jobLauncher.run(verifyMessagesJob, params);
 	}

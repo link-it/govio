@@ -19,7 +19,6 @@
 package it.govio.batch.config;
 
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,16 +82,4 @@ public abstract class AbstractMessagesJobConfig  {
         return repositoryItemWriter;
     }
 	
-	protected ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status[] statuses) {
-        JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
-        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < :now");
-        itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
-        itemReader.setSaveState(true);
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("statuses", Arrays.asList(statuses));
-        parameters.put("now", LocalDateTime.now());
-        itemReader.setParameterValues(parameters);
-        return itemReader;
-    }
-
 }
