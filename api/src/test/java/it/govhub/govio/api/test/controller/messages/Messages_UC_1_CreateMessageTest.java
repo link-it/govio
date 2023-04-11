@@ -218,10 +218,8 @@ class Messages_UC_1_CreateMessageTest {
 	void UC_1_04_CreateMessage_OnlyRequired() throws Exception {
 		
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
-		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		
 		String taxCode = "AYCSFK56HUQE969O";
-		String email = "s.nakamoto@xxxxx.xx";
 		
 		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, null, taxCode, null, null, null, this.dt);
 		
@@ -244,9 +242,7 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals(taxCode, response.getString("taxcode"));
 		assertEquals("Lorem ipsum dolor sit amet.", response.getString("subject"));
 		assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur", response.getString("markdown"));
-		assertEquals(email, response.getString("email"));
 		assertNotNull(response.get("creation_date"));
-		assertEquals(dt.format(dueDate), response.getString("due_date"));
 		assertEquals("scheduled", response.getString("status"));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
