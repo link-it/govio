@@ -1,9 +1,15 @@
 package it.govio.batch.test.utils;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.junit.rules.TemporaryFolder;
+
+import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.entity.GovioMessageEntity.GovioMessageEntityBuilder;
@@ -44,6 +50,26 @@ public class GovioMessageBuilder {
 		
 		GovioMessageEntity message = messageEntity.build();
 		return message;
+	}
+
+	public static GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i) throws IOException {
+		File file = t.newFile(i+".csv");
+		FileWriter file1writer = new FileWriter(file);
+		file1writer.write("Testata\n");
+		for(int x=0;x<100;x++)
+			file1writer.write("XXXXXX"+i+"A00Y"+String.format("%03d", x)+"Z,2022-12-31T12:00:00,2022-12-31T12:00:00,2022-12-31,Ufficio1\n");
+		file1writer.close();
+	
+		GovioFileEntity govioFile1 = GovioFileEntity.builder()
+				.creationDate(LocalDateTime.now())
+				.govioServiceInstance(instanceService)
+				.govhubUserId(1l)
+				.location(file.toPath().toString())
+				.name(file.getName())
+				.status(GovioFileEntity.Status.CREATED)
+				.build();
+	
+		return govioFile1;
 	}
 
 }

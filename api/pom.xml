@@ -212,6 +212,7 @@
 			<version>${commons-fileupload.version}</version>
 		</dependency>
 
+		<!-- Generatore  OpenAPI Custom per govway -->
 		<dependency>
 			<groupId>it.govhub</groupId>
 			<artifactId>govhub-openapi-codegen</artifactId>
