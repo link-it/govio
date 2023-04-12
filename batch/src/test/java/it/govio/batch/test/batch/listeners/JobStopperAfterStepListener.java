@@ -28,6 +28,7 @@ public class JobStopperAfterStepListener implements StepExecutionListener {
 		
 		@Override
 		public ExitStatus afterStep(StepExecution stepExecution) {
+			log.info("JobStopperAfterStepListener::afterStep");
 			if ( ! fired ) {
 				log.info("Stopping job [{}] after step [{}]", stepExecution.getJobExecution().getJobInstance().getJobName(), stepExecution.getStepName());
 				try {
