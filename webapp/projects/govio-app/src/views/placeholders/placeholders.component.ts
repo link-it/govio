@@ -5,12 +5,11 @@ import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
 
 import { SearchBarFormComponent } from 'projects/components/src/lib/ui/search-bar-form/search-bar-form.component';
@@ -68,13 +67,7 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
   sortDirection: string = 'asc';
   sortFields: any[] = [];
 
-  searchFields: any[] = [
-    { field: 'creationDateFrom', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
-    { field: 'creationDateTo', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
-    { field: 'taxcode', label: 'APP.LABEL.Taxcode', type: 'string', condition: 'like' },
-    { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
-    { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
-  ];
+  searchFields: any[] = [];
 
   breadcrumbs: any[] = [
     { label: 'APP.TITLE.Configurations', url: '', type: 'title', iconBs: 'gear' },
@@ -88,7 +81,6 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
     private configService: ConfigService,
     public tools: Tools,
     private eventsManagerService: EventsManagerService,
-    private pageloaderService: PageloaderService,
     public apiService: OpenAPIService
   ) {
     this.config = this.configService.getConfiguration();
@@ -102,20 +94,9 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // language
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.configService.getConfig('placeholders').subscribe(
       (config: any) => {
         this.placeholdersConfig = config;
-        this._translateConfig();
       }
     );
   }
@@ -134,21 +115,6 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
     this.desktop = (window.innerWidth >= 992);
   }
 
-  _translateConfig() {
-    if (this.placeholdersConfig && this.placeholdersConfig.options) {
-      Object.keys(this.placeholdersConfig.options).forEach((key: string) => {
-        if (this.placeholdersConfig.options[key].label) {
-          this.placeholdersConfig.options[key].label = this.translate.instant(this.placeholdersConfig.options[key].label);
-        }
-        if (this.placeholdersConfig.options[key].values) {
-          Object.keys(this.placeholdersConfig.options[key].values).forEach((key2: string) => {
-            this.placeholdersConfig.options[key].values[key2].label = this.translate.instant(this.placeholdersConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
-  }
-
   _setErrorPlaceholders(error: boolean) {
     this._error = error;
     if (this._error) {
@@ -162,38 +128,29 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
 
   _initSearchForm() {
     this._formGroup = new UntypedFormGroup({
-      creationDateFrom: new UntypedFormControl(''),
-      creationDateTo: new UntypedFormControl(''),
-      taxcode: new UntypedFormControl(''),
-      'organization.legal_name': new UntypedFormControl(''),
-      'service.service_name': new UntypedFormControl(''),
+      'q': new UntypedFormControl(''),
     });
   }
 
   _loadPlaceholders(query: any = null, url: string = '') {
     this._setErrorPlaceholders(false);
 
-    if (!url) { this.placeholders = []; }
-
     let aux: any;
-    if (query)  aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.placeholders = [];
+      if (query) { aux = { params: this._queryToHttpParams(query) } };
+    }
 
+    this._spin = true;
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         this.page = response.page;
         this._links = response._links;
-
+        
         if (response.items) {
           const _list: any = response.items.map((placeholder: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.metadata.text, placeholder, this.placeholdersConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.metadata.label, placeholder, this.placeholdersConfig.options || null);
             const element = {
               id: placeholder.id,
-              primaryText: Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.primaryText, placeholder, this.placeholdersConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.secondaryText, placeholder, this.placeholdersConfig.options || null, ' '),
-              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.placeholdersConfig.itemRow.secondaryMetadata, placeholder, this.placeholdersConfig.options || null, ' '),
-              editMode: false,
               source: { ...placeholder }
             };
             return element;
@@ -201,11 +158,13 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
           this.placeholders = (url) ? [...this.placeholders, ..._list] : [..._list];
           this._preventMultiCall = false;
         }
+        this._spin = false;
         Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorPlaceholders(true);
         this._preventMultiCall = false;
+        this._spin = false;
         // Tools.OnError(error);
       }
     });
@@ -298,5 +257,9 @@ export class PlaceholdersComponent implements OnInit, AfterViewInit, AfterConten
 
   _resetScroll() {
     Tools.ScrollElement('container-scroller', 0);
+  }
+
+  trackByFn(index: number, item: any): number {
+    return item.id;
   }
 }

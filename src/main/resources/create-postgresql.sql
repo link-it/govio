@@ -15,11 +15,11 @@ CREATE SEQUENCE seq_govio_services START 1 INCREMENT 1;
 CREATE TABLE govio_templates
   (
      id           BIGINT DEFAULT nextval('seq_govio_templates') NOT NULL,
-     description  VARCHAR(255),
+     description  TEXT,
      has_due_date BOOLEAN NOT NULL,
      has_payment  BOOLEAN NOT NULL,
-     message_body VARCHAR(255) NOT NULL,
-     name         VARCHAR(255),
+     message_body TEXT NOT NULL,
+     name         VARCHAR(255) NOT NULL,
      subject      VARCHAR(255) NOT NULL,
      PRIMARY KEY (id)
   );
@@ -54,6 +54,9 @@ alter table govio_template_placeholders
    add constraint GovioTemplatePlaceholder_GovioTemplate 
    foreign key (id_govio_template) 
    references govio_templates;  
+
+alter table govio_template_placeholders 
+       add constraint UniqueTemplatePlaceholderPosition unique (id_govio_template, position);
 
 CREATE TABLE govio_service_instances
   (

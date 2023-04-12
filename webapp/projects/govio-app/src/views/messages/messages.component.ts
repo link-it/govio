@@ -5,7 +5,7 @@ import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
@@ -64,16 +64,19 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   showSearch: boolean = true;
   showSorting: boolean = true;
 
-  sortField: string = 'date';
+  sortField: string = 'scheduled_expedition_date';
   sortDirection: string = 'asc';
-  sortFields: any[] = [];
+  sortFields: any[] = [
+    { field: 'id', label: 'APP.LABEL.Id', icon: '' },
+    { field: 'scheduled_expedition_date', label: 'APP.LABEL.ScheduledExpeditionDate', icon: '' }
+  ];
 
   searchFields: any[] = [
-    { field: 'creationDateFrom', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
-    { field: 'creationDateTo', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
-    { field: 'taxcode', label: 'APP.LABEL.Taxcode', type: 'string', condition: 'like' },
-    { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
-    { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
+    { field: 'scheduled_expedition_date_from', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
+    { field: 'scheduled_expedition_date_to', label: 'APP.LABEL.ScheduledExpeditionDate', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
+    { field: 'tax_code', label: 'APP.LABEL.TaxCode', type: 'string', condition: 'like' },
+    { field: 'organization_q', label: 'APP.LABEL.Organization', type: 'string', condition: 'like' },
+    { field: 'service_q', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
   ];
 
   breadcrumbs: any[] = [
@@ -101,20 +104,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // language
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.configService.getConfig('messages').subscribe(
       (config: any) => {
         this.messagesConfig = config;
-        this._translateConfig();
       }
     );
   }
@@ -133,21 +125,6 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
     this.desktop = (window.innerWidth >= 992);
   }
 
-  _translateConfig() {
-    if (this.messagesConfig && this.messagesConfig.options) {
-      Object.keys(this.messagesConfig.options).forEach((key: string) => {
-        if (this.messagesConfig.options[key].label) {
-          this.messagesConfig.options[key].label = this.translate.instant(this.messagesConfig.options[key].label);
-        }
-        if (this.messagesConfig.options[key].values) {
-          Object.keys(this.messagesConfig.options[key].values).forEach((key2: string) => {
-            this.messagesConfig.options[key].values[key2].label = this.translate.instant(this.messagesConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
-  }
-
   _setErrorMessages(error: boolean) {
     this._error = error;
     if (this._error) {
@@ -161,22 +138,26 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
   _initSearchForm() {
     this._formGroup = new UntypedFormGroup({
-      creationDateFrom: new UntypedFormControl(''),
-      creationDateTo: new UntypedFormControl(''),
-      taxcode: new UntypedFormControl(''),
-      'organization.legal_name': new UntypedFormControl(''),
-      'service.service_name': new UntypedFormControl(''),
+      scheduled_expedition_date_from: new UntypedFormControl(''),
+      scheduled_expedition_date_to: new UntypedFormControl(''),
+      'tax_code': new UntypedFormControl(''),
+      'organization_q': new UntypedFormControl(''),
+      'service_q': new UntypedFormControl(''),
     });
   }
 
   _loadMessages(query: any = null, url: string = '') {
     this._setErrorMessages(false);
 
-    if (!url) { this.messages = []; }
-
     let aux: any;
-    if (query)  aux = { params: this._queryToHttpParams(query) };
+    if (!url) {
+      this.messages = [];
+      const sort: any = { sort: this.sortField, sort_direction: this.sortDirection}
+      query = { ...query, embed: ['sender,service_instance'], ...sort };
+      aux = { params: this._queryToHttpParams(query) };
+    }
 
+    this._spin = true;
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         this.page = response.page;
@@ -184,30 +165,79 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
         if (response.items) {
           const _list: any = response.items.map((message: any) => {
-            const metadataText = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.text, message, this.messagesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(this.messagesConfig.simpleItem.metadata.label, message, this.messagesConfig.options || null);
+            const _message: any = this.__prepareMessageData(message);
             const element = {
-              id: message.id,
-              primaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.primaryText, message, this.messagesConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryText, message, this.messagesConfig.options || null, ' '),
-              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(this.messagesConfig.simpleItem.secondaryMetadata, message, this.messagesConfig.options || null, ' '),
-              editMode: false,
-              source: { ...message }
+              id: _message.id,
+              source: { ..._message }
             };
             return element;
           });
           this.messages = (url) ? [...this.messages, ..._list] : [..._list];
           this._preventMultiCall = false;
+          this._spin = false;
         }
         Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorMessages(true);
         this._preventMultiCall = false;
+        this._spin = false;
         // Tools.OnError(error);
       }
     });
+  }
+
+  __prepareMessageData(message: any) {
+    const _serviceInstance = message._embedded['service-instance'];
+    const _message: any = {
+      id: message.id,
+      subject: message.subject,
+      markdown: message.markdown,
+      taxcode: message.taxcode,
+      status: message.status,
+      sender_id: message.sender_id,
+      service_instance_id: message.service_instance_id,
+      creation_date: message.creation_date,
+      due_date: message.due_date,
+      last_update_status: message.last_update_status,
+      scheduled_expedition_date: message.scheduled_expedition_date,
+
+      sender: message._embedded.sender,
+
+      service_instance:  {
+        id: _serviceInstance.id,
+        organization_id: _serviceInstance.organization_id,
+        service_id: _serviceInstance.service_id,
+        template_id: _serviceInstance.template_id,
+        apiKey: _serviceInstance.apiKey,
+        enabled: _serviceInstance.enabled
+      },
+
+      organization: {
+        id: _serviceInstance._embedded.organization.id,
+        legal_name: _serviceInstance._embedded.organization.legal_name,
+        tax_code: _serviceInstance._embedded.organization.tax_code,
+        logo: _serviceInstance._embedded.organization._links?.logo?.href || null,
+        logo_small: _serviceInstance._embedded.organization._links['logo-miniature']?.href || null
+      },
+
+      service: {
+        id: _serviceInstance._embedded.service.id,
+        service_name: _serviceInstance._embedded.service.service_name,
+        description: _serviceInstance._embedded.service.description
+      },
+
+      template: {
+        id: _serviceInstance._embedded.template.id,
+        subject: _serviceInstance._embedded.template.subject,
+        description: _serviceInstance._embedded.template.description,
+        message_body: _serviceInstance._embedded.template.message_body,
+        has_payment: _serviceInstance._embedded.template.has_payment,
+        has_due_date: _serviceInstance._embedded.template.has_due_date
+      }
+    };
+
+    return _message;
   }
 
   _queryToHttpParams(query: any) : HttpParams {
@@ -218,9 +248,12 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
         let _dateTime = '';
         switch (key)
         {
-          case 'data_inizio':
-          case 'data_fine':
-            _dateTime = moment(query[key]).format('YYYY-MM-DD');
+          case 'scheduled_expedition_date_from':
+            _dateTime = moment(query[key]).utc().format();
+            httpParams = httpParams.set(key, _dateTime);
+            break;
+          case 'scheduled_expedition_date_to':
+            _dateTime = moment(query[key]).utc().add(23, 'h').add(59, 'm').add(59, 's').format();
             httpParams = httpParams.set(key, _dateTime);
             break;
           default:
@@ -276,7 +309,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   }
 
   _onSort(event: any) {
-    console.log(event);
+    this.sortField = event.sortField;
+    this.sortDirection = event.sortBy;
+    this._loadMessages(this._filterData);
   }
 
   _timestampToMoment(value: number) {
@@ -289,5 +324,9 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
 
   _resetScroll() {
     Tools.ScrollElement('container-scroller', 0);
+  }
+
+  trackByFn(index: number, item: any): number {
+    return item.id;
   }
 }

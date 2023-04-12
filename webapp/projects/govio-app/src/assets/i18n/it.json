@@ -3,6 +3,7 @@
 		"BUTTON": {
 			"AddFile": "Aggiungi tracciato",
 			"AddPlaceholder": "Aggiungi segnaposto",
+			"AddService": "Aggiungi servizio",
 			"AddTemplate": "Aggiungi modello",
 			"AlertAction": "Chiudi",
 			"AssignPlaceholder": "Assegna segnaposto",
@@ -18,6 +19,7 @@
 			"Download": "Scarica",
 			"Entra": "Entra",
 			"Expand": "Espandi",
+			"Export": "Esporta",
 			"Go": "Vai",
 			"Login": "Accedi",
 			"MoreInfo": "Ulteriori informazioni",
@@ -44,6 +46,8 @@
 			"TITLE": {
 				"ContentFile": "Contenuto",
 				"ContentFile_sub": "",
+				"FileMessages": "File messaggi",
+				"FileMessages_sub": "Esporta i messaggi di errore in un file csv",
 				"GeneralInformations": "Informazioni generali",
 				"GeneralInformations_sub": "",
 				"ShowMessages": "Messaggi",
@@ -76,6 +80,8 @@
 		"LABEL": {
 			"AcquiredMessages": "Messaggi acquisiti",
 			"All": "Tutti",
+			"ApiKey": "Api Key",
+			"AppioMessageId": "AppIO Message Id",
 			"AvailabilityDate": "Data di disponibilità",
 			"Content": "Contenuto",
 			"CreationDate": "Data creazione",
@@ -87,6 +93,7 @@
 			"Description": "Descrizione",
 			"DueDate": "Data di scadenza",
 			"Email": "E-mail",
+			"Enabled": "Abilitato",
 			"ErrorMessages": "Messaggi di errore",
 			"Example": "Esempio",
 			"File": "Tracciato",
@@ -106,7 +113,7 @@
 			"Message": "Messaggio",
 			"MessageBody": "Corpo del messaggio",
 			"Name": "Nome",
-			"Organization": "Nome ente",
+			"Organization": "Organizzazione",
 			"Password": "Password",
 			"Pattern": "Pattern",
 			"Placeholder": "Segnaposto",
@@ -114,10 +121,12 @@
 			"Principal": "Nome utente",
 			"ScheduledExpeditionDate": "Data di spedizione pianificata",
 			"Service": "Servizio",
+			"ServiceInstance": "Istanza di servizio",
 			"ServiceName": "Nome Servizio",
 			"Status": "Stato",
 			"Subject": "Oggetto",
-			"Taxcode": "Codice fiscale",
+			"TaxCode": "Codice fiscale",
+			"Template": "Modello",
 			"Type": "Tipo",
 			"User": "Utente",
 			"UserFullName": "Nome utente"
@@ -130,6 +139,7 @@
 			"Dashboard": "Cruscotto",
 			"DeleteFile": "Elimina tracciato...",
 			"DeletePlaceholder": "Elimina segnaposto...",
+			"DeleteService": "Elimina servizio...",
 			"DeleteTemplate": "Elimina modello...",
 			"ExportCSV": "Esporta CSV",
 			"ExportPDF": "Esporta PDF",
@@ -138,6 +148,8 @@
 			"Logout": "Logout",
 			"Messages": "Messaggi",
 			"Placeholders": "Segnaposto",
+			"ServiceInstances": "Istanze di servizio",
+			"Services": "Servizi",
 			"Templates": "Modelli"
 		},
 		"MESSAGE": {
@@ -162,6 +174,7 @@
 				"login_400": "Username o password errati. Controlla la corretta scrittura dei dati.",
 				"login_401": "Username o password errati. Oppure non sei autorizzato ad accedere.",
 				"login_403": "Username o password errati. Oppure non sei autorizzato ad accedere.",
+				"login_404": "Risorsa non trovata.",
 				"login_422": "Username o password errati. Oppure non sei autorizzato ad accedere.",
 				"valid_email": "Inserisci una mail valida",
 				"wrong_username_password": "Username o password errati. Controlla la corretta scrittura dei dati."
@@ -174,6 +187,7 @@
 			"NoResponseUnimplemented": "Nessuna risposta o ancora non implementato",
 			"NoResults": "Siamo spiacenti, il tuo filtro non ha prodotto risultati",
 			"NoResultsHelp": "Per ampliare la tua ricerca, cambia o rimuovi i filtri qui sopra",
+			"NoTemplateSelected": "Nessun modello selezionato",
 			"NotFoundItem": "Elemento non trovato",
 			"NotFoundText": "Testo non trovato",
 			"PageNumber": "Pagina {{page}} di {{total}}",
@@ -188,6 +202,7 @@
 				"LessThanEqual": "L'importo deve avere un valore minore o uguale a {{value}}",
 				"MaxAmount": "L'importo deve avere un valore massimo di {{value}}",
 				"MinAmount": "L'importo deve essere un valore maggiore di {{value}}",
+				"NameMaxLength": "La lunghezza del nome deve essere minore o uguale a {{length}}.",
 				"NoticeLenght": "Il numero avviso deve contenere {{value}} caratteri",
 				"Number": "Il valore deve essere un numero",
 				"OneOfLength": "La lunghezza deve essere uno dei seguenti valori",
@@ -215,7 +230,8 @@
 		"PLACEHOLDER": {
 			"Search": "Cerca...",
 			"SelectOrganization": "Seleziona un'ente",
-			"SelectService": "Seleziona un servizio"
+			"SelectService": "Seleziona un servizio",
+			"SelectServiceInstance": "Seleziona un'istanza di servizio"
 		},
 		"PLACEHOLDERS": {
 			"FILTER": {
@@ -235,6 +251,18 @@
 			"RecentSearches": "Ricerche recenti",
 			"View": "Vista"
 		},
+		"SERVICES": {
+			"FILTER": {
+				"All": "Tutti",
+				"Closed": "Chiusi",
+				"Found": "Trovati",
+				"Open": "Aperti"
+			},
+			"TITLE": {
+				"GeneralInformations": "Informazioni generali",
+				"GeneralInformations_sub": ""
+			}
+		},
 		"SIDENAV": {
 			"Title": "GovIO"
 		},
@@ -243,6 +271,8 @@
 			"BAD_REQUEST": "Richiesta non valida",
 			"CREATED": "Creato",
 			"DENIED": "Negato",
+			"DISABLED": "Disabilitato",
+			"ENABLED": "Abilitato",
 			"ERRORE": "Errore",
 			"FORBIDDEN": "Proibito",
 			"PROCESSED": "Elaborato",
@@ -283,6 +313,8 @@
 			"Dashboard": "Cruscotto",
 			"EditFiles": "Modifica tracciato",
 			"EditPlaceholder": "Modifica segnaposto",
+			"EditService": "Modifica servizio",
+			"EditServiceInstance": "Modifica istanza del servizio",
 			"EditTemplate": "Modifica modello",
 			"File": "Tracciato",
 			"Files": "Tracciati",
@@ -293,10 +325,16 @@
 			"New": "Nuovo",
 			"NewFile": "Nuovo tracciato",
 			"NewPlaceholder": "Nuovo segnaposto",
+			"NewService": "Nuovo servizio",
+			"NewServiceInstance": "Nuova istanza di servizio",
 			"NewTemplate": "Nuovo modello",
 			"Organization": "Organizzazione",
 			"Placeholders": "Segnaposto",
 			"Service": "Servizio",
+			"ServiceInstance": "Istanza di servizio",
+			"ServiceInstances": "Istanze di servizio",
+			"Services": "Servizi",
+			"Template": "Modello",
 			"Templates": "Modelli",
 			"Watermark": "Staging"
 		},
@@ -309,6 +347,7 @@
 			"EditFile": "Modifica tracciato",
 			"EditPlaceholder": "Modifica segnaposto",
 			"EditPlaceholders": "Modifica i segnaposto",
+			"EditService": "Modifica servizio",
 			"EditTemplate": "Modifica modello",
 			"ErrorMessages": "Messaggi di errore",
 			"Export": "Esporta",

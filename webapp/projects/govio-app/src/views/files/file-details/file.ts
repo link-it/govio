@@ -4,8 +4,9 @@ export class File {
 
   id: number | null = null;
   filename: string | null = null;
-  organization_id: string | null = null;
-  service_id: string | null = null;
+  organization_id: number | null = null;
+  service_id: number | null = null;
+  service_instance: number | null = null;
   file: any = null;
   status: any = null;
   creation_date: string | null = null;

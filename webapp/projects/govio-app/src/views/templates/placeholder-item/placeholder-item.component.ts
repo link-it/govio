@@ -12,7 +12,7 @@ import { PlaceholderItem } from './placeholder-item';
 import { Placeholder } from '../../placeholders/placeholder-details/placeholder';
 
 import { concat, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap, tap } from 'rxjs/operators';
 
 import * as jsonpatch from 'fast-json-patch';
 import _ from 'lodash';
@@ -97,11 +97,12 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
     this.placeholders$ = concat(
       of([]), // default items
       this.placeholdersInput$.pipe(
-        filter(res => {
-          return res !== null && res.length >= this.minLengthTerm
-        }),
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
         distinctUntilChanged(),
-        debounceTime(500),
         tap(() => this.placeholdersLoading = true),
         switchMap((term: any) => {
           return this.getPlaceholders(term).pipe(
@@ -208,7 +209,7 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
     const $this = this;
     return Object.keys(obj)
       .filter(function (k) {
-        return obj[k] != null;
+        return ( obj[k] != null && typeof obj[k] !== "object");
       })
       .reduce(function (acc: any, k: string) {
         acc[k] = typeof obj[k] === "object" ? $this.__removeEmpty(obj[k]) : obj[k];
@@ -292,6 +293,7 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
         switch (key) {
           case 'name':
           case 'type':
+          case 'example':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
             break;
@@ -314,9 +316,8 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
     const _mandatory: boolean = body.mandatory ? body.mandatory : false;
     const _body = Tools.RemoveEmpty(body);
     delete _body.mandatory;
-    if (!_body.example) { _body.example  = ''; }
     this._savingPlaceHolder = true;
-    this.apiService.saveElement(`/placeholders`, _body).subscribe(
+    this.apiService.saveElement(`placeholders`, _body).subscribe(
       (response: any) => {
         this._isNewPlaceholder = false;
         this._savingPlaceHolder = false;

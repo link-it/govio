@@ -227,6 +227,15 @@ $light-color: map-get($mat-light-theme-foreground, light);
   --simple-item-action-color: #{$reverse-primary-text};
   --simple-item-action-background-color: #{$accent-color};
   --simple-item-hover-action-background-color: #{$primary-text};
+  // ItemRow
+  --item-row-background-color: #{$reverse-primary-text};
+  --item-row-hover: #{$secondary-color};
+  --item-row-notify-color: #{$alert-color};
+  --item-row-metadata-color: #{$secondary-text};
+  --item-row-hover-action-color: #{$reverse-primary-text};
+  --item-row-action-color: #{$reverse-primary-text};
+  --item-row-action-background-color: #{$accent-color};
+  --item-row-hover-action-background-color: #{$primary-text};
   // TwinItem
   --twin-item-background-color: #{$reverse-primary-text};
   --twin-item-hover: #{$secondary-color};

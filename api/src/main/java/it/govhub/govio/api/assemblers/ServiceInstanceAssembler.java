@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.assemblers;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -5,7 +23,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +47,8 @@ import it.govhub.govregistry.readops.api.assemblers.OrganizationAuthItemAssemble
 import it.govhub.govregistry.readops.api.assemblers.ServiceAuthItemAssembler;
 import it.govhub.govregistry.readops.api.repository.ReadOrganizationRepository;
 import it.govhub.govregistry.readops.api.repository.ReadServiceRepository;
-import it.govhub.govregistry.readops.api.web.ReadOrganizationController;
-import it.govhub.govregistry.readops.api.web.ReadServiceController;
+import it.govhub.govregistry.readops.api.spec.OrganizationApi;
+import it.govhub.govregistry.readops.api.spec.ServiceApi;
 
 @Component
 public class ServiceInstanceAssembler extends RepresentationModelAssemblerSupport<GovioServiceInstanceEntity, GovioServiceInstance>{
@@ -84,11 +101,11 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 					.readServiceInstance(src.getId())
 				).withSelfRel()).
 		add(linkTo(
-				methodOn(ReadServiceController.class)
+				methodOn(ServiceApi.class)
 					.readService(src.getService().getId())
 				).withRel("service")).
 		add(linkTo(
-				methodOn(ReadOrganizationController.class)
+				methodOn(OrganizationApi.class)
 					.readOrganization(src.getOrganization().getId())
 				).withRel("organization")).
 		add(linkTo(
@@ -133,14 +150,14 @@ public class ServiceInstanceAssembler extends RepresentationModelAssemblerSuppor
 		var template = this.templateRepo.findById(src.getTemplateId())
 				.orElseThrow( () -> new SemanticValidationException(templateMessages.idNotFound(src.getTemplateId())));
 		
-		var serviceInstance = GovioServiceInstanceEntity.builder()
+		return GovioServiceInstanceEntity.builder()
 			.apiKey(src.getApiKey())
 			.service(service)
 			.template(template)
 			.organization(organization)
+			.enabled(src.getEnabled())
 			.build();
 		
-		return serviceInstance;
 	}
 
 }

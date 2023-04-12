@@ -2,14 +2,14 @@
   <span class="spinner-border spinner-border-sm text-primary me-3-" *ngIf="_spin"></span> 
   <span class="" *ngIf="!_spin"><i class="bi-arrow-clockwise text-white" (click)="refresh()"></i></span> 
   <div class="position-relative">
-    <div role="group" class="gl-w-full btn-group-" *ngIf="templatePlaceholders?.length">
+    <div role="group" class="gl-w-full btn-group-">
       <!-- <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-3" (click)="_onCreatePlcaholder()" *ngIf="_editPlaceholders" [disabled]="_createPlaceholder">
         <span class="">{{ 'APP.BUTTON.CreateNewPlaceholder' | translate }}</span>
       </button> -->
-      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon me-3" (click)="_onNew()" *ngIf="_editPlaceholders && !(_isNew || _createPlaceholder)" [disabled]="_createPlaceholder">
+      <button aria-label="Add placeholder" type="button" class="btn btn-default btn-md gl-button btn-icon" [class.me-3]="templatePlaceholders.length" (click)="_onNew()" *ngIf="(_editPlaceholders && !(_isNew || _createPlaceholder)) || !templatePlaceholders?.length" [disabled]="_createPlaceholder">
         <span class="">{{ 'APP.BUTTON.AddPlaceholder' | translate }}</span>
       </button>
-      <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onEditPlaceholders($event)" [tooltip]="(_editPlaceholders ? '' : 'APP.TOOLTIP.EditPlaceholders') | translate" placement="left">
+      <button type="button" class="btn btn-default btn-md gl-button btn-icon" (click)="_onEditPlaceholders($event)" [tooltip]="(_editPlaceholders ? '' : 'APP.TOOLTIP.EditPlaceholders') | translate" placement="left" *ngIf="templatePlaceholders?.length">
         <span *ngIf="!_editPlaceholders"><i class="bi-pencil"></i></span>
         <span *ngIf="_editPlaceholders"><i class="bi-x-lg"></i><span class="ms-2">{{ 'APP.BUTTON.Cancel' | translate }}</span></span>
       </button>
@@ -17,7 +17,10 @@
   </div>
 </div>
 <div class="PLACEHOLDERS-LIST-FLEX py-2" *ngIf="_flexList">
-  <div class="table-container fs-smaller" role="table">
+  <div class="list-group-item placeholder-box text-center py-3" *ngIf="!templatePlaceholders?.length">
+    <span class="">{{ 'APP.MESSAGE.NoPlaceholder' | translate }}</span>
+  </div>
+  <div class="table-container fs-smaller" role="table" *ngIf="templatePlaceholders?.length">
     <div class="flex-table header border-top border-bottom align-items-center" role="rowgroup">
       <div class="flex-table-row first fw-bold text-center" role="columnheader" [tooltip]="'APP.TOOLTIP.Position' | translate" placement="top">
         <span class="">{{ '#' | translate }}</span>

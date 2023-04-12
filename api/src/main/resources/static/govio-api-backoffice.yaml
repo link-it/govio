@@ -4,11 +4,36 @@ info:
   x-summary: GovIO Communications
   x-api-id: govio-backoffice
   version: 1.0.1
+  description: >
+    # Warning
+
+    **This is an experimental API that is (most probably) going to change as we
+    evolve the IO platform.**
+
+    # Introduction
+
+    This is the documentation of the GovIO API for 3rd party services. This API
+    enables Public Administration services to send messages directly to citiziens through
+    the  IO platform in a simple and templatized way.
+      
 tags:
-  - name: file
-  - name: message
+  - name: user
+    description: Operations on users.
+  - name: organization
+    description: Operations on organizations.
+  - name: system
+    description: System Operations
   - name: service
+    description: Operation on services.
+  - name: profile
+    description: Read User Profile Info
+  - name: file
+    description: Operation on files.
+  - name: message
+    description: Operation on messages.
   - name: template
+    description: Operation on message templates.
+     
   
 servers:
   - url: 'http://localhost:10001'
@@ -17,40 +42,384 @@ security:
   - header-principal: []
 paths:
 
-  /organizations:
+  /status:
     get:
       tags:
-        - organization
-      summary: Retrieve the organization list.
-      description: Retrieve the organization list.
-      operationId: listOrganizations
-      parameters:
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/offset'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/q_query'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/organization_ordering_query'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
-        - $ref: 'govhub-api-commons.yaml#/components/parameters/with_roles'
-        - $ref: '#/components/parameters/with_service_instance'
+        - system
+      summary: Get the system status.
+      description: Get the system status.
+      operationId: status
       responses:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationList'
+                $ref: 'govhub-api-commons.yaml#/components/schemas/Problem'          
         '400':
-          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
         '401':
-          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
         '403':
-          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
         '429':
-          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
         '503':
-          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
         default:
-          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+
+  /profile:
+       get:
+         tags:
+           - profile
+         summary: Retrieve the user profile.
+         description: Retrieve the  logged user profile.
+         operationId: profile
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/hal+json:
+                 schema:
+                   $ref: 'govhub-api-commons.yaml#/components/schemas/Profile'          
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+             
+  /users:
+    get:
+      tags:
+         - user
+      summary: Retrieve the user list.
+      description: Retrieve the user list.
+      operationId: listUsers
+      parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/enabled_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/user_ordering_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/hal+json:
+              schema:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/UserList"
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"       
+
+  /users/{id}:
+    parameters:
+      - $ref: "govhub-api-commons.yaml#/components/parameters/user_id"    
+    get:
+      tags:
+        - user
+      summary: Retrieve a user.
+      description: Retrieve the user with the provided id.
+      operationId: readUser
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/hal+json:
+              schema:
+                $ref: 'govhub-api-commons.yaml#/components/schemas/User'          
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '404':
+          $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+                       
+  /organizations:
+    get:
+      tags:
+         - organization
+      summary: Retrieve the organization list.
+      description: Retrieve the organization list.
+      operationId: listOrganizations
+      parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_ordering_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/with_roles"
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/hal+json:
+              schema:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/OrganizationList"
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"        
+          
+  /organizations/{id}:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_id"    
+       get:
+         tags:
+           - organization
+         summary: Retrieve an Organization.
+         description: Retrieve the Organization with the provided id.
+         operationId: readOrganization
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/hal+json:
+                 schema:
+                   $ref: 'govhub-api-commons.yaml#/components/schemas/Organization'          
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"
+             
+  /organizations/{id}/logo:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_id"    
+       get:
+         tags:
+           - organization
+         summary: Retrieve the organization logo.
+         description: Retrieve the logo of the organization with the provided id.
+         operationId: downloadOrganizationLogo
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                              
+             
+  /organizations/{id}/logo-miniature:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/organization_id"    
+       get:
+         tags:
+           - organization
+         summary: Retrieve the organization logo miniature
+         description: Retrieve the logo miniature of the organization with the provided id.
+         operationId: downloadOrganizationLogoMiniature
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                
+             
+  /services:
+    get:
+      tags:
+         - service
+      summary: Retrieve the service list.
+      description: Retrieve the service list.
+      operationId: listServices
+      parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/limit"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/offset"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/q_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_ordering_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/sort_direction_query"
+         - $ref: "govhub-api-commons.yaml#/components/parameters/with_roles"
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/hal+json:
+              schema:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/ServiceList"
+        '400':
+          $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+        '401':
+          $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+        '403':
+          $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+        '429':
+          $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+        '503':
+          $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+        default:
+          $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"       
+                
+  /services/{id}:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_id"    
+       get:
+         tags:
+           - service
+         summary: Retrieve a service.
+         description: Retrieve the service with the provided id.
+         operationId: readService
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/hal+json:
+                 schema:
+                   $ref: 'govhub-api-commons.yaml#/components/schemas/Service'          
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                
+  
+  /services/{id}/logo:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_id"    
+       get:
+         tags:
+           - service
+         summary: Retrieve the service logo
+         description: Retrieve the logo of the service with the provided id.
+         operationId: downloadServiceLogo
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"                              
+             
+  /services/{id}/logo-miniature:
+       parameters:
+         - $ref: "govhub-api-commons.yaml#/components/parameters/service_id"    
+       get:
+         tags:
+           - service
+         summary: Retrieve the service logo miniature
+         description: Retrieve the logo miniature of the service with the provided id.
+         operationId: downloadServiceLogoMiniature
+         responses:
+           '200':
+             description: Successful operation.
+             content:
+               application/octet-stream:
+                  schema:
+                     type: string
+                     format: binary
+           '400':
+             $ref: "govhub-api-commons.yaml#/components/responses/400BadRequest"
+           '401':
+             $ref: "govhub-api-commons.yaml#/components/responses/401Unauthorized"
+           '403':
+             $ref: "govhub-api-commons.yaml#/components/responses/403Forbidden"
+           '404':
+             $ref: "govhub-api-commons.yaml#/components/responses/404NotFound"
+           '429':
+             $ref: "govhub-api-commons.yaml#/components/responses/429TooManyRequests"
+           '503':
+             $ref: "govhub-api-commons.yaml#/components/responses/503ServiceUnavailable"
+           default:
+             $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"             
           
   /files:
     post:
@@ -60,11 +429,9 @@ paths:
       description: Allows to upload a csv trace for a GovIO service.
       operationId: uploadFile
       parameters:
-         - $ref: '#/components/parameters/service_instance_id_query_optional'
-#   TODO: Ristabilire la versione con service_instance_id_query e rimuovere dagli schema l' _optional
-         - $ref: "#/components/parameters/service_id_query_optional"
-         - $ref: "#/components/parameters/organization_id_query_optional"
+         - $ref: '#/components/parameters/service_instance_id_query'
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
@@ -80,7 +447,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioFile'
           links:
@@ -122,11 +489,12 @@ paths:
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: '#/components/parameters/file_status_query'
         - $ref: '#/components/parameters/file_ordering_query'
+        - $ref: '#/components/parameters/embed_file'
       responses:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/FileList'
         '400':
@@ -155,7 +523,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioFile'
           links:
@@ -228,7 +596,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/FileMessageList'
         '400':
@@ -253,7 +621,20 @@ paths:
       parameters:
         - $ref: '#/components/parameters/service_instance_id_query'
       summary: Send a new message.
-      description: Send a message through the service template.
+      description: >
+         Send a message through the service template.
+         <br/>
+         <br/>  
+         The service_instance parameter identifies the IO service through which the message is sent, and it's a configuration
+         parameter provided by the service administrator.
+         The placeholder list is also provided by the service administrator, and the API user has to provide the values.
+         <br/>
+         <br/>
+         Upon receiving a call to this endpoint, GovIO builds the actual message to be sent to the IO services.
+         In the process,  the placeholders values are substituted in the message body and message subject by a template engine.
+         <br/>
+         A 201 response status denotes that the final message is built and scheduled by GovIO for the expedition to the IO services.  
+         
       operationId: sendMessage
       requestBody:
         content:
@@ -265,7 +646,7 @@ paths:
         '201':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioMessage'
           links:
@@ -295,6 +676,8 @@ paths:
         - $ref: '#/components/parameters/tax_code_query'
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
+        - $ref: '#/components/parameters/service_q'
+        - $ref: '#/components/parameters/organization_q'
         - $ref: '#/components/parameters/message_ordering_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
@@ -307,7 +690,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioMessageList'
         '400':
@@ -336,7 +719,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioMessage'               
         '400':
@@ -364,6 +747,7 @@ paths:
          clients can send messages to the IO service using the service instance.
       operationId: createServiceInstance
       requestBody:
+        required: true
         content:
           application/json:
              schema:
@@ -372,9 +756,9 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
-                $ref: '#/components/schemas/GovioServiceInstance'
+                $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
              self:
                 $ref: "#/components/links/readServiceInstance"
@@ -400,6 +784,7 @@ paths:
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/q_query'
+        - $ref: 'govhub-api-commons.yaml#/components/parameters/enabled_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/offset'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
@@ -411,7 +796,7 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
                 $ref: '#/components/schemas/GovioServiceInstanceList'
         '400':
@@ -440,16 +825,16 @@ paths:
         '200':
           description: Successful operation.
           content:
-            application/json:
+            application/hal+json:
               schema:
-                $ref: '#/components/schemas/GovioServiceInstance'
+                $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
-             delete:
-                $ref: "#/components/links/disableServiceInstance"
              upload-file:
                 $ref: "#/components/links/uploadFile"
              send-message:
-                $ref: "#/components/links/sendMessage"                            
+                $ref: "#/components/links/sendMessage"
+             patch:
+                $ref: "#/components/links/updateServiceInstance"
         '400':
           $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
         '401':
@@ -481,9 +866,9 @@ paths:
         '200':
           description: Succsessful operation.
           content:
-             application/json:
+             application/hal+json:
                 schema:
-                   $ref: '#/components/schemas/GovioServiceInstance'
+                   $ref: '#/components/schemas/GovioServiceInstanceFull'
           links:
              self:
                 $ref: "#/components/links/readServiceInstance"
@@ -504,30 +889,6 @@ paths:
         default:
           $ref: "govhub-api-commons.yaml#/components/responses/ResponseDefault"              
           
-    delete:
-      tags:
-        - service
-      summary: Disables  a service instance.
-      description: Deletes the specified service instance, only and only if there are no pending messages for it.
-      operationId: disableServiceInstance
-      responses:
-        '200':
-          description: Successful operation.
-        '400':
-          $ref: 'govhub-api-commons.yaml#/components/responses/400BadRequest'
-        '401':
-          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
-        '403':
-          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
-        '404':
-          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
-        '429':
-          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
-        '503':
-          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
-        default:
-          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'          
-          
   /templates:
      post:
          tags:
@@ -545,7 +906,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplate'
              links:
@@ -579,7 +940,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplateList'
            '400':
@@ -608,7 +969,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplate'
              links:
@@ -652,7 +1013,7 @@ paths:
          '200':
            description: Succsessful operation.
            content:
-              application/json:
+              application/hal+json:
                  schema:
                     $ref: '#/components/schemas/GovioTemplate'
            links:
@@ -695,7 +1056,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioTemplatePlaceholder'
            '400':
@@ -742,7 +1103,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioListTemplatePlaceholder'
                  example:
@@ -783,7 +1144,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioListTemplatePlaceholder'
            '400':
@@ -846,7 +1207,7 @@ paths:
            '201':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioPlaceholder'
              links:
@@ -881,7 +1242,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioPlaceholderList'
            '400':
@@ -911,7 +1272,7 @@ paths:
            '200':
              description: Successful operation.
              content:
-               application/json:
+               application/hal+json:
                  schema:
                    $ref: '#/components/schemas/GovioPlaceholder'
            '400':
@@ -949,7 +1310,7 @@ paths:
          '200':
            description: Succsessful operation.
            content:
-              application/json:
+              application/hal+json:
                  schema:
                     $ref: '#/components/schemas/GovioPlaceholder'
            links:
@@ -987,13 +1348,6 @@ components:
         description: >
           You can assign a new placeholder using The `id` value.
           
-    disableServiceInstance:
-        operationId: disableServiceInstance
-        parameters:
-          id: '$response.body#/id'
-        description: >
-          You can disable the service instance using The `id` value.
-
     uploadFile:
         operationId: uploadFile
         parameters:
@@ -1007,6 +1361,13 @@ components:
           id: '$response.body#/id'
         description: >
           You can list the placeholder template using the `id` value.
+          
+    updateServiceInstance:
+        operationId: updateServiceInstance
+        parameters:
+          id: '$response.body#/id'
+        description: >
+          You can update the service instance using The `id` value.
                                           
     readFile:
        description: Retrieve the file.
@@ -1067,6 +1428,17 @@ components:
           the `service_instance` query parameter for sending a  message through the instance.          
       
   parameters:
+  
+    embed_file:
+       name: embed
+       in: query
+       required: false
+       schema:
+          type: array
+          minLength:  0
+          maxLength: 1024
+          items:
+             $ref: "#/components/schemas/EmbedFileEnum"
   
     embed_message:
        name: embed
@@ -1277,9 +1649,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: 'govhub-api-commons.yaml#/components/schemas/TaxCode'
-        
-
+         type: string
+         minLength: 1
+         maxLength: 99999999
+         pattern: '[\s\S]*'
         
     scheduled_expedition_date_to_query:
       name: scheduled_expedition_date_to
@@ -1347,19 +1720,29 @@ components:
           type: string
           maxLength: 16
           minLength: 16
-          description: 'The fiscal code of the user, all upper case.'
+          description: 'The fiscal code of the receiver, all upper case.'
           pattern: >-
             [A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]
+          example: PCRMJV76P12B782Z
         payment:
           $ref: '#/components/schemas/GovioMessagePaymentItem'
         email:
-           $ref: "govhub-api-commons.yaml#/components/schemas/Email"
+           type: string
+           format: email
+           maxLength: 255
+           description: >
+             Default address for notifying the recipient of the message in case
+             no address for the related channel is set in his profile.
         scheduled_expedition_date:
           type: string
           format: date-time
+          description: The date when this message has to be sent to the citizien.
         due_date:
           type: string
           format: date-time
+          description: >
+             The expiration date for the message subject.
+             When set, the IO app shows an expiration date for this message.  
           
     GovioFile:
       type: object
@@ -1371,10 +1754,8 @@ components:
           $ref: "#/components/schemas/FileName"
         user:
           $ref: '#/components/schemas/FileUserItem'
-        organization:
-          $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
-        service:
-          $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
+        service_instance_id:
+          $ref: '#/components/schemas/GovioServiceInstanceId'
         status:
           $ref: '#/components/schemas/FileStatus'
         creation_date:
@@ -1403,11 +1784,20 @@ components:
                  $ref: "govhub-api-commons.yaml#/components/schemas/Link"
               content:
                  $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+              service-instance:
+                 $ref: "govhub-api-commons.yaml#/components/schemas/Link"
            example:
               self: 
                  href: "https://govhub.it/govio/files/1"                
               content: 
                  href: "https://govhub.it/govio/files/1/content"
+              service-instace:
+                 href: "https://govhub.it/govio/service-instances/1"
+        _embedded:
+                type: object
+                properties:
+                   service-instance:
+                      $ref: "#/components/schemas/GovioServiceInstance"                 
       required:
         - creation_date
         - status
@@ -1426,6 +1816,8 @@ components:
             - creation_date
             - markdown
             - subject
+            - sender_id
+            - service_instance_id
           properties:
             id:
               type: integer
@@ -1437,7 +1829,7 @@ components:
             status_detail:
               maxLength: 2000000
               minLength: 0
-              pattern: .*
+              pattern: '[\s\S]*'
               type: string
             appio_message_id:
               maxLength: 1024
@@ -1466,7 +1858,11 @@ components:
                 # Lorem ipsum dolor sit amet
 
                 Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat.            
+                laboris nisi ut aliquip ex ea commodo consequat.
+            sender_id:
+               $ref: "govhub-api-commons.yaml#/components/schemas/UserId"
+            service_instance_id:            
+               $ref: "#/components/schemas/GovioServiceInstanceId"
             _links:
                type: object
                additionalProperties: false
@@ -1506,17 +1902,26 @@ components:
           format: int64
           minimum: 1
           maximum: 9999999999
+          example: 62.12
         notice_number:
-          description: Payment ID in pagoPA
+          description: >-
+             The field ["Numero Avviso"]  of pagoPa, needed to identify the payment. 
           type: string
           pattern: '^[0123][0-9]{17}$'
+          example: 300012548634478225
         invalid_after_due_date:
           type: boolean
+          description: Optional field. When this field is set, the notice can't be payed after this date.
         payee_taxcode:
+          description: Optional field. Defaults to the organization that is sending this message.
           maxLength: 11
           minLength: 11
           pattern: '[0-9]{11}'
           type: string
+          example: 10000000001
+      description: Optional Field, marks the message as a payment message.
+          
+          
                               
     GovioNewMessage:
       allOf:
@@ -1528,7 +1933,8 @@ components:
               items:
                  $ref: "#/components/schemas/Placeholder"
               minItems: 0
-              maxItems: 2147483647                 
+              maxItems: 2147483647
+              description: The placeholder values to be substituted in the message template.
                  
     GovioNewPlaceholder:
        type: object
@@ -1540,8 +1946,8 @@ components:
        properties:
           name:
              type: string
-             pattern: .*
-             maxLength:  9223372036854776000
+             pattern: .+
+             maxLength:  255
              example: cie
           description:
              type: string
@@ -1550,13 +1956,13 @@ components:
              example: Numero carta d'identità elettronica.
           example:
              type: string
-             pattern: .*
-             maxLength:  9223372036854776000
+             pattern: '[\s\S]+'
+             maxLength:  255
              example: CA000000AA
           pattern:
              type: string
              pattern: '[\s\S]*'
-             maxLength:  9223372036854776000
+             maxLength:  255
              example:  "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]" 
           type:
              $ref: "#/components/schemas/GovioPlaceholderType"
@@ -1580,6 +1986,7 @@ components:
        type: object
        additionalProperties: false
        required: 
+          - name
           - subject
           - message_body
           - has_payment
@@ -1588,21 +1995,21 @@ components:
           name:
              type: string
              pattern: .*
-             maxLength: 9223372036854776000
+             maxLength: 255
              example: Spedizione Messaggio CIE
           description:
              type: string
-             pattern: .*
+             pattern: '[\s\S]*'
              maxLength: 9223372036854776000
              example: Segnala la scadenza della proprià C.I.E. 
           subject:
              type: string
-             pattern: .*
-             maxLength: 9223372036854776000
+             pattern: .+
+             maxLength: 255
              example: Scadenza CIE n. ${cie.uppercase}
           message_body:
              type: string
-             pattern: '[\s\S]*'
+             pattern: '[\s\S]+'
              maxLength: 9223372036854776000
              example: Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}.             
           has_payment:
@@ -1790,6 +2197,11 @@ components:
        enum:
            - sender
            - service-instance
+           
+    EmbedFileEnum:
+       type: string
+       enum:
+           - service-instance           
     
     EmbedPlaceholderEnum:
        type: string
@@ -1852,16 +2264,20 @@ components:
         full_name:
           type: string
           maxLength: 255
-          pattern: ^.*$
+          pattern: .*
           example: Antonio Giscardi
       required:
         - id
         - full_name
 
-        
-    GovioServiceInstanceCreate:
+    GovioServiceInstanceData:
       type: object
       additionalProperties: false
+      required:
+         - service_id
+         - organization_id
+         - template_id
+         - enabled
       properties:
         service_id:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
@@ -1869,57 +2285,110 @@ components:
           $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationId'
         template_id:
           $ref: '#/components/schemas/GovioTemplateId'
-        apiKey:
-           type: string
-           maxLength: 9999999
-           pattern: '[\s\S]*'
-
-
-    GovioServiceInstance:
+        enabled:
+           type: boolean
+           default: true   
+           
+    GovioServiceInstanceCreate:
       allOf:
-         - $ref: '#/components/schemas/GovioServiceInstanceCreate'
-         - type: object
-           additionalProperties: false
-           required:
-              - id
-              - enabled
-           properties:
-              id:
-                 $ref: '#/components/schemas/GovioServiceInstanceId'
-              enabled:
-                 type: boolean
-                 default: false           
-              _links:
-                 type: object
-                 additionalProperties: false
-                 properties:
-                    self:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                    service:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                    organization:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                    template:
-                       $ref: "govhub-api-commons.yaml#/components/schemas/Link"                                                                     
-                 example:
-                    self:
-                       href: "https://govhub.it/govio/service-instances/1"                                   
-                    service:
-                       href: "https://govhub.it/govio/services/1"
-                    organization:
-                       href: "https://govhub.it/govio/organizations/1"
-                    template:
-                       href: "https://govhub.it/govio/templates/1"
-              _embedded:
-                 type: object
-                 additionalProperties: false
-                 properties:
-                    service:
-                      $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
-                    organization:
-                      $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
-                    template:
-                      $ref: '#/components/schemas/GovioTemplate'           
+        - $ref: "#/components/schemas/GovioServiceInstanceData"
+        - type: object
+          additionalProperties: false
+          required:
+           - apiKey
+          properties:
+           apiKey:
+              type: string
+              maxLength: 9999999
+              pattern: '[\s\S]*'
+
+
+    GovioServiceInstanceFull:
+        allOf:
+           - $ref: "#/components/schemas/GovioServiceInstanceCreate" 
+           - type: object
+             additionalProperties: false
+             required:
+                 - id
+             properties:
+                 id:
+                    $ref: '#/components/schemas/GovioServiceInstanceId'                             
+                 _links:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       self:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       service:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       organization:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       template:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"                                                                     
+                    example:
+                       self:
+                          href: "https://govhub.it/govio/service-instances/1"                                   
+                       service:
+                          href: "https://govhub.it/govio/services/1"
+                       organization:
+                          href: "https://govhub.it/govio/organizations/1"
+                       template:
+                          href: "https://govhub.it/govio/templates/1"
+                 _embedded:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       service:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
+                       organization:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
+                       template:
+                         $ref: '#/components/schemas/GovioTemplate'
+                         
+                         
+    GovioServiceInstance:
+        allOf:
+           - $ref: "#/components/schemas/GovioServiceInstanceData" 
+           - type: object
+             additionalProperties: false
+             required:
+                 - id
+             properties:
+                 id:
+                    $ref: '#/components/schemas/GovioServiceInstanceId'                             
+                 _links:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       self:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       service:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       organization:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                       template:
+                          $ref: "govhub-api-commons.yaml#/components/schemas/Link"                                                                     
+                    example:
+                       self:
+                          href: "https://govhub.it/govio/service-instances/1"                                   
+                       service:
+                          href: "https://govhub.it/govio/services/1"
+                       organization:
+                          href: "https://govhub.it/govio/organizations/1"
+                       template:
+                          href: "https://govhub.it/govio/templates/1"
+                 _embedded:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                       service:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceAuthItem'
+                       organization:
+                         $ref: 'govhub-api-commons.yaml#/components/schemas/OrganizationAuthItem'
+                       template:
+                         $ref: '#/components/schemas/GovioTemplate'
+                                                  
+                                 
     FileList:
       allOf:
         - $ref: 'govhub-api-commons.yaml#/components/schemas/List'
@@ -1995,13 +2464,13 @@ components:
           example: 1
         line_record:
           type: string
-          pattern: .*
+          pattern: '[\s\S]*'
           maxLength: 20000000
         message:
           $ref: '#/components/schemas/GovioMessageItem'
         error:
            type: string
-           pattern: .*
+           pattern: '[\s\S]*'
            maxLength: 20000000 
         status:
           $ref: '#/components/schemas/FileMessageStatusEnum'
@@ -2067,8 +2536,12 @@ components:
            type: string
            pattern: .*
            maxLength: 2000000
+           description: The name of the placeholder to be replaced in the message template.
+           example: cie
          value:
            type: string
-           pattern: .*
-           maxLength: 2000000    
+           pattern: '[\s\S]*'
+           maxLength: 2000000
+           description: The Value that will replace the placeholder in the message template.
+           example: CA000000AA    
              

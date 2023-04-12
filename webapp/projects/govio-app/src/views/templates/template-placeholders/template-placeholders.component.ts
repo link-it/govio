@@ -63,10 +63,8 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
     this.configService.getConfig('placeholders').subscribe(
       (config: any) => {
         this.placeholdersConfig = config;
-        this._translateConfig();
       }
     );
-
   }
 
   ngOnDestroy() {
@@ -74,21 +72,6 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
 
   refresh() {
     this._loadTemplatePlaceholders();
-  }
-
-  _translateConfig() {
-    if (this.placeholdersConfig && this.placeholdersConfig.options) {
-      Object.keys(this.placeholdersConfig.options).forEach((key: string) => {
-        if (this.placeholdersConfig.options[key].label) {
-          this.placeholdersConfig.options[key].label = this.translate.instant(this.placeholdersConfig.options[key].label);
-        }
-        if (this.placeholdersConfig.options[key].values) {
-          Object.keys(this.placeholdersConfig.options[key].values).forEach((key2: string) => {
-            this.placeholdersConfig.options[key].values[key2].label = this.translate.instant(this.placeholdersConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _setErrorMessages(error: boolean) {
@@ -111,6 +94,14 @@ export class TemplatePlaceholdersComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           this.templatePlaceholders = response.items ? JSON.parse(JSON.stringify(response.items)) : null;
           this._origTemplatePlaceholders = response.items ? JSON.parse(JSON.stringify(response.items)) : null;
+          if (this.templatePlaceholders && !this.templatePlaceholders.length) {
+            this._isEdit = false;
+            this._isNew = false;
+            this._createPlaceholder = false;
+            this._editPlaceholders = false;
+            this._modifiedPlaceholders = false;
+            this._createPlaceholder = false;
+          }
           this._spin = false;
         },
         error: (error: any) => {

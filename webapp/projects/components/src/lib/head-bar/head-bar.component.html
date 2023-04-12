@@ -1,8 +1,8 @@
 <div [ngClass]="__headBarClass()">
   <div class="d-flex justify-content-between w-100">
-    <div class="align-self-center">
-      <img [src]="'assets/images/' + logo" class="header-logo d-inline-block" *ngIf="logo">
-      <p class="d-inline-block my-0" [class.ms-4]="logo" [class.h4]="!logo" *ngIf="title">{{ title }}</p>
+    <div class="d-flex flex-row align-content-center flex-grow-1">
+      <img [src]="'assets/images/' + logo" class="header-logo" *ngIf="logo">
+      <p class="my-0 flex-grow-1 align-self-center" [class.ms-4]="logo" [class.h4]="!logo" *ngIf="title">{{ title }}</p>
     </div>
     <div class="align-self-center d-flex justify-content-end">
       <div class="d-flex justify-content-end align-items-center ms-auto text-truncate headbar-user">

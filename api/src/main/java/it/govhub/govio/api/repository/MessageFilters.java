@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.repository;
 
 import java.time.OffsetDateTime;
@@ -57,9 +75,11 @@ public class MessageFilters {
 	}
 
 
-	public static Specification<GovioMessageEntity> byTaxCode(String taxCode) {
+	public static Specification<GovioMessageEntity> likeTaxcode(String taxCode) {
 		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
-			cb.equal(root.get(GovioMessageEntity_.taxcode), taxCode);
+			cb.like(
+					cb.lower(root.get(GovioMessageEntity_.taxcode)),
+					"%"+taxCode.toLowerCase()+"%");
 	}
 
 
@@ -106,6 +126,39 @@ public class MessageFilters {
 		}
 	}
 	
+	
+	public static Specification<GovioMessageEntity> likeServiceName(String serviceQ) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+			cb.like(
+					cb.lower(
+							root.get(GovioMessageEntity_.govioServiceInstance)
+							.get(GovioServiceInstanceEntity_.service)
+							.get(ServiceEntity_.name)),
+					"%"+serviceQ.toLowerCase()+"%");
+	}
+
+
+	public static Specification<GovioMessageEntity> likeOrganizationName(String organizationQ) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+		cb.like(
+				cb.lower(
+						root.get(GovioMessageEntity_.govioServiceInstance)
+						.get(GovioServiceInstanceEntity_.organization)
+						.get(OrganizationEntity_.legalName)),
+				"%"+organizationQ.toLowerCase()+"%");
+	}
+
+
+	public static Specification<GovioMessageEntity> likeOrganizationTaxCode(String organizationQ) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+		cb.like(
+				cb.lower(
+						root.get(GovioMessageEntity_.govioServiceInstance)
+						.get(GovioServiceInstanceEntity_.organization)
+						.get(OrganizationEntity_.taxCode)),
+				"%"+organizationQ.toLowerCase()+"%");
+	}
+	
 
 	public static Sort sort(MessageOrdering sort, Direction direction) {
 		
@@ -123,5 +176,8 @@ public class MessageFilters {
 
 	
 	private MessageFilters() { }
+
+
+
 	
 }

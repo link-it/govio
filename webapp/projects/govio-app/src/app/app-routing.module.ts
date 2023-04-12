@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 
-import { AuthGuard } from '../guard/auth.guard';
+import { AuthGuard, PermissionGuard } from '../guard';
 
 import { GpLayoutComponent, SimpleLayoutComponent } from '../containers';
 
@@ -32,18 +32,32 @@ const routes: Routes = [
       },
       {
         path: 'files',
+        canActivate: [PermissionGuard],
+        data: {  permission: 'FILES', grant: 'view' },
         loadChildren: () => import('../views/files/files.module').then(m => m.FilesModule)
       },
       {
         path: 'messages',
+        canActivate: [PermissionGuard],
+        data: {  permission: 'MESSAGES', grant: 'view' },
         loadChildren: () => import('../views/messages/messages.module').then(m => m.MessagesModule)
       },
       {
+        path: 'service-instances',
+        canActivate: [PermissionGuard],
+        data: {  permission: 'SERVICE-INSTANCES', grant: 'view' },
+        loadChildren: () => import('../views/services/services.module').then(m => m.ServicesModule)
+      },
+      {
         path: 'placeholders',
+        canActivate: [PermissionGuard],
+        data: {  permission: 'PLACEHOLDERS', grant: 'view' },
         loadChildren: () => import('../views/placeholders/placeholders.module').then(m => m.PlaceholdersModule)
       },
       {
         path: 'templates',
+        canActivate: [PermissionGuard],
+        data: {  permission: 'TEMPLATES', grant: 'view' },
         loadChildren: () => import('../views/templates/templates.module').then(m => m.TemplatesModule)
       }
     ]

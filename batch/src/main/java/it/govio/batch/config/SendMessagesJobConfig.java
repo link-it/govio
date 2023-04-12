@@ -1,11 +1,34 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.batch.config;
 
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,4 +82,15 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 				.retryLimit(5)
 				.build();
 	}
+	
+	protected ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status[] statuses) {
+        JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
+        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < CURRENT_TIMESTAMP");
+        itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
+        itemReader.setSaveState(true);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("statuses", Arrays.asList(statuses));
+        itemReader.setParameterValues(parameters);
+        return itemReader;
+    }
 }

@@ -1,40 +1,19 @@
 {
-  "simpleItem": {
-    "primaryText": [
-      { "field": "subject", "type": "text" },
-      { "field": "per", "type": "message" },
-      { "field": "taxcode", "type": "text" }
-    ],
-    "secondaryText": [
-      { "field": "user.full_name", "type": "text" }
-    ],
-    "metadata": {
-      "text": [
-        { "field": "id", "type": "cardinal" },
-        { "field": "organization.legal_name", "type": "text" }
-      ],
-      "label": [
-        { "field": "status", "type": "label", "options": "status" }
-      ]
-    },
-    "secondaryMetadata": [
-      { "field": "scheduled_expedition_date", "type": "date", "format": "DD-MM-YYYY" }
-    ]
-  },
-
   "itemRow": {
     "primaryText": [
       { "field": "subject", "type": "text", "emptySpace": true },
       { "field": "per", "type": "message", "emptySpace": true },
       { "field": "taxcode", "type": "text" }
-    ],
+    ],  
     "secondaryText": [
-      { "field": "user.full_name", "type": "avatar", "tooltip": "user.full_name" }
+      { "field": "sender.full_name", "type": "avatar", "tooltip": "sender.full_name" }
     ],
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal", "class": "" },
-        { "field": "organization.legal_name", "type": "text" }
+        { "field": "organization.legal_name", "type": "text" },
+        { "field": "service.service_name", "type": "text" },
+        { "field": "template.name", "type": "text" }
       ],
       "label": [
         { "field": "status", "type": "label", "options": "status" }
@@ -46,18 +25,20 @@
   },
 
   "details": [
-    { "label": "APP.LABEL.Subject", "field": "subject", "type": "text" },
-    { "label": "APP.LABEL.Message", "field": "markdown", "type": "markdown" },
+    { "label": "APP.LABEL.Subject", "field": "subject", "type": "text", "columns": 12 },
+    { "label": "APP.LABEL.Message", "field": "markdown", "type": "markdown", "columns": 12 },
     { "label": "APP.LABEL.User", "field": "user.full_name", "type": "text"},
-    { "label": "APP.LABEL.Taxcode", "field": "taxcode", "type": "text" },
-    { "label": "APP.LABEL.CreationDate", "field": "creation_date", "type": "date", "format": "DD-MM-YYYY" },
-    { "label": "APP.LABEL.DueDate", "field": "due_date", "type": "date", "format": "DD-MM-YYYY" },
-    { "label": "APP.LABEL.ScheduledExpeditionDate", "field": "scheduled_expedition_date", "type": "date", "format": "DD-MM-YYYY" },
-    { "label": "APP.LABEL.LastUpdateStatus", "field": "last_update_status", "type": "date", "format": "DD-MM-YYYY" },
+    { "label": "APP.LABEL.TaxCode", "field": "taxcode", "type": "text" },
+    { "label": "APP.LABEL.CreationDate", "field": "creation_date", "type": "date", "format": "DD-MM-YYYY hh:mm:ss" },
+    { "label": "APP.LABEL.DueDate", "field": "due_date", "type": "date", "format": "DD-MM-YYYY hh:mm:ss" },
+    { "label": "APP.LABEL.ScheduledExpeditionDate", "field": "scheduled_expedition_date", "type": "date", "format": "DD-MM-YYYY hh:mm:ss" },
+    { "label": "APP.LABEL.LastUpdateStatus", "field": "last_update_status", "type": "date", "format": "DD-MM-YYYY hh:mm:ss" },
     { "label": "APP.LABEL.Status", "field": "status", "type": "tag", "options": "status", "badged": true },
     { "label": "APP.LABEL.Id", "field": "id", "type": "number" },
     { "label": "APP.LABEL.Organization", "field": "organization.legal_name", "type": "text" },
-    { "label": "APP.LABEL.ServiceName", "field": "service.service_name", "type": "text" }
+    { "label": "APP.LABEL.ServiceName", "field": "service.service_name", "type": "text" },
+    { "label": "APP.LABEL.Template", "field": "template.name", "type": "text" },
+    { "label": "APP.LABEL.AppioMessageId", "field": "appio_message_id", "type": "text", "hideEmpty": true }
   ],
 
   "options": {
@@ -65,20 +46,20 @@
       "label": "APP.LABEL.Status",
       "small": true,
       "values": {
-        "scheduled": { "label": "APP.STATUS.SCHEDULED", "background": "#D1D100", "border": "#D1D100", "color": "#1f1f1f" },
-        "processed": { "label": "APP.STATUS.PROCESSED", "background": "#326C1A", "border": "#326C1A", "color": "#ffffff" },
-        "accepeted": { "label": "APP.STATUS.ACCEPTED", "background": "#A8D695", "border": "#A8D695", "color": "#1f1f1f" },
-        "throttled": { "label": "APP.STATUS.THROTTLED", "background": "#A8D695", "border": "#A8D695", "color": "#1f1f1f" },
-        "recipient_allowed": { "label": "APP.STATUS.RECIPIENT_ALLOWED", "background": "#A8D695", "border": "#A8D695", "color": "#1f1f1f" },
-        "sent": { "label": "APP.STATUS.SENT", "background": "#A8D695", "border": "#A8D695", "color": "#1f1f1f" },
-        "created": { "label": "APP.STATUS.CREATED", "background": "#A8D695", "border": "#A8D695", "color": "#1f1f1f" },
-        "profile_not_exists": { "label": "APP.STATUS.PROFILE_NOT_EXISTS", "background": "#FF8200", "border": "#FF8200", "color": "#1f1f1f" },
-        "sender_not_allowed": { "label": "APP.STATUS.SENDER_NOT_ALLOWED", "background": "#FF8200", "border": "#FF8200", "color": "#1f1f1f" },
-        "forbidden": { "label": "APP.STATUS.FORBIDDEN", "background": "#FF8200", "border": "#FF8200", "color": "#1f1f1f" },
-        "rejected": { "label": "APP.STATUS.REJECTED", "background": "#FF8200", "border": "#FF8200", "color": "#1f1f1f" },
-        "processing": { "label": "APP.STATUS.PROCESSING", "background": "#E87823", "border": "#E87823", "color": "#ffffff" },
-        "denied": { "label": "APP.STATUS.DENIED", "background": "#E82323", "border": "#E82323", "color": "#ffffff" },
-        "bad_request": { "label": "APP.STATUS.BAD_REQUEST", "background": "#E82323", "border": "#E82323", "color": "#ffffff" }
+        "scheduled": { "label": "APP.STATUS.SCHEDULED", "background": "#9E9E9E", "border": "#9E9E9E", "color": "#ffffff" },
+        "processed": { "label": "APP.STATUS.PROCESSED", "background": "#8BC34A", "border": "#326C1A", "color": "#ffffff" },
+        "accepeted": { "label": "APP.STATUS.ACCEPTED", "background": "#8BC34A", "border": "#8BC34A", "color": "#1f1f1f" },
+        "throttled": { "label": "APP.STATUS.THROTTLED", "background": "#8BC34A", "border": "#8BC34A", "color": "#1f1f1f" },
+        "recipient_allowed": { "label": "APP.STATUS.RECIPIENT_ALLOWED", "background": "#8BC34A", "border": "#8BC34A", "color": "#1f1f1f" },
+        "sent": { "label": "APP.STATUS.SENT", "background": "#8BC34A", "border": "#8BC34A", "color": "#1f1f1f" },
+        "created": { "label": "APP.STATUS.CREATED", "background": "#9E9E9E", "border": "#9E9E9E", "color": "#ffffff" },
+        "profile_not_exists": { "label": "APP.STATUS.PROFILE_NOT_EXISTS", "background": "#FFAB40", "border": "#FFAB40", "color": "#1f1f1f" },
+        "sender_not_allowed": { "label": "APP.STATUS.SENDER_NOT_ALLOWED", "background": "#FFAB40", "border": "#FFAB40", "color": "#1f1f1f" },
+        "forbidden": { "label": "APP.STATUS.FORBIDDEN", "background": "#F44336", "border": "#F44336", "color": "#ffffff" },
+        "rejected": { "label": "APP.STATUS.REJECTED", "background": "#FFAB40", "border": "#FFAB40", "color": "#1f1f1f" },
+        "processing": { "label": "APP.STATUS.PROCESSING", "background": "#9E9E9E", "border": "#9E9E9E", "color": "#ffffff" },
+        "denied": { "label": "APP.STATUS.DENIED", "background": "#F44336", "border": "#F44336", "color": "#ffffff" },
+        "bad_request": { "label": "APP.STATUS.BAD_REQUEST", "background": "#F44336", "border": "#F44336", "color": "#ffffff" }
       }
     }
   }

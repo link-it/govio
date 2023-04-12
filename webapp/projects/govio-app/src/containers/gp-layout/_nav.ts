@@ -57,6 +57,15 @@ export const navItemsMainMenu: INavData[] = [
         iconBs: 'tag',
         permission: 'TEMPLATES',
         attributes: { disabled: false }
+      },
+      {
+        title: true,
+        label: 'APP.MENU.ServiceInstances',
+        path: 'service-instances',
+        url: '/service-instances',
+        icon: 'apps',
+        permission: 'SERVICES',
+        attributes: { disabled: false }
       }
     ]
   }

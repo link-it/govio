@@ -20,23 +20,18 @@
     <div class="settings" *ngIf="(message && !_spin)">
       <div class="settings-content">
         <div class="row gl-mt-3">
-          <div class="col-lg-12">
-            <ui-box-collapse
-              [opened]="true"
-              [showCollapse]="appConfig.AppConfig?.Layout?.Details?.Collapsible?.informations"
-              [id]="'general-informations'"
-              [title]="'APP.MESSAGES.TITLE.GeneralInformations' | translate"
-              [subTitle]="'APP.MESSAGES.TITLE.GeneralInformations_sub' | translate">
-              <!-- <ui-form-readonly
-                [fields]="_informazioni"
-                [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6">
-              </ui-form-readonly> -->
+          <div class="row gl-mt-3">
+            <div class="col-lg-4 mb-4">
+              <h4 class="gl-mt-0 text-break">{{ 'APP.MESSAGES.TITLE.GeneralInformations' | translate }}</h4>
+              <div class="text-break" markdown>{{ 'APP.MESSAGES.TITLE.GeneralInformations_sub' | translate }}</div>
+            </div>
+            <div class="col-lg-8">
               <ui-data-view
                 [data]="message"
                 [config]="config"
                 [columns]="appConfig.AppConfig?.Layout?.Details?.columns || 6">
               </ui-data-view>
-            </ui-box-collapse>
+            </div>
           </div>
         </div>
       </div>

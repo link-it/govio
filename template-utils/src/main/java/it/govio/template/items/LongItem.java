@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.template.items;
 
 
@@ -22,7 +40,7 @@ public class LongItem extends Item<Long>{
 	}
 	
 	@Override
-	public Long getValue(String stringValue) throws TemplateValidationException {
+	public Long getValue(String stringValue) {
 		super.validateValue(stringValue);
 		
 		// Se c'e' un valore, controllo che sia compatibile.
@@ -31,14 +49,14 @@ public class LongItem extends Item<Long>{
 				return Long.parseLong(stringValue);
 			} catch (NumberFormatException e) {
 				logger.debug("Validazione del numero fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore %s del campo %s non presenta un numero valido.", stringValue, name));
+				throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non presenta un numero valido.", stringValue, name));
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
+	public Map<String, String> getPlaceholderValues(String stringValue) {
 		Long value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();
@@ -49,7 +67,7 @@ public class LongItem extends Item<Long>{
 			    .doubleValue();
 		NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.ITALY);
 		valuesMap.put(name, value.toString());
-		valuesMap.put(name + ".currency", formatter.format(truncatedDouble));
+		valuesMap.put(name + "_currency", formatter.format(truncatedDouble));
 		return valuesMap;
 	}
 }

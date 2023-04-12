@@ -80,44 +80,6 @@ export class Tools {
     }
   }
 
-  // Stati journal
-  public static StatoJournal: any = {
-    NUOVO: { Code: 'NUOVO', Label: 'Nuovo', Order: 0 },
-    ELABORAZIONE: { Code: 'ELABORAZIONE', Label: 'Elaborazione', Order: 2 },
-    COMPLETATO: { Code: 'COMPLETATO', Label: 'Completato', Order: 4 },
-    SCARTATO: { Code: 'SCARTATO', Label: 'Scartato', Order: 6 }
-  };
-  public static StatiJournal: any[] = Object.keys(Tools.StatoJournal).map((key: string) => {
-    return { label: Tools.StatoJournal[key].Label, value: Tools.StatoJournal[key].Code, order: Tools.StatoJournal[key].Order };
-  });
-
-  // Tipi journal
-  public static TipoJournal: any = {
-    NUOVO: { Code: 'CBI', Label: 'CBI', Order: 0 }
-  };
-  public static TipiJournal: any[] = Object.keys(Tools.TipoJournal).map((key: string) => {
-    return { label: Tools.TipoJournal[key].Label, value: Tools.TipoJournal[key].Code, order: Tools.TipoJournal[key].Order };
-  });
-
-  // Stati transactions
-  public static StatoTransaction: any = {
-    NUOVO: { Code: 'NUOVO', Label: 'Nuovo', Order: 0 },
-    COMPLETATO: { Code: 'COMPLETATO', Label: 'Completato', Order: 2 }
-  };
-  public static StatiTransaction: any[] = Object.keys(Tools.StatoTransaction).map((key: string) => {
-    return { label: Tools.StatoTransaction[key].Label, value: Tools.StatoTransaction[key].Code, order: Tools.StatoTransaction[key].Order };
-  });
-
-  public static FindTaxonomyPagoPAByField(value: string, field: string) {
-    let _searchValue: string = value;
-    if (field === 'DATI SPECIFICI DI INCASSO') {
-      const _valueSplit = value.split('/');
-      if (_valueSplit.length >= 2) { _searchValue = `${_valueSplit[0]}/${_valueSplit[1]}`; }
-    }
-    const _taxonomy = Tools.TaxonomiesPagoPA.find((taxonomy: any) => taxonomy[field].indexOf(_searchValue) !== -1);
-    return _taxonomy || null;
-  }
-
   public static formatValue(value: any, data: any, html: boolean = true, options: any = null): string {
     switch (data.type) {
       case 'number':
@@ -130,9 +92,6 @@ export class Tools {
         return html ? GridFormatters.progressFormatter({ value: value }) : value;
       case 'tag':
         return GridFormatters.typeTagFormatter({ field: data, value: value, optionsName: data.options, options: options });
-      case 'taxonomyPagoPA':
-        const _taxonomy = Tools.FindTaxonomyPagoPAByField(value, data.fieldFindTaxonomy);
-        return _taxonomy ? `${value} - ${_taxonomy[data.fieldTaxonomy]}` : `${value} - [n/a]`;
       default:
         return value;
     }
@@ -201,7 +160,8 @@ export class Tools {
     if (!path) { return obj; }
     const properties: string[] = path.split('.');
     const first = properties.shift() || '';
-    return obj[first] ? Tools.getObjectValue(obj[first], properties.join('.')) : '';
+    const _objFirst = (typeof obj[first] === 'boolean') ? obj[first].toString() : obj[first];
+    return _objFirst ? this.getObjectValue(obj[first], properties.join('.')) : '';
   }
 
   public static ScrollTo(offset: number, callback: Function | null = null) {
@@ -437,7 +397,7 @@ export class Tools {
   public static RemoveEmpty(obj: any) {
     return Object.keys(obj)
       .filter(function (k) {
-        return obj[k] != null;
+        return (obj[k] != null) && (obj[k] != '');
       })
       .reduce(function (acc: any, k: string) {
         acc[k] = typeof obj[k] === "object" ? Tools.RemoveEmpty(obj[k]) : obj[k];
@@ -483,7 +443,7 @@ export class Tools {
       let line = (i + 1) + '';
       for (let index in headerList) {
         let head = headerList[index];
-        line += ',' + array[i][head];
+        line += ',"' + array[i][head] + '"';
       }
       str += line + '\r\n';
     }

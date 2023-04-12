@@ -460,17 +460,10 @@ components:
       OrganizationCreate:
         allOf:
           - $ref: "#/components/schemas/OrganizationData"
-          - type: object
-            additionalProperties: false
-            properties:
-              logo_miniature:
-               $ref: "#/components/schemas/SmallLogo"
-              logo:
-                $ref: "#/components/schemas/Logo"
 
       Organization:
         allOf:
-          - $ref: "#/components/schemas/OrganizationCreate" 
+          - $ref: "#/components/schemas/OrganizationData" 
           - type: object
             additionalProperties: false
             required:
@@ -484,9 +477,17 @@ components:
                  properties:
                     self:
                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                    logo:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
+                    logo-miniature:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
                  example:
                     self: 
-                       href: "https://govhub.it/govregistry/organizations/1"
+                       href: "https://govhub.it/govregistry/organizations/1" 
+                    logo: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo"
+                    logo-miniature: 
+                       href: "https://govhub.it/govregistry/organizations/1/logo-miniature"                                        
                 
       OrganizationItem:
         allOf:
@@ -527,31 +528,44 @@ components:
                $ref: "#/components/schemas/ServiceName"
             description:
               type: string
-              pattern: .*
+              pattern: '[\s\S]*'
               maxLength: 4096
               example: Service for customer management.
-            logo_miniature:
-               $ref: "#/components/schemas/SmallLogo"
-            logo:
-             $ref: "#/components/schemas/Logo"                          
               
       Service:
-         allOf:
-            - $ref: "#/components/schemas/ServiceCreate"
-            -  type: object
-               additionalProperties: false
-               properties:
-                  id:
-                     $ref: "#/components/schemas/ServiceId"
-                  _links:
-                     type: object
-                     additionalProperties: false
-                     properties:
-                        self:
-                           $ref: "govhub-api-commons.yaml#/components/schemas/Link"
-                     example:
-                       self: 
-                          href: "https://govhub.it/govregistry/services/1" 
+            type: object
+            additionalProperties: false
+            required:
+               - service_name
+               - id
+            properties:
+               service_name:
+                  $ref: "#/components/schemas/ServiceName"
+               description:
+                 type: string
+                 pattern: '[\s\S]*'
+                 maxLength: 4096
+                 example: Service for customer management.               
+               id:
+                  $ref: "#/components/schemas/ServiceId"
+               _links:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                     self:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"
+                     logo:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
+                     logo-miniature:
+                        $ref: "govhub-api-commons.yaml#/components/schemas/Link"                           
+                  example:
+                    self: 
+                       href: "https://govhub.it/govregistry/services/1" 
+                    logo: 
+                       href: "https://govhub.it/govregistry/services/1/logo"
+                    logo-miniature: 
+                       href: "https://govhub.it/govregistry/services/1/logo-miniature"                                                    
+                          
                         
                      
       OrganizationOrdering:
@@ -801,6 +815,18 @@ components:
          maxLength: 80
          pattern: ^([\x20-\xFF]{1,80})$
          example: Giletti S.R.L.
+         
+      RoleName:
+        type: string
+        pattern: .+
+        maxLength: 256
+        example: govhub_sender
+        
+      ApplicationName:
+        type: string
+        pattern: ^[a-zA-Z0-9_\-]+$
+        maxLength: 256
+        example: govregistry         
                
       Role:
          type: object
@@ -808,23 +834,47 @@ components:
          required:
             - id
             - role_name
+            - application
          properties:
             id: 
                $ref: "#/components/schemas/RoleId"
             role_name:
-               type: string
-               pattern: .+
-               maxLength: 256
-               example: govhub-sender
+               $ref: "#/components/schemas/RoleName"
+            application:
+               $ref: "#/components/schemas/ApplicationName"
             assignable_roles:
                type: array
                minItems: 0
                maxItems: 256
                items:
-                  type: string
-                  pattern: .+
-                  maxLength: 256
-                  example: govhub-sender
+                  $ref: "#/components/schemas/AssignableRole"
+                  
+      AssignableRole:
+         type: object
+         additionalProperties: false
+         required:
+            - id
+            - role_name
+         properties:
+            id:
+               $ref: "#/components/schemas/RoleId"
+            role_name:
+               $ref: "#/components/schemas/RoleName"
+                  
+      RoleList:
+         allOf:
+            - $ref: "#/components/schemas/List"
+            - type: object
+              properties:              
+                 items:
+                    type: array
+                    items:
+                       $ref: "#/components/schemas/Role"
+                    minItems: 0
+                    maxItems: 2147483647
+              required:
+                 - items 
+              additionalProperties: false
                   
       AuthorizationList:
          allOf:

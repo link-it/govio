@@ -5,12 +5,11 @@ import { HttpParams } from '@angular/common/http';
 
 import { MatFormFieldAppearance } from '@angular/material/form-field';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
 
 import { SearchBarFormComponent } from 'projects/components/src/lib/ui/search-bar-form/search-bar-form.component';
@@ -68,13 +67,7 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
   sortDirection: string = 'asc';
   sortFields: any[] = [];
 
-  searchFields: any[] = [
-    { field: 'creationDateFrom', label: 'APP.LABEL.Date', type: 'date', condition: 'gt', format: 'DD/MM/YYYY' },
-    { field: 'creationDateTo', label: 'APP.LABEL.Date', type: 'date', condition: 'lt', format: 'DD/MM/YYYY' },
-    { field: 'taxcode', label: 'APP.LABEL.Taxcode', type: 'string', condition: 'like' },
-    { field: 'organization.legal_name', label: 'APP.LABEL.LegalName', type: 'string', condition: 'like' },
-    { field: 'service.service_name', label: 'APP.LABEL.ServiceName', type: 'text', condition: 'like' }
-  ];
+  searchFields: any[] = [];
 
   breadcrumbs: any[] = [
     { label: 'APP.TITLE.Configurations', url: '', type: 'title', iconBs: 'gear' },
@@ -88,7 +81,6 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
     private configService: ConfigService,
     public tools: Tools,
     private eventsManagerService: EventsManagerService,
-    private pageloaderService: PageloaderService,
     public apiService: OpenAPIService
   ) {
     this.config = this.configService.getConfiguration();
@@ -102,20 +94,9 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // language
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.configService.getConfig('templates').subscribe(
       (config: any) => {
         this.templatesConfig = config;
-        this._translateConfig();
       }
     );
   }
@@ -132,21 +113,6 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
 
   ngAfterContentChecked(): void {
     this.desktop = (window.innerWidth >= 992);
-  }
-
-  _translateConfig() {
-    if (this.templatesConfig && this.templatesConfig.options) {
-      Object.keys(this.templatesConfig.options).forEach((key: string) => {
-        if (this.templatesConfig.options[key].label) {
-          this.templatesConfig.options[key].label = this.translate.instant(this.templatesConfig.options[key].label);
-        }
-        if (this.templatesConfig.options[key].values) {
-          Object.keys(this.templatesConfig.options[key].values).forEach((key2: string) => {
-            this.templatesConfig.options[key].values[key2].label = this.translate.instant(this.templatesConfig.options[key].values[key2].label);
-          });
-        }
-      });
-    }
   }
 
   _setErrorTemplates(error: boolean) {
@@ -176,23 +142,16 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
     let aux: any;
     if (query)  aux = { params: this._queryToHttpParams(query) };
 
+    this._spin = true;
     this.apiService.getList(this.model, aux, url).subscribe({
       next: (response: any) => {
         this.page = response.page;
         this._links = response._links;
 
         if (response.items) {
-          const _itemRow = this.templatesConfig.itemRow;
           const _list: any = response.items.map((template: any) => {
-            const metadataText = Tools.simpleItemFormatter(_itemRow.metadata.text, template, this.templatesConfig.options || null);
-            const metadataLabel = Tools.simpleItemFormatter(_itemRow.metadata.label, template, this.templatesConfig.options || null);
             const element = {
               id: template.id,
-              primaryText: Tools.simpleItemFormatter(_itemRow.primaryText, template, this.templatesConfig.options || null, ' '),
-              secondaryText: Tools.simpleItemFormatter(_itemRow.secondaryText, template, this.templatesConfig.options || null, ' '),
-              metadata: `${metadataText}<span class="me-2">&nbsp;</span>${metadataLabel}`,
-              secondaryMetadata: Tools.simpleItemFormatter(_itemRow.secondaryMetadata, template, this.templatesConfig.options || null, ' '),
-              editMode: false,
               source: { ...template }
             };
             return element;
@@ -200,11 +159,13 @@ export class TemplatesComponent implements OnInit, AfterViewInit, AfterContentCh
           this.templates = (url) ? [...this.templates, ..._list] : [..._list];
           this._preventMultiCall = false;
         }
+        this._spin = false;
         Tools.ScrollTo(0);
       },
       error: (error: any) => {
         this._setErrorTemplates(true);
         this._preventMultiCall = false;
+        this._spin = false;
         // Tools.OnError(error);
       }
     });
