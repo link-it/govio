@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.test.controller.files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,7 +97,7 @@ class Files_UC_2_FindFilesTest {
 		
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		
-		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
+		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("user_govio_sender")).getUser();
 		
 		List<GovioFileEntity> files = new ArrayList<>();
 		files.add(govioFilesRepository.save(GovioFileUtils.buildFile(this.fileRepositoryPath, serviceInstanceEntity.get(), "01", user)));
@@ -307,7 +325,7 @@ class Files_UC_2_FindFilesTest {
 	// 8. findAllOk filtro sull'utente che ha caricato il tracciato govio_sender
 	@Test
 	void UC_2_08_FindAllOk_UserID() throws Exception {
-		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("govio_sender")).getUser();
+		UserEntity user = ((GovhubPrincipal) this.userDetailService.loadUserByUsername("user_govio_sender")).getUser();
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.FILES_QUERY_PARAM_USER_ID, user.getId()+"");
 		
@@ -552,5 +570,4 @@ class Files_UC_2_FindFilesTest {
 		assertEquals("02.csv", item1.getString("filename"));
 		assertEquals("01.csv", item2.getString("filename"));
 	}
-	
 }

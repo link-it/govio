@@ -1,18 +1,20 @@
 import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { HttpParams } from '@angular/common/http';
 
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
-import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definitions';
 
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
+
+import { concat, Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
 
 import { File } from './file';
 
@@ -42,8 +44,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   ];
   _currentTab: string = 'details';
 
-  _informazioni: FieldClass[] = [];
-
   _isDetails = true;
 
   _editable: boolean = false;
@@ -58,6 +58,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
 
   _spin: boolean = true;
   desktop: boolean = false;
+  _exportSpin: boolean = false;
 
   _useRoute: boolean = true;
 
@@ -76,6 +77,20 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _services: any[] = [];
   _selectedFile: any = null;
 
+  _serviceInstance: any = null;
+  _organization: any = null;
+  _service: any = null;
+  _template: any = null;
+
+  minLengthTerm = 1;
+
+  services$!: Observable<any[]>;
+  servicesSelected$!: any;
+  servicesInput$ = new Subject<string>();
+  servicesLoading: boolean = false;
+
+  _data: any[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -84,23 +99,12 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     private configService: ConfigService,
     public tools: Tools,
     public eventsManagerService: EventsManagerService,
-    public apiService: OpenAPIService,
-    public pageloaderService: PageloaderService
+    public apiService: OpenAPIService
   ) {
     this.appConfig = this.configService.getConfiguration();
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      // Changed
-    });
-
-    this.pageloaderService.resetLoader();
-    this.pageloaderService.isLoading.subscribe({
-      next: (x) => { this._spin = x; },
-      error: (e: any) => { console.log('loader error', e); }
-    });
-
     this.route.params.subscribe(params => {
       if (params['id'] && params['id'] !== 'new') {
         this.id = params['id'];
@@ -109,7 +113,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
         this.configService.getConfig(this.model).subscribe(
           (config: any) => {
             this.config = config;
-            this._translateConfig();
             this._loadAll();
           }
         );
@@ -123,10 +126,9 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
         this.configService.getConfig(this.model).subscribe(
           (config: any) => {
             this.config = config;
-            this._translateConfig();
             if (this._isEdit) {
-              this._loadRegistry();
               this._initForm({ ...this._file });
+              this._initServicesSelect([]);
             } else {
               this._loadAll();
             }
@@ -157,7 +159,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   }
 
   _loadAll() {
-    this._loadRegistry();
     this._loadFile();
   }
 
@@ -175,8 +176,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       Object.keys(data).forEach((key) => {
         let value = '';
         switch (key) {
-          case 'organization_id':
-          case 'service_id':
+          case 'service_instance':
           case 'file':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
@@ -199,7 +199,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     this._error = false;
     const formData = new FormData();
     formData.append('file', this._selectedFile, this._selectedFile.name);
-    const url: string = `files?organization_id=${body.organization_id}&service_id=${body.service_id}`;
+    const url: string = `files?service_instance=${body.service_instance}`;
     this.apiService.upload(url, formData)
       .subscribe({
         next: (response: any) => {
@@ -209,7 +209,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
           this._isNew = false;
 
           this._initBreadcrumb();
-          this.__initInformazioni();
           this._onCancelEdit();
         },
         error: (error: any) => {
@@ -284,35 +283,6 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     );
   }
 
-  _loadRegistry() {
-    this.apiService.getList('organizations').subscribe({
-      next: (response: any) => {
-        this._organizations = response.items;
-      },
-      error: (error: any) => {
-        Tools.OnError(error);
-      }
-    });
-
-    this.apiService.getList('services').subscribe({
-      next: (response: any) => {
-        this._services = response.items;
-      },
-      error: (error: any) => {
-        Tools.OnError(error);
-      }
-    });
-
-    // this.apiService.getList('service-instances').subscribe({
-    //   next: (response: any) => {
-    //     this._services = response.items;
-    //   },
-    //   error: (error: any) => {
-    //     Tools.OnError(error);
-    //   }
-    // });
-  }
-
   _downloadAction(event: any) {
     this._downloadContent(event.item);
   }
@@ -336,49 +306,79 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
 
   _loadFile() {
     if (this.id) {
+      this._spin = true;
       this.file = null;
       this.apiService.getDetails(this.model, this.id).subscribe({
         next: (response: any) => {
           this.file = response; // new File({ ...response });
           this._file = response; // new File({ ...response });
 
-          this.__initInformazioni();
+          this._spin = false;
+          this._loadServiceInstance(this.file.service_instance_id);
         },
         error: (error: any) => {
+          this._spin = false;
           Tools.OnError(error);
         }
       });
     }
   }
 
-  __initInformazioni() {
-    if (this.file) {
-      this._informazioni = Tools.generateFields(this.config.details, this.file, true, this.config.options).map((field: FieldClass) => {
-        field.label = this.translate.instant(field.label);
-        return field;
+  _loadServiceInstance(id: number) {
+    if (this.file && this.file._embedded && this.file._embedded['service-instance']) {
+      this._serviceInstance = this.file._embedded['service-instance'];
+      this._organization = this._serviceInstance._embedded.organization;
+      this._service = this._serviceInstance._embedded.service;
+      this._template = this._serviceInstance._embedded.template;
+
+      this.file.organization = this._organization;
+      this.file.service = this._service;
+      this.file.template = this._template;
+    } else {
+      this._spin = true;
+      this._serviceInstance = null;
+      let aux: any = { params: this._queryToHttpParams({ embed: ['organization','service','template'] }) };
+      this.apiService.getDetails('service-instances', id, '', aux).subscribe({
+        next: (response: any) => {
+          this._serviceInstance = response;
+          this._organization = this._serviceInstance._embedded.organization;
+          this._service = this._serviceInstance._embedded.service;
+          this._template = this._serviceInstance._embedded.template;
+  
+          this.file.organization = this._organization;
+          this.file.service = this._service;
+          this.file.template = this._template;
+  
+          this._spin = false;
+        },
+        error: (error: any) => {
+          this._spin = false;
+          Tools.OnError(error);
+        }
       });
     }
   }
 
-  _translateConfig() {
-    if (this.config && this.config.options) {
-      Object.keys(this.config.options).forEach((key: string) => {
-        if (this.config.options[key].label) {
-          this.config.options[key].label = this.translate.instant(this.config.options[key].label);
+  _queryToHttpParams(query: any) : HttpParams {
+    let httpParams = new HttpParams();
+
+    Object.keys(query).forEach(key => {
+      if (query[key]) {
+        switch (key)
+        {
+          default:
+            httpParams = httpParams.set(key, query[key]);
         }
-        if (this.config.options[key].values) {
-          Object.keys(this.config.options[key].values).forEach((key2: string) => {
-            this.config.options[key].values[key2].label = this.translate.instant(this.config.options[key].values[key2].label);
-          });
-        }
-      });
-    }
+      }
+    });
+    
+    return httpParams; 
   }
 
   _initBreadcrumb() {
     const _title = this.id ? `#${this.id}` : this.translate.instant('APP.TITLE.New');
     this.breadcrumbs = [
-      { label: '', url: '', type: 'title', icon: 'corporate_fare' },
+      { label: '', url: '', type: 'title', icon: 'account_balance' },
       { label: 'APP.TITLE.Files', url: '/files', type: 'link' },
       { label: `${_title}`, url: '', type: 'title' }
     ];
@@ -431,23 +431,115 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
 
   _orgLogo = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo_small) {
-      logoUrl = item._links.logo_small.href;
+    if (item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return logoUrl;
   };
 
   _orgLogoBackground = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo_small && false) {
-      // logoUrl = 'http://172.16.1.121:8083/govio/api/v1/organizations/16/logo_miniature';
-      logoUrl = item._links.logo_small.href;
+    if (item._links && item._links['logo-miniature'] && false) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };
 
   _serviceLogoBackground = (item: any): string => {
-    const logoUrl = item.logo || this._serviceLogoPlaceholder;
+    const logoUrl = item['logo-miniature'] || this._serviceLogoPlaceholder;
     return `url(${logoUrl})`;
   };
+
+  trackByFn(item: any) {
+    return item.id;
+  }
+
+  _initServicesSelect(defaultValue: any[] = []) {
+    this.services$ = concat(
+      of(defaultValue),
+      this.servicesInput$.pipe(
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => this.servicesLoading = true),
+        switchMap((term: any) => {
+          return this.getData('service-instances', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.servicesLoading = false)
+          )
+        })
+      )
+    );
+  }
+
+  getData(model: string, term: string | null = null): Observable<any> {
+    const _options: any = { params: { q: term, limit: 100, embed: ['service','organization','template'] } };
+
+    return this.apiService.getList(model, _options)
+      .pipe(map(resp => {
+        if (resp.Error) {
+          throwError(resp.Error);
+        } else {
+          const _items = resp.items.map((item: any) => {
+            item.organization = item._embedded.organization;
+            item.organization_name = item._embedded.organization.legal_name;
+            item.service = item._embedded.service;
+            item.service_name = item._embedded.service.service_name;
+            item.template = item._embedded.template;
+            item.template_name = item._embedded.template.description;
+            item.label = `${item.service_name} | ${item.template_name}`;
+            // item.disabled = true;
+            return item;
+          });
+          return _items;
+        }
+      })
+      );
+  }
+
+  onChangeService(event: any) {
+    this.servicesSelected$ = event;
+  }
+
+  onExport() {
+    let _data: any[] = [];
+    this._exportSpin = true;
+    let aux: any = { params: this._queryToHttpParams({ file_messages_status: 'error', limit: 100 }) };
+    this.apiService.getDetails(this.model, this.id, 'file-messages', aux)
+      .pipe(
+        switchMap(response => {
+          _data = _data.concat(response.items);
+          if(response._links && response._links.next) {
+            return this._getData(response._links.next.href, aux, _data);
+          } else {
+            return of(_data);
+          }
+        })
+      ).subscribe({
+        next: (response: any) => {
+          this._data = response;
+          Tools.DownloadCSVFile(this._data, 'FileMessagesError');
+          this._exportSpin = false;
+        },
+        error: (error: any) => {
+          this._exportSpin = false;
+          Tools.OnError(error);
+        }
+      });
+  }
+
+  _getData(url: string, aux: any, fullData:any[]): Observable<any> {
+    fullData = fullData || [];
+    return this.apiService.getList(this.model, aux, url)
+      .pipe(
+        switchMap((data:any)=>{
+          fullData = fullData.concat(data.items);
+          return !data.next? of(fullData):
+            this._getData(data.next, aux, fullData)
+        })
+      );
+  }
 }

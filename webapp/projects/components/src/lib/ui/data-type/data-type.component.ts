@@ -4,18 +4,18 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
 
-import { UtilsLib } from '../../../utils/utils.lib';
+import { UtilsLib } from '../../utils/utils.lib';
 
 import * as moment from 'moment';
 
 @Component({
-  selector: 'ui-item-type',
-  templateUrl: './item-type.component.html',
+  selector: 'ui-data-type',
+  templateUrl: './data-type.component.html',
   styleUrls: [
-    './item-type.component.scss'
+    './data-type.component.scss'
   ]
 })
-export class ItemTypeComponent implements OnInit, AfterViewInit {
+export class DataTypeComponent implements OnInit, AfterViewInit {
   @HostBinding('class.empty-space') get emptySpace(): boolean {
     return this._elem.emptySpace;
   }
@@ -27,7 +27,7 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
   @Input('elem') _elem: any = null;
   @Input('config') _config: any = null;
 
-  @Output() itemClick: EventEmitter<any> = new EventEmitter();
+  @Output() dataClick: EventEmitter<any> = new EventEmitter();
 
   _value: any = null;
 
@@ -42,6 +42,7 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
   _color: string = '';
   _class: string = '';
   _showBadged: boolean = false;
+  _tooltip: string = '';
 
   constructor(
     private sanitized: DomSanitizer,
@@ -50,7 +51,7 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this._value = this.utilsLib.getObjectValue(this._data.source, this._elem.field);
+    this._value = this.utilsLib.getObjectValue(this._data, this._elem.field);
     if (this._elem.type === 'status') {
       if (this._config.options) {
         const _origValue = this._value;
@@ -86,6 +87,12 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
         this._showBadged = (this._elem.badged !== undefined) ? this._elem.badged : true;
         this._class = 'gl-badge badge badge-pill';
       }
+    }
+    if (this._elem.type === 'image') {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'avatar') {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
     }
   }
 

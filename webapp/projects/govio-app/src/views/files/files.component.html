@@ -3,16 +3,6 @@
     <div class="breadcrumbs-area">
       <ui-breadcrumb [breadcrumbs]="breadcrumbs" (onClick)="onBreadcrumb($event)"></ui-breadcrumb>
     </div>
-    <div class="flash-container flash-container-page sticky gp-display-block d-none">
-      <div class="flash-notice" data-testid="alert-info">
-        <div class="flash-text">
-          You must sign in to search for specific terms.
-          <div class="close-icon-wrapper">
-            <mat-icon class="fs-6" fontSet="material-icons-outlined">close</mat-icon>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="top-area">
       <div class="tabs gp-tabs d-flex flex-grow-1 p-0 m-0 mobile-separator issuable-state-filters">
         <div class="">
@@ -27,11 +17,11 @@
       </div>
       <div class="nav-controls">
         <div role="group" class="gl-w-full btn-group-">
-          <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'create'"> -->
+          <ng-template [appHasPermission]="'FILES'" [action]="'create'">
             <button aria-label="Add file" type="button" class="btn btn-confirm btn-md gl-button btn-icon" (click)="_onNew()">
-              <mat-icon fontSet="material-icons-outlined">note_add</mat-icon> <span class="ms-2">{{ 'APP.BUTTON.AddFile' | translate }}</span>
+              <i class="bi bi-plus-lg"></i><span class="ms-2">{{ 'APP.BUTTON.AddFile' | translate }}</span>
             </button>
-          <!-- </ng-template> -->
+          </ng-template>
         </div>
       </div>
     </div>
@@ -57,31 +47,24 @@
                 <fieldset>
                   <div class="row">
                     <div class="form-group col-md-4 mb-2">
-                      <label class="label-bold mb-0" for="creationDateFrom">{{ 'APP.LABEL.DateFrom' | translate }}</label>
-                      <input class="form-control form-control-sm gl-form-input" id="creationDateFrom" type="date" formControlName="creationDateFrom" autocomplete="off">
+                      <label class="label-bold mb-0" for="creation_date_from">{{ 'APP.LABEL.DateFrom' | translate }}</label>
+                      <input class="form-control form-control-sm gl-form-input" id="creation_date_from" type="date" formControlName="creation_date_from" autocomplete="off">
                     </div>
                     <div class="form-group col-md-4 mb-2">
-                      <label class="label-bold mb-0" for="creationDateTo">{{ 'APP.LABEL.DateTo' | translate }}</label>
-                      <input class="form-control form-control-sm gl-form-input" id="creationDateTo" type="date" formControlName="creationDateTo" autocomplete="off">
+                      <label class="label-bold mb-0" for="creation_date_to">{{ 'APP.LABEL.DateTo' | translate }}</label>
+                      <input class="form-control form-control-sm gl-form-input" id="creation_date_to" type="date" formControlName="creation_date_to" autocomplete="off">
                     </div>
                   </div>
                   <div class="row">
                     <div class="form-group col-md-4 mb-2">
-                      <label class="label-bold mb-0" for="fileName">{{ 'APP.LABEL.FileName' | translate }}</label>
-                      <input class="form-control form-control-sm gl-form-input" id="fileName" type="text" formControlName="fileName" autocomplete="off">
+                      <label class="label-bold mb-0" for="filename">{{ 'APP.LABEL.FileName' | translate }}</label>
+                      <input class="form-control form-control-sm gl-form-input" id="filename" type="text" formControlName="filename" autocomplete="off">
                     </div>
                     <div class="form-group col-md-4 mb-2">
                       <label class="label-bold mb-0" for="status">{{ 'APP.LABEL.Status' | translate }}</label>
                       <select class="form-control form-control-sm" id="status" formControlName="status">
                         <option value="">{{ 'APP.LABEL.All' | translate }}</option>
-                        <option *ngFor="let s of Tools.StatiJournal" [value]="s.value">{{ s.label }}</option>
-                      </select>
-                    </div>
-                    <div class="form-group col-md-4 mb-2">
-                      <label class="label-bold mb-0" for="type">{{ 'APP.LABEL.Type' | translate }}</label>
-                      <select class="form-control form-control-sm" id="type" formControlName="type">
-                        <option value="">{{ 'APP.LABEL.All' | translate }}</option>
-                        <option *ngFor="let t of Tools.TipiJournal" [value]="t.value">{{ t.label }}</option>
+                        <option *ngFor="let s of statusList" [value]="s.value">{{ s.label | translate }}</option>
                       </select>
                     </div>
                   </div>
@@ -111,15 +94,7 @@
 
       <div class="row">
         <div class="col-12">
-          <!-- <ui-simple-item class="border-bottom" *ngFor="let file of files"
-            [primaryText]="file.primaryText"
-            [secondaryText]="file.secondaryText"
-            [metadata]="file.metadata"
-            [secondaryMetadata]="file.secondaryMetadata"
-            [hasLink]="true"
-            (simpleClick)="_onEdit($event, file)">
-          </ui-simple-item> -->
-          <ui-item-row class="border-bottom" *ngFor="let file of files"
+          <ui-item-row class="border-bottom" *ngFor="let file of files;trackBy: trackByFn;"
             [data]="file"
             [config]="filesConfig"
             [hasLink]="true"

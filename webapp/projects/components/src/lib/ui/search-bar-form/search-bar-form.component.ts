@@ -5,7 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
 import _ from 'lodash';
-import moment from 'moment';
+import * as moment from 'moment';
 
 import { ConfigService } from 'projects/tools/src/lib/config.service';
 
@@ -32,6 +32,7 @@ export class SearchBarFormComponent implements OnInit, OnChanges, AfterViewInit 
   @Input() placeholder: string = 'Search or filter results...';
   @Input() formGroup: UntypedFormGroup = new UntypedFormGroup({});
   @Input() autoPin: boolean = false;
+  @Input() simple: boolean = false;
 
   @Output() onSearch: EventEmitter<any> = new EventEmitter();
   @Output() onSort: EventEmitter<any> = new EventEmitter();
@@ -49,6 +50,8 @@ export class SearchBarFormComponent implements OnInit, OnChanges, AfterViewInit 
   config: any;
 
   _clickInside: boolean = false;
+
+  query: string = '';
 
   constructor(
     private matIconRegistry: MatIconRegistry,
@@ -131,23 +134,27 @@ export class SearchBarFormComponent implements OnInit, OnChanges, AfterViewInit 
   }
 
   _onSearch(close: boolean = true, save: boolean = true) {
-    // Get Form data
-    const _oldValues = this._currentValues;
-    this._currentValues = this.formGroup.value;
-    this._tokens = this.__createTokens();
-    if (_oldValues !== this._currentValues) {
+    if (this.simple) {
+      this.onSearch.emit({ q: this.query });
+    } else {
+      // Get Form data
+      const _oldValues = this._currentValues;
+      this._currentValues = this.formGroup.value;
+      this._tokens = this.__createTokens();
       this.onSearch.emit(this._currentValues);
-      if (!this.__isEmptyValues(this._currentValues) && save) {
-        this._addHistory(this._currentValues);
-        this._history = this._getHistory();
+      if (_oldValues !== this._currentValues) {
+        if (!this.__isEmptyValues(this._currentValues) && save) {
+          this._addHistory(this._currentValues);
+          this._history = this._getHistory();
+        }
+        if (this.autoPin) {
+          this._pinLastSearch();
+        }
       }
-      if (this.autoPin) {
-        this._pinLastSearch();
+      if (this._tokens.length > 0) { this._placeholder = ''; }
+      if (this._isOpen && close) {
+        this._closeSearchDropDpwn(null);
       }
-    }
-    if (this._tokens.length > 0) { this._placeholder = ''; }
-    if (this._isOpen && close) {
-      this._closeSearchDropDpwn(null);
     }
   }
 
@@ -263,21 +270,27 @@ export class SearchBarFormComponent implements OnInit, OnChanges, AfterViewInit 
   }
 
   _openSearch(event: any) {
-    if (this._isOpen) {
-      this._isOpen = false;
-      $("#form_toggle").dropdown('hide');
-    } else {
-      this._isOpen = true;
-      $("#form_toggle").dropdown('show');
+    if (!this.simple) {
+      if (this._isOpen) {
+        this._isOpen = false;
+        $("#form_toggle").dropdown('hide');
+      } else {
+        this._isOpen = true;
+        $("#form_toggle").dropdown('show');
+      }
     }
   }
 
   _clearSearch(event: any) {
-    event.stopPropagation();
-    this._tokens = [];
-    this._currentValues = {};
-    this.formGroup.reset();
-    this._placeholder = this.placeholder;
+    if (this.simple) {
+      this.query = '';
+    } else {
+      event.stopPropagation();
+      this._tokens = [];
+      this._currentValues = {};
+      this.formGroup.reset();
+      this._placeholder = this.placeholder;
+    }
     this._onSearch();
   }
 

@@ -1,11 +1,9 @@
 {
   "itemRow": {
     "primaryText": [
-      { "field": "subject", "type": "text" }
+      { "field": "name", "type": "text" }
     ],
-    "secondaryText": [
-      { "field": "description", "type": "text" }
-    ],
+    "secondaryText": [],
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal", "class": "" }
@@ -16,8 +14,10 @@
   },
 
   "details": [
-    { "label": "APP.LABEL.Subject", "field": "subject", "type": "text" },
+    { "label": "APP.LABEL.Name", "field": "subject", "type": "text" },
     { "label": "APP.LABEL.Description", "field": "description", "type": "text" },
+    { "label": "APP.LABEL.Subject", "field": "subject", "type": "text" },
+    { "label": "APP.LABEL.message_body", "field": "subject", "type": "text" },
     { "label": "APP.LABEL.HasPayment", "field": "has_payment", "type": "text"},
     { "label": "APP.LABEL.HasDueDate", "field": "has_due_date", "type": "text"}
   ],

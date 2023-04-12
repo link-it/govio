@@ -1,7 +1,7 @@
 <div class="filtered-search-bar-container gl-md-display-flex gl-flex-grow-1 gl-border-t-none row-content-block {{ classBlock }}">
   <div class="gl-search-box-by-click flex-grow-1 filtered-search-input" *ngIf="showSearch">
     <div role="group" class="input-group">
-      <div class="" [class.input-group-prepend]="showHistory" *ngIf="showHistory">
+      <div class="" [class.input-group-prepend]="showHistory" *ngIf="showHistory && !simple">
         <div class="dropdown b-dropdown gl-new-dropdown gl-search-box-by-click-history btn-group" id="history">
           <button id="history_toggle" aria-haspopup="true" aria-expanded="false" type="button" data-bs-toggle="dropdown" data-bs-display="static" class="btn dropdown-toggle btn-default btn-md gl-button dropdowngl-dropdown-toggle btn-default-secondary" (click)="_closeSearchDropDpwn($event)">
             <mat-icon fontSet="material-icons-outlined">history</mat-icon>
@@ -64,7 +64,7 @@
       </div>
       <div class="gl-filtered-search-scrollable">
         <ng-container *ngFor="let token of _tokens; let index = index;">
-          <div class="gl-filtered-search-token gl-filtered-search-item" (click)="_openSearch($event)">
+          <div class="gl-filtered-search-token gl-filtered-search-item" (click)="_openSearch($event)" *ngIf="!simple">
             <div class="gl-filtered-search-token-segment">
               <span class="gl-filtered-search-token-type gl-token gl-token-default-variant gl-token-view-only gl-cursor-pointer">
                 <span class="gl-token-content">{{ token.label }}</span>
@@ -89,7 +89,7 @@
         </ng-container>
         <div class="gl-h-auto gl-filtered-search-term gl-filtered-search-item gl-filtered-search-last-item">
           <div class="gl-filtered-search-token-segment gl-filtered-search-term-token" [class.gl-w-full]="!_tokens.length">
-            <input id="form_toggle" [placeholder]="_placeholder" [attr.aria-label]="_placeholder" class="gl-filtered-search-term-input w-100" readonly data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="false" (click)="_openSearch($event)">
+            <input id="form_toggle" type="text" [(ngModel)]="query" [placeholder]="_placeholder" [attr.aria-label]="_placeholder" class="gl-filtered-search-term-input w-100" [readonly]="!simple" [attr.data-bs-toggle]="simple ? '' : 'dropdown'" data-bs-display="static" data-bs-auto-close="false" (click)="_openSearch($event)" (keyup.enter)="_onSearch()">
             <ul role="menu" tabindex="-1" class="dropdown-menu form-search-container w-100 px-2" aria-labelledby="form_toggle">
               <li><button type="button" class="close" style="width: auto;" (click)="_closeSearchDropDpwn($event)"><i class="bi bi-x"></i></button></li>
               <div class="dropdown-menu-content p-3">
@@ -99,7 +99,7 @@
           </div>
         </div>
       </div>
-      <button name="clear" title="Clear" aria-label="Clear" type="button" class="btn gl-clear-icon-button gl-search-box-by-click-icon-button gl-search-box-by-click-clear-button gl-clear-icon-button btn-default btn-sm gl-button btn-default-tertiary btn-icon" *ngIf="_tokens?.length" (click)="_clearSearch($event)">
+      <button name="clear" title="Clear" aria-label="Clear" type="button" class="btn gl-clear-icon-button gl-search-box-by-click-icon-button gl-search-box-by-click-clear-button gl-clear-icon-button btn-default btn-sm gl-button btn-default-tertiary btn-icon" *ngIf="_tokens?.length || query" (click)="_clearSearch($event)">
         <div aria-hidden="true" class="gl-button-icon gl-icon s16">
           <mat-icon>cancel</mat-icon>
         </div>

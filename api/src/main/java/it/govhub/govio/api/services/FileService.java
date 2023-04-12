@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.services;
 
 import java.io.File;
@@ -7,8 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -27,13 +43,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.assemblers.FileMessageAssembler;
 import it.govhub.govio.api.assemblers.MessageAssembler;
-import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
-import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
-import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.FileMessages;
 import it.govhub.govio.api.repository.FileMessageRepository;
@@ -41,7 +54,6 @@ import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.exception.InternalException;
-import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
@@ -82,14 +94,6 @@ public class FileService {
 	
 	Logger log = LoggerFactory.getLogger(FileService.class);
 	
-	// TODO: Chiedi a lorenzo quali sono gli stati intermedi
-	public static final Set<GovioMessageEntity.Status> IntermediateStatuses = Set.of(
-				GovioMessageEntity.Status.THROTTLED,
-				GovioMessageEntity.Status.SCHEDULED,
-				GovioMessageEntity.Status.RECIPIENT_ALLOWED,
-				GovioMessageEntity.Status.CREATED
-			);
-	
 	
 	@Transactional
 	public GovioFileEntity uploadCSV(GovioServiceInstanceEntity instance, String sourceFilename, FileItemStream itemStream) {
@@ -103,15 +107,14 @@ public class FileService {
 		}
 
     	Path destPath = this.fileRepositoryPath
-    				.resolve(instance.getOrganization().getId().toString())
-    				.resolve(instance.getService().getId().toString());
+    				.resolve(instance.getId().toString());
     	
     	File destDir = destPath.toFile();
     	destDir.mkdirs();
     	
     	if (!destDir.isDirectory()) {
     		log.error("Impossibile creare la directory per conservare i files: {}", destDir);
-    		throw new RuntimeException("Non è stato possibile creare la directory per conservare i files");
+    		throw new InternalException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
     	Path destFile =  destPath
@@ -141,52 +144,21 @@ public class FileService {
 	
 
 	@Transactional
-	public GovioFile readFile(Long id) {
-		GovioFileEntity file = this.fileRepo.findById(id)
-				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
-		GovioServiceInstanceEntity instance = file.getServiceInstance();
-		
-		log.debug("Reading file [{}]", file.getLocation());
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
-		
-		GovioFile ret = this.fileAssembler.toModel(file);
-		return ret;
-	}
-
-	
-	@Transactional
-	public FileList listFiles(Specification<GovioFileEntity> spec, LimitOffsetPageRequest pageRequest) {
-		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
-		
-		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
-				.currentRequestAttributes()).getRequest();
-		
-		FileList ret = ListaUtils.buildPaginatedList(files, pageRequest.limit, curRequest, new FileList());
-		
-		for (GovioFileEntity file : files) {
-			ret.addItemsItem(this.fileAssembler.toModel(file));
-		}
-		return ret;
-	}
-	
-	
-	@Transactional
 	public FileMessageList listFileMessages(Specification<GovioFileMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
 		
 		// TODO: Qui ho bisogno di un'entity graph che di ogni fileEntity mi peschi anche i
 		// fileMessages, altrimenti pago altre
 		// N query quando vado a convertire i files
 		
-		Page<GovioFileMessageEntity> fileMessages = this.fileMessageRepo.findAll(spec, pageRequest.pageable);
+		Page<GovioFileMessageEntity> fileList = this.fileMessageRepo.findAll(spec, pageRequest.pageable);
 
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 				.getRequest();
 
-		FileMessageList ret = ListaUtils.buildPaginatedList(fileMessages, pageRequest.limit, curRequest,
+		FileMessageList ret = ListaUtils.buildPaginatedList(fileList, pageRequest.limit, curRequest,
 				new FileMessageList());
 
-		for (GovioFileMessageEntity fileMessage : fileMessages) {
+		for (GovioFileMessageEntity fileMessage : fileList) {
 			ret.addItemsItem(this.fileMessageAssembler.toModel(fileMessage));
 		}
 		

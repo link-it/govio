@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.web;
 
 import java.time.OffsetDateTime;
@@ -33,11 +51,13 @@ import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.entity.UserEntity;
+import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
 import it.govhub.security.services.SecurityService;
 import it.govio.template.BaseMessage;
+import it.govio.template.exception.TemplateValidationException;
 
 @V1RestController
 public class MessageController implements MessageApi {
@@ -76,6 +96,8 @@ public class MessageController implements MessageApi {
 			String taxCode,
 			Long serviceId,
 			Long organizationId,
+			String serviceQ,
+			String organizationQ,
 			Integer limit,
 			Long offset,
 			List<EmbedMessageEnum> embeds) {
@@ -107,13 +129,19 @@ public class MessageController implements MessageApi {
 			spec = spec.and(MessageFilters.toExpeditionDate(expeditionDateTo));
 		}
 		if (taxCode != null) {
-			spec = spec.and(MessageFilters.byTaxCode(taxCode));
+			spec = spec.and(MessageFilters.likeTaxcode(taxCode));
 		}
 		if (serviceId != null) {
 			spec = spec.and(MessageFilters.byServiceId(serviceId));
 		}
 		if (organizationId != null) {
 			spec = spec.and(MessageFilters.byOrganizationId(organizationId));
+		}
+		if (serviceQ != null) {
+			spec = spec.and(MessageFilters.likeServiceName(serviceQ));
+		}
+		if (organizationQ != null) {
+			spec = spec.and(MessageFilters.likeOrganizationName(organizationQ).or(MessageFilters.likeOrganizationTaxCode(organizationQ))); 
 		}
 		
 		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest, embeds);
@@ -124,9 +152,15 @@ public class MessageController implements MessageApi {
 	@Override
 	public ResponseEntity<GovioMessage> readMessage(Long id) {
 		
-		GovioMessage ret = this.messageService.readMessage(id);
+		GovioMessageEntity message = this.messageRepo.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(this.messageMessages.idNotFound(id)));
 		
-		return ResponseEntity.ok(ret);
+		GovioServiceInstanceEntity instance = message.getGovioServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
+
+		return ResponseEntity.ok(this.messageAssembler.toEmbeddedModel(message));
 	}
 	
     
@@ -159,7 +193,7 @@ public class MessageController implements MessageApi {
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		BaseMessage message = BaseMessage.builder()
-				.dueDate(govioNewMessage.getDueDate().toLocalDateTime())
+				.dueDate(govioNewMessage.getDueDate() == null ? null : govioNewMessage.getDueDate().toLocalDateTime())
 				.email(govioNewMessage.getEmail())
 				.scheduledExpeditionDate(govioNewMessage.getScheduledExpeditionDate().toLocalDateTime())
 				.taxcode(govioNewMessage.getTaxcode())
@@ -175,9 +209,14 @@ public class MessageController implements MessageApi {
 			for(var p : govioNewMessage.getPlaceholders()) {
 				placeholderValues.put(p.getName(), p.getValue());
 			}
-		GovioMessageEntity messageEntity = this.messageService.newMessage(SecurityService.getPrincipal().getId(), instance.getId(), message, placeholderValues);
 		
-		return ResponseEntity.ok(this.messageAssembler.toModel(messageEntity));
+		try {
+			GovioMessageEntity messageEntity = this.messageService.newMessage(SecurityService.getPrincipal().getId(), instance.getId(), message, placeholderValues);
+			return ResponseEntity.ok(this.messageAssembler.toModel(messageEntity));
+		} catch (TemplateValidationException e) {
+			throw new SemanticValidationException(e.getMessage());
+		}
+		
 	}
 
 	

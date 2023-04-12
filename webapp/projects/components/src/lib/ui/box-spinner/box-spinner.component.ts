@@ -12,11 +12,11 @@ import { Tools } from 'projects/tools/src/lib/tools.service';
       <div class="max-w-100 m-auto">
         <div class="mx-auto my-0 p-3 position-relative">
           <mat-progress-spinner [color]="color" mode="indeterminate" [diameter]="diameter" [strokeWidth]="strokeWidth"></mat-progress-spinner>
-          <span class="rescue-spinner">
+          <!-- <span class="rescue-spinner">
             <button mat-button mat-icon-button type="button" (click)="_rescueCall()">
               <mat-icon fontSet="material-icons-outlined">close</mat-icon>
             </button>
-          </span>
+          </span> -->
         </div>
       </div>
     </div>

@@ -4,18 +4,18 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
 
-import { UtilsLib } from '../../../utils/utils.lib';
+import { UtilsLib } from '../../utils/utils.lib';
 
 import * as moment from 'moment';
 
 @Component({
-  selector: 'ui-data-type',
-  templateUrl: './data-type.component.html',
+  selector: 'ui-item-type',
+  templateUrl: './item-type.component.html',
   styleUrls: [
-    './data-type.component.scss'
+    './item-type.component.scss'
   ]
 })
-export class DataTypeComponent implements OnInit, AfterViewInit {
+export class ItemTypeComponent implements OnInit, AfterViewInit {
   @HostBinding('class.empty-space') get emptySpace(): boolean {
     return this._elem.emptySpace;
   }
@@ -27,7 +27,7 @@ export class DataTypeComponent implements OnInit, AfterViewInit {
   @Input('elem') _elem: any = null;
   @Input('config') _config: any = null;
 
-  @Output() dataClick: EventEmitter<any> = new EventEmitter();
+  @Output() itemClick: EventEmitter<any> = new EventEmitter();
 
   _value: any = null;
 
@@ -42,6 +42,7 @@ export class DataTypeComponent implements OnInit, AfterViewInit {
   _color: string = '';
   _class: string = '';
   _showBadged: boolean = false;
+  _tooltip: string = '';
 
   constructor(
     private sanitized: DomSanitizer,
@@ -50,7 +51,10 @@ export class DataTypeComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this._value = this.utilsLib.getObjectValue(this._data, this._elem.field);
+    this._value = this.utilsLib.getObjectValue(this._data.source, this._elem.field);
+    if ( !this._value && this._elem.default) {
+      this._value = this._elem.default;
+    }
     if (this._elem.type === 'status') {
       if (this._config.options) {
         const _origValue = this._value;
@@ -68,7 +72,7 @@ export class DataTypeComponent implements OnInit, AfterViewInit {
         const _origValue = this._value;
         const _optionsName = this._elem.options;
         this._label = (this._config.options[_optionsName].label) ? this._config.options[_optionsName].label : _optionsName;
-        this._value = this._value ? (this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value) : 'undefined';
+        this._value = this._value ? (this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value) : this._config.options[_optionsName].values[_origValue].label;
         this._background = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].background : '#1f1f1f';
         this._border = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].border : '#1f1f1f';
         this._color = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].color : '#fff';
@@ -77,15 +81,28 @@ export class DataTypeComponent implements OnInit, AfterViewInit {
     }
     if (this._elem.type === 'tag') {
       if (this._config.options) {
-        const _origValue = this._value;
+        const _origValue = this._value ;
         const _optionsName = this._elem.options;
-        this._value = this._value ? (this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value) : 'undefined';
+        this._value = this._value ? ((this._config.options[_optionsName].values[_origValue] ? this._config.options[_optionsName].values[_origValue].label : this._value)) : this._config.options[_optionsName].values[_origValue].label;
         this._background = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].background : '#1f1f1f';
         this._border = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].border : '#1f1f1f';
         this._color = (this._config.options[_optionsName] && this._config.options[_optionsName].values[_origValue]) ? this._config.options[_optionsName].values[_origValue].color : '#fff';
         this._showBadged = (this._elem.badged !== undefined) ? this._elem.badged : true;
-        this._class = 'gl-badge badge badge-pill';
+        this._class = 'badge badge-pill';
+        this._class += this._config.options[_optionsName].small ? ' gl-badge-sm' : ' gl-badge';
       }
+    }
+    if (this._elem.type === 'image' && this._elem.tooltip) {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'avatar' && this._elem.tooltip) {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'avatar-image' && this._elem.tooltip) {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'gravatar-image' && this._elem.tooltip) {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
     }
   }
 

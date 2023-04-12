@@ -1,22 +1,44 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.web;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +49,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.govhub.govio.api.assemblers.FileAssembler;
+import it.govhub.govio.api.beans.EmbedFileEnum;
 import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
@@ -50,6 +73,7 @@ import it.govhub.govregistry.commons.exception.InternalException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
+import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.govregistry.commons.utils.RequestUtils;
 import it.govhub.security.services.SecurityService;
 
@@ -77,7 +101,7 @@ public class FileController implements FileApi {
 	@Autowired
 	ServiceInstanceMessages sinstanceMessages;
 	
-	Logger logger = LoggerFactory.getLogger(FileController.class);
+	Logger log = LoggerFactory.getLogger(FileController.class);
 	
 	/**
 	 * I parametri argomento vengono ignorati e sono null. Abbiamo disabilitato la gestione del multipart di spring 
@@ -85,8 +109,7 @@ public class FileController implements FileApi {
 	 * richiesta direttamente su file.
 	 */
 	@Override
-	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, Long serviceId, Long organizationId, MultipartFile file) {
-	//public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId, MultipartFile file) {
+	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId,  MultipartFile file) {
 		
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		
@@ -102,18 +125,21 @@ public class FileController implements FileApi {
 			// quando viene chiamato iterStream.hasNext.
 			// Per lo short-circuit dell'&&, una volta trovato l'elemento multipart necessario, usciamo dal while
 			// senza chiamare iterStream.hasNext
-			logger.debug("Reading Multipart Elements..");
+			log.debug("Reading Multipart Elements..");
 			while (sourceFilename == null && iterStream.hasNext()) {
 			    itemStream = iterStream.next();
-			    logger.debug("Found element: {}", itemStream.getFieldName());
+			    log.debug("Found element: {}", itemStream.getFieldName());
 			    
 			    if (itemStream.isFormField()) {
-			    	logger.debug("Skipping multipart form field {}", itemStream.getFieldName());
+			    	log.debug("Skipping multipart form field {}", itemStream.getFieldName());
 			    } else {
 				    sourceFilename = RequestUtils.readFilenameFromHeaders(itemStream.getHeaders());
 			    }
 			}
-		} catch (Exception e) {
+		} catch(FileUploadException e) {
+			throw new BadRequestException(e);
+		}
+		catch (Exception e) {
 			throw new InternalException(e);
 		}
 		
@@ -122,22 +148,12 @@ public class FileController implements FileApi {
     	}
     	
     	GovioServiceInstanceEntity serviceInstance = null;
-    	if (serviceInstanceId != null) {
-    		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
-        			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
-    	} else if (serviceId != null && organizationId != null) {
-    		serviceInstance = this.serviceRepo.findByService_IdAndOrganization_Id(serviceId, organizationId)
-    				.orElseThrow( () -> new SemanticValidationException("Service Instance for service ["+serviceId+"] and organization ["+organizationId+"] not present"));
-    	}
-    	
-    	if (serviceInstance == null) {
-    		throw new BadRequestException("E' necessasrio specificare una service instance");
-    	}
+  		serviceInstance = this.serviceRepo.findById(serviceInstanceId)
+       			.orElseThrow( () -> new SemanticValidationException(this.sinstanceMessages.idNotFound(serviceInstanceId)));	
     	
     	if (!serviceInstance.getEnabled() ) {
     		throw new SemanticValidationException("La service instance ["+serviceInstance.getId()+"] è disabilitata.");
     	}
-    	/**/
 		
     	GovioFileEntity created = this.fileService.uploadCSV(serviceInstance, sourceFilename, itemStream);
     	
@@ -145,6 +161,7 @@ public class FileController implements FileApi {
 	}
 	
 	
+	@Transactional
 	@Override
 	public ResponseEntity<FileList> listFiles(
 				Direction sortDirection, 
@@ -157,7 +174,8 @@ public class FileController implements FileApi {
 				 Long organizationId, 
 				 OffsetDateTime creationDateFrom, 
 				 OffsetDateTime creationDateTo,
-				 GovioFileEntity.Status status) {
+				 GovioFileEntity.Status status,
+				 List<EmbedFileEnum> embed) {
 		
 		// Pesco servizi e autorizzazioni che l'utente può leggere
 		Set<Long> orgIds = this.authService.listAuthorizedOrganizations(GovioRoles.GOVIO_SYSADMIN, GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER);
@@ -197,15 +215,36 @@ public class FileController implements FileApi {
 		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, FileFilters.sort(sortDirection,orderBy));
 		
-		FileList ret = fileService.listFiles(spec, pageRequest);
+		Page<GovioFileEntity> files= this.fileRepo.findAll(spec, pageRequest.pageable);
+		
+		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
+				.currentRequestAttributes()).getRequest();
+		
+		FileList ret = ListaUtils.buildPaginatedList(files, pageRequest.limit, curRequest, new FileList());
+		
+		for (GovioFileEntity file : files) {
+			ret.addItemsItem(this.fileAssembler.toEmbeddedModel(file, embed));
+		}
 		
 		return ResponseEntity.ok(ret);
 	}
 
 
+	@Transactional
 	@Override
-	public ResponseEntity<GovioFile> readFile(Long traceId) {
-		return ResponseEntity.ok(	this.fileService.readFile(traceId));
+	public ResponseEntity<GovioFile> readFile(Long id) {
+		
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		log.debug("Reading file [{}]", id);
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
+		
+		GovioFile ret = this.fileAssembler.toEmbeddedModel(file);
+		return ResponseEntity.ok(	ret);
 	}
 
 
@@ -232,9 +271,7 @@ public class FileController implements FileApi {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentLength(file.getSize());
-		ResponseEntity<Resource> ret =   new ResponseEntity<>(fileStream, headers, HttpStatus.OK); 
-		
-		return ret;
+		return new ResponseEntity<>(fileStream, headers, HttpStatus.OK); 
 	}
 
 
@@ -251,7 +288,7 @@ public class FileController implements FileApi {
 		GovioServiceInstanceEntity instance = file.getServiceInstance();
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;;
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
 
 		Specification<GovioFileMessageEntity> spec = FileMessageFilters.ofFile(file.getId());
 

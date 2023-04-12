@@ -11,22 +11,45 @@ export const AUTH_CONST: any = {
   storageSession: 'GOIO_SESSION'
 };
 
+export const USER_ADMIN: string = 'govio_sysadmin';
+
 export const PERMISSIONS: any = {
-  govio_r: [
+  govio_sender: [
+    { name: 'DASHBOARD', view: true, edit: false, create: false, delete: false },
+    { name: 'FILES', view: true, edit: true, create: true, delete: true },
+    { name: 'MESSAGES', view: true, edit: false, create: false, delete: false },
+    { name: 'SETTINGS', view: false, edit: false, create: false, delete: false },
+    { name: 'PLACEHOLDERS', view: false, edit: false, create: false, delete: false },
+    { name: 'TEMPLATES', view: false, edit: false, create: false, delete: false },
+    { name: 'SERVICE-INSTANCES', view: false, edit: false, create: false, delete: false }
+  ],
+  govio_viewer: [
     { name: 'DASHBOARD', view: true, edit: false, create: false, delete: false },
     { name: 'FILES', view: true, edit: false, create: false, delete: false },
     { name: 'MESSAGES', view: true, edit: false, create: false, delete: false },
+    { name: 'SETTINGS', view: false, edit: false, create: false, delete: false },
+    { name: 'PLACEHOLDERS', view: false, edit: false, create: false, delete: false },
+    { name: 'TEMPLATES', view: false, edit: false, create: false, delete: false },
+    { name: 'SERVICE-INSTANCES', view: false, edit: false, create: false, delete: false }
   ],
-  govio_rw: [
-    { name: 'DASHBOARD', view: true, edit: true, create: true, delete: true },
-    { name: 'FILES', view: true, edit: true, create: true, delete: true },
-    { name: 'MESSAGES', view: true, edit: true, create: true, delete: true },
+  govio_service_instance_editor: [
+    { name: 'DASHBOARD', view: true, edit: false, create: false, delete: false },
+    { name: 'FILES', view: false, edit: false, create: false, delete: false },
+    { name: 'MESSAGES', view: false, edit: false, create: false, delete: false },
+    { name: 'SETTINGS', view: true, edit: false, create: false, delete: false },
+    { name: 'PLACEHOLDERS', view: true, edit: true, create: true, delete: true },
+    { name: 'TEMPLATES', view: true, edit: true, create: true, delete: true },
+    { name: 'SERVICE-INSTANCES', view: true, edit: true, create: true, delete: true }
   ],
-  govio_adm: [
-    { name: 'DASHBOARD', view: true, edit: true, create: true, delete: true },
-    { name: 'FILES', view: true, edit: true, create: true, delete: true },
-    { name: 'MESSAGES', view: true, edit: true, create: true, delete: true },
-  ],
+  govio_service_instance_viewer: [
+    { name: 'DASHBOARD', view: true, edit: false, create: false, delete: false },
+    { name: 'FILES', view: false, edit: false, create: false, delete: false },
+    { name: 'MESSAGES', view: false, edit: false, create: false, delete: false },
+    { name: 'SETTINGS', view: true, edit: false, create: false, delete: false },
+    { name: 'PLACEHOLDERS', view: true, edit: false, create: false, delete: false },
+    { name: 'TEMPLATES', view: true, edit: false, create: false, delete: false },
+    { name: 'SERVICE-INSTANCES', view: true, edit: false, create: false, delete: false }
+  ]
 };
 
 @Injectable({
@@ -42,6 +65,8 @@ export class AuthenticationService {
 
   API_PROFILE: string = '/profile';
   API_LOGOUT: string = '/logout';
+
+  _noProfile: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -83,6 +108,10 @@ export class AuthenticationService {
     return this.http.get(url);
   }
 
+  setNoProfile(value: boolean) {
+    this._noProfile = value;
+  }
+
   setCurrentSession(data: any) {
     const session = btoa(encodeURI(JSON.stringify(data)));
     localStorage.setItem(AUTH_CONST.storageSession, session);
@@ -115,41 +144,43 @@ export class AuthenticationService {
     return session?.full_name ? session?.full_name : session?.principal ?? '<no-username>';
   }
 
-  getRoles() {
+  getAuthorizations() {
     const session = this.getCurrentSession();
-    return session?.roles ?? [];
+    return session?.authorizations ?? [];
   }
 
   hasRole(role: string) {
-    const roles = this.getRoles();
-    if (roles.findIndex((x: any) => x.name === role) > -1) {
+    const _auths = this.getAuthorizations();
+    if (_auths.findIndex((x: any) => x.name === role) > -1) {
       return true;
     }
     return false;
   }
 
   isAdmin() {
+    const _auths: any[] = this.getAuthorizations();
     if (!this.currentSession) {
       return false;
     } else {
-      return (_.includes(this.currentSession.roles, 'govio_adm'));
+      const idx = _auths.findIndex((auth: any) => auth.role.role_name === USER_ADMIN);
+      return ( idx > -1);
     }
   }
 
   getPermissions() {
-    const roles: any[] = this.getRoles();
+    const _auths: any[] = this.getAuthorizations();
     let permissions: any[] = [];
-    roles.forEach((role: any) => {
-      permissions = permissions.concat(PERMISSIONS[role]);
+    _auths.forEach((auth: any) => {
+      permissions = permissions.concat(PERMISSIONS[auth.role.role_name]);
     });
     return permissions;
   }
 
   hasPermission(value: string, grant = 'view') {
-    const uValue = value ? value.toUpperCase() : value;
-    if (this.isAdmin() || uValue === 'PUBLIC') { return true; }
+    const uValue = value;
+    if (this.isAdmin() || uValue === 'PUBLIC' || this._noProfile) { return true; }
     const permissions = this.getPermissions();
-    const idx = permissions.findIndex(o => o.name.toUpperCase() === uValue);
+    const idx = permissions.findIndex((auth: any) => auth.name === uValue);
     const permission = (idx > -1) ? permissions[idx] : null;
     if (permission) {
       return permission[grant];

@@ -1,14 +1,35 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.batch.config;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JpaCursorItemReader;
@@ -29,19 +50,25 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 	@Autowired
 	private GetMessageProcessor getMessageProcessor;
 	
+	@Value( "${govio.batch.verify-messages.delay-mins:30}" )
+	protected int delay;
+	
+	@Value( "${govio.batch.verify-messages.window-days:14}" )
+	protected int window;	
+	
 	@Bean(name = "VerifyMessagesJob")
-	public Job verificaMessaggiIO(){
+	public Job verificaMessaggiIO(@Qualifier("getMessageStep") Step getMessageStep){
 		return jobs.get("VerifyMessagesJob")
 				.incrementer(new RunIdIncrementer())
-				.start(getMessageStep())
+				.start(getMessageStep)
 				.build();
 	}
 	
-	public Step getMessageStep(){
-		Status[] statuses = {Status.SENT, Status.THROTTLED, Status.ACCEPTED};
+	@Bean("getMessageStep")
+	public Step getMessageStep(@Qualifier("expiredExpeditionDateMessageCursor") ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor){
 		return steps.get("getMessaggeStep")
 		.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
-		.reader(expiredExpeditionDateMessageCursor(statuses))
+		.reader(expiredExpeditionDateMessageCursor)
 		.processor(asyncProcessor(this.getMessageProcessor))
 		.writer(asyncMessageWriter())
 		.faultTolerant()
@@ -50,19 +77,20 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 		.build();
 	}
 	
-	@Value( "${govio.batch.verify-messages.delay-window:30}" )
-	protected int delayWindow;
-	
-	@Bean
-	@Qualifier("expiredExpeditionDateMessageCursor")
-	protected ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor(Status[] statuses) {
+	@Bean("expiredExpeditionDateMessageCursor")
+	@StepScope
+	protected JpaCursorItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor(@Value("#{jobParameters[CurrentDate]}") Date now) {
+		LocalDateTime from = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime().minusMinutes(delay);
+		LocalDateTime to = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime().minusDays(window);
+		Status[] statuses = {Status.SENT, Status.THROTTLED, Status.ACCEPTED};
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
-        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.expeditionDate < :t0");
+        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.expeditionDate < :t0 AND msg.expeditionDate > :t1");
         itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
         itemReader.setSaveState(true);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("statuses", Arrays.asList(statuses));
-        parameters.put("t0", LocalDateTime.now().minusMinutes(delayWindow));
+        parameters.put("t0", from);        
+        parameters.put("t1", to);
         itemReader.setParameterValues(parameters);
         return itemReader;
     }

@@ -3,6 +3,7 @@
 		"BUTTON": {
 			"AddFile": "Add file",
 			"AddPlaceholder": "Add placeholder",
+			"AddService": "Add service",
 			"AddTemplate": "Add template",
 			"AlertAction": "Close",
 			"AssignPlaceholder": "Assign placeholder",
@@ -18,6 +19,7 @@
 			"Download": "Download",
 			"Entra": "Enter",
 			"Expand": "Expand",
+			"Export": "Export",
 			"Go": "Go",
 			"Login": "Login",
 			"MoreInfo": "More info",
@@ -44,6 +46,8 @@
 			"TITLE": {
 				"ContentFile": "Content",
 				"ContentFile_sub": "",
+				"FileMessages": "File messages",
+				"FileMessages_sub": "Export error messages to csv file",
 				"GeneralInformations": "General informations",
 				"GeneralInformations_sub": "",
 				"ShowMessages": "Messages",
@@ -76,6 +80,8 @@
 		"LABEL": {
 			"AcquiredMessages": "Acquired messages",
 			"All": "All",
+			"ApiKey": "Api Key",
+			"AppioMessageId": "AppIO Message Id",
 			"AvailabilityDate": "Availability date",
 			"Content": "Content",
 			"CreationDate": "Creation date",
@@ -87,6 +93,7 @@
 			"Description": "Description",
 			"DueDate": "Due date",
 			"Email": "Email",
+			"Enabled": "Enabled",
 			"ErrorMessages": "Error messages",
 			"Example": "Example",
 			"File": "File",
@@ -106,7 +113,7 @@
 			"Message": "Message",
 			"MessageBody": "Message body",
 			"Name": "Name",
-			"Organization": "Organization name",
+			"Organization": "Organization",
 			"Password": "Password",
 			"Pattern": "Pattern",
 			"Placeholder": "Placeholder",
@@ -114,13 +121,15 @@
 			"Principal": "Username",
 			"ScheduledExpeditionDate": "Scheduled expedition date",
 			"Service": "Service",
+			"ServiceInstance": "Service instance",
 			"ServiceName": "Service name",
 			"Status": "Status",
 			"Subject": "Subject",
-			"Taxcode": "Taxcode",
+			"TaxCode": "Tax code",
+			"Template": "Template",
 			"Type": "Type",
 			"User": "User",
-			"UserFullName": "User fullname"
+			"UserFullName": "User full name"
 		},
 		"LABEL_HELP": {
 			"All": ""
@@ -130,6 +139,7 @@
 			"Dashboard": "Dashboard",
 			"DeleteFile": "Delete file …",
 			"DeletePlaceholder": "Delete placeholder …",
+			"DeleteService": "Delete service …",
 			"DeleteTemplate": "Delete template …",
 			"ExportCSV": "Export CSV",
 			"ExportPDF": "Export PDF",
@@ -138,6 +148,8 @@
 			"Logout": "Logout",
 			"Messages": "Messages",
 			"Placeholders": "Placeholders",
+			"ServiceInstances": "Service instances",
+			"Services": "Services",
 			"Templates": "Templates"
 		},
 		"MESSAGE": {
@@ -162,6 +174,7 @@
 				"login_400": "Username o password errati. Controlla la corretta scrittura dei dati.",
 				"login_401": "Username o password errati. Controlla la corretta scrittura dei dati.",
 				"login_403": "Username o password errati. Controlla la corretta scrittura dei dati.",
+				"login_404": "Resource not found.",
 				"login_422": "Username o password errati. Oppure non sei autorizzato ad accedere.",
 				"valid_email": "Insert valid email",
 				"wrong_username_password": "Username e/o Password errati."
@@ -174,6 +187,7 @@
 			"NoResponseUnimplemented": "No Response or Unimplemented yet",
 			"NoResults": "Sorry, your filter produced no results",
 			"NoResultsHelp": "To widen your search, change or remove filters above",
+			"NoTemplateSelected": "No template selected",
 			"NotFoundItem": "Not found item",
 			"NotFoundText": "Not found text",
 			"PageNumber": "Page {{page}} of {{total}}",
@@ -188,6 +202,7 @@
 				"LessThanEqual": "The amount must have a value less or equal to {{value}}",
 				"MaxAmount": "The amount can have a maximum value of {{value}}",
 				"MinAmount": "The amount must be a value greater than {{value}}",
+				"NameMaxLength": "The length of the name must be less than or equal to {{length}}.",
 				"NoticeLenght": "The notice number must have {{value}} char",
 				"Number": "The value must be a number",
 				"OneOfLength": "The length must be one of the following values",
@@ -215,7 +230,8 @@
 		"PLACEHOLDER": {
 			"Search": "Search...",
 			"SelectOrganization": "Select a organization",
-			"SelectService": "Select a service"
+			"SelectService": "Select a service",
+			"SelectServiceInstance": "Select a service instance"
 		},
 		"PLACEHOLDERS": {
 			"FILTER": {
@@ -235,6 +251,18 @@
 			"RecentSearches": "Recent searches",
 			"View": "View"
 		},
+		"SERVICES": {
+			"FILTER": {
+				"All": "All",
+				"Closed": "Closed",
+				"Found": "Found",
+				"Open": "Open"
+			},
+			"TITLE": {
+				"GeneralInformations": "General informations",
+				"GeneralInformations_sub": ""
+			}
+		},
 		"SIDENAV": {
 			"Title": "GovIO"
 		},
@@ -243,6 +271,8 @@
 			"BAD_REQUEST": "Bad request",
 			"CREATED": "Created",
 			"DENIED": "Denied",
+			"DISABLED": "Disabled",
+			"ENABLED": "Enabled",
 			"ERRORE": "Error",
 			"FORBIDDEN": "Forbidden",
 			"PROCESSED": "Processed",
@@ -283,6 +313,8 @@
 			"Dashboard": "Dashboard",
 			"EditFiles": "Edit file",
 			"EditPlaceholder": "Edit placeholder",
+			"EditService": "Edit service",
+			"EditServiceInstance": "Edit service instance",
 			"EditTemplate": "Edit template",
 			"File": "File",
 			"Files": "Files",
@@ -293,10 +325,16 @@
 			"New": "New",
 			"NewFile": "New file",
 			"NewPlaceholder": "New placeholder",
+			"NewService": "New service",
+			"NewServiceInstance": "New service instance",
 			"NewTemplate": "New template",
 			"Organization": "Organization",
 			"Placeholders": "Placeholders",
 			"Service": "Service",
+			"ServiceInstance": "Service instance",
+			"ServiceInstances": "Service instances",
+			"Services": "Services",
+			"Template": "Template",
 			"Templates": "Templates",
 			"Watermark": "Staging"
 		},
@@ -309,6 +347,7 @@
 			"EditFile": "Edit file",
 			"EditPlaceholder": "Edit placeholder",
 			"EditPlaceholders": "Edit placeholders",
+			"EditService": "Edit service",
 			"EditTemplate": "Edit template",
 			"ErrorMessages": "Error messages",
 			"Export": "Export",

@@ -1,5 +1,24 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.web;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,8 +63,8 @@ import it.govhub.govio.api.beans.GovioPlaceholderList;
 import it.govhub.govio.api.beans.GovioTemplate;
 import it.govhub.govio.api.beans.GovioTemplateList;
 import it.govhub.govio.api.beans.GovioTemplatePlaceholder;
-import it.govhub.govio.api.beans.GovioTemplatePlaceholderUpdateItem;
 import it.govhub.govio.api.beans.GovioTemplatePlaceholderUpdateList;
+import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioPlaceholderEntity;
 import it.govhub.govio.api.entity.GovioPlaceholderEntity_;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
@@ -61,10 +80,12 @@ import it.govhub.govio.api.repository.TemplateFilters;
 import it.govhub.govio.api.repository.TemplatePlaceholderFilters;
 import it.govhub.govio.api.repository.TemplatePlaceholderRepository;
 import it.govhub.govio.api.repository.TemplateRepository;
+import it.govhub.govio.api.services.TemplateService;
 import it.govhub.govio.api.spec.TemplateApi;
 import it.govhub.govregistry.commons.api.beans.PatchOp;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.exception.BadRequestException;
+import it.govhub.govregistry.commons.exception.ConflictException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.messages.PatchMessages;
@@ -72,10 +93,10 @@ import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
 import it.govhub.govregistry.commons.utils.RequestUtils;
+import it.govhub.security.services.SecurityService;
 
 @V1RestController
 public class TemplateController implements TemplateApi {
-	// TODO: Autorizzazioni
 	
 	@Autowired
 	TemplateRepository templateRepo;
@@ -107,11 +128,17 @@ public class TemplateController implements TemplateApi {
 	@Autowired
 	ObjectMapper objectMapper;
 	
+	@Autowired
+	SecurityService authService;
+	
+	@Autowired
+	TemplateService templateService;
+	
 	Logger log = LoggerFactory.getLogger(TemplateController.class);
 	
 	@Override
 	public ResponseEntity<GovioTemplate> createTemplate(GovioNewTemplate govioNewTemplate) {
-		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SYSADMIN);
 		log.info("Creating new template: {}", govioNewTemplate);
 		
 		GovioTemplateEntity template = new GovioTemplateEntity();
@@ -127,8 +154,13 @@ public class TemplateController implements TemplateApi {
 	
 	@Override
 	public ResponseEntity<GovioTemplate> readTemplate(Long id) {
-		var template = this.templateRepo.findById(id)
-				.orElseThrow( () -> new ResourceNotFoundException(templateMessages.idNotFound(id)));
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		
+		var template = this.templateRepo.findById(id).orElse(null);
+		
+		if (template == null) {
+				throw new ResourceNotFoundException(templateMessages.idNotFound(id));
+		}
 		
 		return ResponseEntity.ok(this.templateAssembler.toModel(template));
 	}
@@ -137,33 +169,33 @@ public class TemplateController implements TemplateApi {
 	@Override
 	public ResponseEntity<GovioTemplateList> listTemplates(Direction sortDirection, Integer limit, Long offset, String q) {
 		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(sortDirection, GovioTemplateEntity_.NAME));
-		
 		Specification<GovioTemplateEntity> spec = TemplateFilters.empty();
-		
 		if (!StringUtils.isBlank(q)) {
 			spec = TemplateFilters.likeDescription(q).
 					or(TemplateFilters.likeName(q));
 		}
 		
-		
-		Page<GovioTemplateEntity> templates = this.templateRepo.findAll(spec, pageRequest.pageable);
-		
+
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder
 				.currentRequestAttributes()).getRequest();
 		
+		Page<GovioTemplateEntity> templates = this.templateRepo.findAll(spec, pageRequest.pageable);		
 		GovioTemplateList ret = ListaUtils.buildPaginatedList(templates, pageRequest.limit, curRequest, new GovioTemplateList());
 		
 		for (var t : templates) {
 			ret.addItemsItem(this.templateAssembler.toModel(t));
 		}
-		
 		return ResponseEntity.ok(ret);
 	}
 
 	
 	@Override
 	public ResponseEntity<GovioPlaceholder> createPlaceholder(GovioNewPlaceholder govioNewPlaceholder) {
+		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SYSADMIN);
 		
 		log.info("Creating new placeholder: {}", govioNewPlaceholder);
 		
@@ -180,6 +212,9 @@ public class TemplateController implements TemplateApi {
 
 	@Override
 	public ResponseEntity<GovioPlaceholder> readPlaceholder(Long id) {
+		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		
 		var placeholder = this.placeholderRepo.findById(id)
 				.orElseThrow( () -> new ResourceNotFoundException(this.placeholderMessages.idNotFound(id)) );
 		
@@ -189,6 +224,9 @@ public class TemplateController implements TemplateApi {
 
 	@Override
 	public ResponseEntity<GovioPlaceholderList> listPlaceholders(Integer limit, Long offset, String q) {
+		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		
 		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(Direction.DESC, GovioPlaceholderEntity_.NAME));
 		
 		Specification<GovioPlaceholderEntity> spec = PlaceholderFilters.empty();
@@ -215,15 +253,24 @@ public class TemplateController implements TemplateApi {
 	@Override
 	public ResponseEntity<GovioTemplatePlaceholder> assignPlaceholder(Long templateId, Long placeholderId, GovioNewTemplatePlaceholder newTemplatePlaceholder) {
 		
-		log.info("Assigning placeholder [{}] to template [{}]: {}", placeholderId, templateId, newTemplatePlaceholder);
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR,  GovioRoles.GOVIO_SYSADMIN);
 		
-		// TODO Check conflitto 
+		log.info("Assigning placeholder [{}] to template [{}]: {}", placeholderId, templateId, newTemplatePlaceholder);
 		
 		var template = this.templateRepo.findById(templateId)
 				.orElseThrow( () -> new ResourceNotFoundException(templateMessages.idNotFound(templateId)));
 		
 		var placeholder = this.placeholderRepo.findById(placeholderId)
 				.orElseThrow( () -> new SemanticValidationException(this.placeholderMessages.idNotFound(placeholderId)) );
+		
+		var spec = TemplatePlaceholderFilters.byTemplateId(templateId)
+				.and( 
+						TemplatePlaceholderFilters.byPlaceholderId(placeholderId).or(TemplatePlaceholderFilters.byPosition(newTemplatePlaceholder.getPosition()))
+					);
+		
+		if (this.templatePlaceholderRepo.exists(spec)) {
+			throw new ConflictException("Placeholder with the same id: ["+placeholderId+"] or position: ["+newTemplatePlaceholder.getPosition()+"] already associated with the template");
+		}
 		
 		var templatePlaceholder = new GovioTemplatePlaceholderEntity();
 		
@@ -240,43 +287,52 @@ public class TemplateController implements TemplateApi {
 	}
 	
 	
-	@Transactional
 	@Override
-	public ResponseEntity<GovioListTemplatePlaceholder> updateTemplatePlaceholders(Long id, GovioTemplatePlaceholderUpdateList govioTemplatePlaceholderUpdateList) {
+	public ResponseEntity<GovioListTemplatePlaceholder> updateTemplatePlaceholders(Long id, GovioTemplatePlaceholderUpdateList placeholders) {
 		
-		var template = this.templateRepo.findById(id)
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR,  GovioRoles.GOVIO_SYSADMIN);
+		
+		final GovioTemplateEntity template = this.templateRepo.findById(id)
 				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(id)));
 		
-		// Validazione semantica, verifichiamo che i placeholder esistano.
-		Set<Long> requestedIds = govioTemplatePlaceholderUpdateList.getItems()
+		Set<Long> requestedIds = new HashSet<>();
+		Set<Integer> positions = new HashSet<>();
+		
+		// Validazione semantica, verifichiamo che i placeholder esistano, e che non  cisiano duplicati
+		placeholders.getItems()
 				.stream()
-				.map( GovioTemplatePlaceholderUpdateItem::getPlaceholderId)
-				.collect(Collectors.toSet());
+				.forEach( p -> {
+					if (requestedIds.contains(p.getPlaceholderId())) {
+						throw new SemanticValidationException("Duplicated placeholder_id: ["+p.getPlaceholderId()+"] for template_id ["+id+"]");
+					}
+					if (positions.contains(p.getPosition())) {
+						throw new SemanticValidationException("Duplicated placeholder position: ["+p.getPosition()+"]");
+					}
+					requestedIds.add(p.getPlaceholderId());
+					positions.add(p.getPosition());
+				});
 		
 		List<GovioPlaceholderEntity> placeholdersFound = this.placeholderRepo.findAll(PlaceholderFilters.byIds(requestedIds));
 		Set<Long> foundIds = placeholdersFound.stream().map(GovioPlaceholderEntity::getId).collect(Collectors.toSet());
 		requestedIds.removeAll(foundIds);
 		
-		// TODO usare la placeholderMessages per costruire il messaggio di errore
 		if (!requestedIds.isEmpty()) {
-			throw new SemanticValidationException("Placeholders with IDs: " + requestedIds + " not Found");
+			throw new SemanticValidationException(this.placeholderMessages.idsNotFound(requestedIds));
 		}
 
-		template.getGovioTemplatePlaceholders().clear();
-
-		for(GovioTemplatePlaceholderUpdateItem item : govioTemplatePlaceholderUpdateList.getItems()) {
-	
-			var templatePlaceholder = new GovioTemplatePlaceholderEntity();
-			templatePlaceholder.setId(new GovioTemplatePlaceholderKey(item.getPlaceholderId(), template.getId()));
-			BeanUtils.copyProperties(item, templatePlaceholder);
-			
-			template.getGovioTemplatePlaceholders().add(templatePlaceholder);
-		}
+		Set<GovioTemplatePlaceholderEntity> templatePlaceholders = placeholders.getItems().
+			stream().
+			map( p -> {
+				var templatePlaceholder = new GovioTemplatePlaceholderEntity();
+				templatePlaceholder.setId(new GovioTemplatePlaceholderKey(p.getPlaceholderId(), template.getId()));
+				BeanUtils.copyProperties(p, templatePlaceholder);
+				return templatePlaceholder;
+			}).
+			collect(Collectors.toSet());
 		
-		template = this.templateRepo.save(template);
+		this.templateService.updatePlaceHolders(template, templatePlaceholders);
 		
 		return this.listTemplatePlaceholders(id, null);
-		
 	}
 	
 
@@ -284,17 +340,17 @@ public class TemplateController implements TemplateApi {
 	@Override
 	public ResponseEntity<GovioListTemplatePlaceholder> listTemplatePlaceholders(Long templateId, List<EmbedPlaceholderEnum> embeds) {
 		
-		var spec = TemplatePlaceholderFilters.byTemplateId(templateId);
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SERVICE_INSTANCE_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		
-		List<GovioTemplatePlaceholderEntity> templatePlaceholders = this.templatePlaceholderRepo.findAll(spec, Sort.by(Direction.ASC, GovioTemplatePlaceholderEntity_.POSITION));
-		
-		GovioListTemplatePlaceholder ret = new GovioListTemplatePlaceholder();
-		
-		for (var tp : templatePlaceholders) {
-			GovioTemplatePlaceholder item = this.templatePlaceholderAssembler.toEmbeddedModel(tp, embeds);
-			ret.addItemsItem(item);
+		var template = this.templateRepo.findById(templateId).orElse(null);
+		if (template == null) {
+				throw new ResourceNotFoundException(this.templateMessages.idNotFound(templateId));
 		}
 		
+		var spec = TemplatePlaceholderFilters.byTemplateId(templateId);
+		
+		GovioListTemplatePlaceholder ret = this.templateService.listTemplatePlaceholders(spec,Sort.by(Direction.ASC, GovioTemplatePlaceholderEntity_.POSITION), embeds );  
+
 		return ResponseEntity.ok(ret);
 	}
 
@@ -302,6 +358,8 @@ public class TemplateController implements TemplateApi {
 	@Transactional
 	@Override
 	public ResponseEntity<GovioTemplate> updateTemplate(Long id, List<PatchOp> patchOp) {
+		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR,  GovioRoles.GOVIO_SYSADMIN);
 		
 		// Otteniamo l'oggetto JsonPatch
 		JsonPatch patch = RequestUtils.toJsonPatch(patchOp);
@@ -351,6 +409,7 @@ public class TemplateController implements TemplateApi {
 		
 		// Dall'oggetto REST passo alla entity
 		GovioTemplateEntity newTemplate = this.templateAssembler.toEntity(updatedTemplate);
+		newTemplate.setGovioTemplatePlaceholders(template.getGovioTemplatePlaceholders());
 
 		newTemplate = this.templateRepo.save(newTemplate);
 		
@@ -361,6 +420,8 @@ public class TemplateController implements TemplateApi {
 	@Transactional
 	@Override
 	public ResponseEntity<Void> removeTemplatePlaceholder(Long templateId, Long placeholderId) {
+		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR, GovioRoles.GOVIO_SYSADMIN);
 		
 		var template = this.templateRepo.findById(templateId)
 				.orElseThrow( () -> new ResourceNotFoundException(this.templateMessages.idNotFound(templateId)) );
@@ -380,6 +441,8 @@ public class TemplateController implements TemplateApi {
 
 	@Override
 	public ResponseEntity<GovioPlaceholder> updatePlaceholder(Long id, List<PatchOp> patchOp) {
+		
+		this.authService.hasAnyRole(GovioRoles.GOVIO_SERVICE_INSTANCE_EDITOR,  GovioRoles.GOVIO_SYSADMIN);
 
 		// Otteniamo l'oggetto JsonPatch
 		JsonPatch patch = RequestUtils.toJsonPatch(patchOp);

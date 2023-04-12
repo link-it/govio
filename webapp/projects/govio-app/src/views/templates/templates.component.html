@@ -29,6 +29,7 @@
       <div class="col-12">
         <ui-search-bar-form #searchBarForm
           [classBlock]="''"
+          [placeholder]="'APP.PLACEHOLDER.Search' | translate"
           [template]="'APP.TEMPLATE.Search' | translate"
           [showHistory]="showHistory"
           [historyStore]="'templates'"
@@ -39,27 +40,12 @@
           [sortDirection]="sortDirection"
           [sortFields]="sortFields"
           [formGroup]="_formGroup"
+          [simple]="true"
           (onSearch)="_onSearch($event)"
           (onSort)="_onSort($event)">
           <div form-search>
             <form class="row" [formGroup]="_formGroup" (submit)="_onSubmit(_formGroup.value)">
               <fieldset>
-                <div class="row">
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="creationDateFrom">{{ 'APP.LABEL.DateFrom' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="creationDateFrom" type="date" formControlName="creationDateFrom" autocomplete="off">
-                  </div>
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="creationDateTo">{{ 'APP.LABEL.DateTo' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="creationDateTo" type="date" formControlName="creationDateTo" autocomplete="off">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="form-group col-md-4 mb-2">
-                    <label class="label-bold mb-0" for="subject">{{ 'APP.LABEL.Subject' | translate }}</label>
-                    <input class="form-control form-control-sm gl-form-input" id="subject" type="text" formControlName="subject" autocomplete="off">
-                  </div>
-                </div>
                 <button type="submit" class="d-none">hidden submit</button>
               </fieldset>
             </form>
@@ -74,7 +60,6 @@
     [infiniteScrollThrottle]="50"
     (scrolled)="__loadMoreData()"
     [scrollWindow]="false">
-    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
 
     <ui-box-template *ngIf="templates.length == 0 && !_spin"
       [size]="64"
@@ -86,14 +71,6 @@
 
     <div class="row">
       <div class="col-12">
-        <!-- <ui-simple-item class="border-bottom" *ngFor="let template of templates"
-          [primaryText]="template.primaryText"
-          [secondaryText]="template.secondaryText"
-          [metadata]="template.metadata"
-          [secondaryMetadata]="template.secondaryMetadata"
-          [hasLink]="true"
-          (simpleClick)="_onEdit($event, template)">
-        </ui-simple-item> -->
         <ui-item-row class="border-bottom" *ngFor="let template of templates"
           [data]="template"
           [config]="templatesConfig"
@@ -102,5 +79,8 @@
         </ui-item-row>
       </div>
     </div>
+
+    <ui-box-spinner [color]="'accent'" [diameter]="48" [strokeWidth]="4" *ngIf="_spin"></ui-box-spinner>
+
   </section>
 </div>>

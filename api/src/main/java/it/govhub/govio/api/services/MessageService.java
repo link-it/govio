@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.services;
 
 import java.time.OffsetDateTime;
@@ -21,9 +39,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.EmbedMessageEnum;
-import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessageList;
-import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioTemplateEntity;
@@ -32,7 +48,6 @@ import it.govhub.govio.api.messages.MessageMessages;
 import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govregistry.commons.entity.UserEntity;
-import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.security.services.SecurityService;
@@ -64,21 +79,6 @@ public class MessageService {
 	SecurityService authService;
 	
 	Logger log = LoggerFactory.getLogger(MessageService.class);
-
-	@Transactional
-	public GovioMessage readMessage(Long id) {
-		
-		GovioMessageEntity message = this.messageRepo.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException(this.messageMessages.idNotFound(id)));
-		
-		GovioServiceInstanceEntity instance = message.getGovioServiceInstance();
-		
-		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
-		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
-
-		return this.messageAssembler.toModel(message);
-	}
-
 
 	
 	@Transactional
