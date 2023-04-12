@@ -40,7 +40,6 @@ import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
-import it.govio.batch.test.batch.listeners.BatchListeners;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
 @SpringBootTest(classes = Application.class)
@@ -48,7 +47,6 @@ import it.govio.batch.test.utils.GovioMessageBuilder;
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
-@Import(BatchListeners.class)
 class FileProcessingInterruptedLineReading {
 
 	@Autowired

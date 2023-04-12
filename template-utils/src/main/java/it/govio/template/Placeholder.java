@@ -2,9 +2,11 @@ package it.govio.template;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
 @Builder
+@Jacksonized
 public class Placeholder {
 	
 	public enum Type { DATE, DATETIME, STRING }
