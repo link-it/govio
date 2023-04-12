@@ -42,7 +42,7 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(/*classes = Application.class*/)
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc

@@ -4,9 +4,11 @@ import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 @SuperBuilder
 @Data
+@Jacksonized
 public class BaseMessage {
 		private String taxcode;
 		private Long amount;

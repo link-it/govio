@@ -35,7 +35,7 @@ public class ObservableTestConfig {
 		
 		factory.executionListeners.put("promoteProcessingFileTasklet", new LogListener());
 		
-		factory.stepListeners.put("loadCsvFileToDbStep", Set.of( new ChunkLogListener()));
+		factory.stepListeners.put("loadCsvFileToDbStep", Set.of(new ChunkLogListener()));
 		
 		return factory;
 	}
