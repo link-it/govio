@@ -10,7 +10,6 @@ import { ConfigService } from 'projects/tools/src/lib/config.service';
 import { Tools } from 'projects/tools/src/lib/tools.service';
 import { EventsManagerService } from 'projects/tools/src/lib/eventsmanager.service';
 import { OpenAPIService } from 'projects/govio-app/src/services/openAPI.service';
-import { PageloaderService } from 'projects/tools/src/lib/pageloader.service';
 import { FieldClass } from 'projects/link-lab/src/lib/it/link/classes/definitions';
 
 import { YesnoDialogBsComponent } from 'projects/components/src/lib/dialogs/yesno-dialog-bs/yesno-dialog-bs.component';
@@ -107,8 +106,7 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
     private configService: ConfigService,
     public tools: Tools,
     public eventsManagerService: EventsManagerService,
-    public apiService: OpenAPIService,
-    public pageloaderService: PageloaderService
+    public apiService: OpenAPIService
   ) {
     this.appConfig = this.configService.getConfiguration();
   }
@@ -365,8 +363,9 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
       template: {
         id: service._embedded.template.id,
-        subject: service._embedded.template.subject,
+        name: service._embedded.template.name,
         description: service._embedded.template.description,
+        subject: service._embedded.template.subject,
         message_body: service._embedded.template.message_body,
         has_payment: service._embedded.template.has_payment,
         has_due_date: service._embedded.template.has_due_date
@@ -595,24 +594,24 @@ export class ServiceDetailsComponent implements OnInit, OnChanges, AfterContentC
 
   _orgLogo = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links.logo) {
-      logoUrl = item._links.logo.href;
+    if (item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return logoUrl;
   };
 
   _orgLogoBackground = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item && item._links && item._links.logo) {
-      logoUrl = item._links.logo.href;
+    if (item && item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };
 
   _serviceLogoBackground = (item: any): string => {
     let logoUrl = this._serviceLogoPlaceholder;
-    if (item && item._links && item._links.logo) {
-      logoUrl = item._links.logo.href;
+    if (item && item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };

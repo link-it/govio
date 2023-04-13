@@ -11,6 +11,10 @@
     <div class="edit-form">
       <form novalidate class="form-readonly" [formGroup]="_formGroup">
         <div class="">
+          <div class="form-group name">
+            <label class="label-bold" for="name">{{ 'APP.LABEL.Name' | translate }}</label>
+            <input type="text" readonly class="form-control-plaintext" id="name" [value]="template.name">
+          </div>
           <div class="form-group description">
             <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }}</label>
             <input type="text" readonly class="form-control-plaintext" id="description" [value]="template.description">
@@ -29,7 +33,7 @@
           <div class="row mt-5 has_payment has_due_date">
             <div class="col-md-6">
               <div class="gl-form-checkbox custom-control custom-checkbox has_payment">
-                <input class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [value]="template.has_payment" disabled>
+                <input class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [checked]="template.has_payment" disabled>
                 <label class="custom-control-label text-dark" for="has_payment">
                   <span>{{ 'APP.LABEL.HasPayment' | translate }}</span>
                 </label>

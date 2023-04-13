@@ -1,6 +1,13 @@
 <div class="d-flex align-items-center">
   <div #ir class="active-item d-flex flex-grow-1 align-items-center">
     <div class="d-flex align-items-center w-100 main-content">
+      <div class="avatar-image" *ngIf="_itemRowConfig?.avatar">
+        <ui-item-type
+          [data]="_data"
+          [elem]="_itemRowConfig?.avatar"
+          [config]="_config">
+        </ui-item-type>
+      </div>
       <div class="main-info">
         <div class="main-data">
           <div class="primary-text text-break fw-bold-600">

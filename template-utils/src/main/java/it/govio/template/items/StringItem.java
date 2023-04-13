@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.template.items;
 
 
@@ -17,7 +35,7 @@ public class StringItem extends Item<String>{
 	}
 	
 	@Override
-	public String getValue(String value) throws TemplateValidationException {
+	public String getValue(String value) {
 		super.validateValue(value);
 		// Se c'e' un pattern ed un valore, controllo che sia compatibile.
 		if(pattern != null && !Pattern.matches(pattern, value)) {
@@ -27,14 +45,14 @@ public class StringItem extends Item<String>{
 	}
 	
 	@Override
-	public Map<String, String> getPlaceholderValues(String value) throws TemplateValidationException {
+	public Map<String, String> getPlaceholderValues(String value) {
 		Map<String, String> valuesMap = new HashMap<>();
 		
 		if(value == null) return valuesMap;
 				
 		valuesMap.put(name, value);
-		valuesMap.put(name + ".lower", value.toLowerCase());
-		valuesMap.put(name + ".upper", value.toUpperCase());
+		valuesMap.put(name + "_lower", value.toLowerCase());
+		valuesMap.put(name + "_upper", value.toUpperCase());
 		return valuesMap;
 	}
 }

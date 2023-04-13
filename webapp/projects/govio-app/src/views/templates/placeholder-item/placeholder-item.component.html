@@ -126,7 +126,6 @@
           <div class="form-group type">
             <label class="label-bold" for="type">{{ 'APP.LABEL.Type' | translate }}</label>
             <select class="form-select form-control-sm" id="type" formControlName="type" [class.gl-field-error-outline]="_hasControlError('type')">
-              <option [value]="">{{ '' }}</option>
               <option *ngFor="let pt of placeholderTypes" [value]="pt.value">{{ pt.label }}</option>
             </select>
             <p *ngIf="f['name'].invalid && (f['type'].dirty || f['type'].touched)" class="form-text text-danger">

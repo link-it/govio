@@ -17,11 +17,11 @@
       </div>
       <div class="nav-controls">
         <div role="group" class="gl-w-full btn-group-">
-          <!-- <ng-template [appHasPermission]="'SETTINGS'" [action]="'create'"> -->
+          <ng-template [appHasPermission]="'FILES'" [action]="'create'">
             <button aria-label="Add file" type="button" class="btn btn-confirm btn-md gl-button btn-icon" (click)="_onNew()">
               <i class="bi bi-plus-lg"></i><span class="ms-2">{{ 'APP.BUTTON.AddFile' | translate }}</span>
             </button>
-          <!-- </ng-template> -->
+          </ng-template>
         </div>
       </div>
     </div>
