@@ -11,9 +11,9 @@ import java.util.Set;
 
 import org.h2.tools.Server;
 import org.junit.Assert;
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.rules.TemporaryFolder;
@@ -29,12 +29,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.govio.batch.Application;
 import it.govio.batch.entity.GovioFileEntity;
@@ -44,7 +41,6 @@ import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
-import it.govio.batch.test.config.TestObjectMapper;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
 
@@ -68,21 +64,6 @@ public class SchedulingFileProcessingJobTest {
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
 
-	// private JobLauncherTestUtils jobLauncherTestUtils;
-
-	@Autowired
-	@Qualifier(value = "FileProcessingJob")
-	private Job job;
-
-	/*@Autowired
-	private JobLauncher jobLauncher;
-
-	@Autowired
-	private JobRepository jobRepository;
-	
-	@Autowired
-	private JobOperator jobOperator;*/
-	
 	@Autowired
 	private JobExplorer jobExplorer;
 
@@ -104,14 +85,11 @@ public class SchedulingFileProcessingJobTest {
 	}
 
 	/**
-	 * Test di elaborazione tracciato a metà: Interrompiamo l'esecuzione del batch non appena finisce la
-	 * promoteProcessingFileListener e riavviamo l'esecuzione, (Creando una nuova JobExecution)
-	 * @throws InterruptedException 
-	 * @throws IOException 
+	 * Lascia agli scheduler il compito di iniziare i jobs. Verifica che "FileProcessingJob" venga iniziato e portato a termine.
 	 * 
 	 */
-	//@Test
-	public void isSchedulingRunning() throws InterruptedException, IOException {
+	@Test
+	public void isSchedulingWorking() throws InterruptedException, IOException {
 		
 		// Popolo il Db...	
 		List<GovioFileEntity> files = populateDb();
