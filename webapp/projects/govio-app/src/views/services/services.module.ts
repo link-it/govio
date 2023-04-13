@@ -7,7 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { VendorsModule } from 'projects/vendors/src/lib/vendors.module';
 import { ComponentsModule } from 'projects/components/src/lib/components.module';
 import { LinkLabModule } from 'projects/link-lab/src/lib/link-lab.module';
-import { HasPermissionModule } from '../../directives/has-permission/has-permission.module';
+import { HasPermissionModule } from '@app/directives/has-permission/has-permission.module';
 
 import { ServicesComponent } from './services.component';
 import { ServicesRoutingModule } from './services-routing.module';

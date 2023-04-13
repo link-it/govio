@@ -92,10 +92,16 @@ export class ItemTypeComponent implements OnInit, AfterViewInit {
         this._class += this._config.options[_optionsName].small ? ' gl-badge-sm' : ' gl-badge';
       }
     }
-    if (this._elem.type === 'image') {
+    if (this._elem.type === 'image' && this._elem.tooltip) {
       this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
     }
-    if (this._elem.type === 'avatar') {
+    if (this._elem.type === 'avatar' && this._elem.tooltip) {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'avatar-image' && this._elem.tooltip) {
+      this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
+    }
+    if (this._elem.type === 'gravatar-image' && this._elem.tooltip) {
       this._tooltip = this.utilsLib.getObjectValue(this._data.source, this._elem.tooltip);
     }
   }

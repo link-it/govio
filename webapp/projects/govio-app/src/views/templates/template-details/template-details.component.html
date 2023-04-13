@@ -67,6 +67,20 @@
                 <div class="text-break" markdown>{{ 'APP.TEMPLATES.TITLE.GeneralInformations_sub' | translate }}</div>
               </div>
               <div class="col-lg-8">
+                <div class="form-group name">
+                  <label class="label-bold" for="name">{{ 'APP.LABEL.Name' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'name'" *ngIf="_isEdit"></span></label>
+                  <div class="" *ngIf="_isEdit">
+                    <input aria-required="true" autofocus="autofocus" autocomplete="off" class="form-control" [class.gl-field-error-outline]="_hasControlError('name')" type="text" name="name" id="name" formControlName="name">
+                    <p *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="form-text text-danger">
+                      <span *ngIf="f['name'].errors && f['name'].errors['required']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.FieldRequired' | translate }}</span>
+                      <span *ngIf="f['name'].errors && f['name'].errors['maxlength']" class="d-block">{{ 'APP.MESSAGE.VALIDATION.NameMaxLength' | translate: { length: f['name'].errors['maxlength'].requiredLength } }}</span>
+                    </p>
+                    <ui-input-help field="name" context="TEMPLATE"></ui-input-help>
+                  </div>
+                  <div class="" *ngIf="!_isEdit">
+                    <input type="text" readonly class="form-control-plaintext" id="name" [value]="template.name">
+                  </div>
+                </div>
                 <div class="form-group description">
                   <label class="label-bold" for="description">{{ 'APP.LABEL.Description' | translate }} <span appMarkAsterisk [formGroup]="_formGroup" [controlName]="'description'" *ngIf="_isEdit"></span></label>
                   <div class="" *ngIf="_isEdit">
@@ -119,7 +133,7 @@
                     </div>
                     <div class="" *ngIf="!_isEdit">
                       <div class="gl-form-checkbox custom-control custom-checkbox has_payment">
-                        <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [value]="template.has_payment" disabled>
+                        <input autofocus="autofocus" class="custom-control-input" type="checkbox" name="has_payment" id="has_payment" [checked]="template.has_payment" disabled>
                         <label class="custom-control-label text-dark" for="has_payment">
                           <span>{{ 'APP.LABEL.HasPayment' | translate }}</span> 
                         </label>
@@ -153,7 +167,7 @@
             </div>
 
             <div class="row-content-block footer-block" *ngIf="_isEdit">
-              <button aria-label="Save" type="submit" class="gl-button btn btn-confirm gl-mr-2" [disabled]="_formGroup.invalid || _spin">
+              <button aria-label="Save" type="submit" class="gl-button btn btn-confirm gl-mr-2" [disabled]="_formGroup.invalid">
                 {{ 'APP.BUTTON.Save' | translate }}
               </button>
               <button aria-label="Cancel" type="button" class="btn gl-button btn-default" (click)="_onCancelEdit()">

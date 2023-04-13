@@ -293,6 +293,7 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
         switch (key) {
           case 'name':
           case 'type':
+          case 'example':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
             break;
@@ -315,9 +316,8 @@ export class PlaceholderItemComponent implements OnInit, OnDestroy {
     const _mandatory: boolean = body.mandatory ? body.mandatory : false;
     const _body = Tools.RemoveEmpty(body);
     delete _body.mandatory;
-    if (!_body.example) { _body.example  = ''; }
     this._savingPlaceHolder = true;
-    this.apiService.saveElement(`/placeholders`, _body).subscribe(
+    this.apiService.saveElement(`placeholders`, _body).subscribe(
       (response: any) => {
         this._isNewPlaceholder = false;
         this._savingPlaceHolder = false;

@@ -1,3 +1,21 @@
+/*
+ * GovIO - Notification system for AppIO
+ *
+ * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.template.items;
 
 
@@ -19,7 +37,7 @@ public class DateTimeItem extends Item<LocalDateTime> {
 	
 	private Logger logger = LoggerFactory.getLogger(DateTimeItem.class);
 	protected static final DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.ITALY);
-	protected static final DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("E dd M yyyy 'alle ore' HH:mm", Locale.ITALY);
+	protected static final DateTimeFormatter longFormat = DateTimeFormatter.ofPattern("EEEE dd LLLL yyyy 'alle ore' HH:mm", Locale.ITALY);
 	protected static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm", Locale.ITALY);
 
 	public DateTimeItem(int position, String name, boolean mandatory) {
@@ -28,7 +46,7 @@ public class DateTimeItem extends Item<LocalDateTime> {
 	
 	
 	@Override
-	public LocalDateTime getValue(String stringValue) throws TemplateValidationException {
+	public LocalDateTime getValue(String stringValue) {
 		super.validateValue(stringValue);
 		
 		// Se c'e' un valore, controllo che sia compatibile.
@@ -44,17 +62,17 @@ public class DateTimeItem extends Item<LocalDateTime> {
 	}
 
 	@Override
-	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
+	public Map<String, String> getPlaceholderValues(String stringValue) {
 		LocalDateTime value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();
 		if(value == null) return valuesMap;
 		
 		valuesMap.put(name, value.format(baseFormat));
-		valuesMap.put(name + ".verbose", value.format(longFormat));
-		valuesMap.put(name + ".date", value.format(DateItem.baseFormat));
-		valuesMap.put(name + ".date.verbose", value.format(DateItem.longFormat));
-		valuesMap.put(name + ".time", value.format(timeFormat));
+		valuesMap.put(name + "_verbose", value.format(longFormat));
+		valuesMap.put(name + "_date", value.format(DateItem.baseFormat));
+		valuesMap.put(name + "_date_verbose", value.format(DateItem.longFormat));
+		valuesMap.put(name + "_time", value.format(timeFormat));
 		return valuesMap;
 	}
 }
