@@ -46,6 +46,8 @@ import it.govio.batch.step.GetMessageProcessor;
 
 @Configuration
 public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
+	
+	public static final String VERIFYMESSAGES_JOBNAME = "VerifyMessagesJob";
 
 	@Autowired
 	private GetMessageProcessor getMessageProcessor;
@@ -56,9 +58,9 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 	@Value( "${govio.batch.verify-messages.window-days:14}" )
 	protected int window;	
 	
-	@Bean(name = "VerifyMessagesJob")
+	@Bean(name = VERIFYMESSAGES_JOBNAME)
 	public Job verificaMessaggiIO(@Qualifier("getMessageStep") Step getMessageStep){
-		return jobs.get("VerifyMessagesJob")
+		return jobs.get(VERIFYMESSAGES_JOBNAME)
 				.incrementer(new AddParametersIncrementer())
 				.start(getMessageStep)
 				.build();

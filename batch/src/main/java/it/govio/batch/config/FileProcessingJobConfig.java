@@ -23,7 +23,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
@@ -49,6 +48,8 @@ import it.govio.template.Template;
 
 @Configuration
 public class FileProcessingJobConfig {
+	
+	public static final String FILEPROCESSING_JOBNAME = "FileProcessingJob";
 
 	@Autowired
 	protected StepBuilderFactory steps;
@@ -63,15 +64,14 @@ public class FileProcessingJobConfig {
 		return taskExecutor;
 	}
 
-	@Bean(name = "FileProcessingJob")
+	@Bean(name = FILEPROCESSING_JOBNAME)
 	public Job fileProcessingJob(
 			JobBuilderFactory jobs,
 			@Qualifier("promoteProcessingFileTasklet") Step promoteProcessingFileTasklet,
 			@Qualifier("govioFileReaderMasterStep") Step govioFileReaderMasterStep,
 			@Qualifier("finalizeProcessingFileTasklet") Step finalizeProcessingFileTasklet
 			){
-		return jobs.get("FileProcessingJob")
-				.incrementer(new RunIdIncrementer())
+		return jobs.get(FILEPROCESSING_JOBNAME)
 				.start(promoteProcessingFileTasklet)
 				.on("NEW_FILES_NOT_FOUND")
 				.end()

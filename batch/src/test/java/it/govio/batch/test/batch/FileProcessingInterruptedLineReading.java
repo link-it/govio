@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.govio.batch.Application;
+import it.govio.batch.config.FileProcessingJobConfig;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioMessageEntity;
@@ -42,7 +43,7 @@ import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
-@SpringBootTest(classes = Application.class)
+//@SpringBootTest
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -64,7 +65,7 @@ class FileProcessingInterruptedLineReading {
 	private JobLauncherTestUtils jobLauncherTestUtils;
 
 	@Autowired
-	@Qualifier(value = "FileProcessingJob")
+	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOBNAME)
 	private Job job;
 
 	@Autowired
