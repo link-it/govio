@@ -1,9 +1,7 @@
 {
   "itemRow": {
     "primaryText": [
-      { "field": "subject", "type": "text", "emptySpace": true },
-      { "field": "per", "type": "message", "emptySpace": true },
-      { "field": "taxcode", "type": "text" }
+      { "field": "subject", "type": "text" }
     ],  
     "secondaryText": [
       { "field": "sender.full_name", "type": "avatar", "tooltip": "sender.full_name" }
@@ -11,9 +9,8 @@
     "metadata": {
       "text": [
         { "field": "id", "type": "cardinal", "class": "" },
-	      { "field": "service.service_name", "type": "text", "emptySpace": true },
-	      { "field": "da", "type": "message", "emptySpace": true },
-        { "field": "organization.legal_name", "type": "text", "emptySpace": true },
+        { "field": "organization.legal_name", "type": "text" },
+	      { "field": "service.service_name", "type": "text", "emptySpace": true },	      
 	      { "field": "per", "type": "message", "emptySpace": true },
         { "field": "taxcode", "type": "text" }
       ],
