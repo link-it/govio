@@ -1,7 +1,7 @@
 -- Servizio di test
 
 INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (1,'Il Comune la informa che il ${due_date_date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment_verbose} presso {at}.','Scadenza CIE ${taxcode}',true,false,'Template CIE','Template CIE');
-INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (2 ,'Errore nel freemarker: il ${placeholder} non esiste. Il Comune la informa che il ${due_date_date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment_verbose} presso {at}.','Scadenza CIE ${taxcode}',true,false,'Template CIE','Template CIE');
+INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (2 ,'Benvenuto ${nome}','Ciao ${nome}',false,false,'Test freemarker','Test freemarker');
 ALTER SEQUENCE seq_govio_templates RESTART WITH 3;
 
 -- Ai fini del batch i govhub_services non servono
@@ -21,7 +21,9 @@ ALTER SEQUENCE seq_govio_service_instances RESTART WITH 3;
 
 INSERT INTO govio_placeholders(id,name,type,example) VALUES (1,'appointment','DATE','2100-12-31T12:00');
 INSERT INTO govio_placeholders(id,name,type,example) VALUES (2,'at','STRING','Ufficio numero 1');
-ALTER SEQUENCE seq_govio_placeholders RESTART WITH 3;
+INSERT INTO govio_placeholders(id,name,type,example) VALUES (3,'nome','STRING','Mario');
+ALTER SEQUENCE seq_govio_placeholders RESTART WITH 4;
 
 INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('1','1', true, 1);
 INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('1','2', true, 2);
+INSERT INTO govio_template_placeholders(id_govio_template,id_govio_placeholder, mandatory, position) VALUES ('2','3', true, 1);

@@ -48,19 +48,19 @@ public abstract class TemplateApplier {
 	protected String getSubject(Map<String, String> placeholderValues) {
 		String subjectString = applyFreemarkerTemplate(subject, placeholderValues);
 		if (subjectString.length() < 10) {
-			throw new TemplateValidationException(String.format("Il subject di dimensione %d, è minore della dimensione minima ammessa.", subjectString.length()));
+			throw new TemplateValidationException(String.format("Il subject di dimensione %d, è minore della dimensione minima ammessa di 10.", subjectString.length()));
 		}
 		if  (subjectString.length() > 120) 
-			throw new TemplateValidationException(String.format("Il subject di dimensione %d, supera la dimensione massima ammessa.", subjectString.length()));
+			throw new TemplateValidationException(String.format("Il subject di dimensione %d, supera la dimensione massima ammessa di 120.", subjectString.length()));
 		return subjectString;
 	}
 
 	protected String getMessage(Map<String, String> placeholderValues) {
 		String markdown = applyFreemarkerTemplate(message, placeholderValues);
 		if (markdown.length() < 80)
-			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, è minore della dimensione minima ammessa.", markdown.length()));
+			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, è minore della dimensione minima ammessa di 80.", markdown.length()));
 		if (markdown.length() > 10000)
-			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, supera la dimensione massima ammessa.", markdown.length()));
+			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, supera la dimensione massima ammessa di 10000.", markdown.length()));
 		return markdown;
 	}
 
