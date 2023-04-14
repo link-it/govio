@@ -507,4 +507,31 @@ class UC1_CsvTemplateTest {
 
 		assertEquals("messaggio semplice con un placeholder con date time :  03/12/2007 10:15, 03/12/2007, lunedì 03 dicembre 2007, 10:15, lunedì 03 dicembre 2007 alle ore 10:15",messaggio.getMarkdown());
 	}
+
+
+	@Test
+	@DisplayName("Messaggio senza due date, senza payment, senza placeholder")
+	void UC_1_X_OnlyTaxcodeExpeditionDate() throws IOException, TemplateException, TemplateValidationException{
+		List<Placeholder> placeholders = new ArrayList<> ();
+		Placeholder p = Placeholder.builder()
+				.name("nome")
+				.type(Type.STRING)
+				.position(1)
+				.mandatory(true)
+				.build();
+		placeholders.add(p);
+
+		Template template = Template
+				.builder()
+				.hasDueDate(false)
+				.hasPayment(false)
+				.messageBody("Lorem ipsum dolor set amet ${nome}. Lorem ipsum dolor set amet. Lorem ipsum dolor set amet.")
+				.subject("hello, il subject deve essere almeno dieci caratteri")
+				.placeholders(placeholders)
+				.build();
+		CsvTemplateApplier templateApplier = TemplateApplierFactory.buildCSVTemplateApplier(template);
+
+		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A,2023-01-01T12:00:00,Mario");
+		assertEquals("Lorem ipsum dolor set amet Mario. Lorem ipsum dolor set amet. Lorem ipsum dolor set amet.",messaggio.getMarkdown());
+	}
 }
