@@ -64,8 +64,8 @@ export class MessagesComponent implements OnInit, AfterViewInit, AfterContentChe
   showSearch: boolean = true;
   showSorting: boolean = true;
 
-  sortField: string = 'scheduled_expedition_date';
-  sortDirection: string = 'asc';
+  sortField: string = 'id';
+  sortDirection: string = 'desc';
   sortFields: any[] = [
     { field: 'id', label: 'APP.LABEL.Id', icon: '' },
     { field: 'scheduled_expedition_date', label: 'APP.LABEL.ScheduledExpeditionDate', icon: '' }
