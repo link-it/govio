@@ -86,7 +86,6 @@ public abstract class TemplateApplier {
 			t.process(placeholderValues, out);
 			return out.toString();
 		} catch (TemplateException | IOException e) {
-			logger.warn("Errore nell'esecuzione del freemarker", e);
 			throw new TemplateFreemarkerException(e);
 		}
 	}
