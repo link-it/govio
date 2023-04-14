@@ -86,8 +86,7 @@ public abstract class AbstractMessagesJobConfig  {
         return repositoryItemWriter;
     }
 	
-<<<<<<< HEAD
-	protected ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status[] statuses) {
+	/*protected ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status[] statuses) {
 		log.info("Configuring ItemReader expiredScheduledDateMessageCursor");
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
         itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < :now");
@@ -98,8 +97,6 @@ public abstract class AbstractMessagesJobConfig  {
         parameters.put("now", LocalDateTime.now());
         itemReader.setParameterValues(parameters);
         return itemReader;
-    }
+    }*/
 
-=======
->>>>>>> staging
 }

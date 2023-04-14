@@ -18,74 +18,53 @@
  */
 package it.govio.batch;
 
-import java.util.Date;
-
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import it.govio.batch.config.FileProcessingJobConfig;
+import it.govio.batch.config.SendMessagesJobConfig;
+import it.govio.batch.config.VerifyMessagesJobConfig;
+import it.govio.batch.service.GovioBatchService;
+
 @SpringBootApplication(scanBasePackages={"it.govio.batch","it.pagopa.io.v1.api"})
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
 
-	private static final String GOVIO_JOB_ID = "GovioJobID";
-
-	@Autowired
-	private JobLauncher jobLauncher;
-
-	@Autowired
-	@Qualifier("FileProcessingJob") 
-	private Job fileProcessingJob;
+	private Logger log = LoggerFactory.getLogger(Application.class);
 	
 	@Autowired
-	@Qualifier("SendMessagesJob") 
-	private Job sendMessagesJob;
-	
-	@Autowired
-	@Qualifier("VerifyMessagesJob") 
-	private Job verifyMessagesJob;
+	GovioBatchService govioBatches;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 	
-	// TODO: Se ad ogni run dello scheduler cambio i parametri, verrà creata una nuova JobInstance e il lavoro non riprenderà da dove si era fermato.
-	//	https://docs.spring.io/spring-batch/docs/current/reference/html/domain.html
 	@Scheduled(fixedDelayString = "${scheduler.fileProcessingJob.fixedDelayString:10000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void fileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException   {
-		JobParameters params = new JobParametersBuilder()
-				.addString(GOVIO_JOB_ID, "1")//String.valueOf(System.currentTimeMillis()))
-				.toJobParameters();
-		jobLauncher.run(fileProcessingJob, params);
+		this.log.info("Running scheduled {}", FileProcessingJobConfig.FILEPROCESSING_JOBNAME);
+		this.govioBatches.runFileProcessingJob();
 	}
 	
 	@Scheduled(fixedDelayString = "${scheduler.sendMessageJob.fixedDelayString:60000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void sendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException  {
-		JobParameters params = new JobParametersBuilder()
-				.addString(GOVIO_JOB_ID, String.valueOf(System.currentTimeMillis()))
-				.toJobParameters();
-		jobLauncher.run(sendMessagesJob, params);
+		this.log.info("Running scheduled {}", SendMessagesJobConfig.SENDMESSAGES_JOBNAME);
+		this.govioBatches.runSendMessageJob();
 	}
 	
 	@Scheduled(fixedDelayString = "${scheduler.verifyMessagesJob.fixedDelayString:600000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void verifyMessagesJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		JobParameters params = new JobParametersBuilder()
-				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))
-				.addDate("CurrentDate",new Date())
-				.toJobParameters();
-		jobLauncher.run(verifyMessagesJob, params);
+		this.log.info("Running scheduled {}", VerifyMessagesJobConfig.VERIFYMESSAGES_JOBNAME);
+		this.govioBatches.runVerifyMessagesJob();
 	}
 	
 }
