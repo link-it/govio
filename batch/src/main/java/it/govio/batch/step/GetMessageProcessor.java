@@ -31,6 +31,7 @@ import it.govio.batch.entity.GovioMessageEntity;
 import it.pagopa.io.v1.api.DefaultApi;
 import it.pagopa.io.v1.api.beans.ExternalMessageResponseWithContent;
 import it.pagopa.io.v1.api.beans.FiscalCodePayload;
+import it.pagopa.io.v1.api.beans.MessageStatusValue;
 
 @Component
 public class GetMessageProcessor extends GovioMessageAbstractProcessor { 
@@ -52,7 +53,9 @@ public class GetMessageProcessor extends GovioMessageAbstractProcessor {
 			fiscalCodePayload.setFiscalCode(item.getTaxcode());
 			ExternalMessageResponseWithContent message = backendIOClient.getMessage(fiscalCodePayload.getFiscalCode(), item.getAppioMessageId());
 			logger.info("Verifica completata: messaggio in stato {}", message.getStatus());
-			item.setStatus(GovioMessageEntity.Status.valueOf(message.getStatus().toString()));
+			MessageStatusValue status = message.getStatus();
+			if(status != null)
+				item.setStatus(GovioMessageEntity.Status.valueOf(status.toString()));
 		} catch (HttpClientErrorException e) {
 			// Ho avuto un errore client. Non cambio di stato, passo oltre
 			handleRestClientException(e);

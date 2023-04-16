@@ -20,17 +20,19 @@ package it.govio.batch.config;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JpaCursorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,30 +45,6 @@ import it.govio.batch.step.GetMessageProcessor;
 
 @Configuration
 public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
-
-	@Autowired
-	private GetMessageProcessor getMessageProcessor;
-	
-	@Bean(name = "VerifyMessagesJob")
-	public Job verificaMessaggiIO(){
-		return jobs.get("VerifyMessagesJob")
-				.incrementer(new RunIdIncrementer())
-				.start(getMessageStep())
-				.build();
-	}
-	
-	public Step getMessageStep(){
-		Status[] statuses = {Status.SENT, Status.THROTTLED, Status.ACCEPTED};
-		return steps.get("getMessaggeStep")
-		.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
-		.reader(expiredExpeditionDateMessageCursor(statuses))
-		.processor(asyncProcessor(this.getMessageProcessor))
-		.writer(asyncMessageWriter())
-		.faultTolerant()
-		.skip(BackendioRuntimeException.class)
-		.skipLimit(Integer.MAX_VALUE)
-		.build();
-	}
 	
 	@Value( "${govio.batch.verify-messages.delay-mins:30}" )
 	protected int delay;
@@ -74,17 +52,41 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 	@Value( "${govio.batch.verify-messages.window-days:14}" )
 	protected int window;	
 	
-	@Bean
-	@Qualifier("expiredExpeditionDateMessageCursor")
-	protected ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor(Status[] statuses) {
+	@Bean(name = "VerifyMessagesJob")
+	public Job verificaMessaggiIO(@Qualifier("getMessageStep") Step getMessageStep){
+		return jobs.get("VerifyMessagesJob")
+				.incrementer(new RunIdIncrementer())
+				.start(getMessageStep)
+				.build();
+	}
+	
+	@Bean("getMessageStep")
+	public Step getMessageStep(@Qualifier("expiredExpeditionDateMessageCursor") ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor, GetMessageProcessor getMessageProcessor){
+		return steps.get("getMessaggeStep")
+		.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
+		.reader(expiredExpeditionDateMessageCursor)
+		.processor(asyncProcessor(getMessageProcessor))
+		.writer(asyncMessageWriter())
+		.faultTolerant()
+		.skip(BackendioRuntimeException.class)
+		.skipLimit(Integer.MAX_VALUE)
+		.build();
+	}
+	
+	@Bean("expiredExpeditionDateMessageCursor")
+	@StepScope
+	protected JpaCursorItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor(@Value("#{jobParameters[CurrentDate]}") Date now) {
+		LocalDateTime from = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime().minusMinutes(delay);
+		LocalDateTime to = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime().minusDays(window);
+		Status[] statuses = {Status.SENT, Status.THROTTLED, Status.ACCEPTED};
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
         itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.expeditionDate < :t0 AND msg.expeditionDate > :t1");
         itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
         itemReader.setSaveState(true);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("statuses", Arrays.asList(statuses));
-        parameters.put("t0", LocalDateTime.now().minusMinutes(delay));        
-        parameters.put("t1", LocalDateTime.now().minusDays(window));
+        parameters.put("t0", from);        
+        parameters.put("t1", to);
         itemReader.setParameterValues(parameters);
         return itemReader;
     }
