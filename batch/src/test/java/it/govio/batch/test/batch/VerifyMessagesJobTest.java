@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +31,8 @@ import java.util.UUID;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,6 +44,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.test.JobLauncherTestUtils;
@@ -73,6 +78,8 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
+@TestInstance(Lifecycle.PER_CLASS)
+
 class VerifyMessagesJobTest {
 
 	@Mock
@@ -175,10 +182,13 @@ class VerifyMessagesJobTest {
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 
 		initailizeJobLauncherTestUtils();
-		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+		JobParameters params = new JobParametersBuilder()
+				.addString("GovioJobID", String.valueOf(System.currentTimeMillis()))
+				.addDate("CurrentDate",new Date())
+				.toJobParameters();
+		JobExecution jobExecution = jobLauncherTestUtils.launchJob(params);
 
 		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
-
 		//Controllo che tutti i messaggi siano spediti con successo e aggiornati conseguentemente.
 
 		List<GovioMessageEntity> findAll = govioMessagesRepository.findAll();

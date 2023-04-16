@@ -19,6 +19,7 @@
 package it.govio.batch.test.batch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -53,9 +54,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.govio.batch.Application;
 import it.govio.batch.entity.GovioFileEntity;
+import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
+import it.govio.batch.repository.GovioFileMessagesRepository;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
@@ -74,7 +77,7 @@ class FileProcessingJobTest {
 	private GovioFilesRepository govioFilesRepository;
 
 	@Autowired
-	private GovioFilesRepository govioFileMessagesRepository;
+	private GovioFileMessagesRepository govioFileMessagesRepository;
 	
 	@Autowired
 	private GovioMessagesRepository govioMessagesRepository;
@@ -110,8 +113,6 @@ class FileProcessingJobTest {
 		govioFileMessagesRepository.deleteAll();
 		govioFilesRepository.deleteAll();
 		govioMessagesRepository.deleteAll();
-		
-		
 	}
 
 	/**
@@ -154,6 +155,109 @@ class FileProcessingJobTest {
 
 		for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
 			assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
+		}
+
+	}
+
+
+	@Test
+	void csvLoad_validationError() throws Exception {
+
+		assertEquals(0, govioMessagesRepository.count());
+		
+		// Caricamento messaggi da inviare
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(3L);
+
+		TemporaryFolder testFolder = new TemporaryFolder();
+		testFolder.create();
+
+		File file = testFolder.newFile("freemarker_fail.csv");
+		FileWriter file1writer = new FileWriter(file);
+		file1writer.write("Testata\n");
+		file1writer.write("AAAAAA00A00A000A,2023-01-01T12:00:00, ,Mario\n");
+		file1writer.close();
+
+		GovioFileEntity govioFile1 = GovioFileEntity.builder()
+				.creationDate(LocalDateTime.now())
+				.govioServiceInstance(serviceInstanceEntity.get())
+				.govhubUserId(1l)
+				.location(file.toPath().toString())
+				.name(file.getName())
+				.status(Status.CREATED)
+				.build();
+
+
+		List<GovioFileEntity> files = new ArrayList<>();
+		files.add(govioFilesRepository.save(govioFile1));
+
+		initailizeJobLauncherTestUtils();
+
+		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
+
+		for(GovioFileEntity entity : govioFilesRepository.findAll()) {
+			// Controllo lo stato di elaborazione
+			assertEquals(Status.PROCESSED, entity.getStatus());
+			assertEquals(0, entity.getAcquiredMessages());
+			assertEquals(1, entity.getErrorMessages());
+		}
+
+		assertEquals(0, govioMessagesRepository.count());
+
+		for(GovioFileMessageEntity entity : govioFileMessagesRepository.findAll()) {
+			assertNotNull(entity.getError());
+		}
+
+	}
+
+	@Test
+	void csvLoad_freemarkerError() throws Exception {
+
+		assertEquals(0, govioMessagesRepository.count());
+		
+		// Caricamento messaggi da inviare
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(3L);
+
+		TemporaryFolder testFolder = new TemporaryFolder();
+		testFolder.create();
+
+		File file = testFolder.newFile("freemarker_fail.csv");
+		FileWriter file1writer = new FileWriter(file);
+		file1writer.write("Testata\n");
+		file1writer.write("AAAAAA00A00A000A,2023-01-01T12:00:00,,Mario\n");
+		file1writer.close();
+
+		GovioFileEntity govioFile1 = GovioFileEntity.builder()
+				.creationDate(LocalDateTime.now())
+				.govioServiceInstance(serviceInstanceEntity.get())
+				.govhubUserId(1l)
+				.location(file.toPath().toString())
+				.name(file.getName())
+				.status(Status.CREATED)
+				.build();
+
+
+		List<GovioFileEntity> files = new ArrayList<>();
+		files.add(govioFilesRepository.save(govioFile1));
+
+		initailizeJobLauncherTestUtils();
+
+		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
+
+		for(GovioFileEntity entity : govioFilesRepository.findAll()) {
+			// Controllo lo stato di elaborazione
+			assertEquals(Status.PROCESSED, entity.getStatus());
+			assertEquals(0, entity.getAcquiredMessages());
+			assertEquals(1, entity.getErrorMessages());
+		}
+
+		assertEquals(0, govioMessagesRepository.count());
+
+		for(GovioFileMessageEntity entity : govioFileMessagesRepository.findAll()) {
+			assertNotNull(entity.getError());
 		}
 
 	}
