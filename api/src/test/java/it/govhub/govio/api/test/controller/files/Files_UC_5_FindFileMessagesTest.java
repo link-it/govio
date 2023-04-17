@@ -38,6 +38,8 @@ import javax.json.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -330,8 +332,11 @@ class Files_UC_5_FindFileMessagesTest {
 	}
 	
 	// 7. getFileMessages Filtro sulla linea del file da restiuire l >  0
-	@Test
-	void UC_3_07_GetFileMessagesOk_LinNumberFromGreaterThanZero() throws Exception {
+	// 9. getFileMessages Filtro sulla linea del file da restiuire l = 0
+	// 10. getFileMessages Filtro sulla linea del file da restiuire l > size
+	@ParameterizedTest
+	@ValueSource(strings = { "1", "0", "1"})
+	void UC_3_07_GetFileMessagesOk_LinNumberFrom(String lineNum) throws Exception {
 		MvcResult result = this.mockMvc.perform(get(FILES_BASE_PATH)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
 				.accept(MediaType.APPLICATION_JSON))
@@ -356,7 +361,7 @@ class Files_UC_5_FindFileMessagesTest {
 		int idFile = item1.getInt("id");
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, "1");
+		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, lineNum);
 		
 		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
 				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
@@ -417,103 +422,4 @@ class Files_UC_5_FindFileMessagesTest {
 				.andExpect(jsonPath("$.detail", is("readFileMessages.lineNumberFrom: must be greater than or equal to 0")))
 				.andReturn();
 	}
-	
-	// 9. getFileMessages Filtro sulla linea del file da restiuire l = 0
-	@Test
-	void UC_3_09_GetFileMessagesOk_LinNumberFromEqualsZero() throws Exception {
-		MvcResult result = this.mockMvc.perform(get(FILES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
-		
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject userList = reader.readObject();
-		
-		// Controlli sulla paginazione
-		JsonObject page = userList.getJsonObject("page");
-		assertEquals(0, page.getInt("offset"));
-		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(2, page.getInt("total"));
-		
-		// Controlli sugli items
-		JsonArray items = userList.getJsonArray("items");
-		assertEquals(2, items.size());
-		
-		
-		JsonObject item1 = items.getJsonObject(0);
-		int idFile = item1.getInt("id");
-		
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, "0");
-		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
-				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
-		
-		reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		userList = reader.readObject();
-		
-		// Controlli sulla paginazione
-		page = userList.getJsonObject("page");
-		assertEquals(0, page.getInt("offset"));
-		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(0, page.getInt("total"));
-		
-		// Controlli sugli items
-		items = userList.getJsonArray("items");
-		assertEquals(0, items.size());
-	}
-	
-	// 10. getFileMessages Filtro sulla linea del file da restiuire l > size
-	@Test
-	void UC_3_10_GetFileMessagesOk_LinNumberFromGreaterThanSize() throws Exception {
-		MvcResult result = this.mockMvc.perform(get(FILES_BASE_PATH)
-				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
-		
-		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		JsonObject userList = reader.readObject();
-		
-		// Controlli sulla paginazione
-		JsonObject page = userList.getJsonObject("page");
-		assertEquals(0, page.getInt("offset"));
-		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(2, page.getInt("total"));
-		
-		// Controlli sugli items
-		JsonArray items = userList.getJsonArray("items");
-		assertEquals(2, items.size());
-		
-		
-		JsonObject item1 = items.getJsonObject(0);
-		int idFile = item1.getInt("id");
-		
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add(Costanti.FILES_QUERY_PARAM_LINE_NUMBER_FROM, "1");
-		
-		result = this.mockMvc.perform(get(FILES_BASE_PATH_DETAIL_ID,idFile).params(params)
-				.with(this.userAuthProfilesUtils.utenzaGovIOSender())
-				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andReturn();
-		
-		reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		userList = reader.readObject();
-		
-		// Controlli sulla paginazione
-		page = userList.getJsonObject("page");
-		assertEquals(0, page.getInt("offset"));
-		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(0, page.getInt("total"));
-		
-		// Controlli sugli items
-		items = userList.getJsonArray("items");
-		assertEquals(0, items.size());
-	}
-	
 }
