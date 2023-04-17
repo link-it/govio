@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -36,17 +37,17 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.service.GovioBatchService;
-import it.govio.batch.test.config.FileProcessingInterruptedTestConfig;
+import it.govio.batch.test.config.FileProcessingBrokenDbConfig;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
 @SpringBootTest
-@Import(FileProcessingInterruptedTestConfig.class)
+@Import(FileProcessingBrokenDbConfig.class)
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-class FileProcessingInterruptedJobTest {
+public class FileProcessingBrokenDbTest {
 
 	@Autowired
 	private GovioServiceInstancesRepository govioServiceInstancesRepository;
@@ -129,5 +130,5 @@ class FileProcessingInterruptedJobTest {
 		}
 		
 	}
-	
+
 }
