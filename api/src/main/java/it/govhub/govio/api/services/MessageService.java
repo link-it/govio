@@ -132,7 +132,7 @@ public class MessageService {
 		GovioMessageEntity newMessage = GovioMessageEntity.builder()
 				.amount(message.getAmount())
 				.creationDate(now)
-				.dueDate(message.getDueDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime())
+				.dueDate(message.getDueDate() != null ? message.getDueDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime() : null)
 				.email(message.getEmail())
 				.govioServiceInstance(serviceInstance)
 				.invalidAfterDueDate(message.getInvalidAfterDueDate())
