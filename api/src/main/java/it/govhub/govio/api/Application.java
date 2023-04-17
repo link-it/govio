@@ -63,7 +63,6 @@ import it.govhub.govregistry.readops.api.config.ReadOpsExportedBeans;
 public class Application extends SpringBootServletInitializer {
 	
 	public static void main(String[] args) {
-		Locale.setDefault(Locale.ENGLISH);
 		SpringApplication.run(Application.class, args);
 	}
 	

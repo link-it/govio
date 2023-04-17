@@ -8,13 +8,13 @@
 	<parent>
 		<groupId>it.govhub.govio</groupId>
 		<artifactId>bom</artifactId>
-		<version>1.0.0</version>
+		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>api</artifactId>
+	<artifactId>mock-io</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>GovIO - API</name>
-	<description>API per il backoffice di spedizione messaggi GovHub</description>
+	<name>GovIO - IO Mock</name>
+	<description>Servizio che simula il backend di IO, utile al testing dei batch.</description>
 
 
 	<profiles>
@@ -51,24 +51,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>it.govhub.govregistry</groupId>
-			<artifactId>readops</artifactId>
-			<version>${govregistry.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>it.govhub.govregistry</groupId>
-			<artifactId>security</artifactId>
-			<version>${govregistry.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>it.govhub.govio</groupId>
-			<artifactId>template-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
@@ -76,11 +58,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-hateoas</artifactId>
 		</dependency>
 
 		<dependency>
@@ -133,12 +110,6 @@
 		</dependency>
 
 		<!-- Integration Test -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
@@ -198,31 +169,10 @@
 			<version>${jsr305.version}</version>
 		</dependency>
 
-		<!-- JsonPatch -->
-		<dependency>
-			<groupId>com.github.java-json-tools</groupId>
-			<artifactId>json-patch</artifactId>
-			<version>${jsonpatch.version}</version>
-		</dependency>
-
-		<!-- Streaming Contenuto Multipart -->
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${commons-fileupload.version}</version>
-		</dependency>
-
-		<!-- Generatore  OpenAPI Custom per govway -->
-		<dependency>
-			<groupId>it.govhub</groupId>
-			<artifactId>govhub-openapi-codegen</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
-		<finalName>govio</finalName>
+		<finalName>mock-io</finalName>
 		
 		<plugins>
 			<plugin>
@@ -265,54 +215,18 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<ignoreFileOverride>${project.basedir}/.openapi-generator-ignore</ignoreFileOverride>
-							<inputSpec>${project.basedir}/src/main/resources/static/govio-api-backoffice.yaml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/appio/v1/appio-mock.yaml</inputSpec>
 							<generatorName>govhub-codegen</generatorName>
-							<typeMappings>base64=it.govhub.govregistry.commons.utils.Base64String</typeMappings>
-							<importMappings>
-								<!-- IMPORT MAPPINGS DI GOVHUB-COMMONS -->
-								<importMapping>Direction=org.springframework.data.domain.Sort.Direction</importMapping>
-								<importMapping>PageInfo=it.govhub.govregistry.commons.api.beans.PageInfo</importMapping>
-								<importMapping>Problem=it.govhub.govregistry.commons.api.beans.Problem</importMapping>
-								<importMapping>PatchOp=it.govhub.govregistry.commons.api.beans.PatchOp</importMapping>
-								<importMapping>Authorization=it.govhub.govregistry.commons.api.beans.Authorization</importMapping>
-								<importMapping>AuthorizationList=it.govhub.govregistry.commons.api.beans.AuthorizationList</importMapping>
-								<importMapping>AuthorizationOrdering=it.govhub.govregistry.commons.api.beans.AuthorizationOrdering</importMapping>
-								<importMapping>User=it.govhub.govregistry.commons.api.beans.User</importMapping>
-								<importMapping>UserCreate=it.govhub.govregistry.commons.api.beans.UserCreate</importMapping>
-								<importMapping>Organization=it.govhub.govregistry.commons.api.beans.Organization</importMapping>
-								<importMapping>OrganizationCreate=it.govhub.govregistry.commons.api.beans.OrganizationCreate</importMapping>
-								<importMapping>Service=it.govhub.govregistry.commons.api.beans.Service</importMapping>
-								<importMapping>ServiceCreate=it.govhub.govregistry.commons.api.beans.ServiceCreate</importMapping>
-								<importMapping>ServiceAuthItem=it.govhub.govregistry.commons.api.beans.ServiceAuthItem</importMapping>
-								<importMapping>OrganizationAuthItem=it.govhub.govregistry.commons.api.beans.OrganizationAuthItem</importMapping>
-								<importMapping>OrganizationList=it.govhub.govregistry.commons.api.beans.OrganizationList</importMapping>
-								<importMapping>ServiceList=it.govhub.govregistry.commons.api.beans.ServiceList</importMapping>
-								<importMapping>UserList=it.govhub.govregistry.commons.api.beans.UserList</importMapping>
-								<importMapping>OrganizationOrdering=it.govhub.govregistry.commons.api.beans.OrganizationOrdering</importMapping>
-
-								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
-								<!-- <importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping> -->
-								<importMapping>GovioPlaceholderType=it.govhub.govio.api.entity.GovioPlaceholderEntity.Type</importMapping>
-							</importMappings>
-							<typeMappings>
-								<typeMapping>GovioPlaceholderType=it.govhub.govio.api.entity.GovioPlaceholderEntity.Type</typeMapping>
-							</typeMappings>
-							<schemaMappings>
-								<schemaMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</schemaMapping>
-								<schemaMapping>ServiceOrdering=it.govhub.govregistry.commons.api.beans.ServiceOrdering</schemaMapping>
-								<schemaMapping>UserOrdering=it.govhub.govregistry.commons.api.beans.UserOrdering</schemaMapping>
-							</schemaMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
 								<library>spring-boot</library>
 								<sourceFolder>generated-sources/java/</sourceFolder>
-								<basePackage>it.govhub.govio.api</basePackage>
-								<apiPackage>it.govhub.govio.api.spec</apiPackage>
-								<modelPackage>it.govhub.govio.api.beans</modelPackage>
+								<basePackage>it.govhub.govio.mockio.api</basePackage>
+								<apiPackage>it.govhub.govio.api.mockio.spec</apiPackage>
+								<modelPackage>it.govhub.govio.api.mockio.beans</modelPackage>
 								<useBeanValidation>true</useBeanValidation>
 								<skipDefaultInterface>true</skipDefaultInterface>
 								<interfaceOnly>true</interfaceOnly>
-								<hateoas>true</hateoas>
 								<useTags>true</useTags>
 							</configOptions>
 							<output>${project.basedir}/target</output>
@@ -320,6 +234,7 @@
 							<generateApiTests>false</generateApiTests>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<generateModelTests>false</generateModelTests>
+							
 						</configuration>
 					</execution>
 				</executions>
@@ -362,20 +277,6 @@
 				</dependencies>
 			</plugin>
 
-			<!-- Code Coverage Plugin -->
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco.version}</version>
-				<executions>
-					<execution>
-						<id>prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<extensions>
 			<!-- Enabling the use of SSH -->
