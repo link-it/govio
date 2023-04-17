@@ -23,14 +23,11 @@ public class DatabaseStopperAfterStepListener implements StepExecutionListener {
 
 		
 		@Override
-		public void beforeStep(StepExecution stepExecution) {	}
-
-		
-		@Override
 		public ExitStatus afterStep(StepExecution stepExecution) {
-			log.info("JobStopperAfterStepListener::afterStep");
+			log.info("Running StepListener for Job [{}] after step [{}]", stepExecution.getJobExecution().getJobInstance().getJobName(), stepExecution.getStepName());
+			
 			if ( ! fired ) {
-				log.info("Stopping job [{}] after step [{}]", stepExecution.getJobExecution().getJobInstance().getJobName(), stepExecution.getStepName());
+				log.info("Stopping H2 DATABASE");
 				try {
 					this.jobOperator.stop(stepExecution.getJobExecutionId());
 					fired = true;
@@ -39,10 +36,12 @@ public class DatabaseStopperAfterStepListener implements StepExecutionListener {
 					throw new RuntimeException(e);
 				}
 			} else {
-				log.info("Job [{}] already stopped one time after step [{}]", stepExecution.getJobExecution().getJobInstance().getJobName(), stepExecution.getStepName());
+				log.info("H2 DATABASE Already stopped");
 			}
-			
 			
 			return stepExecution.getExitStatus();
 		}
+		
+		@Override
+		public void beforeStep(StepExecution stepExecution) {	}
 }

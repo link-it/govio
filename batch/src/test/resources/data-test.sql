@@ -1,5 +1,18 @@
 -- Servizio di test
 
+DELETE FROM BATCH_JOB_EXECUTION_PARAMS;
+DELETE FROM BATCH_JOB_EXECUTION_CONTEXT;
+
+DELETE FROM BATCH_STEP_EXECUTION_CONTEXT;
+DELETE FROM BATCH_STEP_EXECUTION;
+
+DELETE FROM BATCH_JOB_EXECUTION;
+
+DELETE FROM BATCH_JOB_INSTANCE;
+
+
+
+
 INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (1,'Il Comune la informa che il ${due_date_date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment_verbose} presso {at}.','Scadenza CIE ${taxcode}',true,false,'Template CIE','Template CIE');
 ALTER SEQUENCE seq_govio_templates RESTART WITH 2;
 
