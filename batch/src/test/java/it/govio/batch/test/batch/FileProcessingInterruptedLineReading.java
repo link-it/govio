@@ -113,7 +113,7 @@ class FileProcessingInterruptedLineReading {
 
 		this.jobLauncherTestUtils = new JobLauncherTestUtils();
 		
-		//this.jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
+//		this.jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
 		this.jobLauncherTestUtils.setJobLauncher(jobLauncher);
 		this.jobLauncherTestUtils.setJobRepository(jobRepository);
 		this.jobLauncherTestUtils.setJob(job);
