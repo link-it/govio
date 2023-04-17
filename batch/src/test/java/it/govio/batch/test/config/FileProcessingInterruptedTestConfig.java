@@ -22,7 +22,7 @@ import it.govio.batch.test.batch.listeners.JobStopperAfterStepListener;
  *
  */
 @TestConfiguration
-public class FileProcessingJobInterruptedTestConfig {
+public class FileProcessingInterruptedTestConfig {
 
 	@Autowired
 	JobRegistry jobRegistry;

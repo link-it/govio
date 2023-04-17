@@ -44,7 +44,7 @@ import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
-import it.govio.batch.test.config.FileProcessingJobInterruptedTestConfig;
+import it.govio.batch.test.config.FileProcessingInterruptedTestConfig;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
 
@@ -61,7 +61,7 @@ import it.govio.batch.test.utils.GovioMessageBuilder;
 			classes = Application.class,
 			properties = {"scheduler.initialDelayString=1000"}
 		)
-@Import(FileProcessingJobInterruptedTestConfig.class)
+@Import(FileProcessingInterruptedTestConfig.class)
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
