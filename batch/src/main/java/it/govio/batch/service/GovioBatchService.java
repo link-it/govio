@@ -82,8 +82,10 @@ public class GovioBatchService {
 				switch (lastExecution.getStatus()) {
 
 				// In questo caso Creo un nuovo Job.
-				case COMPLETED:
 				case ABANDONED:
+					this.log.warn("TODO: ACCERTARSI COME CI SI FINISCE IN STATO ABANDONED");
+				case COMPLETED:
+				
 					// I Job Abandoned non possono essere riavviati. (Sono abbandonati appunto)
 					// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
 					// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
@@ -101,8 +103,9 @@ public class GovioBatchService {
 					params = lastExecution.getJobParameters();
 					break;
 				default:
-					//STARTED, STARTING, STOPPING, UNKNOWN:
+					// STARTED, STARTING, STOPPING, UNKNOWN:
 					// STARTED STARTING e STOPPING non dovremmo mai trovarli, per via del comportamento dello scheduler.
+					
 					// UNKNOWN - Questo possiamo scoprirlo solo operativamente.
 					// TODO: STARTED potrebbe esserci anche nel caso in cui il db sia andato giù bruscamente.
 					log.error("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOBNAME, exitStatus, lastExecution.getStatus());

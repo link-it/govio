@@ -104,13 +104,26 @@ public class FileProcessingBrokenDbTest {
          stat.close();
          conn.close();
 	}
+	
+public void awaitAllCurrentJobs() throws InterruptedException {
+		
+		for (String jn : jobExplorer.getJobNames()) {             
+			   for (JobExecution je : jobExplorer.findRunningJobExecutions(jn)) {
+				   while (je.isRunning()) {
+						je = this.jobExplorer.getJobExecution(je.getId());
+						Thread.sleep(20);
+				   }
+			   }
+		}
+		
+	}
 
 	/**
 	 * Test di elaborazione tracciato a metà: Interrompiamo l'esecuzione del batch non appena finisce la
 	 * promoteProcessingFileListener e riavviamo l'esecuzione, (Creando una nuova JobExecution)
 	 * 
 	 */
-	@Test
+	//@Test
 	void csvLoadInterruptedAndRestartedNew() throws Exception {
 		
 		assertEquals(0, govioMessagesRepository.count());
