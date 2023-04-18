@@ -50,7 +50,6 @@
 		<module>batch</module>
 		<module>api</module>
 		<!-- <module>stats</module> -->
-		<module>mock-io</module>
 		<module>report</module>
 	</modules>
 

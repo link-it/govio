@@ -26,7 +26,6 @@ import java.util.concurrent.Future;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,10 @@ import it.govio.batch.step.NewMessageProcessor;
 
 @Configuration
 public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
+	
+	public static final String SENDMESSAGES_JOBNAME = "SendMessagesJob";
+	public static final String GETPROFILE_STEPNAME = "getProfileStep";
+	public static final String NEWMESSAGE_STEPNAME = "newMessageStep"; 
 
 	@Autowired
 	private GetProfileProcessor getProfileProcessor;
@@ -48,10 +51,9 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 	@Autowired
 	private NewMessageProcessor newMessageProcessor;
 	
-	@Bean(name = "SendMessagesJob")
+	@Bean(name = SENDMESSAGES_JOBNAME)
 	public Job spedizioneMessaggiIO(){
-		return jobs.get("SendMessagesJob")
-				.incrementer(new RunIdIncrementer())
+		return jobs.get(SENDMESSAGES_JOBNAME)
 				.start(getProfileStep())
 				.next(newMessageStep())
 				.build();
@@ -59,7 +61,7 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 	
 	public Step getProfileStep(){
 		Status[] statuses = {Status.SCHEDULED};
-		return steps.get("getProfileStep")
+		return steps.get(GETPROFILE_STEPNAME)
 				.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
 				.reader(expiredScheduledDateMessageCursor(statuses))
 				.processor(asyncProcessor(this.getProfileProcessor))
@@ -72,7 +74,7 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 	
 	public Step newMessageStep(){
 		Status[] statuses = {Status.RECIPIENT_ALLOWED};
-		return steps.get("newMessageStep")
+		return steps.get(NEWMESSAGE_STEPNAME)
 				.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(1)
 				.reader(expiredScheduledDateMessageCursor(statuses))
 				.processor(asyncProcessor(this.newMessageProcessor))
@@ -84,8 +86,11 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 	}
 	
 	protected ItemReader<GovioMessageEntity> expiredScheduledDateMessageCursor(Status[] statuses) {
+		
+		final String query = "SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < CURRENT_TIMESTAMP";
+		
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
-        itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.scheduledExpeditionDate < CURRENT_TIMESTAMP");
+        itemReader.setQueryString(query);
         itemReader.setEntityManagerFactory(entityManager.getEntityManagerFactory());
         itemReader.setSaveState(true);
         Map<String, Object> parameters = new HashMap<>();

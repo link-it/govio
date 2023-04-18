@@ -55,8 +55,10 @@ public abstract class AbstractMessagesJobConfig  {
 	
 	private Logger log = LoggerFactory.getLogger(AbstractMessagesJobConfig.class);
 	
+	public static final String MSG_SENDER_TASK_EXECUTOR_NAME = "spring_batch_msgsender"; 
+	
 	protected TaskExecutor taskExecutor() {
-	    return new SimpleAsyncTaskExecutor("spring_batch_msgsender");
+	    return new SimpleAsyncTaskExecutor(MSG_SENDER_TASK_EXECUTOR_NAME);
 	}
 	
 	protected AsyncItemProcessor<GovioMessageEntity, GovioMessageEntity> asyncProcessor(GovioMessageAbstractProcessor itemProcessor) {
@@ -78,5 +80,5 @@ public abstract class AbstractMessagesJobConfig  {
         repositoryItemWriter.setMethodName("save");
         return repositoryItemWriter;
     }
-	
+
 }
