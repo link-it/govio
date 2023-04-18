@@ -52,7 +52,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.govio.batch.Application;
+import it.govio.batch.config.FileProcessingJobConfig;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
@@ -63,7 +63,9 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 
-@SpringBootTest(classes = Application.class)
+@SpringBootTest( 
+		properties = { "scheduler.initialDelayString=99999999999" }
+		)
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -85,7 +87,7 @@ class FileProcessingJobTest {
 	private JobLauncherTestUtils jobLauncherTestUtils;
 
 	@Autowired
-	@Qualifier(value = "FileProcessingJob")
+	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOBNAME)
 	private Job job;
 
 	@Autowired
@@ -99,12 +101,6 @@ class FileProcessingJobTest {
 		this.jobLauncherTestUtils.setJobLauncher(jobLauncher);
 		this.jobLauncherTestUtils.setJobRepository(jobRepository);
 		this.jobLauncherTestUtils.setJob(job);
-	}
-
-	@BeforeAll
-	public void initTest() throws SQLException {
-		Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082")
-		.start();
 	}
 
 	@BeforeEach
@@ -121,7 +117,7 @@ class FileProcessingJobTest {
 	 */
 	@Test
 	void csvLoadOk() throws Exception {
-
+		
 		assertEquals(0, govioMessagesRepository.count());
 		
 		// Caricamento messaggi da inviare
