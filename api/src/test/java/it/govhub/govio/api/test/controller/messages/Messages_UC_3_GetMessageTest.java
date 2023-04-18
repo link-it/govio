@@ -306,9 +306,9 @@ class Messages_UC_3_GetMessageTest {
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
 		String taxCode = "AYCSFK56HUQE969O";
-		String email = "s.nakamoto@xxxxx.xx";
+		String email = null;
 
-		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, null, taxCode, null, null, null, this.dt);
+		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, null, taxCode, email, null, null, this.dt);
 
 		String json = message.toString();
 
