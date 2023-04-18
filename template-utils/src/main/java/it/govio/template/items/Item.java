@@ -51,6 +51,8 @@ public abstract class Item<T> {
 	public String getStringValueFromCsv(String[] values) {
 		if(values.length <= position)
 			throw new TemplateValidationException(String.format("Numero di valori inferiore a quanto richiesto dal template. Assente il valore %s in posizione %d", name, position));
+		if(values[position].isBlank())
+			return null;
 		return values[position];
 	}
 	

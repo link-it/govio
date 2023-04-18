@@ -31,6 +31,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -79,6 +80,9 @@ public class MessageService {
 	SecurityService authService;
 	
 	Logger log = LoggerFactory.getLogger(MessageService.class);
+	
+	@Value("${govhub.time-zone:Europe/Rome}")
+	String timeZone;
 
 	
 	@Transactional
@@ -128,11 +132,14 @@ public class MessageService {
 		String subject = templateApplier.getSubject(message, placeholderValues);
 		String markdown = templateApplier.getMarkdown(message, placeholderValues);
 		
+		// IO si aspetta le date con TimeZone a Europe/Rome, per 
 		OffsetDateTime now = OffsetDateTime.now();
+		OffsetDateTime dueDate = message.getDueDate() == null ? null : message.getDueDate().atZone(ZoneId.of(timeZone)).toOffsetDateTime();
+		
 		GovioMessageEntity newMessage = GovioMessageEntity.builder()
 				.amount(message.getAmount())
 				.creationDate(now)
-				.dueDate(message.getDueDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime())
+				.dueDate(dueDate)
 				.email(message.getEmail())
 				.govioServiceInstance(serviceInstance)
 				.invalidAfterDueDate(message.getInvalidAfterDueDate())
@@ -140,7 +147,7 @@ public class MessageService {
 				.markdown(markdown)
 				.noticeNumber(message.getNoticeNumber())
 				.payeeTaxcode(message.getPayee())
-				.scheduledExpeditionDate(message.getScheduledExpeditionDate().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime())
+				.scheduledExpeditionDate(message.getScheduledExpeditionDate().atZone(ZoneId.of(timeZone)).toOffsetDateTime())
 				.sender(em.getReference(UserEntity.class, senderId))
 				.status(GovioMessageEntity.Status.SCHEDULED)
 				.subject(subject)

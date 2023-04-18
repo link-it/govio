@@ -207,9 +207,11 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
           this.file = response; // new File({ ...response });
           this._file = response; // new File({ ...response });
           this._isNew = false;
-
           this._initBreadcrumb();
-          this._onCancelEdit();
+          this._isEdit = false;
+          this._isNew = false;
+          this.save.emit({ id: this.id, file: response, update: false });
+          this.router.navigate([this.model, this.id], { replaceUrl: true });
         },
         error: (error: any) => {
           this._error = true;

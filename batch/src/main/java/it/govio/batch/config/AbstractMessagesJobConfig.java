@@ -19,26 +19,21 @@
 package it.govio.batch.config;
 
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.persistence.EntityManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.integration.async.AsyncItemProcessor;
 import org.springframework.batch.integration.async.AsyncItemWriter;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.data.RepositoryItemWriter;
-import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
 import it.govio.batch.entity.GovioMessageEntity;
-import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.step.GovioMessageAbstractProcessor;
 
@@ -47,16 +42,18 @@ import it.govio.batch.step.GovioMessageAbstractProcessor;
 public abstract class AbstractMessagesJobConfig  {
 
 	@Autowired
-	protected JobBuilderFactory jobs;
+	JobBuilderFactory jobs;
 
 	@Autowired
-	protected StepBuilderFactory steps;
+	StepBuilderFactory steps;
 	
 	@Autowired
-	protected GovioMessagesRepository govioMessagesRepository;
+	GovioMessagesRepository govioMessagesRepository;
 	
 	@Autowired
-	protected EntityManager entityManager;
+	EntityManager entityManager;
+	
+	private Logger log = LoggerFactory.getLogger(AbstractMessagesJobConfig.class);
 	
 	protected TaskExecutor taskExecutor() {
 	    return new SimpleAsyncTaskExecutor("spring_batch_msgsender");

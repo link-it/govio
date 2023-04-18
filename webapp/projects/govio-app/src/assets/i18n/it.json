@@ -132,7 +132,9 @@
 			"UserFullName": "Nome utente"
 		},
 		"LABEL_HELP": {
-			"All": ""
+			"All": "",
+			"TEMPLATE": {
+			}
 		},
 		"MENU": {
 			"Configurations": "Configurazioni",
