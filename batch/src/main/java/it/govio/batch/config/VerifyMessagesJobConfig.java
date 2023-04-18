@@ -33,7 +33,6 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JpaCursorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -46,9 +45,6 @@ import it.govio.batch.step.GetMessageProcessor;
 
 @Configuration
 public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
-
-	@Autowired
-	private GetMessageProcessor getMessageProcessor;
 	
 	@Value( "${govio.batch.verify-messages.delay-mins:30}" )
 	protected int delay;
@@ -65,11 +61,11 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 	}
 	
 	@Bean("getMessageStep")
-	public Step getMessageStep(@Qualifier("expiredExpeditionDateMessageCursor") ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor){
+	public Step getMessageStep(@Qualifier("expiredExpeditionDateMessageCursor") ItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor, GetMessageProcessor getMessageProcessor){
 		return steps.get("getMessaggeStep")
 		.<GovioMessageEntity, Future<GovioMessageEntity>>chunk(10)
 		.reader(expiredExpeditionDateMessageCursor)
-		.processor(asyncProcessor(this.getMessageProcessor))
+		.processor(asyncProcessor(getMessageProcessor))
 		.writer(asyncMessageWriter())
 		.faultTolerant()
 		.skip(BackendioRuntimeException.class)

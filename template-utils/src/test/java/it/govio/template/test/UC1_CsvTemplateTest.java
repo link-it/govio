@@ -35,9 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import freemarker.template.TemplateException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 class UC1_CsvTemplateTest {
 	
@@ -301,7 +299,6 @@ class UC1_CsvTemplateTest {
 
 	}
 
-
 	@Test
 	@DisplayName("template con placeholder stringa senza pattern")
 	void UC_1_15_PlaceholderStringaSenzaPattern() throws IOException, TemplateException, TemplateValidationException{
@@ -506,5 +503,26 @@ class UC1_CsvTemplateTest {
 		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A,2007-12-03T10:15:30,2007-12-03T10:15:30");
 
 		assertEquals("messaggio semplice con un placeholder con date time :  03/12/2007 10:15, 03/12/2007, lunedì 03 dicembre 2007, 10:15, lunedì 03 dicembre 2007 alle ore 10:15",messaggio.getMarkdown());
+	}
+
+	@Test
+	@DisplayName("template con payment senza payee")
+	void UC_1_22_PaymentSenzaPayee() throws IOException, TemplateException, TemplateValidationException{
+		List<Placeholder> placeholders = new ArrayList<> ();
+
+		Template template = Template
+				.builder()
+				.hasDueDate(false)
+				.hasPayment(true)
+				.messageBody("Message deve essere di almento 80 caratteri. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc sit amet aliquam tincidunt, nunc mauris aliquam erat, vel")
+				.subject("hello, il subject deve essere almeno dieci caratteri")
+				.placeholders(placeholders)
+				.build();
+
+		CsvTemplateApplier templateApplier = TemplateApplierFactory.buildCSVTemplateApplier(template);
+		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A,2023-01-01T12:00:00,300000000000000000,999,,,");
+
+		assertNull(messaggio.getDueDate());
+		assertNull(messaggio.getPayee());
 	}
 }

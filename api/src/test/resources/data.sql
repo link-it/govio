@@ -101,8 +101,8 @@ INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment
 
 INSERT INTO govio_templates(id, message_body, subject, has_due_date, has_payment, name, description) VALUES (
 		nextval('public.seq_govio_templates'), 
-		'Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie.uppercase}. Per maggiori informazioni sulle modalità di rinnovo può consultare https://comune.dimostrativo.it.', 
-		'Scadenza CIE n. ${cie.uppercase}', 
+		'Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie}. Per maggiori informazioni sulle modalità di rinnovo può consultare https://comune.dimostrativo.it.', 
+		'Scadenza CIE n. ${cie}', 
 		true, 
 		false,
 		'CIE', 'Description...');

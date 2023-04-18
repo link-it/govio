@@ -54,6 +54,14 @@ public class Costanti {
 	public static final String USERS_QUERY_PARAM_ORGANIZATION_ID = "organization_id";
 	public static final String USERS_QUERY_PARAM_EMBED = "embed";
 	public static final String USERS_QUERY_PARAM_PLACEHOLDER_ID = "placeholder_id";
+	public static final String USERS_QUERY_PARAM_STATUS = "status";
+	public static final String USERS_QUERY_PARAM_SERVICE_Q = "service_q";
+	public static final String USERS_QUERY_PARAM_ORGANIZATION_Q = "organization_q";
+	public static final String USERS_QUERY_PARAM_TAX_CODE = "tax_code";
+	public static final String USERS_QUERY_PARAM_SCHEDULED_EXPEDITION_DATE_FROM = "scheduled_expedition_date_from";
+	public static final String USERS_QUERY_PARAM_SCHEDULED_EXPEDITION_DATE_TO = "scheduled_expedition_date_to";
+	public static final String USERS_QUERY_PARAM_EXPEDITION_DATE_FROM = "expedition_date_from";
+	public static final String USERS_QUERY_PARAM_EXPEDITION_DATE_TO = "expedition_date_to";
 	
 	public static final Integer USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE = LimitOffsetPageRequest.LIMIT_DEFAULT_VALUE;
 	
@@ -75,6 +83,10 @@ public class Costanti {
 	
 	public static final String FILES_QUERY_PARAM_LINE_NUMBER_FROM = "line_number_from";
 	public static final String FILES_QUERY_PARAM_FILE_MESSAGE_STATUS = "file_message_status";
+	
+	public static final String TEMPLATE_CIE_SUBJECT = "Scadenza CIE n. ${cie}";
+	public static final String TEMPLATE_CIE_MESSAGE_BODY = "Salve, con la presente la informiamo che in data ${due_date} scadrà la Carta di Identità elettronica numero ${cie}. Per maggiori informazioni sulle modalità di rinnovo può consultare https://comune.dimostrativo.it.";
+	
 	
 	
 	/* ORGANIZATIONS */
