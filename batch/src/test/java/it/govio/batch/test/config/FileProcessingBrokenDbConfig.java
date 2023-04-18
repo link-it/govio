@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import it.govio.batch.builders.ObservableJobBuilderFactory;
-import it.govio.batch.builders.ObservableStepBuilderFactory;
-import it.govio.batch.test.batch.listeners.DatabaseStopperAfterStepListener;
+import it.govio.batch.test.batch.builders.ObservableJobBuilderFactory;
+import it.govio.batch.test.batch.builders.ObservableStepBuilderFactory;
+import it.govio.batch.test.listeners.DatabaseStopperAfterStepListener;
 
 
 /**

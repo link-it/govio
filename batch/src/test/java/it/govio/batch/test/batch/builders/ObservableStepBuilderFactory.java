@@ -1,4 +1,4 @@
-package it.govio.batch.builders;
+package it.govio.batch.test.batch.builders;
 
 import java.util.HashMap;
 import java.util.Set;

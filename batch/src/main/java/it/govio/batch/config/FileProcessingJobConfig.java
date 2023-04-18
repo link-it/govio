@@ -73,13 +73,13 @@ public class FileProcessingJobConfig {
 			){
 		return jobs.get(FILEPROCESSING_JOBNAME)
 				.start(promoteProcessingFileTasklet)
-				.on("NEW_FILES_NOT_FOUND")
+	/*			.on("NEW_FILES_NOT_FOUND")
 				.end()
 				.from(promoteProcessingFileTasklet)
-				.on("NEW_FILES_FOUND")
-				.to(govioFileReaderMasterStep)
+				.on("NEW_FILES_FOUND")*/
+				.next(govioFileReaderMasterStep)
 				.next(finalizeProcessingFileTasklet)
-				.end()
+				//.end()
 				.build();
 	}
 

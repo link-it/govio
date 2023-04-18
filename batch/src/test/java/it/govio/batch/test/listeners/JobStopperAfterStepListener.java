@@ -1,4 +1,4 @@
-package it.govio.batch.test.batch.listeners;
+package it.govio.batch.test.listeners;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
