@@ -231,7 +231,8 @@
 			"Search": "Search...",
 			"SelectOrganization": "Select a organization",
 			"SelectService": "Select a service",
-			"SelectServiceInstance": "Select a service instance"
+			"SelectServiceInstance": "Select a service instance",
+			"SelectTemplate": "Select a template"
 		},
 		"PLACEHOLDERS": {
 			"FILTER": {

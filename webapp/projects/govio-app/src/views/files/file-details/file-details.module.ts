@@ -11,6 +11,7 @@ import { HasPermissionModule } from '@app/directives/has-permission/has-permissi
 
 import { FileDetailsComponent } from './file-details.component';
 import { FileDetailsRoutingModule } from './file-details-routing.module';
+import { TemplateViewModule } from '../../templates/template-view/template-view.module';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { FileDetailsRoutingModule } from './file-details-routing.module';
     ComponentsModule,
     LinkLabModule,
     HasPermissionModule,
-    FileDetailsRoutingModule
+    FileDetailsRoutingModule,
+    TemplateViewModule
   ],
   declarations: [
     FileDetailsComponent
