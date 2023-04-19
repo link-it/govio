@@ -40,7 +40,7 @@ public class GovioBatchService {
 	JobExplorer jobExplorer;
 
 	@Autowired
-	@Qualifier(FileProcessingJobConfig.FILEPROCESSING_JOBNAME)
+	@Qualifier(FileProcessingJobConfig.FILEPROCESSING_JOB)
 	private Job fileProcessingJob;
 
 	@Autowired
@@ -59,11 +59,15 @@ public class GovioBatchService {
 	 * Possiamo avere un'unica istanza attiva di questo Job. 
 	 * Se c'è già un job passato che non è terminato ma e fermo, va ripresa l'esecuzione di quel job finchè non termina.
 	 * @return 
+	 * @throws JobParametersInvalidException 
+	 * @throws JobInstanceAlreadyCompleteException 
+	 * @throws JobRestartException 
+	 * @throws JobExecutionAlreadyRunningException 
 	 *  
 	 */
-	public JobExecution runFileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException,	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	public JobExecution runFileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		
-		JobInstance lastInstance = this.jobExplorer.getLastJobInstance(FileProcessingJobConfig.FILEPROCESSING_JOBNAME);
+		JobInstance lastInstance = this.jobExplorer.getLastJobInstance(FileProcessingJobConfig.FILEPROCESSING_JOB);
 		
 		// Determino i JobParameters con cui lanciare il Job. In base al loro valore avverrà un avvio nuovo, un restart, o nulla.
 		JobParameters params = null;
@@ -85,23 +89,23 @@ public class GovioBatchService {
 
 				// In questo caso Creo un nuovo Job.
 				case ABANDONED:
-					this.log.warn("TODO: ACCERTARSI COME CI SI FINISCE IN STATO ABANDONED");
+					log.warn("Trovata Job Execution di id {} abbandonata!", lastExecution.getId());
 				case COMPLETED:
 				
 					// I Job Abandoned non possono essere riavviati. (Sono abbandonati appunto)
 					// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
 					// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
 					// Siamo liberi di andare avanti e di eseguire un nuovo job.
-					log.info("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], avvio nuovo Job.", FileProcessingJobConfig.FILEPROCESSING_JOBNAME, exitStatus, lastExecution.getStatus());
+					log.info("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], avvio nuovo Job.", FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 					params = new JobParametersBuilder()
 							.addString("When", String.valueOf(System.currentTimeMillis()))
-							.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOBNAME).toJobParameters();
+							.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 					break;
 				
 				// In questo caso riavvio.
 				case FAILED:
 				case STOPPED:
-					log.info("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], riavvio il job.", FileProcessingJobConfig.FILEPROCESSING_JOBNAME, exitStatus, lastExecution.getStatus());
+					log.info("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], riavvio il job.", FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 					params = lastExecution.getJobParameters();
 					break;
 				default:
@@ -110,18 +114,18 @@ public class GovioBatchService {
 					
 					// UNKNOWN - Questo possiamo scoprirlo solo operativamente.
 					// TODO: STARTED potrebbe esserci anche nel caso in cui il db sia andato giù bruscamente.
-					log.error("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOBNAME, exitStatus, lastExecution.getStatus());
+					log.error("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 					params = null;
 					break;
 				}
 			} else { // lastExecution == null
-				log.error("Trovata istanza preesistente per il job [{}] ma senza una JobExecution associata, forse l'esecuzione deve ancora partire. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOBNAME);
+				log.error("Trovata istanza preesistente per il job [{}] ma senza una JobExecution associata, forse l'esecuzione deve ancora partire. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOB);
 				params = null;
 			}
 		} else {
 			params = new JobParametersBuilder()
 					.addString("When", String.valueOf(System.currentTimeMillis()))
-					.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOBNAME).toJobParameters();
+					.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 		}
 		
 		if (params != null) {

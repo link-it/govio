@@ -48,17 +48,5 @@ public class FileProcessingInterruptedTestConfig {
 				new JobStopperAfterStepListener(this.jobOperator));
 		return factory;
 	}
-
 	
-	/**
-	 * Definire questo bean fa si che il jobOperator venga a conoscenza delle JobInstance esistenti e possa riavviarle.
-	 * 
-	 */
-	@Bean
-	public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor() {
-		JobRegistryBeanPostProcessor postProcessor = new JobRegistryBeanPostProcessor();
-		postProcessor.setJobRegistry(jobRegistry);
-		return postProcessor;
-	}
-
 }

@@ -63,9 +63,7 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 
-@SpringBootTest( 
-		properties = { "scheduler.initialDelayString=99999999999" }
-		)
+@SpringBootTest
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -87,7 +85,7 @@ class FileProcessingJobTest {
 	private JobLauncherTestUtils jobLauncherTestUtils;
 
 	@Autowired
-	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOBNAME)
+	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOB)
 	private Job job;
 
 	@Autowired

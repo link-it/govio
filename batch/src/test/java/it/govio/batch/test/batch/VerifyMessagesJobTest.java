@@ -73,13 +73,12 @@ import it.pagopa.io.v1.api.beans.ExternalMessageResponseWithContent;
 import it.pagopa.io.v1.api.beans.MessageStatusValue;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
-@SpringBootTest(	properties = { "scheduler.initialDelayString=99999999999" })
+@SpringBootTest
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-
 class VerifyMessagesJobTest {
 
 	@Mock

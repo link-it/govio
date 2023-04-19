@@ -2,10 +2,6 @@ package it.govio.batch.test.batch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,34 +9,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.h2.tools.Server;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.CannotCreateTransactionException;
 
-import it.govio.batch.config.FileProcessingJobConfig;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioMessageEntity;
@@ -49,6 +38,7 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.service.GovioBatchService;
+import it.govio.batch.test.utils.DBUtils;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
 @SpringBootTest
@@ -60,34 +50,32 @@ import it.govio.batch.test.utils.GovioMessageBuilder;
 public class FileProcessingBrokenDbTest {
 
 	@Autowired
-	private GovioServiceInstancesRepository govioServiceInstancesRepository;
+	GovioServiceInstancesRepository govioServiceInstancesRepository;
 
 	@Autowired
-	private GovioFilesRepository govioFilesRepository;
+	GovioFilesRepository govioFilesRepository;
 
 	@Autowired
-	private GovioFilesRepository govioFileMessagesRepository;
+	GovioFilesRepository govioFileMessagesRepository;
 	
 	@Autowired
-	private GovioMessagesRepository govioMessagesRepository;
+	GovioMessagesRepository govioMessagesRepository;
 
 	@Autowired
-	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOBNAME)
-	private Job job;
+	JobExplorer jobExplorer;
 	
 	@Autowired
-	private JobExplorer jobExplorer;
-	
-	@Autowired
-	private JobRepository jobRepository;
+	JobRepository jobRepository;
 
 	@Autowired
-	private GovioBatchService govioBatchService;
+	GovioBatchService govioBatchService;
 	
 	@Autowired
-	private JobLauncher jobLauncher;
+	JobLauncher jobLauncher;
 	
 	Logger log = LoggerFactory.getLogger(FileProcessingInterruptedJobTest.class);
+	
+	
 	
 	@BeforeEach
 	void setUp(){
@@ -96,28 +84,6 @@ public class FileProcessingBrokenDbTest {
 		govioMessagesRepository.deleteAll();
 	}
 	
-	public static void stopH2Database() throws SQLException {
-        Connection conn = DriverManager
-                .getConnection("jdbc:h2:file:/tmp/govio-batch-db", "sa", "");
-         Statement stat = conn.createStatement();
-         stat.executeUpdate("SHUTDOWN");
-         stat.close();
-         conn.close();
-	}
-	
-public void awaitAllCurrentJobs() throws InterruptedException {
-		
-		for (String jn : jobExplorer.getJobNames()) {             
-			   for (JobExecution je : jobExplorer.findRunningJobExecutions(jn)) {
-				   while (je.isRunning()) {
-						je = this.jobExplorer.getJobExecution(je.getId());
-						Thread.sleep(20);
-				   }
-			   }
-		}
-		
-	}
-
 	/**
 	 * Test di elaborazione tracciato a metà: Interrompiamo l'esecuzione del batch non appena finisce la
 	 * promoteProcessingFileListener e riavviamo l'esecuzione, (Creando una nuova JobExecution)
@@ -168,7 +134,7 @@ public void awaitAllCurrentJobs() throws InterruptedException {
 
 		this.log.info("Stopping H2 Database...");
 		Thread.sleep(800);
-		stopH2Database();
+		DBUtils.stopH2Database();
 		
 		this.log.info("Mi assicuro che il Job abbia sollevato un'eccezione del DB");
 		JobExecution jobExecution = fu.get();

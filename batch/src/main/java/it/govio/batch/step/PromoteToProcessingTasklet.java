@@ -42,6 +42,7 @@ public class PromoteToProcessingTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		int updateAllStatus = repository.updateAllStatus(Status.CREATED, Status.PROCESSING);
+		logger.info("Promoting Files from CREATED to PROCESSING status");
 		if(updateAllStatus>0) {
 			logger.info("Promoted {} files to PROCESSING status", updateAllStatus);
 			contribution.setExitStatus(new ExitStatus("NEW_FILES_FOUND"));  
