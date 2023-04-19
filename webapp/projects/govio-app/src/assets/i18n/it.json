@@ -132,9 +132,7 @@
 			"UserFullName": "Nome utente"
 		},
 		"LABEL_HELP": {
-			"All": "",
-			"TEMPLATE": {
-			}
+			"All": ""
 		},
 		"MENU": {
 			"Configurations": "Configurazioni",
@@ -233,7 +231,8 @@
 			"Search": "Cerca...",
 			"SelectOrganization": "Seleziona un'ente",
 			"SelectService": "Seleziona un servizio",
-			"SelectServiceInstance": "Seleziona un'istanza di servizio"
+			"SelectServiceInstance": "Seleziona un'istanza di servizio",
+			"SelectTemplate": "Seleziona un modello"
 		},
 		"PLACEHOLDERS": {
 			"FILTER": {
