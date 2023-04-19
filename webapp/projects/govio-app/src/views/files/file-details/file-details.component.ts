@@ -1,4 +1,4 @@
-import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterContentChecked, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
@@ -36,7 +36,10 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Output() save: EventEmitter<any> = new EventEmitter<any>();
 
+  @ViewChild('templateInfo') templateInfo!: any;
+
   appConfig: any;
+  templateConfig: any;
 
   hasTab: boolean = true;
   tabs: any[] = [
@@ -73,23 +76,33 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _organizationLogoPlaceholder: string = './assets/images/organization-placeholder.png';
   _serviceLogoPlaceholder: string = './assets/images/service-placeholder.png';
 
-  _organizations: any[] = [];
-  _services: any[] = [];
   _selectedFile: any = null;
 
-  _serviceInstance: any = null;
   _organization: any = null;
   _service: any = null;
   _template: any = null;
+  _serviceInstance: any = null;
 
   minLengthTerm = 1;
 
+  organizations$!: Observable<any[]>;
+  organizationsInput$ = new Subject<string>();
+  organizationsLoading: boolean = false;
+
   services$!: Observable<any[]>;
-  servicesSelected$!: any;
   servicesInput$ = new Subject<string>();
   servicesLoading: boolean = false;
 
+  serviceInstances$!: Observable<any[]>;
+  serviceInstancesInput$ = new Subject<string>();
+  serviceInstancesLoading: boolean = false;
+  serviceInstancesSelected$!: any;
+
   _data: any[] = [];
+
+  _modalInfoRef!: BsModalRef;
+
+  _currentTemlplateId: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -128,15 +141,24 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
             this.config = config;
             if (this._isEdit) {
               this._initForm({ ...this._file });
-              this._initServicesSelect([]);
+              setTimeout(() => {
+                this._initOrganizationsSelect([]);
+                this._initServicesSelect([]);
+                // this._initServiceInstancesSelect([]);
+              }, 500);
             } else {
               this._loadAll();
             }
           }
         );
       }
-
     });
+
+    this.configService.getConfig('templates').subscribe(
+      (config: any) => {
+        this.templateConfig = config;
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -166,6 +188,10 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     return (this.f[name].errors && this.f[name].touched);
   }
 
+  _hasControlValue(name: string) {
+    return (this.f[name] && this.f[name].value);
+  }
+
   get f(): { [key: string]: AbstractControl } {
     return this._formGroup.controls;
   }
@@ -176,10 +202,15 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       Object.keys(data).forEach((key) => {
         let value = '';
         switch (key) {
-          case 'service_instance':
+          case 'organization_id':
+          case 'service_id':
           case 'file':
             value = data[key] ? data[key] : null;
             _group[key] = new UntypedFormControl(value, [Validators.required]);
+            break;
+          case 'service_instance':
+            value = data[key] ? data[key] : null;
+            _group[key] = new UntypedFormControl({ value: value, disabled: true }, [Validators.required]);
             break;
           default:
             value = data[key] ? data[key] : null;
@@ -380,7 +411,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
   _initBreadcrumb() {
     const _title = this.id ? `#${this.id}` : this.translate.instant('APP.TITLE.New');
     this.breadcrumbs = [
-      { label: '', url: '', type: 'title', icon: 'account_balance' },
+      { label: '', url: '', type: 'title', icon: 'topic' },
       { label: 'APP.TITLE.Files', url: '/files', type: 'link' },
       { label: `${_title}`, url: '', type: 'title' }
     ];
@@ -441,19 +472,43 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
 
   _orgLogoBackground = (item: any): string => {
     let logoUrl = this._organizationLogoPlaceholder;
-    if (item._links && item._links['logo-miniature'] && false) {
+    if (item._links && item._links['logo-miniature']) {
       logoUrl = item._links['logo-miniature'].href;
     }
     return `url(${logoUrl})`;
   };
 
   _serviceLogoBackground = (item: any): string => {
-    const logoUrl = item['logo-miniature'] || this._serviceLogoPlaceholder;
+    let logoUrl = this._serviceLogoPlaceholder;
+    if (item && item._links && item._links['logo-miniature']) {
+      logoUrl = item._links['logo-miniature'].href;
+    }
     return `url(${logoUrl})`;
   };
 
   trackByFn(item: any) {
     return item.id;
+  }
+
+  _initOrganizationsSelect(defaultValue: any[] = []) {
+    this.organizations$ = concat(
+      of(defaultValue),
+      this.organizationsInput$.pipe(
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => this.organizationsLoading = true),
+        switchMap((term: any) => {
+          return this.getData('organizations', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.organizationsLoading = false)
+          )
+        })
+      )
+    );
   }
 
   _initServicesSelect(defaultValue: any[] = []) {
@@ -468,7 +523,7 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
         distinctUntilChanged(),
         tap(() => this.servicesLoading = true),
         switchMap((term: any) => {
-          return this.getData('service-instances', term).pipe(
+          return this.getData('services', term).pipe(
             catchError(() => of([])), // empty list on error
             tap(() => this.servicesLoading = false)
           )
@@ -477,8 +532,38 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
     );
   }
 
-  getData(model: string, term: string | null = null): Observable<any> {
+  _initServiceInstancesSelect(defaultValue: any[] = []) {
+    this.serviceInstances$ = concat(
+      of(defaultValue),
+      this.serviceInstancesInput$.pipe(
+        // filter(res => {
+        //   return res !== null && res.length >= this.minLengthTerm
+        // }),
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => this.serviceInstancesLoading = true),
+        switchMap((term: any) => {
+          return this.getData_('service-instances', term).pipe(
+            catchError(() => of([])), // empty list on error
+            tap(() => this.serviceInstancesLoading = false)
+          )
+        })
+      )
+    );
+  }
+
+  getData_(model: string, term: string | null = null): Observable<any> {
+    const _organization_id: number = this._formGroup.controls['organization_id'].value;
+    const _service_id: number = this._formGroup.controls['service_id'].value;
+
     const _options: any = { params: { q: term, limit: 100, embed: ['service','organization','template'] } };
+    if (_organization_id) {
+      _options.params.organization_id = _organization_id;
+    }  
+    if (_service_id) {
+      _options.params.service_id = _service_id;
+    }  
 
     return this.apiService.getList(model, _options)
       .pipe(map(resp => {
@@ -491,8 +576,9 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
             item.service = item._embedded.service;
             item.service_name = item._embedded.service.service_name;
             item.template = item._embedded.template;
-            item.template_name = item._embedded.template.description;
-            item.label = `${item.service_name} | ${item.template_name}`;
+            item.template_name = item._embedded.template.name;
+            item.template_description = item._embedded.template.description;
+            item.label = `${item.template_name}`;
             // item.disabled = true;
             return item;
           });
@@ -502,8 +588,35 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       );
   }
 
+  getData(model: string, term: any = null): Observable<any> {
+    let _options: any = { params: { limit: 100 } };
+    if (term) {
+      if (typeof term === 'string' ) {
+        _options.params =  { ..._options.params, q: term };
+      }
+      if (typeof term === 'object' ) {
+        console.log('term', term);
+        _options.params =  { ..._options.params, ...term };
+      }
+    }
+
+    return this.apiService.getList(model, _options)
+      .pipe(map(resp => {
+        if (resp.Error) {
+          throwError(resp.Error);
+        } else {
+          const _items = resp.items.map((item: any) => {
+            // item.disabled = _.findIndex(this._toExcluded, (excluded) => excluded.name === item.name) !== -1;
+            return item;
+          });
+          return _items;
+        }
+      })
+      );
+  }
+
   onChangeService(event: any) {
-    this.servicesSelected$ = event;
+    this.serviceInstancesSelected$ = event;
   }
 
   onExport() {
@@ -523,7 +636,11 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
       ).subscribe({
         next: (response: any) => {
           this._data = response;
-          Tools.DownloadCSVFile(this._data, 'FileMessagesError');
+          if (this._data.length) {
+            Tools.DownloadCSVFile(this._data, 'FileMessagesError');
+          } else {
+            Tools.OnError(null, this.translate.instant('APP.MESSAGE.ERROR.NoMessageError'));
+          }
           this._exportSpin = false;
         },
         error: (error: any) => {
@@ -543,5 +660,29 @@ export class FileDetailsComponent implements OnInit, OnChanges, AfterContentChec
             this._getData(data.next, aux, fullData)
         })
       );
+  }
+
+  onChangeValue() {
+    if (this._hasControlValue('organization_id') && this._hasControlValue('service_id')) {
+      this._formGroup.controls['service_instance'].enable();
+      this._initServiceInstancesSelect([]);
+    } else {
+      this._formGroup.controls['service_instance'].disable();
+    }
+    this._formGroup.controls['service_instance'].setValue(null);
+    this.serviceInstancesSelected$ = null;
+    this._formGroup.updateValueAndValidity();
+  }
+
+  openTemplateInfo() {
+    this._currentTemlplateId = this._isEdit ? this.serviceInstancesSelected$.template_id : this._template.id
+    this._modalInfoRef = this.modalService.show(this.templateInfo, {
+      ignoreBackdropClick: false,
+      class: 'modal-lg'
+    });
+  }
+
+  closeModal(){
+    this._modalInfoRef.hide();
   }
 }
