@@ -51,6 +51,7 @@ public class GovioFileUtils {
 
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
 				.creationDate(OffsetDateTime.now())
+				.size(destFile.toFile().length())
 				.serviceInstance(instanceService)
 				.location(destFile)
 				.name(file.getName())

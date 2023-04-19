@@ -73,7 +73,7 @@ import it.pagopa.io.v1.api.beans.LimitedProfile;
 import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
-@SpringBootTest
+@SpringBootTest(	properties = { "scheduler.initialDelayString=99999999999" })
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc

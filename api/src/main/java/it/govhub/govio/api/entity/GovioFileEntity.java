@@ -80,7 +80,7 @@ public class GovioFileEntity {
 	private OffsetDateTime processingDate;
 	
 	@Convert(converter = JpaPathConverter.class)
-	@Column(name = "location",  length = 1024, nullable = false)
+	@Column(name = "location",  length = 2048, nullable = false)
 	private Path location;
 
 	@Column(name = "status", nullable = false)
@@ -90,8 +90,8 @@ public class GovioFileEntity {
 	@Column(name = "status_detail",  length = 1024)
 	private String statusDetail;
 	
-	@Column(name = "size")
-	private long size;
+	@Column(name = "size", nullable = false)
+	private Long size;
 
 	@Column(name = "acquired_messages")
 	private Long acquiredMessages;

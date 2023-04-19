@@ -85,3 +85,7 @@ ALTER TABLE govio_placeholders ALTER COLUMN description TYPE TEXT;
 
 UPDATE govhub_users SET full_name = 'Utente Demo' WHERE full_name IS NULL;
 ALTER TABLE govhub_users ALTER column full_name SET NOT NULL;
+
+-- PATCH 7-04-2023 Size not null per govio file
+
+ALTER TABLE govio_files ALTER COLUMN size SET NOT NULL;
