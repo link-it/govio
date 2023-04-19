@@ -44,7 +44,7 @@ public class GovioBatchService {
 	private Job fileProcessingJob;
 
 	@Autowired
-	@Qualifier(SendMessagesJobConfig.SENDMESSAGES_JOBNAME)
+	@Qualifier(SendMessagesJobConfig.SENDMESSAGES_JOB)
 	private Job sendMessagesJob;
 
 	@Autowired
@@ -113,7 +113,6 @@ public class GovioBatchService {
 					// STARTED STARTING e STOPPING non dovremmo mai trovarli, per via del comportamento dello scheduler.
 					
 					// UNKNOWN - Questo possiamo scoprirlo solo operativamente.
-					// TODO: STARTED potrebbe esserci anche nel caso in cui il db sia andato giù bruscamente.
 					log.error("Trovata istanza preesistente per il Job [{}] [ExitStatus = {}] [BatchStatus = {}], STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 					params = null;
 					break;
@@ -136,17 +135,15 @@ public class GovioBatchService {
 		
 	}
 
-	public void runSendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	public JobExecution runSendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		
 		// TODO: Anche qui controllerei la presenza di una vecchia esecuzione. Ma facciamo prima dei test con dei mock che contano quanti messaggi vengono inviati.
-		
-		// 
 		JobParameters params = new JobParametersBuilder().
-				addString(GOVIO_JOB_ID, SendMessagesJobConfig.SENDMESSAGES_JOBNAME).
+				addString(GOVIO_JOB_ID, SendMessagesJobConfig.SENDMESSAGES_JOB).
 				addString("When", String.valueOf(System.currentTimeMillis())).
 				toJobParameters();
 		
-		jobLauncher.run(sendMessagesJob, params);
+		return jobLauncher.run(sendMessagesJob, params);
 	}
 
 	public void runVerifyMessagesJob() throws JobExecutionAlreadyRunningException, JobRestartException, 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {

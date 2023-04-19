@@ -41,7 +41,7 @@ import it.govio.batch.step.NewMessageProcessor;
 @Configuration
 public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 	
-	public static final String SENDMESSAGES_JOBNAME = "SendMessagesJob";
+	public static final String SENDMESSAGES_JOB = "SendMessagesJob";
 	public static final String GETPROFILE_STEPNAME = "getProfileStep";
 	public static final String NEWMESSAGE_STEPNAME = "newMessageStep"; 
 
@@ -51,9 +51,9 @@ public class SendMessagesJobConfig extends AbstractMessagesJobConfig {
 	@Autowired
 	private NewMessageProcessor newMessageProcessor;
 	
-	@Bean(name = SENDMESSAGES_JOBNAME)
+	@Bean(name = SENDMESSAGES_JOB)
 	public Job spedizioneMessaggiIO(){
-		return jobs.get(SENDMESSAGES_JOBNAME)
+		return jobs.get(SENDMESSAGES_JOB)
 				.start(getProfileStep())
 				.next(newMessageStep())
 				.build();

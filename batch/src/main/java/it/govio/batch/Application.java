@@ -58,7 +58,7 @@ public class Application extends SpringBootServletInitializer {
 	
 	@Scheduled(fixedDelayString = "${scheduler.sendMessageJob.fixedDelayString:60000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void sendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException  {
-		this.log.info("Running scheduled {}", SendMessagesJobConfig.SENDMESSAGES_JOBNAME);
+		this.log.info("Running scheduled {}", SendMessagesJobConfig.SENDMESSAGES_JOB);
 		this.govioBatches.runSendMessageJob();
 	}
 	
