@@ -52,7 +52,7 @@ public class Application extends SpringBootServletInitializer {
 	
 	@Scheduled(fixedDelayString = "${scheduler.fileProcessingJob.fixedDelayString:10000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void fileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException   {
-		this.log.info("Running scheduled {}", FileProcessingJobConfig.FILEPROCESSING_JOBNAME);
+		this.log.info("Running scheduled {}", FileProcessingJobConfig.FILEPROCESSING_JOB);
 		this.govioBatches.runFileProcessingJob();
 	}
 	

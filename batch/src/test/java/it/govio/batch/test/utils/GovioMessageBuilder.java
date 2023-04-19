@@ -69,13 +69,20 @@ public class GovioMessageBuilder {
 		GovioMessageEntity message = messageEntity.build();
 		return message;
 	}
-
+	
 	public static GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i) throws IOException {
+		return buildFile(t, instanceService, i ,100);
+	}
+
+	public static GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i, int nRows) throws IOException {
 		File file = t.newFile(i+".csv");
 		FileWriter file1writer = new FileWriter(file);
 		file1writer.write("Testata\n");
-		for(int x=0;x<100;x++)
-			file1writer.write("XXXXXX"+i+"A00Y"+String.format("%03d", x)+"Z,2022-12-31T12:00:00,2022-12-31T12:00:00,2022-12-31,Ufficio1\n");
+		for(int x=0;x<nRows;x++) {
+			String cf = "XXXXXX"+i+"A00Y"+String.format("%03d", x)+"Z";
+			
+			file1writer.write(cf + ",2022-12-31T12:00:00,2022-12-31T12:00:00,2022-12-31,Ufficio1\n");
+		}
 		file1writer.close();
 	
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
