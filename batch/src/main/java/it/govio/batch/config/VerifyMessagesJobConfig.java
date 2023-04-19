@@ -30,7 +30,6 @@ import java.util.concurrent.Future;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,17 +44,19 @@ import it.govio.batch.step.GetMessageProcessor;
 
 @Configuration
 public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
-	
+
+	public static final String VERIFYMESSAGES_JOBNAME = "VerifyMessagesJob";
+
 	@Value( "${govio.batch.verify-messages.delay-mins:30}" )
 	protected int delay;
 	
 	@Value( "${govio.batch.verify-messages.window-days:14}" )
 	protected int window;	
 	
-	@Bean(name = "VerifyMessagesJob")
+	@Bean(name = VERIFYMESSAGES_JOBNAME)
 	public Job verificaMessaggiIO(@Qualifier("getMessageStep") Step getMessageStep){
-		return jobs.get("VerifyMessagesJob")
-				.incrementer(new RunIdIncrementer())
+		return jobs.get(VERIFYMESSAGES_JOBNAME)
+				.incrementer(new AddParametersIncrementer())
 				.start(getMessageStep)
 				.build();
 	}
