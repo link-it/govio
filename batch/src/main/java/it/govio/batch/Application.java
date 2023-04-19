@@ -44,6 +44,7 @@ public class Application extends SpringBootServletInitializer {
 	
 	public static final String GOVIOJOBID_STRING = "GovioJobID";
 	
+	@Autowired
 	GovioBatchService govioBatches;
 	
 	public static void main(String[] args) {
