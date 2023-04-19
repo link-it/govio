@@ -2,7 +2,6 @@ package it.govio.batch.test.batch;
 
 import static it.govio.batch.config.FileProcessingJobConfig.FILEPROCESSING_JOB;
 import static it.govio.batch.config.SendMessagesJobConfig.SENDMESSAGES_JOB;
-import static it.govio.batch.test.utils.GovioMessageBuilder.buildFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -17,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -65,6 +65,7 @@ import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.service.GovioBatchService;
 import it.govio.batch.test.config.JobOperatorConfig;
 import it.govio.batch.test.utils.DBUtils;
+import it.govio.batch.test.utils.GovioMessageBuilder;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.LimitedProfile;
 import it.pagopa.io.v1.api.impl.ApiClient;
@@ -135,7 +136,8 @@ public class IlTestDelDestinoTest {
 
 	// TODO: Se ci metto un solo codice fiscale errato, tutto il job va a puttane?
 	
-	private List<GovioFileEntity> setUp() throws IOException {
+	@BeforeEach
+	private void  setUp() throws IOException {
 
 		MockitoAnnotations.openMocks(this);
 
@@ -155,29 +157,19 @@ public class IlTestDelDestinoTest {
 		
 		for (int i = 0; i < FILE_COUNT; i++) {
 			files.add(govioFilesRepository.save(
-					buildFile(
+					GovioMessageBuilder.buildFile(
 							testFolder, 
 							serviceInstanceEntity.get(),
 							String.format("%02d", i),
 							RECORDS_PER_FILE))); 
 		}
-		return files;
 	}
 	
-	//@Test
-	public void ilTestDelDestino2() throws Exception {
-		for(int i=0;i<10;i++) {
-			this.log.info("RUN NUMERO {}", i);
-			ilTestDelDestino();
-		}
-	}
 	
 	@Test
 	public void ilTestDelDestino() throws Exception{
 		buildMocks();
 
-		setUp();
-		
 		final int fileProcessingSleepBeforeShutdown = 800;
 
 		final Future<JobExecution> futureBrokenJob = this.runFileProcessingJobAsync();
@@ -261,6 +253,7 @@ public class IlTestDelDestinoTest {
 		
 		Assert.assertEquals(FILE_COUNT*RECORDS_PER_FILE, findAll.size());
 
+		Assert.assertEquals(FILE_COUNT*RECORDS_PER_FILE, messagesReceived);
 		// TODO this.updateJobExecutionStatus(jobExecution, BatchStatus.ABANDONED);
 		
 /*		this.govioBatchService.runSendMessageJob();
@@ -296,6 +289,7 @@ public class IlTestDelDestinoTest {
 	}
 	
 	
+	int messagesReceived = 0;
 	
 	
 	
@@ -305,7 +299,6 @@ public class IlTestDelDestinoTest {
 		}))).thenAnswer(new Answer<ResponseEntity<LimitedProfile>>() {
 			@Override
 			public ResponseEntity<LimitedProfile> answer(InvocationOnMock invocation) throws Exception {
-				@SuppressWarnings("unchecked")
 				// String fiscalCode = ((RequestEntity<FiscalCodePayload>) invocation.getArgument(0)).getBody().getFiscalCode();
 
 				LimitedProfile profile = new LimitedProfile();
@@ -318,11 +311,13 @@ public class IlTestDelDestinoTest {
 		}))).thenAnswer(new Answer<ResponseEntity<CreatedMessage>>() {
 			@Override
 			public ResponseEntity<CreatedMessage> answer(InvocationOnMock invocation) throws InterruptedException {
+				messagesReceived++;
 				CreatedMessage createdMessage = new CreatedMessage();
 				createdMessage.setId(UUID.randomUUID().toString());
 				return new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED);
 			}
 		});
+		
 		Mockito.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 	}
 	
