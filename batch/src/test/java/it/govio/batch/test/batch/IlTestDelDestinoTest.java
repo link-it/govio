@@ -8,12 +8,15 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +49,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -68,6 +72,7 @@ import it.govio.batch.test.utils.DBUtils;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 import it.pagopa.io.v1.api.beans.CreatedMessage;
 import it.pagopa.io.v1.api.beans.LimitedProfile;
+import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
 /**
@@ -129,13 +134,11 @@ public class IlTestDelDestinoTest {
 	
 	ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	static final int FILE_COUNT = 5;
-	static final int RECORDS_PER_FILE = 100;
+	static final int FILE_COUNT = 20;
+	static final int RECORDS_PER_FILE = 1000;
 
 	Logger log = LoggerFactory.getLogger(IlTestDelDestinoTest.class);
 
-	// TODO: Se ci metto un solo codice fiscale errato, tutto il job va a puttane?
-	
 	@BeforeEach
 	private void  setUp() throws IOException {
 
@@ -157,10 +160,10 @@ public class IlTestDelDestinoTest {
 		
 		for (int i = 0; i < FILE_COUNT; i++) {
 			files.add(govioFilesRepository.save(
-					GovioMessageBuilder.buildFile(
+					GovioMessageBuilder.buildFileWithUniqueCF(
 							testFolder, 
 							serviceInstanceEntity.get(),
-							String.format("%02d", i),
+							i,
 							RECORDS_PER_FILE))); 
 		}
 	}
@@ -172,76 +175,99 @@ public class IlTestDelDestinoTest {
 
 		final int fileProcessingSleepBeforeShutdown = 800;
 
-		final Future<JobExecution> futureBrokenJob = this.runFileProcessingJobAsync();
-		
-		this.log.info("Lascio lavorare il Job [{}] per {}ms...", FILEPROCESSING_JOB, fileProcessingSleepBeforeShutdown);
-		Thread.sleep(fileProcessingSleepBeforeShutdown);
-		
-		this.log.info("Stopping H2 Database...");
-		DBUtils.stopH2Database();
-		
-		this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB", FILEPROCESSING_JOB);
-		final JobExecution brokenExecution = futureBrokenJob.get();
-		Assert.assertEquals(null, brokenExecution);
-		
-		this.log.info("Attendo che il db si riprenda");
-		DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
-		
-		// TODO SE LASCIO QUESTO (CON maxPoolSize=10), L'EXIT STATUS DELL'ULTIMA EXECUTION  È COMPLETO DI STACK TRACE, ALTRIMENTI NON LA VEDO, ANCHE SE FALLISCE PER LO STESSO MOTIVO.
-		//DBUtils.clearSpringBatchTables();	
-		
-		this.log.info("Provo Rieseguire il job, mi aspetto che non venga avviato vista la precedente terminazione anormale");
-		final JobExecution notStartedExecution = this.govioBatchService.runFileProcessingJob();
-		Assert.assertEquals(null, notStartedExecution);
-		
-		final JobInstance instanceToAbandon = this.jobExplorer.getLastJobInstance(FILEPROCESSING_JOB);
-		final JobExecution executionToAbandon = 	this.jobExplorer.getLastJobExecution(instanceToAbandon);
-		
-		this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, executionToAbandon.getStatus());
-		this.log.info("Aggiorno lo stato dell'ultimo job ad Abandoned");
-
-		Assert.assertNotEquals(BatchStatus.ABANDONED, executionToAbandon.getStatus());
-		Assert.assertNotEquals(BatchStatus.COMPLETED, executionToAbandon.getStatus());
-		Assert.assertNotEquals(BatchStatus.FAILED, executionToAbandon.getStatus());
-		Assert.assertNotEquals(BatchStatus.STOPPED, executionToAbandon.getStatus());
-		
-		this.jobOperator.stop(executionToAbandon.getId());
-		this.jobOperator.abandon(executionToAbandon.getId());
-		
-		final JobExecution executionAbandoned =	this.jobExplorer.getLastJobExecution(instanceToAbandon);
-		Assert.assertEquals(BatchStatus.ABANDONED, executionAbandoned.getStatus());
+		int count = 10;
+		while (count > 0) {
+			final Future<JobExecution> futureBrokenJob = this.runFileProcessingJobAsync();
+			
+			this.log.info("Lascio lavorare il Job [{}] per {}ms...", FILEPROCESSING_JOB, fileProcessingSleepBeforeShutdown);
+			Thread.sleep(fileProcessingSleepBeforeShutdown);
+			
+			this.log.info("Stopping H2 Database...");
+			DBUtils.stopH2Database();
+			
+			this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB", FILEPROCESSING_JOB);
+			final JobExecution brokenExecution = futureBrokenJob.get();
+			if (brokenExecution != null) {
+				this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, brokenExecution.getStatus());
+				Assert.assertTrue(BatchStatus.UNKNOWN == brokenExecution.getStatus() || BatchStatus.FAILED == brokenExecution.getStatus());
+			}
+						
+			this.log.info("Attendo che il db si riprenda");
+			DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
+			
+			// TODO SE LASCIO QUESTO (CON maxPoolSize=10), L'EXIT STATUS DELL'ULTIMA EXECUTION  È COMPLETO DI STACK TRACE, ALTRIMENTI NON LA VEDO, ANCHE SE FALLISCE PER LO STESSO MOTIVO.
+			//DBUtils.clearSpringBatchTables();	
+			
+			this.log.info("Provo Rieseguire il job, mi aspetto che non venga avviato vista la precedente terminazione anormale");
+			final JobExecution notStartedExecution = this.govioBatchService.runFileProcessingJob();
+			Assert.assertEquals(null, notStartedExecution);
+			
+			final JobInstance instanceToAbandon = this.jobExplorer.getLastJobInstance(FILEPROCESSING_JOB);
+			final JobExecution executionToAbandon = 	this.jobExplorer.getLastJobExecution(instanceToAbandon);
+			
+			this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, executionToAbandon.getStatus());
+			this.log.info("Aggiorno lo stato dell'ultimo job ad Abandoned");
+	
+			Assert.assertNotEquals(BatchStatus.ABANDONED, executionToAbandon.getStatus());
+			Assert.assertNotEquals(BatchStatus.COMPLETED, executionToAbandon.getStatus());
+			Assert.assertNotEquals(BatchStatus.FAILED, executionToAbandon.getStatus());
+			Assert.assertNotEquals(BatchStatus.STOPPED, executionToAbandon.getStatus());
+			
+			this.jobOperator.stop(executionToAbandon.getId());
+			this.jobOperator.abandon(executionToAbandon.getId());
+			
+			final JobExecution executionAbandoned =	this.jobExplorer.getLastJobExecution(instanceToAbandon);
+			Assert.assertEquals(BatchStatus.ABANDONED, executionAbandoned.getStatus());
+			count--;
+		}
 		
 		this.log.info("Provo Rieseguire il job per intero, adesso deve riavviarsi perchè il precedente è abbandonato.");
-		final JobExecution completedFileProcessingExecution = this.govioBatchService.runFileProcessingJob();
+		this.log.info("Eseguo i restanti job in modo da elaborare il resto dei files.");
+		for(int i=0; i< FILE_COUNT/10; i++) {
+			JobExecution completedFileProcessingExecution = this.govioBatchService.runFileProcessingJob();
+			this.log.info("Job [{}] Terminato con ExitStatus [{}]", FILEPROCESSING_JOB, completedFileProcessingExecution.getExitStatus());
+			Assert.assertEquals(BatchStatus.COMPLETED, completedFileProcessingExecution.getStatus());
+		}
 		
-		this.log.info("Job [{}] Terminato con ExitStatus [{}]", FILEPROCESSING_JOB, completedFileProcessingExecution.getExitStatus());
-		Assert.assertEquals(BatchStatus.COMPLETED, completedFileProcessingExecution.getStatus());
+		for(GovioFileEntity entity : govioFilesRepository.findAll()) {
+			assertEquals(GovioFileEntity.Status.PROCESSED, entity.getStatus());
+			assertEquals(RECORDS_PER_FILE, entity.getAcquiredMessages());
+			assertEquals(0, entity.getErrorMessages());
+		}
+		assertEquals(RECORDS_PER_FILE*FILE_COUNT, govioMessagesRepository.count());
+		for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
+			assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
+		}
 		
 		// Adesso ho terminato il primo job, dopo essersi ripreso da un errore grave.
 		
-		// Lancio il sendMessage job
+		// Invio messaggi. Lancio il sendMessage job e faccio rompere il db e riavviare il job più
+		// volte, fin quando il job non termina.		
 		
-		int sendMessagesSleepBeforeShutdown = 4000;
-
-		final Future<JobExecution> brokenSendMessage = this.runSendMessageJobAsync();
+		final int sendMessagesSleepBeforeShutdown = 500;
+		BatchStatus status = null;
+		while (status != BatchStatus.COMPLETED) {
+			final Future<JobExecution> brokenSendMessage = this.runSendMessageJobAsync();
+			
+			this.log.info("Lascio lavorare il Job [{}] per {}ms...", SENDMESSAGES_JOB, sendMessagesSleepBeforeShutdown);
+			DBUtils.sleep(sendMessagesSleepBeforeShutdown);
+			
+			this.log.info("Stopping H2 Database...");
+			DBUtils.stopH2Database();
+			
+			this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB oppure che abbia completato.", SENDMESSAGES_JOB);
+			final JobExecution brokenSendMessageExecution = brokenSendMessage.get();
+			
+			// Gli stati possono essere due: o il job è finito prima di aver chiuso il db, oppure è rotto perchè si è chiuso il db sotto.
+			if (brokenSendMessageExecution != null && brokenSendMessageExecution.getStatus() != BatchStatus.UNKNOWN && brokenSendMessageExecution.getStatus() != BatchStatus.FAILED) {
+				status = brokenSendMessageExecution.getStatus();
+				Assert.assertEquals(BatchStatus.COMPLETED, status);
+			}
+			
+			this.log.info("Attendo che il db si riprenda");
+			DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
+		}
 		
-		this.log.info("Lascio lavorare il Job [{}] per {}ms...", SENDMESSAGES_JOB, sendMessagesSleepBeforeShutdown);
-		DBUtils.sleep(sendMessagesSleepBeforeShutdown);
-		
-		this.log.info("Stopping H2 Database...");
-		DBUtils.stopH2Database();
-		
-		this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB", SENDMESSAGES_JOB);
-		final JobExecution brokenSendMessageExecution = brokenSendMessage.get();
-		Assert.assertEquals(null, brokenSendMessageExecution);
-		
-		this.log.info("Attendo che il db si riprenda");
-		DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
-		
-		this.log.info("Lascio la vecchia esecuzione rotta e ne avvio una nuova");
-		final JobExecution completedSendMessageExecution = this.govioBatchService.runSendMessageJob();
-		
-		Assert.assertEquals(BatchStatus.COMPLETED, completedSendMessageExecution.getStatus());
 		
 		List<GovioMessageEntity> findAll = govioMessagesRepository.findAll();
 		for(GovioMessageEntity entity : findAll) {
@@ -252,14 +278,14 @@ public class IlTestDelDestinoTest {
 		}
 		
 		Assert.assertEquals(FILE_COUNT*RECORDS_PER_FILE, findAll.size());
+		
+		if ( ! this.codiciFiscaliDuplicati.isEmpty()) {
+			this.log.error("Trovati i seguenti codici fiscali duplicati!: {}", this.codiciFiscaliDuplicati);
+		}
 
-		Assert.assertEquals(FILE_COUNT*RECORDS_PER_FILE, messagesReceived);
-		// TODO this.updateJobExecutionStatus(jobExecution, BatchStatus.ABANDONED);
+		Assert.assertEquals(FILE_COUNT*RECORDS_PER_FILE, messagesReceived.get());
 		
-/*		this.govioBatchService.runSendMessageJob();
-		
-		
-		this.govioBatchService.runVerifyMessagesJob();*/
+		// this.govioBatchService.runVerifyMessagesJob();
 	
 	}
 	
@@ -289,8 +315,9 @@ public class IlTestDelDestinoTest {
 	}
 	
 	
-	int messagesReceived = 0;
-	
+	AtomicInteger messagesReceived = new AtomicInteger(0);
+	Set<String> codiciFiscali = new HashSet<>();
+	List<String> codiciFiscaliDuplicati = new ArrayList<>();
 	
 	
 	private void buildMocks() {
@@ -311,7 +338,16 @@ public class IlTestDelDestinoTest {
 		}))).thenAnswer(new Answer<ResponseEntity<CreatedMessage>>() {
 			@Override
 			public ResponseEntity<CreatedMessage> answer(InvocationOnMock invocation) throws InterruptedException {
-				messagesReceived++;
+				@SuppressWarnings("unchecked")
+				String fiscalCode = ((RequestEntity<NewMessage>) invocation.getArgument(0)).getBody().getFiscalCode();
+				if (codiciFiscali.contains(fiscalCode)) {
+					log.error("Trovato mesaggio duplicato, con destinatario: {}", fiscalCode);
+					codiciFiscaliDuplicati.add(fiscalCode);
+				}
+
+				codiciFiscali.add(fiscalCode);
+				messagesReceived.incrementAndGet();
+				
 				CreatedMessage createdMessage = new CreatedMessage();
 				createdMessage.setId(UUID.randomUUID().toString());
 				return new ResponseEntity<CreatedMessage>(createdMessage, HttpStatus.CREATED);

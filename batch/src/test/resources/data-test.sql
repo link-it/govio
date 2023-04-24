@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS BATCH_JOB_INSTANCE;
 
 
 
-INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (1,'Il Comune la informa che il ${due_date_date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment_verbose} presso {at}.','Scadenza CIE ${taxcode}',true,false,'Template CIE','Template CIE');
+INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (1,'Il Comune la informa che il ${due_date_date} scadrà la sua Carta di Identità. Potrà rinnovarlo il ${appointment_verbose} presso ${at}.','Scadenza CIE ${taxcode}',true,false,'Template CIE','Template CIE');
 INSERT INTO govio_templates(id,message_body,subject,has_due_date,has_payment,name,description) VALUES (2 ,'Benvenuto ${nome}','Ciao ${nome}',false,false,'Test freemarker','Test freemarker');
 ALTER SEQUENCE seq_govio_templates RESTART WITH 3;
 

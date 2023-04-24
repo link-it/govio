@@ -25,13 +25,16 @@ import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioMessageEntity;
-import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.entity.GovioMessageEntity.GovioMessageEntityBuilder;
 import it.govio.batch.entity.GovioMessageEntity.Status;
+import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.pagopa.io.v1.api.beans.Payee;
 
 public class GovioMessageBuilder {
@@ -70,17 +73,76 @@ public class GovioMessageBuilder {
 		return message;
 	}
 	
+	private static Logger log = LoggerFactory.getLogger(GovioMessageBuilder.class);
+	
 	public static GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i) throws IOException {
-		return buildFile(t, instanceService, i ,100);
-	}
-
-	public static GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i, int nRows) throws IOException {
 		File file = t.newFile(i+".csv");
 		FileWriter file1writer = new FileWriter(file);
 		file1writer.write("Testata\n");
-		for(int x=0;x<nRows;x++) {
+		for(int x=0;x<100;x++) {
 			String cf = "XXXXXX"+i+"A00Y"+String.format("%03d", x)+"Z";
 			
+			file1writer.write(cf + ",2022-12-31T12:00:00,2022-12-31T12:00:00,2022-12-31,Ufficio1\n");
+		}
+		file1writer.close();
+	
+		GovioFileEntity govioFile1 = GovioFileEntity.builder()
+				.creationDate(LocalDateTime.now())
+				.govioServiceInstance(instanceService)
+				.govhubUserId(1l)
+				.location(file.toPath().toString())
+				.name(file.getName())
+				.status(GovioFileEntity.Status.CREATED)
+				.build();
+	
+		return govioFile1;	
+	}
+	
+	
+	/**
+	 * Trasforma un numero in un codice fiscale, in modo tale da generare messaggi univoci e poterli
+	 * distinguere nei mock.
+	 * 
+	 * Max 100 file.
+	 */
+	public static String indexToFiscalCode(int idx) {
+		String prefix = decimalToAlphabetical(idx);
+		String suffix = "00A00Y000Z";
+		
+		return prefix  + suffix;
+	}
+
+	/**
+	 * Trasforma un numero in una stringa alfabetica di 6 caratteri.
+	 * A = 0
+	 * X = 24
+	 * Z = Padding
+	 * Contiamo in tetravigesimale
+	 */
+	private static String decimalToAlphabetical(int i) {
+		final int start = 65;		// Lettera A in ascii
+		String ret = "A";
+		while (i>0) {
+			int resto = (i % 24);
+			i = i / 24;
+			ret = ret + (char) (resto+start);
+		}
+		while(ret.length() < 6) {
+			ret = "Z" + ret;
+		}
+		return ret;
+	}
+
+	public static GovioFileEntity buildFileWithUniqueCF(TemporaryFolder t, GovioServiceInstanceEntity instanceService, int fileIndex, int nRows) throws IOException {
+		String strIndex = String.format("%02d", fileIndex);
+		
+		File file = t.newFile(strIndex+".csv");
+		FileWriter file1writer = new FileWriter(file);
+		file1writer.write("Testata\n");
+		for(int x=0;x<nRows;x++) {
+			String cf = indexToFiscalCode(nRows*fileIndex+x);
+			
+			// Rendo univoco l'idUfficio così da poter riconoscere i messaggi che sono stati duplicati.
 			file1writer.write(cf + ",2022-12-31T12:00:00,2022-12-31T12:00:00,2022-12-31,Ufficio1\n");
 		}
 		file1writer.close();
