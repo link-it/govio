@@ -18,6 +18,9 @@
  */
 package it.govio.batch.step;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -26,8 +29,12 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.repository.GovioFilesRepository;
 
@@ -39,9 +46,31 @@ public class PromoteToProcessingTasklet implements Tasklet {
 	@Autowired
 	private GovioFilesRepository repository;
 	
+	@Value("${jobs.FileProcessingJob.steps.govioFileReaderMasterStep.partitioner.grid-size:10}")
+	Integer gridSize;
+	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-		int updateAllStatus = repository.updateAllStatus(Status.CREATED, Status.PROCESSING);
+		List<GovioFileEntity> processingFiles = repository.findByStatus(Status.PROCESSING, null);
+		int newFiles = gridSize - processingFiles.size();		
+		if (processingFiles.size() > 0) {
+			logger.warn("Trovati dei file in stato {} provenienti da una passata esecuzione fallita, li aggiungo al batch.", Status.PROCESSING);
+		}
+		if (processingFiles.size() > gridSize) {
+			logger.error("Trovati più di {} file in stato {}, potrebbe rompersi lo scheduler del FileProcessingJob.", gridSize, Status.PROCESSING);
+		}
+		if (newFiles > 0) {
+			List<GovioFileEntity> toProcess = repository.findByStatus(Status.CREATED, PageRequest.of(0, newFiles, Sort.by("id")));
+			processingFiles.addAll(toProcess);
+		}
+		
+		List<Long> ids = processingFiles.stream()
+				.map(GovioFileEntity::getId)
+				.collect(Collectors.toList());
+		
+		//int updateAllStatus = repository.updateAllStatus(Status.CREATED, Status.PROCESSING);
+		int updateAllStatus = repository.updateStatus(ids, Status.PROCESSING);
+		
 		logger.info("Promoting Files from CREATED to PROCESSING status");
 		if(updateAllStatus>0) {
 			logger.info("Promoted {} files to PROCESSING status", updateAllStatus);

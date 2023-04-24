@@ -75,11 +75,14 @@ public class FileProcessingJobConfig {
 	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.core-pool-size:3}")
 	Integer corePoolSize;
 	
-	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.queue-capacity:3}")
+	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.queue-capacity:20}")
 	Integer queueCapacity;
 	
 	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.chunk-size:10}")
 	Integer chunkSize;
+	
+	@Value("${jobs.FileProcessingJob.steps.govioFileReaderMasterStep.partitioner.grid-size:10}")
+	Integer gridSize;
 	
 	@Bean
 	public ThreadPoolTaskExecutor taskExecutor() {
@@ -129,6 +132,7 @@ public class FileProcessingJobConfig {
 			) {
 		return steps.get(GOVIOFILE_READER_MASTER_STEP)
 				.partitioner(LOAD_CSV_FILE_TO_DB_STEP, govioFilePartitioner)
+				.gridSize(gridSize)
 				.step(loadCsvFileToDbStep)
 				.taskExecutor(taskExecutor())
 				.build();
@@ -144,8 +148,6 @@ public class FileProcessingJobConfig {
 			FlatFileItemReader<GovioFileMessageEntity> govioFileItemReader,
 			ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor,
 			ItemWriter<GovioFileMessageEntity> govioFileItemWriter){
-		
-		DataIntegrityViolationException e;
 		
 		return steps.get(LOAD_CSV_FILE_TO_DB_STEP)
 				.<GovioFileMessageEntity, GovioFileMessageEntity>chunk(chunkSize)
@@ -199,8 +201,14 @@ public class FileProcessingJobConfig {
 	@Bean
 	@StepScope
 	public Partitioner govioFilePartitioner(GovioFilesRepository govioFilesRepository) {
+		
 		GovioFilePartitioner partitioner = new GovioFilePartitioner();
-		partitioner.setGovioFileEntities(govioFilesRepository.findByStatus(Status.PROCESSING));
+		partitioner.setGovioFileEntities(
+				govioFilesRepository.findByStatus(
+						Status.PROCESSING, null
+						)
+			);
+		
 		return partitioner;
 	}
 

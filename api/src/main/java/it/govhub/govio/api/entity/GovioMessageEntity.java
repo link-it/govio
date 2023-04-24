@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import it.govhub.govregistry.commons.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -50,9 +51,11 @@ import lombok.Setter;
 @Entity
 @Component
 @Table(name = "govio_messages")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class GovioMessageEntity {
 	public enum Status {ACCEPTED, THROTTLED, SCHEDULED, RECIPIENT_ALLOWED, PROFILE_NOT_EXISTS, SENDER_NOT_ALLOWED, DENIED, SENT, BAD_REQUEST, FORBIDDEN, PROCESSED, CREATED, REJECTED}
 
+	@EqualsAndHashCode.Include
 	@Id
 	@SequenceGenerator(name = "seq_govio_messages", sequenceName = "seq_govio_messages", initialValue = 1, allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_govio_messages")

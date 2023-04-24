@@ -24,15 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.h2.tools.Server;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -54,8 +51,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.govio.batch.config.FileProcessingJobConfig;
 import it.govio.batch.entity.GovioFileEntity;
-import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
+import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFileMessagesRepository;
