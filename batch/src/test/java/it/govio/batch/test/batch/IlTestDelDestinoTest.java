@@ -134,8 +134,8 @@ public class IlTestDelDestinoTest {
 	
 	ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	static final int FILE_COUNT = 20;
-	static final int RECORDS_PER_FILE = 1000;
+	static final int FILE_COUNT = 60;
+	static final int RECORDS_PER_FILE = 5000;
 
 	Logger log = LoggerFactory.getLogger(IlTestDelDestinoTest.class);
 
@@ -246,7 +246,8 @@ public class IlTestDelDestinoTest {
 		
 		final int sendMessagesSleepBeforeShutdown = 500;
 		BatchStatus status = null;
-		while (status != BatchStatus.COMPLETED) {
+		count = 10;
+		while (status != BatchStatus.COMPLETED && count > 0) {
 			final Future<JobExecution> brokenSendMessage = this.runSendMessageJobAsync();
 			
 			this.log.info("Lascio lavorare il Job [{}] per {}ms...", SENDMESSAGES_JOB, sendMessagesSleepBeforeShutdown);
@@ -259,15 +260,18 @@ public class IlTestDelDestinoTest {
 			final JobExecution brokenSendMessageExecution = brokenSendMessage.get();
 			
 			// Gli stati possono essere due: o il job è finito prima di aver chiuso il db, oppure è rotto perchè si è chiuso il db sotto.
-			if (brokenSendMessageExecution != null && brokenSendMessageExecution.getStatus() != BatchStatus.UNKNOWN && brokenSendMessageExecution.getStatus() != BatchStatus.FAILED) {
+			if (brokenSendMessageExecution != null) {
+				this.log.info("Il Job [{}] è rimasto in stato {}", SENDMESSAGES_JOB,brokenSendMessageExecution);
 				status = brokenSendMessageExecution.getStatus();
-				Assert.assertEquals(BatchStatus.COMPLETED, status);
 			}
 			
 			this.log.info("Attendo che il db si riprenda");
-			DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
+			DBUtils.awaitForDb(jobExplorer, SENDMESSAGES_JOB);
+			count--;
 		}
 		
+		JobExecution completedSendExecution = this.govioBatchService.runSendMessageJob();
+		Assert.assertEquals(BatchStatus.COMPLETED, completedSendExecution.getStatus());
 		
 		List<GovioMessageEntity> findAll = govioMessagesRepository.findAll();
 		for(GovioMessageEntity entity : findAll) {
