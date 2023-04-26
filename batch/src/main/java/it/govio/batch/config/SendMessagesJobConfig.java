@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Configuration;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.govio.batch.exception.BackendioRuntimeException;
-import it.govio.batch.step.BackupMessageChunkSkipper;
 import it.govio.batch.step.BackupSendMessageWriter;
 import it.govio.batch.step.GetProfileProcessor;
 import it.govio.batch.step.NewMessageProcessor;

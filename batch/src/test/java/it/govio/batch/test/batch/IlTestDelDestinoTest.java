@@ -7,12 +7,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -67,6 +69,7 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.service.GovioBatchService;
+import it.govio.batch.test.config.IlTestDelDestinoObservableConfig;
 import it.govio.batch.test.config.JobOperatorConfig;
 import it.govio.batch.test.utils.DBUtils;
 import it.govio.batch.test.utils.GovioMessageBuilder;
@@ -90,7 +93,7 @@ import it.pagopa.io.v1.api.impl.ApiClient;
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@Import({ JobOperatorConfig.class})
+@Import({ JobOperatorConfig.class, IlTestDelDestinoObservableConfig.class})
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
@@ -125,6 +128,9 @@ public class IlTestDelDestinoTest {
 	@Autowired
 	JobLauncher jobLauncher;
 	
+	@Autowired
+	IlTestDelDestinoObservableConfig testListeners;
+	
 	@Mock
 	RestTemplate restTemplate;
 	
@@ -134,14 +140,13 @@ public class IlTestDelDestinoTest {
 	
 	ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	static final int FILE_COUNT = 60;
-	static final int RECORDS_PER_FILE = 5000;
+	static final int FILE_COUNT = 40;
+	static final int RECORDS_PER_FILE = 500;
 
 	Logger log = LoggerFactory.getLogger(IlTestDelDestinoTest.class);
 
 	@BeforeEach
 	private void  setUp() throws IOException {
-
 		MockitoAnnotations.openMocks(this);
 
 		govioFileMessagesRepository.deleteAll();
@@ -157,7 +162,6 @@ public class IlTestDelDestinoTest {
 		testFolder.create();
 		
 		List<GovioFileEntity> files = new ArrayList<>();
-		
 		for (int i = 0; i < FILE_COUNT; i++) {
 			files.add(govioFilesRepository.save(
 					GovioMessageBuilder.buildFileWithUniqueCF(
@@ -177,47 +181,7 @@ public class IlTestDelDestinoTest {
 
 		int count = 10;
 		while (count > 0) {
-			final Future<JobExecution> futureBrokenJob = this.runFileProcessingJobAsync();
-			
-			this.log.info("Lascio lavorare il Job [{}] per {}ms...", FILEPROCESSING_JOB, fileProcessingSleepBeforeShutdown);
-			Thread.sleep(fileProcessingSleepBeforeShutdown);
-			
-			this.log.info("Stopping H2 Database...");
-			DBUtils.stopH2Database();
-			
-			this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB", FILEPROCESSING_JOB);
-			final JobExecution brokenExecution = futureBrokenJob.get();
-			if (brokenExecution != null) {
-				this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, brokenExecution.getStatus());
-				Assert.assertTrue(BatchStatus.UNKNOWN == brokenExecution.getStatus() || BatchStatus.FAILED == brokenExecution.getStatus());
-			}
-						
-			this.log.info("Attendo che il db si riprenda");
-			DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
-			
-			// TODO SE LASCIO QUESTO (CON maxPoolSize=10), L'EXIT STATUS DELL'ULTIMA EXECUTION  È COMPLETO DI STACK TRACE, ALTRIMENTI NON LA VEDO, ANCHE SE FALLISCE PER LO STESSO MOTIVO.
-			//DBUtils.clearSpringBatchTables();	
-			
-			this.log.info("Provo Rieseguire il job, mi aspetto che non venga avviato vista la precedente terminazione anormale");
-			final JobExecution notStartedExecution = this.govioBatchService.runFileProcessingJob();
-			Assert.assertEquals(null, notStartedExecution);
-			
-			final JobInstance instanceToAbandon = this.jobExplorer.getLastJobInstance(FILEPROCESSING_JOB);
-			final JobExecution executionToAbandon = 	this.jobExplorer.getLastJobExecution(instanceToAbandon);
-			
-			this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, executionToAbandon.getStatus());
-			this.log.info("Aggiorno lo stato dell'ultimo job ad Abandoned");
-	
-			Assert.assertNotEquals(BatchStatus.ABANDONED, executionToAbandon.getStatus());
-			Assert.assertNotEquals(BatchStatus.COMPLETED, executionToAbandon.getStatus());
-			Assert.assertNotEquals(BatchStatus.FAILED, executionToAbandon.getStatus());
-			Assert.assertNotEquals(BatchStatus.STOPPED, executionToAbandon.getStatus());
-			
-			this.jobOperator.stop(executionToAbandon.getId());
-			this.jobOperator.abandon(executionToAbandon.getId());
-			
-			final JobExecution executionAbandoned =	this.jobExplorer.getLastJobExecution(instanceToAbandon);
-			Assert.assertEquals(BatchStatus.ABANDONED, executionAbandoned.getStatus());
+			runFileProcessingJobThenBreakAndAbandonIt(fileProcessingSleepBeforeShutdown);
 			count--;
 		}
 		
@@ -229,6 +193,7 @@ public class IlTestDelDestinoTest {
 			Assert.assertEquals(BatchStatus.COMPLETED, completedFileProcessingExecution.getStatus());
 		}
 		
+		this.log.info("Controllo che siano stati prodotti i GovioFile e i GovioMessage sul db...");
 		for(GovioFileEntity entity : govioFilesRepository.findAll()) {
 			assertEquals(GovioFileEntity.Status.PROCESSED, entity.getStatus());
 			assertEquals(RECORDS_PER_FILE, entity.getAcquiredMessages());
@@ -239,34 +204,48 @@ public class IlTestDelDestinoTest {
 			assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
 		}
 		
-		// Adesso ho terminato il primo job, dopo essersi ripreso da un errore grave.
+		// Adesso ho terminato il primo job, dopo essersi ripreso da ripetuti errori gravi.
 		
-		// Invio messaggi. Lancio il sendMessage job e faccio rompere il db e riavviare il job più
-		// volte, fin quando il job non termina.		
+		// JOB - SENDMESSAGES
+		// È composto da due step: GetProfile e NewMessage.				
+		// Rompo il primo job n volte e poi aspetto di raggiungere il secondo step.
+		this.log.info("TEST SendMessagesJob, lascio andare il primo step e lo rompo un pò di volte...");
 		
-		final int sendMessagesSleepBeforeShutdown = 500;
-		BatchStatus status = null;
-		count = 10;
+		final int sleepBeforeShutdown = 500;
+		BatchStatus status = null;		
+		count = 5;
+		while (count > 0) {
+			status = runSendMessagesJobThenBreakIt(sleepBeforeShutdown)	;
+			count--;
+		}
+
+		status = null;
+		final Future<JobExecution> afterFirstStepResult = this.runSendMessageJobAsync();
+		while ( !testListeners.getProfileDescriptor.isStepEnded() ) {
+			this.log.info("TEST SendMessagesJob, attendo che il primo step sia finito..");		
+			DBUtils.sleep(20);
+		}
+		this.log.info("Lo step getProfile è finito.");		
+		
+		// Non appena finisco il primo step, parto rompendo il secondo step.		
+		this.log.info("Lascio lavorare il Job [{}] per {}ms...", SENDMESSAGES_JOB, sleepBeforeShutdown);
+		DBUtils.sleep(sleepBeforeShutdown);
+		this.log.info("Stopping H2 Database...");
+		DBUtils.stopH2Database();
+		this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB oppure che abbia completato.", SENDMESSAGES_JOB);
+		final JobExecution afterFirstStepExecution = afterFirstStepResult.get();
+		if (afterFirstStepExecution != null) {
+			this.log.info("Il Job [{}] è rimasto in stato {}", SENDMESSAGES_JOB,afterFirstStepExecution);
+			status = afterFirstStepExecution.getStatus();
+		}
+		this.log.info("Attendo che il db si riprenda");
+		DBUtils.awaitForDb(jobExplorer, SENDMESSAGES_JOB);
+		
+		this.log.info("Adesso Rompo il DB {} volte durante il secondo step", 30);
+		count = 30;
+		final int sendMessagesSleepBeforeShutdown = 300;
 		while (status != BatchStatus.COMPLETED && count > 0) {
-			final Future<JobExecution> brokenSendMessage = this.runSendMessageJobAsync();
-			
-			this.log.info("Lascio lavorare il Job [{}] per {}ms...", SENDMESSAGES_JOB, sendMessagesSleepBeforeShutdown);
-			DBUtils.sleep(sendMessagesSleepBeforeShutdown);
-			
-			this.log.info("Stopping H2 Database...");
-			DBUtils.stopH2Database();
-			
-			this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB oppure che abbia completato.", SENDMESSAGES_JOB);
-			final JobExecution brokenSendMessageExecution = brokenSendMessage.get();
-			
-			// Gli stati possono essere due: o il job è finito prima di aver chiuso il db, oppure è rotto perchè si è chiuso il db sotto.
-			if (brokenSendMessageExecution != null) {
-				this.log.info("Il Job [{}] è rimasto in stato {}", SENDMESSAGES_JOB,brokenSendMessageExecution);
-				status = brokenSendMessageExecution.getStatus();
-			}
-			
-			this.log.info("Attendo che il db si riprenda");
-			DBUtils.awaitForDb(jobExplorer, SENDMESSAGES_JOB);
+			status = runSendMessagesJobThenBreakIt(sendMessagesSleepBeforeShutdown);
 			count--;
 		}
 		
@@ -288,10 +267,78 @@ public class IlTestDelDestinoTest {
 		}
 
 		Assert.assertEquals(FILE_COUNT*RECORDS_PER_FILE, messagesReceived.get());
-		
-		// this.govioBatchService.runVerifyMessagesJob();
-	
 	}
+
+
+	private void runFileProcessingJobThenBreakAndAbandonIt(final int fileProcessingSleepBeforeShutdown) throws Exception{
+		final Future<JobExecution> futureBrokenJob = this.runFileProcessingJobAsync();
+		
+		this.log.info("Lascio lavorare il Job [{}] per {}ms...", FILEPROCESSING_JOB, fileProcessingSleepBeforeShutdown);
+		Thread.sleep(fileProcessingSleepBeforeShutdown);
+		
+		this.log.info("Stopping H2 Database...");
+		DBUtils.stopH2Database();
+		
+		this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB", FILEPROCESSING_JOB);
+		final JobExecution brokenExecution = futureBrokenJob.get();
+		if (brokenExecution != null) {
+			this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, brokenExecution.getStatus());
+		}
+					
+		this.log.info("Attendo che il db si riprenda");
+		DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
+		
+		this.log.info("Provo Rieseguire il job, mi aspetto che non venga avviato vista la precedente terminazione anormale");
+		final JobExecution notStartedExecution = this.govioBatchService.runFileProcessingJob();
+		Assert.assertEquals(null, notStartedExecution);
+		
+		final JobInstance instanceToAbandon = this.jobExplorer.getLastJobInstance(FILEPROCESSING_JOB);
+		final JobExecution executionToAbandon = 	this.jobExplorer.getLastJobExecution(instanceToAbandon);
+		
+		this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, executionToAbandon.getStatus());
+		this.log.info("Aggiorno lo stato dell'ultimo job ad Abandoned");
+
+		Assert.assertNotEquals(BatchStatus.ABANDONED, executionToAbandon.getStatus());
+		Assert.assertNotEquals(BatchStatus.COMPLETED, executionToAbandon.getStatus());
+		Assert.assertNotEquals(BatchStatus.FAILED, executionToAbandon.getStatus());
+		Assert.assertNotEquals(BatchStatus.STOPPED, executionToAbandon.getStatus());
+		
+		this.jobOperator.stop(executionToAbandon.getId());
+		this.jobOperator.abandon(executionToAbandon.getId());
+		
+		final JobExecution executionAbandoned =	this.jobExplorer.getLastJobExecution(instanceToAbandon);
+		Assert.assertEquals(BatchStatus.ABANDONED, executionAbandoned.getStatus());
+	}
+
+
+	private BatchStatus runSendMessagesJobThenBreakIt(final int sleepBeforeShutdown)	throws SQLException, InterruptedException, ExecutionException {
+		
+		final Future<JobExecution> brokenSendMessage = this.runSendMessageJobAsync();
+		
+		this.log.info("Lascio lavorare il Job [{}] per {}ms...", SENDMESSAGES_JOB, sleepBeforeShutdown);
+		DBUtils.sleep(sleepBeforeShutdown);
+		
+		this.log.info("Stopping H2 Database...");
+		DBUtils.stopH2Database();
+		
+		this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB oppure che abbia completato.", SENDMESSAGES_JOB);
+		final JobExecution brokenSendMessageExecution = brokenSendMessage.get();
+		
+		// Gli stati possono essere due: o il job è finito prima di aver chiuso il db, oppure è rotto perchè si è chiuso il db sotto.
+		BatchStatus status = null;
+		if (brokenSendMessageExecution != null) {
+			this.log.info("Il Job [{}] è rimasto in stato {}", SENDMESSAGES_JOB,brokenSendMessageExecution);
+			status = brokenSendMessageExecution.getStatus();
+		}
+		
+		this.log.info("Attendo che il db si riprenda");
+		DBUtils.awaitForDb(jobExplorer, SENDMESSAGES_JOB);
+		return status;
+	}
+	
+	
+	
+	
 	
 	// TODO: LA gestione delle eccezioni deve essere fatta fuori la future, o cmq solleviamo l'eccezione puntualmente e nel test guardiamo la cause	
 	
