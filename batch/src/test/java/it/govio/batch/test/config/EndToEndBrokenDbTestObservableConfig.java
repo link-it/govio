@@ -19,7 +19,7 @@ import it.govio.batch.test.listeners.StepDescriptorListener;
  * 
  */
 @TestConfiguration
-public class IlTestDelDestinoObservableConfig {
+public class EndToEndBrokenDbTestObservableConfig {
 
 	public final StepDescriptorListener getProfileDescriptor  = new StepDescriptorListener();
 

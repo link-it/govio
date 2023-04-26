@@ -69,7 +69,7 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.service.GovioBatchService;
-import it.govio.batch.test.config.IlTestDelDestinoObservableConfig;
+import it.govio.batch.test.config.EndToEndBrokenDbTestObservableConfig;
 import it.govio.batch.test.config.JobOperatorConfig;
 import it.govio.batch.test.utils.DBUtils;
 import it.govio.batch.test.utils.GovioMessageBuilder;
@@ -93,13 +93,13 @@ import it.pagopa.io.v1.api.impl.ApiClient;
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@Import({ JobOperatorConfig.class, IlTestDelDestinoObservableConfig.class})
+@Import({ JobOperatorConfig.class, EndToEndBrokenDbTestObservableConfig.class})
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @ExtendWith(MockitoExtension.class)
-public class IlTestDelDestinoTest {
+public class EndToEndBrokenDbTest {
 
 	@Autowired
 	GovioServiceInstancesRepository govioServiceInstancesRepository;
@@ -129,7 +129,7 @@ public class IlTestDelDestinoTest {
 	JobLauncher jobLauncher;
 	
 	@Autowired
-	IlTestDelDestinoObservableConfig testListeners;
+	EndToEndBrokenDbTestObservableConfig testListeners;
 	
 	@Mock
 	RestTemplate restTemplate;
@@ -143,7 +143,7 @@ public class IlTestDelDestinoTest {
 	static final int FILE_COUNT = 40;
 	static final int RECORDS_PER_FILE = 500;
 
-	Logger log = LoggerFactory.getLogger(IlTestDelDestinoTest.class);
+	Logger log = LoggerFactory.getLogger(EndToEndBrokenDbTest.class);
 
 	@BeforeEach
 	private void  setUp() throws IOException {
