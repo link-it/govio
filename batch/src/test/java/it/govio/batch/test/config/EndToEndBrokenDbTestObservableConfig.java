@@ -1,34 +1,27 @@
 package it.govio.batch.test.config;
 
-import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
-import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import it.govio.batch.config.SendMessagesJobConfig;
 import it.govio.batch.test.batch.builders.ObservableJobBuilderFactory;
 import it.govio.batch.test.batch.builders.ObservableStepBuilderFactory;
-import it.govio.batch.test.listeners.JobStopperAfterStepListener;
+import it.govio.batch.test.listeners.StepDescriptorListener;
 
 /**
- * In questa configurazione facciamo in modo di interrompere l'esecuzione del
- * job, dopo il primo step di lettura e aggiornamento stato dei file "
- *
+ * In questa configurazione registriamo un solo listener che imposta lo stato di esecuzione del
+ * primo step del SendMessagesJob
+ * 
  */
 @TestConfiguration
-public class FileProcessingInterruptedTestConfig {
+public class EndToEndBrokenDbTestObservableConfig {
 
-	@Autowired
-	JobRegistry jobRegistry;
-
-	@Autowired
-	JobOperator jobOperator;
+	public final StepDescriptorListener getProfileDescriptor  = new StepDescriptorListener();
 
 	@Bean
 	@Primary
@@ -42,9 +35,9 @@ public class FileProcessingInterruptedTestConfig {
 	@Primary
 	public StepBuilderFactory stepBuilderFactory(JobRepository jobRepository,	PlatformTransactionManager transactionManager) {
 		var factory = new ObservableStepBuilderFactory(jobRepository, transactionManager);
-		factory.executionListeners.put("promoteProcessingFileTasklet",
-				new JobStopperAfterStepListener(this.jobOperator));
+		factory.executionListeners.put(SendMessagesJobConfig.GETPROFILE_STEPNAME,	getProfileDescriptor);
 		return factory;
 	}
+	
 	
 }

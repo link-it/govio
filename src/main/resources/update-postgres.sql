@@ -89,3 +89,10 @@ ALTER TABLE govhub_users ALTER column full_name SET NOT NULL;
 -- PATCH 7-04-2023 Size not null per govio file
 
 ALTER TABLE govio_files ALTER COLUMN size SET NOT NULL;
+
+
+-- PATCH 19-04*2023 Resi unique file e line-number per i file-messages, in questo modo il batch non può
+-- creare entry duplicate per una stessa riga di un dato csv
+
+alter table govio_file_messages add constraint UniqueGovioFileLineNumber unique (id_govio_file, line_number);
+
