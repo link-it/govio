@@ -21,6 +21,8 @@ package it.govio.batch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.launch.NoSuchJobException;
+import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
@@ -44,6 +46,7 @@ public class Application extends SpringBootServletInitializer {
 	
 	public static final String GOVIOJOBID_STRING = "GovioJobID";
 	
+	@Autowired
 	GovioBatchService govioBatches;
 	
 	public static void main(String[] args) {
@@ -51,14 +54,14 @@ public class Application extends SpringBootServletInitializer {
 	}
 	
 	@Scheduled(fixedDelayString = "${scheduler.fileProcessingJob.fixedDelayString:10000}", initialDelayString = "${scheduler.initialDelayString:1}")
-	public void fileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException   {
-		this.log.info("Running scheduled {}", FileProcessingJobConfig.FILEPROCESSING_JOBNAME);
+	public void fileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, NoSuchJobException   {
+		this.log.info("Running scheduled {}", FileProcessingJobConfig.FILEPROCESSING_JOB);
 		this.govioBatches.runFileProcessingJob();
 	}
 	
 	@Scheduled(fixedDelayString = "${scheduler.sendMessageJob.fixedDelayString:60000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void sendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException  {
-		this.log.info("Running scheduled {}", SendMessagesJobConfig.SENDMESSAGES_JOBNAME);
+		this.log.info("Running scheduled {}", SendMessagesJobConfig.SENDMESSAGES_JOB);
 		this.govioBatches.runSendMessageJob();
 	}
 	

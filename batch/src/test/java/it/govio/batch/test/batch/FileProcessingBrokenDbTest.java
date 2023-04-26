@@ -1,11 +1,9 @@
 package it.govio.batch.test.batch;
 
+import static it.govio.batch.config.FileProcessingJobConfig.FILEPROCESSING_JOB;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.h2.tools.Server;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,24 +20,23 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.transaction.TransactionSystemException;
 
-import it.govio.batch.config.FileProcessingJobConfig;
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioFileEntity.Status;
 import it.govio.batch.entity.GovioMessageEntity;
@@ -49,9 +45,13 @@ import it.govio.batch.repository.GovioFilesRepository;
 import it.govio.batch.repository.GovioMessagesRepository;
 import it.govio.batch.repository.GovioServiceInstancesRepository;
 import it.govio.batch.service.GovioBatchService;
+import it.govio.batch.test.utils.DBUtils;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+		"jobs.FileProcessingJob.steps.govioFileReaderMasterStep.partitioner.grid-size=10",
+		"jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.max-pool-size:10"
+})
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -60,168 +60,158 @@ import it.govio.batch.test.utils.GovioMessageBuilder;
 public class FileProcessingBrokenDbTest {
 
 	@Autowired
-	private GovioServiceInstancesRepository govioServiceInstancesRepository;
+	GovioServiceInstancesRepository govioServiceInstancesRepository;
 
 	@Autowired
-	private GovioFilesRepository govioFilesRepository;
+	GovioFilesRepository govioFilesRepository;
 
 	@Autowired
-	private GovioFilesRepository govioFileMessagesRepository;
+	GovioFilesRepository govioFileMessagesRepository;
 	
 	@Autowired
-	private GovioMessagesRepository govioMessagesRepository;
+	GovioMessagesRepository govioMessagesRepository;
 
 	@Autowired
-	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOBNAME)
-	private Job job;
+	JobExplorer jobExplorer;
 	
 	@Autowired
-	private JobExplorer jobExplorer;
+	JobRepository jobRepository;
 	
 	@Autowired
-	private JobRepository jobRepository;
+	JobOperator jobOperator;
 
 	@Autowired
-	private GovioBatchService govioBatchService;
+	GovioBatchService govioBatchService;
 	
 	@Autowired
-	private JobLauncher jobLauncher;
+	JobLauncher jobLauncher;
+	
+	ExecutorService executor = Executors.newSingleThreadExecutor();
 	
 	Logger log = LoggerFactory.getLogger(FileProcessingInterruptedJobTest.class);
 	
+	static final int FILE_COUNT = 30;
+	static final int RECORDS_PER_FILE = 5000;
+	
 	@BeforeEach
-	void setUp(){
+	void setUp() throws IOException{
 		govioFileMessagesRepository.deleteAll();
 		govioFilesRepository.deleteAll();
 		govioMessagesRepository.deleteAll();
-	}
-	
-	public static void stopH2Database() throws SQLException {
-        Connection conn = DriverManager
-                .getConnection("jdbc:h2:file:/tmp/govio-batch-db", "sa", "");
-         Statement stat = conn.createStatement();
-         stat.executeUpdate("SHUTDOWN");
-         stat.close();
-         conn.close();
-	}
-	
-public void awaitAllCurrentJobs() throws InterruptedException {
 		
-		for (String jn : jobExplorer.getJobNames()) {             
-			   for (JobExecution je : jobExplorer.findRunningJobExecutions(jn)) {
-				   while (je.isRunning()) {
-						je = this.jobExplorer.getJobExecution(je.getId());
-						Thread.sleep(20);
-				   }
-			   }
-		}
-		
-	}
+		assertEquals(govioMessagesRepository.count(), 0);
 
+		// Caricamento Files di messaggi da inviare
+		
+		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		TemporaryFolder testFolder = new TemporaryFolder();
+		testFolder.create();
+		
+		List<GovioFileEntity> files = new ArrayList<>();
+		
+		for (int i = 0; i < FILE_COUNT; i++) {
+			files.add(govioFilesRepository.save(
+					GovioMessageBuilder.buildFileWithUniqueCF(
+							testFolder, 
+							serviceInstanceEntity.get(),
+							i,
+							RECORDS_PER_FILE))); 
+		}
+	}
+	
 	/**
 	 * Test di elaborazione tracciato a metà: Interrompiamo l'esecuzione del batch non appena finisce la
 	 * promoteProcessingFileListener e riavviamo l'esecuzione, (Creando una nuova JobExecution)
 	 * 
 	 */
-	//@Test
+	@Test
 	void csvLoadInterruptedAndRestartedNew() throws Exception {
 		
 		assertEquals(0, govioMessagesRepository.count());
 		
-		// Caricamento messaggi da inviare
-		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
+		final int fileProcessingSleepBeforeShutdown = 500;
 
-		TemporaryFolder testFolder = new TemporaryFolder();
-		testFolder.create();
-		
-		// Inserisco 5 file con 100 record ciascuna
-		List<GovioFileEntity> files = new ArrayList<>();
-		files.add(govioFilesRepository.save(GovioMessageBuilder.buildFile(testFolder, serviceInstanceEntity.get(), "01")));
-		files.add(govioFilesRepository.save(GovioMessageBuilder.buildFile(testFolder, serviceInstanceEntity.get(), "02")));
-		files.add(govioFilesRepository.save(GovioMessageBuilder.buildFile(testFolder, serviceInstanceEntity.get(), "03")));
-		files.add(govioFilesRepository.save(GovioMessageBuilder.buildFile(testFolder, serviceInstanceEntity.get(), "04")));
-		files.add(govioFilesRepository.save(GovioMessageBuilder.buildFile(testFolder, serviceInstanceEntity.get(), "05")));
-		
-         
-        //Thread.sleep(1000);
-
-         // NOTA: Ricreare la connessione non serve, ci pensa spring batch in automatico, basta fare la sleep
-    /*    conn = DriverManager
-                .getConnection("jdbc:h2:file:/tmp/govio-batch-db", "sa", "");
-        stat = conn.createStatement();
-        ResultSet result = stat.executeQuery("SELECT * from govio_files");
-        this.log.info(result.toString());*/
-        
-		// Vado di esecuzione asincrona 
-
-		//this.jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
-		
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future<JobExecution> fu = executor.submit( () -> {
-			try {
-				return govioBatchService.runFileProcessingJob();
-			} catch (CannotCreateTransactionException e) {
-				// Se il db è andato giù, restituiamo null
-				return null;
+		int count = 30;
+		while (count > 0) {
+			final Future<JobExecution> futureBrokenJob = this.runFileProcessingJobAsync();
+			
+			this.log.info("Lascio lavorare il Job [{}] per {}ms...", FILEPROCESSING_JOB, fileProcessingSleepBeforeShutdown);
+			Thread.sleep(fileProcessingSleepBeforeShutdown);
+			
+			this.log.info("Stopping H2 Database...");
+			DBUtils.stopH2Database();
+			
+			this.log.info("Mi assicuro che il Job [{}] abbia sollevato un'eccezione del DB", FILEPROCESSING_JOB);
+			
+			final JobExecution brokenExecution = futureBrokenJob.get();
+			if (brokenExecution != null) {
+				this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, brokenExecution.getStatus());
+				Assert.assertTrue(BatchStatus.UNKNOWN == brokenExecution.getStatus() || BatchStatus.FAILED == brokenExecution.getStatus());
 			}
-		});
-
-		this.log.info("Stopping H2 Database...");
-		Thread.sleep(800);
-		stopH2Database();
-		
-		this.log.info("Mi assicuro che il Job abbia sollevato un'eccezione del DB");
-		JobExecution jobExecution = fu.get();
-		Assert.assertEquals(jobExecution, null);
-		
-		// Rilancio il jobbe
-		this.log.info("Rilancio il Job..");
-		Thread.sleep(100000);		// Attendo perchè il db torni su.
-		fu = executor.submit( () -> {
-			return govioBatchService.runFileProcessingJob();
-		});
-		
-		jobExecution = fu.get();
-		Thread.sleep(300);
-		
-	/*	while (!jobExecution.isRunning()) {
-			jobExecution = this.jobExplorer.getJobExecution(jobExecution.getId());
+			
+			this.log.info("Attendo che il db si riprenda");
+			DBUtils.awaitForDb(jobExplorer, FILEPROCESSING_JOB);
+			
+			this.log.info("Provo Rieseguire il job, mi aspetto che non venga avviato vista la precedente terminazione anormale");
+			final JobExecution notStartedExecution = this.govioBatchService.runFileProcessingJob();
+			Assert.assertEquals(null, notStartedExecution);
+			
+			final JobInstance instanceToAbandon = this.jobExplorer.getLastJobInstance(FILEPROCESSING_JOB);
+			final JobExecution executionToAbandon = 	this.jobExplorer.getLastJobExecution(instanceToAbandon);
+			
+			this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, executionToAbandon.getStatus());
+			this.log.info("Aggiorno lo stato dell'ultimo job ad Abandoned");
+	
+			Assert.assertNotEquals(BatchStatus.ABANDONED, executionToAbandon.getStatus());
+			Assert.assertNotEquals(BatchStatus.COMPLETED, executionToAbandon.getStatus());
+			Assert.assertNotEquals(BatchStatus.FAILED, executionToAbandon.getStatus());
+			Assert.assertNotEquals(BatchStatus.STOPPED, executionToAbandon.getStatus());
+			
+			this.jobOperator.stop(executionToAbandon.getId());
+			this.jobOperator.abandon(executionToAbandon.getId());
+			
+			final JobExecution executionAbandoned =	this.jobExplorer.getLastJobExecution(instanceToAbandon);
+			Assert.assertEquals(BatchStatus.ABANDONED, executionAbandoned.getStatus());
+			count--;
 		}
 		
-		while(jobExecution.isRunning()) {
-			this.log.info("Waiting for the execution to end...");
-			jobExecution = this.jobExplorer.getJobExecution(jobExecution.getId());
-		}*/
-	
+		this.log.info("Provo Rieseguire il job per intero, adesso deve riavviarsi perchè il precedente è abbandonato.");
+		JobExecution completedFileProcessingExecution = this.govioBatchService.runFileProcessingJob();
 		
-		//jobExecution = this.jobRepository.getLastJobExecution(jobExecution.getJobInstance().getJobName(), jobExecution.getJobParameters());
+		this.log.info("Job [{}] Terminato con ExitStatus [{}]", FILEPROCESSING_JOB, completedFileProcessingExecution.getExitStatus());
+		Assert.assertEquals(BatchStatus.COMPLETED, completedFileProcessingExecution.getStatus());
 		
-		this.log.info("Job status: {}", jobExecution.getExitStatus());
+		this.log.info("Eseguo i restanti job in modo da elaborare il resto dei files.");
+		for(int i=0; i< FILE_COUNT/10; i++) {
+			completedFileProcessingExecution = this.govioBatchService.runFileProcessingJob();
+			this.log.info("Job [{}] Terminato con ExitStatus [{}]", FILEPROCESSING_JOB, completedFileProcessingExecution.getExitStatus());
+			Assert.assertEquals(BatchStatus.COMPLETED, completedFileProcessingExecution.getStatus());
+		}
 		
-		
-		//Assert.assertEquals("STOPPED", jobExecution.getExitStatus().getExitCode());
-		
-		// Rilancio l'esecuzione, che deve tenere conto di precedenti istanze
-		// jobExecution = govioBatchService.runFileProcessingJob();
-		
-		// Dopo la prima volta il listener non verrà più eseguito e mi aspetto che il job completi
-		
-		this.log.info("Checking Job Execution Exit Code...");
-		Assert.assertEquals("COMPLETED", jobExecution.getExitStatus().getExitCode());
-
 		for(GovioFileEntity entity : govioFilesRepository.findAll()) {
 			// Controllo lo stato di elaborazione
 			assertEquals(Status.PROCESSED, entity.getStatus());
-			assertEquals(100, entity.getAcquiredMessages());
+			assertEquals(RECORDS_PER_FILE, entity.getAcquiredMessages());
 			assertEquals(0, entity.getErrorMessages());
 		}
 
-		assertEquals(500, govioMessagesRepository.count());
+		assertEquals(RECORDS_PER_FILE*FILE_COUNT, govioMessagesRepository.count());
 
 		for(GovioMessageEntity entity : govioMessagesRepository.findAll()) {
 			assertEquals(GovioMessageEntity.Status.SCHEDULED, entity.getStatus());
 		}
-		
 	}
+	
+	private Future<JobExecution> runFileProcessingJobAsync() {
+		return executor.submit( () -> {
+			try {
+				return govioBatchService.runFileProcessingJob();
+			} catch (CannotCreateTransactionException | TransactionSystemException e) {
+				// Se il db è andato giù, restituiamo null
+				return null;
+			}
+		});
+	}
+	
 
 }
