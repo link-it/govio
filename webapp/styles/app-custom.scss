@@ -543,3 +543,9 @@ $tagColorHover: #dbdbdb;
 .modal-backdrop.show {
   opacity: 0.40 !important;
 }
+
+// Menu active
+
+.sidebar-top-level-items li.active > a.gl-link {
+  color: var(--navbar-link-active-color, #303030);
+}
