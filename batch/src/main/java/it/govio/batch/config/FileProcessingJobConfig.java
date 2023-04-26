@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import it.govio.batch.entity.GovioFileEntity.Status;
@@ -48,38 +49,62 @@ import it.govio.template.Template;
 
 @Configuration
 public class FileProcessingJobConfig {
+
+	public static final String FILEPROCESSING_JOB = "FileProcessingJob";
 	
-	public static final String FILEPROCESSING_JOBNAME = "FileProcessingJob";
+	public static final String GOVIO_FILE_ITEM_WRITER = "govioFileItemWriter";
+
+	public  static final String GOVIO_FILE_ITEM_PROCESSOR = "govioFileItemProcessor";
+
+	public static final String GOVIO_FILE_ITEM_READER = "govioFileItemReader";
+
+	public static final String FINALIZE_PROCESSING_FILE_TASKLET = "finalizeProcessingFileTasklet";
+	
+	public static final String PROMOTE_PROCESSING_FILE_STEP = "promoteProcessingFileTasklet";
+
+	public static final String GOVIOFILE_READER_MASTER_STEP = "govioFileReaderMasterStep";
+	
+	public static final String LOAD_CSV_FILE_TO_DB_STEP = "loadCsvFileToDbStep";
 
 	@Autowired
-	protected StepBuilderFactory steps;
-
+	StepBuilderFactory steps;
+	
+	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.max-pool-size:10}")
+	Integer maxPoolSize;
+	
+	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.core-pool-size:3}")
+	Integer corePoolSize;
+	
+	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.queue-capacity:20}")
+	Integer queueCapacity;
+	
+	@Value("${jobs.FileProcessingJob.steps.loadCsvFileToDbStep.executor.chunk-size:10}")
+	Integer chunkSize;
+	
+	@Value("${jobs.FileProcessingJob.steps.govioFileReaderMasterStep.partitioner.grid-size:10}")
+	Integer gridSize;
+	
 	@Bean
 	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		taskExecutor.setMaxPoolSize(3);
-		taskExecutor.setCorePoolSize(3);
-		taskExecutor.setQueueCapacity(3);
+		taskExecutor.setMaxPoolSize(maxPoolSize);
+		taskExecutor.setCorePoolSize(corePoolSize);
+		taskExecutor.setQueueCapacity(queueCapacity);
 		taskExecutor.afterPropertiesSet();
 		return taskExecutor;
 	}
 
-	@Bean(name = FILEPROCESSING_JOBNAME)
+	@Bean(name = FILEPROCESSING_JOB)
 	public Job fileProcessingJob(
 			JobBuilderFactory jobs,
-			@Qualifier("promoteProcessingFileTasklet") Step promoteProcessingFileTasklet,
-			@Qualifier("govioFileReaderMasterStep") Step govioFileReaderMasterStep,
-			@Qualifier("finalizeProcessingFileTasklet") Step finalizeProcessingFileTasklet
+			@Qualifier(PROMOTE_PROCESSING_FILE_STEP) Step promoteProcessingFileTasklet,
+			@Qualifier(GOVIOFILE_READER_MASTER_STEP) Step govioFileReaderMasterStep,
+			@Qualifier(FINALIZE_PROCESSING_FILE_TASKLET) Step finalizeProcessingFileTasklet
 			){
-		return jobs.get(FILEPROCESSING_JOBNAME)
+		return jobs.get(FILEPROCESSING_JOB)
 				.start(promoteProcessingFileTasklet)
-	/*			.on("NEW_FILES_NOT_FOUND")
-				.end()
-				.from(promoteProcessingFileTasklet)
-				.on("NEW_FILES_FOUND")*/
 				.next(govioFileReaderMasterStep)
 				.next(finalizeProcessingFileTasklet)
-				//.end()
 				.build();
 	}
 
@@ -92,21 +117,22 @@ public class FileProcessingJobConfig {
 	}
 	
 	@Bean
-	@Qualifier("finalizeProcessingFileTasklet")
+	@Qualifier(FINALIZE_PROCESSING_FILE_TASKLET)
 	public Step finalizeProcessingFileTasklet(FinalizeFileProcessingTasklet finalizeProcessingFileTasklet) {
-		return steps.get("finalizeProcessingFileTasklet")
+		return steps.get(FINALIZE_PROCESSING_FILE_TASKLET)
 				.tasklet(finalizeProcessingFileTasklet)
 				.build();
 	}
 
 	@Bean
-	@Qualifier("govioFileReaderMasterStep")
+	@Qualifier(GOVIOFILE_READER_MASTER_STEP)
 	public Step govioFileReaderMasterStep(
 			Partitioner govioFilePartitioner,
-			@Qualifier("loadCsvFileToDbStep") Step loadCsvFileToDbStep
+			@Qualifier(LOAD_CSV_FILE_TO_DB_STEP) Step loadCsvFileToDbStep
 			) {
-		return steps.get("govioFileReaderMasterStep")
-				.partitioner("loadCsvFileToDbStep", govioFilePartitioner)
+		return steps.get(GOVIOFILE_READER_MASTER_STEP)
+				.partitioner(LOAD_CSV_FILE_TO_DB_STEP, govioFilePartitioner)
+				.gridSize(gridSize)
 				.step(loadCsvFileToDbStep)
 				.taskExecutor(taskExecutor())
 				.build();
@@ -117,16 +143,19 @@ public class FileProcessingJobConfig {
 	 * @return
 	 */
 	@Bean
-	@Qualifier("loadCsvFileToDbStep")
+	@Qualifier(LOAD_CSV_FILE_TO_DB_STEP)
 	public Step loadCsvFileToDbStep(
 			FlatFileItemReader<GovioFileMessageEntity> govioFileItemReader,
 			ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor,
 			ItemWriter<GovioFileMessageEntity> govioFileItemWriter){
-		return steps.get("loadCsvFileToDbStep")
-				.<GovioFileMessageEntity, GovioFileMessageEntity>chunk(10)
+		
+		return steps.get(LOAD_CSV_FILE_TO_DB_STEP)
+				.<GovioFileMessageEntity, GovioFileMessageEntity>chunk(chunkSize)
 				.reader(govioFileItemReader)
 				.processor(govioFileItemProcessor)
 				.writer(govioFileItemWriter)
+				.faultTolerant()							// Skippo le lineee che sollevano il DataIntegrityViolationException
+				.skip(DataIntegrityViolationException.class)
 				.build();
 	}
 
@@ -136,7 +165,7 @@ public class FileProcessingJobConfig {
 	 */
 	@Bean
 	@StepScope
-	@Qualifier("govioFileItemReader")
+	@Qualifier(GOVIO_FILE_ITEM_READER)
 	public FlatFileItemReader<GovioFileMessageEntity> govioFileItemReader(@Value("#{stepExecutionContext[location]}") String filename) {
 		FlatFileItemReader<GovioFileMessageEntity> flatFileItemReader = new FlatFileItemReader<>();
 		flatFileItemReader.setLinesToSkip(1);
@@ -147,7 +176,7 @@ public class FileProcessingJobConfig {
 
 	@Bean
 	@StepScope
-	@Qualifier("govioFileItemProcessor")
+	@Qualifier(GOVIO_FILE_ITEM_PROCESSOR)
 	public ItemProcessor<GovioFileMessageEntity,GovioFileMessageEntity> govioFileItemProcessor(
 			@Value("#{stepExecutionContext[template]}") Template template) {
 		GovioFileItemProcessor processor = new GovioFileItemProcessor();
@@ -157,7 +186,7 @@ public class FileProcessingJobConfig {
 	
 	@Bean
 	@StepScope
-	@Qualifier("govioFileItemWriter")
+	@Qualifier(GOVIO_FILE_ITEM_WRITER)
 	public ItemWriter<GovioFileMessageEntity> govioFileItemWriter(
 			@Value("#{stepExecutionContext[id]}") long govioFileId,
 			@Value("#{stepExecutionContext[serviceInstance]}") Long serviceInstanceId,
@@ -172,8 +201,14 @@ public class FileProcessingJobConfig {
 	@Bean
 	@StepScope
 	public Partitioner govioFilePartitioner(GovioFilesRepository govioFilesRepository) {
+		
 		GovioFilePartitioner partitioner = new GovioFilePartitioner();
-		partitioner.setGovioFileEntities(govioFilesRepository.findByStatus(Status.PROCESSING));
+		partitioner.setGovioFileEntities(
+				govioFilesRepository.findByStatus(
+						Status.PROCESSING, null
+						)
+			);
+		
 		return partitioner;
 	}
 
