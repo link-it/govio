@@ -18,11 +18,13 @@
  */
 package it.govio.batch.step;
 
+import org.slf4j.Logger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,8 +50,12 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 	long govioServiceInstanceId;
 	long govhubUserId;
 	
+	Logger log = LoggerFactory.getLogger(GovioFileItemWriter.class);
+	
 	@Override
 	public void write(List<? extends GovioFileMessageEntity> items) throws Exception {
+		log.debug("Writing {} messages for File Id [{}], ServiceInstance [{}] with User uploader [{}]", items.size(), govioFileId, govioServiceInstanceId, govhubUserId);
+		
 		GovioFileEntity govioFileReference = em.getReference(GovioFileEntity.class, govioFileId);
 		GovioServiceInstanceEntity govioServiceInstanceReference = em.getReference(GovioServiceInstanceEntity.class, govioServiceInstanceId);
 		for(GovioFileMessageEntity item : items) {
@@ -58,7 +64,12 @@ public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 				item.getGovioMessage().setGovioServiceInstance(govioServiceInstanceReference);
 				item.getGovioMessage().setGovhubUserId(govhubUserId);
 			}
-			repository.save(item);
+			try {
+				repository.save(item);
+			} catch (Exception e) {
+				log.error("Exception while saving GovioFIleMessageEntity: {}", e.getMessage());
+				throw (e);
+			}
 		}
 	}
 

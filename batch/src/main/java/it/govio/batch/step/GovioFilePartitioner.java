@@ -46,6 +46,8 @@ public class GovioFilePartitioner implements Partitioner {
 	
 	@Override
 	public Map<String, ExecutionContext> partition(int gridSize) {
+		logger.debug("Partitioning [{}] Govio Files with a grid of size [{}]", govioFileEntities.size(), gridSize);
+		
 		Map<String, ExecutionContext> result = new HashMap<> (gridSize);
 		for (GovioFileEntity file : govioFileEntities){
 			// Devo recuperare la lista dei placeholder previsti
@@ -53,10 +55,8 @@ public class GovioFilePartitioner implements Partitioner {
 			ex.putString("location", file.getLocation());
 			ex.putLong("id", file.getId());
 			ex.putLong("govhubUserId", file.getGovhubUserId());
-			// Se il service_instance non presenta un template, recupero il default dal service
-			GovioTemplateEntity govioTemplate = null;
 
-			govioTemplate = file.getGovioServiceInstance().getGovioTemplate();
+			GovioTemplateEntity govioTemplate = file.getGovioServiceInstance().getGovioTemplate();
 			
 			List<Placeholder> placeholders = new ArrayList<>();
 			for(GovioTemplatePlaceholderEntity e : govioTemplate.getGovioTemplatePlaceholders()) {

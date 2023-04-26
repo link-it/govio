@@ -1,5 +1,6 @@
 package it.govio.batch.test.batch;
 
+import it.govio.batch.test.config.JobOperatorConfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ import it.govio.batch.test.config.FileProcessingInterruptedTestConfig;
 import it.govio.batch.test.utils.GovioMessageBuilder;
 
 @SpringBootTest
-@Import(FileProcessingInterruptedTestConfig.class)
+@Import({FileProcessingInterruptedTestConfig.class, JobOperatorConfig.class})
 @RunWith(SpringRunner.class)
 @EnableAutoConfiguration
 @AutoConfigureMockMvc
@@ -61,7 +62,7 @@ class FileProcessingInterruptedJobTest {
 	private GovioMessagesRepository govioMessagesRepository;
 
 	@Autowired
-	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOBNAME)
+	@Qualifier(value = FileProcessingJobConfig.FILEPROCESSING_JOB)
 	private Job job;
 
 	@Autowired

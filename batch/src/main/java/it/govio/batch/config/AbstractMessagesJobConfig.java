@@ -21,8 +21,6 @@ package it.govio.batch.config;
 
 import javax.persistence.EntityManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -53,8 +51,6 @@ public abstract class AbstractMessagesJobConfig  {
 	@Autowired
 	EntityManager entityManager;
 	
-	private Logger log = LoggerFactory.getLogger(AbstractMessagesJobConfig.class);
-	
 	public static final String MSG_SENDER_TASK_EXECUTOR_NAME = "spring_batch_msgsender"; 
 	
 	protected TaskExecutor taskExecutor() {
@@ -73,7 +69,7 @@ public abstract class AbstractMessagesJobConfig  {
 	    asyncItemWriter.setDelegate(messageWriter());
 	    return asyncItemWriter;
 	}
-	
+		
 	protected RepositoryItemWriter<GovioMessageEntity> messageWriter() {
         final RepositoryItemWriter<GovioMessageEntity> repositoryItemWriter = new RepositoryItemWriter<>();
         repositoryItemWriter.setRepository(govioMessagesRepository);

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import it.govio.batch.config.SendMessagesJobConfig;
 import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.entity.GovioMessageEntity.Status;
 import it.pagopa.io.v1.api.DefaultApi;
@@ -51,8 +52,19 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 
 	@Override
 	public GovioMessageEntity process(GovioMessageEntity item) throws Exception {
-
 		logger.info("Spedizione messaggio {}", item.getId());
+		GovioMessageEntity message = SendMessagesJobConfig.temporaryMessageStore.remove(item.getId());
+		if (message != null) {
+			logger.info("Messaggio {} già spedito, aggiorno il suo stato nel DB.", item.getId());
+			return updateExpeditionData(message, item);
+		}
+		else {
+			return sendMessage(item);
+		}
+		
+	}
+
+	private GovioMessageEntity sendMessage(GovioMessageEntity item) throws HttpClientErrorException, InterruptedException {
 
 		backendIOClient.getApiClient().setApiKey(item.getGovioServiceInstance().getApikey());
 		backendIOClient.getApiClient().setDebugging(debugging);
@@ -104,7 +116,16 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 			handleRestClientException(e);
 		}
 		item.setLastUpdateStatus(LocalDateTime.now());
-		return item;
+		return item;		
+	}
+
+	private GovioMessageEntity updateExpeditionData(GovioMessageEntity src, GovioMessageEntity dest) {
+		dest.setAppioMessageId(src.getAppioMessageId());
+		dest.setStatus(src.getStatus());
+		dest.setExpeditionDate(src.getExpeditionDate());
+		dest.setLastUpdateStatus(src.getLastUpdateStatus());
+		
+		return dest;
 	}
 
 }
