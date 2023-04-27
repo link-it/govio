@@ -678,6 +678,7 @@ paths:
         - $ref: '#/components/parameters/organization_id_query_optional'
         - $ref: '#/components/parameters/service_q'
         - $ref: '#/components/parameters/organization_q'
+        - $ref: '#/components/parameters/message_status_query'
         - $ref: '#/components/parameters/message_ordering_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
@@ -1684,6 +1685,14 @@ components:
          required: true
          schema:
             $ref: "#/components/schemas/MessageOrdering"        
+            
+    message_status_query:
+         name: status
+         in: query
+         description: Filters by message state.
+         required: false
+         schema:
+            $ref: "#/components/schemas/GovioMessageStatus"                    
             
     file_ordering_query:
          name: sort
