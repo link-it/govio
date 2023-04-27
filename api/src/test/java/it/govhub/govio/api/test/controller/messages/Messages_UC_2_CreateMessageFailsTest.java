@@ -41,6 +41,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
+import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.ServiceInstanceFilters;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
@@ -771,7 +772,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		assertEquals(email, response.getString("email"));
 		assertNotNull(response.get("creation_date"));
 		assertEquals(dt.format(dueDate), response.getString("due_date"));
-		assertEquals("scheduled", response.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNotNull(payment);
