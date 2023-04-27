@@ -98,6 +98,7 @@ public class MessageController implements MessageApi {
 			Long organizationId,
 			String serviceQ,
 			String organizationQ,
+			it.govhub.govio.api.entity.GovioMessageEntity.Status status,
 			Integer limit,
 			Long offset,
 			List<EmbedMessageEnum> embeds) {
@@ -142,6 +143,9 @@ public class MessageController implements MessageApi {
 		}
 		if (organizationQ != null) {
 			spec = spec.and(MessageFilters.likeOrganizationName(organizationQ).or(MessageFilters.likeOrganizationTaxCode(organizationQ))); 
+		}
+		if (status != null) {
+			spec = spec.and(MessageFilters.byStatus(status));
 		}
 		
 		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest, embeds);

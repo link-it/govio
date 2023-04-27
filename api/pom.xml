@@ -291,7 +291,6 @@
 								<importMapping>OrganizationOrdering=it.govhub.govregistry.commons.api.beans.OrganizationOrdering</importMapping>
 
 								<!-- IMPORT MAPPINGS SPECIFICI DI GOVIO -->
-								<!-- <importMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</importMapping> -->
 								<importMapping>GovioPlaceholderType=it.govhub.govio.api.entity.GovioPlaceholderEntity.Type</importMapping>
 							</importMappings>
 							<typeMappings>
@@ -301,6 +300,7 @@
 								<schemaMapping>FileStatus=it.govhub.govio.api.entity.GovioFileEntity.Status</schemaMapping>
 								<schemaMapping>ServiceOrdering=it.govhub.govregistry.commons.api.beans.ServiceOrdering</schemaMapping>
 								<schemaMapping>UserOrdering=it.govhub.govregistry.commons.api.beans.UserOrdering</schemaMapping>
+								<schemaMapping>GovioMessageStatus=it.govhub.govio.api.entity.GovioMessageEntity.Status</schemaMapping>
 							</schemaMappings>
 							<configOptions>
 								<dateLibrary>java8</dateLibrary>
