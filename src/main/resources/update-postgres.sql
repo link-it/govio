@@ -96,3 +96,8 @@ ALTER TABLE govio_files ALTER COLUMN size SET NOT NULL;
 
 alter table govio_file_messages add constraint UniqueGovioFileLineNumber unique (id_govio_file, line_number);
 
+-- PATCH 26-04-2023 Aggiunta campo io_service_id alle service instances
+
+alter table govio_service_instances add column io_service_id varchar(512);
+update govio_service_instances set io_service_id = 'IO SERVICE ID MANCANTE' where io_service_id is null;
+alter table govio_service_instances alter column io_service_id set not null;

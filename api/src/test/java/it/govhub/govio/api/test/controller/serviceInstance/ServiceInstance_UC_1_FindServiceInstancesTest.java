@@ -620,4 +620,32 @@ class ServiceInstance_UC_1_FindServiceInstancesTest {
 		assertEquals(servizio.getName(), service.getString("service_name"));
 		assertEquals(servizio.getDescription(), service.getString("description"));
 	}
+	
+	@Test
+	void UC_4_20_FindAllOk_IoServiceId() throws Exception {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.USERS_QUERY_PARAM_IO_SERVICE_ID, "01GMWZ8YR9HG6HAFB9ZQKGX34I");
+
+		MvcResult result = this.mockMvc.perform(get(SERVICE_INSTANCES_BASE_PATH).params(params )
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(1, page.getInt("total"));
+
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(1, items.size());
+		
+		JsonObject item1 = items.getJsonObject(0); 
+		assertEquals("01GMWZ8YR9HG6HAFB9ZQKGX34I", item1.getString("io_service_id"));
+	}
 }

@@ -96,12 +96,14 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", serviceEntity.getId())
 				.add("organization_id", idUser1)
 				.add("template_id", templateEntity.getId())
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -127,12 +129,14 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", idUser1)
 				.add("organization_id", organizationEntity.getId())
 				.add("template_id", templateEntity.getId())
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -157,12 +161,14 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", serviceEntity.getId())
 				.add("organization_id", organizationEntity.getId())
 				.add("template_id", idUser1)
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -186,11 +192,13 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", serviceEntity.getId())
 				.add("template_id", templateEntity.getId())
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -215,11 +223,13 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("organization_id", organizationEntity.getId())
 				.add("template_id", templateEntity.getId())
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -243,11 +253,13 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", serviceEntity.getId())
 				.add("organization_id", organizationEntity.getId())
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -272,10 +284,43 @@ class ServiceInstance_UC_4_CreateServiceInstanceFailsTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 //		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", serviceEntity.getId())
 				.add("organization_id", organizationEntity.getId())
 				.add("template_id", templateEntity.getId())
+				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
+				.build()
+				.toString();
+		
+		this.mockMvc.perform(post(SERVICE_INSTANCES_BASE_PATH)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
+		
+	}
+	
+	@Test
+	void UC_4_07_CreateServiceInstance_MissingIoServiceID() throws Exception {
+		ServiceEntity serviceEntity = leggiServizioDB(Costanti.SERVICE_NAME_TARI);
+		OrganizationEntity organizationEntity = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_3);
+		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
+		
+		String apiKey = GovioFileUtils.createApiKey();
+		String json = Json.createObjectBuilder()
+				.add("service_id", serviceEntity.getId())
+				.add("organization_id", organizationEntity.getId())
+				.add("template_id", templateEntity.getId())
+				.add("apiKey", apiKey)
 				.add("enabled", true)
 				.build()
 				.toString();
