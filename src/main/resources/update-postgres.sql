@@ -101,3 +101,9 @@ alter table govio_file_messages add constraint UniqueGovioFileLineNumber unique 
 alter table govio_service_instances add column io_service_id varchar(512);
 update govio_service_instances set io_service_id = 'IO SERVICE ID MANCANTE' where io_service_id is null;
 alter table govio_service_instances alter column io_service_id set not null;
+
+-- PATCH 28-04-2023 Reso unique il nome del placeholder
+
+alter table govio_placeholders add constraint UniqueGovioPlaceholderName unique (name);
+
+
