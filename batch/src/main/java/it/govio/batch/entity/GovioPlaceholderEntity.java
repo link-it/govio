@@ -50,7 +50,7 @@ public class GovioPlaceholderEntity {
 	@GeneratedValue(strategy= GenerationType.SEQUENCE, generator="seq_govio_placeholders")
 	private Long id;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
 	@Column(name = "description", columnDefinition = "TEXT")

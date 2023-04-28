@@ -42,6 +42,12 @@ public class PlaceholderFilters {
 	}
 	
 	
+	public static Specification<GovioPlaceholderEntity> byName(String name) {
+		return (Root<GovioPlaceholderEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+			cb.equal(root.get(GovioPlaceholderEntity_.name), name);
+	}
+	
+	
 	public static Specification<GovioPlaceholderEntity> likeDescription(String description) {
 		return (Root<GovioPlaceholderEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
 			cb.like(cb.upper(root.get(GovioPlaceholderEntity_.description)), "%"+description.toUpperCase()+"%");

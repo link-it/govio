@@ -31,7 +31,7 @@ public class BooleanItem extends Item<Boolean> {
 	}
 	
 	@Override
-	public Boolean getValue(String stringValue) {
+	public Boolean getValue(String stringValue) throws TemplateValidationException {
 		super.validateValue(stringValue);
 		if (stringValue != null && !stringValue.equalsIgnoreCase("true") && !stringValue.equalsIgnoreCase("false") && !stringValue.isBlank())
 			throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non è un booleano", stringValue, name));
@@ -39,7 +39,7 @@ public class BooleanItem extends Item<Boolean> {
 	}
 
 	@Override
-	public Map<String, String> getPlaceholderValues(String stringValue) {
+	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
 		Boolean value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();
