@@ -101,6 +101,7 @@ class ServiceInstance_UC_2_GetServiceInstanceTest {
 		JsonObject item = reader.readObject();
 		
 		assertEquals("17886617e07d47e8b1ba314f2f1e3053", item.getString("apiKey"));
+		assertEquals("01GMWZ8YR9HG6HAFB9ZQKGX34H", item.getString("io_service_id"));
 		
 	}
 	

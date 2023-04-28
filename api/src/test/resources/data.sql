@@ -126,26 +126,26 @@ INSERT INTO govio_placeholders(id, name, type, example) VALUES (nextval('public.
 -- template CIE
 INSERT INTO govio_template_placeholders(id_govio_template, id_govio_placeholder, mandatory, position) VALUES (2, 1, true, 1);
 
-INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template,apikey) VALUES (
+INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template, apikey, io_service_id) VALUES (
 		nextval('public.seq_govio_service_instances'), 
 		(select id from govhub_services where name='Servizio Generico'),
 		(select id from govhub_organizations where tax_code='12345678901'),
 		1,
-		'17886617e07d47e8b1ba314f2f1e3052');
+		'17886617e07d47e8b1ba314f2f1e3052', '01GMWZ8YR9HG6HAFB9ZQKGX34G');
 		
-INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template,apikey, enabled) VALUES (
+INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template, apikey, enabled, io_service_id) VALUES (
 		nextval('public.seq_govio_service_instances'), 
 		(select id from govhub_services where name='IMU-ImpostaMunicipaleUnica'),
 		(select id from govhub_organizations where tax_code='12345678902'),
 		1,
-		'17886617e07d47e8b1ba314f2f1e3053', false);
+		'17886617e07d47e8b1ba314f2f1e3053', false, '01GMWZ8YR9HG6HAFB9ZQKGX34H');
 
-INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template,apikey) VALUES (
+INSERT INTO govio_service_instances(id, id_govhub_service, id_govhub_organization, id_govio_template, apikey, io_service_id) VALUES (
 		nextval('public.seq_govio_service_instances'), 
 		(select id from govhub_services where name='CIE'),
 		(select id from govhub_organizations where tax_code='80015010723'),
 		2,
-		'17886617e07d47e8b1ba314f2f1e3054');
+		'17886617e07d47e8b1ba314f2f1e3054', '01GMWZ8YR9HG6HAFB9ZQKGX34I');
 
 -- Servizio di test
 
