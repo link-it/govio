@@ -24,6 +24,7 @@ import it.govio.template.Placeholder;
 import it.govio.template.Placeholder.Type;
 import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
+import it.govio.template.exception.TemplateFreemarkerException;
 import it.govio.template.exception.TemplateValidationException;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ class UC3_FreemarkerTemplateTest {
 	
 	@Test
 	@DisplayName("template con messaggio statico")
-	void UC_1_1_STATIC_OK() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_1_STATIC_OK() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Template template = Template
 				.builder()
@@ -77,7 +78,7 @@ class UC3_FreemarkerTemplateTest {
 	
 	@Test
 	@DisplayName("Placeholder string")
-	void UC_1_2_CUSTOM_STRING_PLACEHOLDER() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_2_CUSTOM_STRING_PLACEHOLDER() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder fullname = Placeholder.builder()
 				.mandatory(true)
@@ -107,7 +108,7 @@ class UC3_FreemarkerTemplateTest {
 
 	@Test
 	@DisplayName("Placeholder string")
-	void UC_1_3_IFPATTERN() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_3_IFPATTERN() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder fullname = Placeholder.builder()
 				.mandatory(true)

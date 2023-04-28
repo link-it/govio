@@ -199,11 +199,15 @@ public class TemplateController implements TemplateApi {
 		
 		log.info("Creating new placeholder: {}", govioNewPlaceholder);
 		
+		var conflict = this.placeholderRepo.findOne(PlaceholderFilters.byName(govioNewPlaceholder.getName()));
+		if (conflict.isPresent()) {
+			throw new ConflictException(this.placeholderMessages.conflict("name", govioNewPlaceholder.getName()));
+		}
+		
 		var placeholder = new GovioPlaceholderEntity();
 		BeanUtils.copyProperties(govioNewPlaceholder, placeholder);
 		
 		placeholder = this.placeholderRepo.save(placeholder);
-		
 		return ResponseEntity.
 				status(HttpStatus.CREATED).
 				body(this.placeholderAssembler.toModel(placeholder));
@@ -489,6 +493,14 @@ public class TemplateController implements TemplateApi {
 		PostgreSQLUtilities.throwIfContainsNullByte(updatedPlaceholder.getDescription(), "description");
 		PostgreSQLUtilities.throwIfContainsNullByte(updatedPlaceholder.getExample(), "example");
 		PostgreSQLUtilities.throwIfContainsNullByte(updatedPlaceholder.getPattern(), "pattern");
+		
+		// Controllo un eventuale duplicato.
+		var conflict = this.placeholderRepo.findOne(PlaceholderFilters.byName(updatedPlaceholder.getName()))
+					.orElse(null);
+		if (conflict != null && conflict.getId() != updatedPlaceholder.getId()) {
+			throw new ConflictException(this.placeholderMessages.conflict("name", updatedPlaceholder.getName()));
+		}
+		
 		
 		// Dall'oggetto REST passo alla entity
 		GovioPlaceholderEntity newPlaceholder = this.placeholderAssembler.toEntity(updatedPlaceholder);

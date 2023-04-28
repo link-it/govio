@@ -36,6 +36,8 @@ CREATE TABLE govio_placeholders
      PRIMARY KEY (id)
   );
 
+alter table govio_placeholders add constraint UniqueGovioPlaceholderName unique (name);
+
 CREATE TABLE govio_template_placeholders
   (
      id_govio_placeholder BIGINT NOT NULL,

@@ -27,6 +27,7 @@ import java.util.Map;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 
+import it.govio.template.exception.TemplateFreemarkerException;
 import it.govio.template.exception.TemplateValidationException;
 import it.govio.template.items.BooleanItem;
 import it.govio.template.items.DateTimeItem;
@@ -40,7 +41,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class CsvTemplateApplier extends TemplateApplier {
 	
-	public Message buildMessage(String csvline) {
+	public Message buildMessage(String csvline) throws TemplateValidationException, TemplateFreemarkerException {
 		CSVParser build = new CSVParserBuilder().build();
 		String[] splitted;
 		try {

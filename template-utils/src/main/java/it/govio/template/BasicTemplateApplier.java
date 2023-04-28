@@ -21,6 +21,8 @@ package it.govio.template;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.govio.template.exception.TemplateFreemarkerException;
+import it.govio.template.exception.TemplateValidationException;
 import it.govio.template.items.Item;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -29,17 +31,17 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class BasicTemplateApplier extends TemplateApplier {
 	
-	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) {
+	public String getMarkdown(BaseMessage message, Map<String, String> placeholders) throws TemplateValidationException, TemplateFreemarkerException {
 		return getMessage(getPlaceholderValues(message, placeholders));
 	}
 	
-	public String getSubject(BaseMessage message, Map<String, String> placeholders) {
+	public String getSubject(BaseMessage message, Map<String, String> placeholders) throws TemplateValidationException, TemplateFreemarkerException {
 		return getSubject(getPlaceholderValues(message, placeholders));
 	}
 	
-	private Map<String, String> getPlaceholderValues(BaseMessage message, Map<String, String> placeholders) {
+	private Map<String, String> getPlaceholderValues(BaseMessage message, Map<String, String> placeholders) throws TemplateValidationException {
 		if(placeholders == null)
-			placeholders = new HashMap<String,String>();
+			placeholders = new HashMap<>();
 		if(message.getAmount() != null)
 			placeholders.put(ItemKeys.AMOUNT.toString(), message.getAmount().toString());
 		if(message.getDueDate() != null)
@@ -57,6 +59,7 @@ public class BasicTemplateApplier extends TemplateApplier {
 
 		Map<String, String> placeholderValues = new HashMap<>();
 		for(Item<?> item : items.values()) {
+			item.validateValue(placeholders.get(item.getName()));
 			placeholderValues.putAll(item.getPlaceholderValues(placeholders.get(item.getName())));
 		}
 		return placeholderValues;
