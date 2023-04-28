@@ -33,6 +33,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
+import it.govhub.govio.api.entity.GovioPlaceholderEntity;
+import it.govhub.govio.api.repository.PlaceholderRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
 import it.govhub.govregistry.commons.api.beans.PatchOp.OpEnum;
@@ -64,6 +67,9 @@ class Template_UC_10_PatchPlaceHolderTest {
 
 	@Autowired
 	private UserAuthProfilesUtils userAuthProfilesUtils;
+	
+	@Autowired
+	PlaceholderRepository placeholderRepository;
 
 	@ParameterizedTest
 	@ValueSource(strings = {"/example","/name", "/type"})
@@ -157,7 +163,9 @@ class Template_UC_10_PatchPlaceHolderTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"/description","/example","/name"})
 	void UC_10_04_PatchTemplate_StringValuesOk(String patchField) throws Exception {
-		int id = 1;
+		GovioPlaceholderEntity placeholderEntity = this.placeholderRepository.findById(1l).get();
+		
+		long idService1 = placeholderEntity.getId();
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
 				.add("op", OpEnum.REPLACE.toString())
@@ -169,7 +177,7 @@ class Template_UC_10_PatchPlaceHolderTest {
 				.build()
 				.toString();
 
-		MvcResult result = this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, id)
+		MvcResult result = this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, idService1)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.with(csrf())
 				.content(json)
@@ -238,6 +246,38 @@ class Template_UC_10_PatchPlaceHolderTest {
 		.andExpect(status().isBadRequest())
 		.andExpect(jsonPath("$.status", is(400)))
 		.andExpect(jsonPath("$.title", is("Bad Request")))
+		.andExpect(jsonPath("$.type").isString())
+		.andExpect(jsonPath("$.detail").isString())
+		.andReturn();
+	}
+	
+	@Test
+	void UC_10_07_PatchTemplate_ConflictName() throws Exception {
+		GovioPlaceholderEntity placeholderEntity = this.placeholderRepository.findById(1l).get();
+		
+		long idService1 = placeholderEntity.getId();
+		
+		GovioPlaceholderEntity placeholderEntity2 = this.placeholderRepository.findById(2l).get();
+		
+		JsonObjectBuilder patchOp = Json.createObjectBuilder()
+				.add("op", OpEnum.REPLACE.toString())
+				.add("path", "/name")
+				.add("value", placeholderEntity2.getName());
+
+		String json = Json.createArrayBuilder()
+				.add(patchOp)
+				.build()
+				.toString();
+
+		this.mockMvc.perform(patch(PLACEHOLDERS_BASE_PATH_DETAIL_ID, idService1)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType("application/json-patch+json")
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isConflict())
+		.andExpect(jsonPath("$.status", is(409)))
+		.andExpect(jsonPath("$.title", is("Conflict")))
 		.andExpect(jsonPath("$.type").isString())
 		.andExpect(jsonPath("$.detail").isString())
 		.andReturn();

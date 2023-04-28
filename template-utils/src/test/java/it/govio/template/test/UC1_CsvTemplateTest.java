@@ -24,6 +24,7 @@ import it.govio.template.Placeholder;
 import it.govio.template.Placeholder.Type;
 import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
+import it.govio.template.exception.TemplateFreemarkerException;
 import it.govio.template.exception.TemplateValidationException;
 
 import java.io.IOException;
@@ -98,7 +99,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("Messaggio senza due date, senza payment, senza placeholder")
-	void UC_1_4_OnlyTaxcodeExpeditionDate() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_4_OnlyTaxcodeExpeditionDate() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Template template = Template
 				.builder()
@@ -116,7 +117,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due_date e data valida")
-	void UC_1_5_DueDateValido() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_5_DueDateValido() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
@@ -175,7 +176,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con payment valido")
-	void UC_1_8_PaymentValido() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_8_PaymentValido() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
@@ -215,7 +216,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due date e payment e invalid_after_due_date true")
-	void UC_1_10_DueDatePaymentInvalidAfterDueDateTrue() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_10_DueDatePaymentInvalidAfterDueDateTrue() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
@@ -237,7 +238,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due date e payment e invalid_after_due_date false")
-	void UC_1_12_DueDatePaymentInvalidAfterDueDateFalse() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_12_DueDatePaymentInvalidAfterDueDateFalse() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
@@ -258,7 +259,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con due date e payment e invalid_after_due_date assente")
-	void UC_1_13_DueDatePaymentInvalidAfterDueDateAssente() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_13_DueDatePaymentInvalidAfterDueDateAssente() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
@@ -301,7 +302,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con placeholder stringa senza pattern")
-	void UC_1_15_PlaceholderStringaSenzaPattern() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_15_PlaceholderStringaSenzaPattern() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -332,7 +333,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("Template con placeholder stringa con pattern rispettato")
-	void UC_1_16_PlaceholderStringaConPatternOK() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_16_PlaceholderStringaConPatternOK() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -391,7 +392,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con placeholder data valida")
-	void UC_1_18_PlaceholderDate() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_18_PlaceholderDate() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -450,7 +451,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con placeholder data verbosa")
-	void UC_1_20_PlaceholderDateVerbosa() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_20_PlaceholderDateVerbosa() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -479,7 +480,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con placeholder date time in tutti i formati")
-	void UC_1_21_PlaceholderEveryDateTime() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_21_PlaceholderEveryDateTime() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Placeholder placeHolder = Placeholder
 				.builder()
@@ -507,7 +508,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template con payment senza payee")
-	void UC_1_22_PaymentSenzaPayee() throws IOException, TemplateException, TemplateValidationException{
+	void UC_1_22_PaymentSenzaPayee() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 
 		Template template = Template
