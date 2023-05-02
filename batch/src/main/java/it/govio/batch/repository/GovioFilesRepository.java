@@ -20,6 +20,7 @@ package it.govio.batch.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
@@ -30,11 +31,16 @@ import it.govio.batch.entity.GovioFileEntity.Status;
 
 public interface GovioFilesRepository extends JpaRepositoryImplementation<GovioFileEntity, Long> {
 
-	List<GovioFileEntity> findByStatus(Status status);
+	@Query("SELECT f FROM GovioFileEntity f WHERE f.status = :status")
+	List<GovioFileEntity> findByStatus(@Param("status") Status status, Pageable pageable);
 	
     @Modifying
     @Query("UPDATE GovioFileEntity f SET f.status = :newStatus WHERE f.status = :oldStatus")
     int updateAllStatus(@Param("oldStatus") Status oldStatus, @Param("newStatus") Status newStatus);
+    
+    @Modifying
+    @Query("UPDATE GovioFileEntity f SET f.status = :newStatus WHERE f.id IN  :ids")
+    int updateStatus(@Param("ids") List<Long> ids, @Param("newStatus") Status newStatus);
 
     @Modifying
     @Query(value = "UPDATE govio_files "

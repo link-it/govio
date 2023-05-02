@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
+import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.test.costanti.Costanti;
 import it.govhub.govio.api.test.utils.MessageUtils;
 import it.govhub.govio.api.test.utils.UserAuthProfilesUtils;
@@ -98,7 +99,7 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals(email, response.getString("email"));
 		assertNotNull(response.get("creation_date"));
 		assertEquals(dt.format(dueDate), response.getString("due_date"));
-		assertEquals("scheduled", response.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNotNull(payment);
@@ -141,7 +142,7 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals(email, response.getString("email"));
 		assertNotNull(response.get("creation_date"));
 		assertEquals(dt.format(dueDate), response.getString("due_date"));
-		assertEquals("scheduled", response.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNull(payment);
@@ -202,7 +203,7 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals(email, response.getString("email"));
 		assertNotNull(response.get("creation_date"));
 		assertEquals(dt.format(dueDate), response.getString("due_date"));
-		assertEquals("scheduled", response.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNotNull(payment);
@@ -253,7 +254,7 @@ class Messages_UC_1_CreateMessageTest {
 		JsonValue dueDateJson = response.get("due_date");
 		assertNull(dueDateJson);
 		
-		assertEquals("scheduled", response.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNull(payment);
@@ -298,7 +299,7 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals(email, response.getString("email"));
 		assertNotNull(response.get("creation_date"));
 		assertEquals(dt.format(dueDate), response.getString("due_date"));
-		assertEquals("scheduled", response.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNotNull(payment);

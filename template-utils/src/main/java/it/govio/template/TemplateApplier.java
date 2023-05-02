@@ -45,8 +45,13 @@ public abstract class TemplateApplier {
 
 	protected Map<String, Item<?>> items;
 
-	protected String getSubject(Map<String, String> placeholderValues) {
-		String subjectString = applyFreemarkerTemplate(subject, placeholderValues);
+	protected String getSubject(Map<String, String> placeholderValues) throws TemplateValidationException, TemplateFreemarkerException {
+		String subjectString = null;
+		try {
+			subjectString = applyFreemarkerTemplate(subject, placeholderValues);
+		} catch (TemplateException |  IOException e) {
+			throw new TemplateFreemarkerException("Errore nell'applicazione del freemarker per l'oggetto del messaggio", e);
+		}
 		if (subjectString.length() < 10) {
 			throw new TemplateValidationException(String.format("Il subject di dimensione %d, è minore della dimensione minima ammessa di 10.", subjectString.length()));
 		}
@@ -55,8 +60,13 @@ public abstract class TemplateApplier {
 		return subjectString;
 	}
 
-	protected String getMessage(Map<String, String> placeholderValues) {
-		String markdown = applyFreemarkerTemplate(message, placeholderValues);
+	protected String getMessage(Map<String, String> placeholderValues) throws TemplateValidationException, TemplateFreemarkerException {
+		String markdown = null;
+		try {
+			markdown = applyFreemarkerTemplate(message, placeholderValues);
+		} catch (TemplateException |  IOException e) {
+			throw new TemplateFreemarkerException("Errore nell'applicazione del freemarker per il contenuto del messaggio", e);
+		}
 		if (markdown.length() < 80)
 			throw new TemplateValidationException(String.format("Il markdown di dimensione %d, è minore della dimensione minima ammessa di 80.", markdown.length()));
 		if (markdown.length() > 10000)
@@ -64,7 +74,7 @@ public abstract class TemplateApplier {
 		return markdown;
 	}
 
-	private String applyFreemarkerTemplate(String template, Map<String, String> placeholderValues) {
+	private String applyFreemarkerTemplate(String template, Map<String, String> placeholderValues) throws IOException, TemplateException {
 		Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
 		cfg.setDefaultEncoding("UTF-8");
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -80,13 +90,9 @@ public abstract class TemplateApplier {
 				logger.debug(entry.toString());
 			}
 		}
-		try {
-			freemarker.template.Template t = new freemarker.template.Template("freemarker", new StringReader(template), cfg);
-			Writer out = new StringWriter();
-			t.process(placeholderValues, out);
-			return out.toString();
-		} catch (TemplateException | IOException e) {
-			throw new TemplateFreemarkerException(e);
-		}
+		freemarker.template.Template t = new freemarker.template.Template("freemarker", new StringReader(template), cfg);
+		Writer out = new StringWriter();
+		t.process(placeholderValues, out);
+		return out.toString();
 	}
 }
