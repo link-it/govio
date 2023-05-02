@@ -283,6 +283,11 @@ public class EndToEndBrokenDbTest {
 		final JobExecution brokenExecution = futureBrokenJob.get();
 		if (brokenExecution != null) {
 			this.log.info("Il Job [{}] è rimasto in stato {}", FILEPROCESSING_JOB, brokenExecution.getStatus());
+			
+			// Se per caso il job ha finito di lavorare perchè la macchina è stata veloce, allora salta la parte di abandoning
+			if (brokenExecution.getStatus() == BatchStatus.COMPLETED) {
+				return;
+			}
 		}
 					
 		this.log.info("Attendo che il db si riprenda");
