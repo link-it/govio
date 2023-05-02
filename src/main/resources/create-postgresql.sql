@@ -68,6 +68,7 @@ CREATE TABLE govio_service_instances
      id_govhub_organization   BIGINT NOT NULL,
      id_govio_template        BIGINT NOT NULL,
 	 enabled                  BOOLEAN NOT NULL DEFAULT TRUE,
+	 io_service_id 	          VARCHAR(255) NOT NULL,
      PRIMARY KEY (id)
   );
 

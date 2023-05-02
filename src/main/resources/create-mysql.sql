@@ -22,6 +22,8 @@ CREATE TABLE govio_placeholders
      PRIMARY KEY (id)
   );
 
+alter table govio_placeholders add constraint UniqueGovioPlaceholderName unique (name);
+
 CREATE TABLE govio_template_placeholders
   (
      id_govio_placeholder BIGINT NOT NULL,
@@ -52,6 +54,7 @@ CREATE TABLE govio_service_instances
      id_govhub_organization   BIGINT NOT NULL,
      id_govio_template        BIGINT NOT NULL,
 	 enabled                  BOOLEAN NOT NULL DEFAULT TRUE,
+	 io_service_id 	          VARCHAR(255) NOT NULL,
      PRIMARY KEY (id)
   );
 

@@ -78,7 +78,7 @@ public class GovioServiceInstanceEntity implements Serializable {
 	@Column(name = "apikey", nullable = false)
 	private String apiKey;
 	
-	@Column(name = "io_service_id", nullable = false)
+	@Column(name = "io_service_id", nullable = false, columnDefinition = "varchar(255)")
 	private String ioServiceId;
 	
 	@Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
