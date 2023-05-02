@@ -40,7 +40,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.beans.GovioMessageStatus;
 import it.govhub.govio.api.beans.MessageOrdering;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioMessageEntity.Status;
@@ -666,7 +665,7 @@ class Messages_UC_4_FindMessagesTest {
 	}
 	
 	@Test
-	void UC_4_13_FindAllOk_ExpeditionDateFrom() throws Exception {
+	void UC_4_14_FindAllOk_ExpeditionDateFrom() throws Exception {
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(300).toOffsetDateTime(); 
 		
 		
@@ -695,7 +694,7 @@ class Messages_UC_4_FindMessagesTest {
 	}
 	
 	@Test
-	void UC_4_14_FindAllOk_ExpeditionDateTo() throws Exception {
+	void UC_4_15_FindAllOk_ExpeditionDateTo() throws Exception {
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(500).toOffsetDateTime(); 
 		
 		
@@ -724,7 +723,7 @@ class Messages_UC_4_FindMessagesTest {
 	}
 	
 	@Test
-	void UC_4_15_FindAllOk_ScheduledExpeditionDateFrom() throws Exception {
+	void UC_4_16_FindAllOk_ScheduledExpeditionDateFrom() throws Exception {
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(300).toOffsetDateTime(); 
 		
 		
@@ -777,7 +776,7 @@ class Messages_UC_4_FindMessagesTest {
 	}
 	
 	@Test
-	void UC_4_16_FindAllOk_ScheduledExpeditionDateTo() throws Exception {
+	void UC_4_17_FindAllOk_ScheduledExpeditionDateTo() throws Exception {
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(500).toOffsetDateTime(); 
 		
 		
@@ -830,8 +829,9 @@ class Messages_UC_4_FindMessagesTest {
 	}
 
 	@Test
-	void UC_4_17_FindAllOk_VerifyAllFieldsValue() throws Exception {
-
+	void UC_4_18_FindAllOk_VerifyAllFieldsValue() throws Exception {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.USERS_QUERY_PARAM_STATUS, GovioMessageEntity.Status.PROCESSED.toString());
 		OffsetDateTime now = ZonedDateTime.now(ZoneId.of(this.timeZone)).toOffsetDateTime();
 
 		GovioMessageEntity msg = GovioMessageEntity.builder()
@@ -858,7 +858,7 @@ class Messages_UC_4_FindMessagesTest {
 		govioMessageRepository.save(msg);
 
 
-		MvcResult result = this.mockMvc.perform(get(MESSAGES_BASE_PATH)
+		MvcResult result = this.mockMvc.perform(get(MESSAGES_BASE_PATH).params(params )
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -871,13 +871,13 @@ class Messages_UC_4_FindMessagesTest {
 		JsonObject page = messagesList.getJsonObject("page");
 		assertEquals(0, page.getInt("offset"));
 		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
-		assertEquals(3, page.getInt("total"));
+		assertEquals(1, page.getInt("total"));
 
 		// Controlli sul messaggio
 		JsonArray items = messagesList.getJsonArray("items");
-		assertEquals(3, items.size());
+		assertEquals(1, items.size());
 
-		JsonObject item = items.getJsonObject(2);
+		JsonObject item = items.getJsonObject(0);
  
 		assertNotNull(item.get("id"));
 		assertEquals(msg.getTaxcode(), item.getString("taxcode"));
@@ -885,18 +885,11 @@ class Messages_UC_4_FindMessagesTest {
 		assertEquals(msg.getMarkdown(), item.getString("markdown"));
 		assertEquals(msg.getEmail(), item.getString("email"));
 		assertEquals(msg.getAppioMessageId(), item.getString("appio_message_id"));
+		assertEquals(msg.getStatus().toString(), item.getString("status"));
 		assertEquals(dt.format(msg.getCreationDate()), item.getString("creation_date"));
 		assertEquals(dt.format(msg.getExpeditionDate()), item.getString("expedition_date"));
 		assertEquals(dt.format(msg.getDueDate()), item.getString("due_date"));
 		assertEquals(dt.format(msg.getLastUpdateStatus()), item.getString("last_update_status"));
-
-
-		//		assertEquals(msg.getCreationDate(), OffsetDateTime.parse(item.getString("creation_date")));
-		//		assertEquals(msg.getExpeditionDate(), OffsetDateTime.parse(item.getString("expedition_date")));
-		//		assertEquals(msg.getDueDate(), OffsetDateTime.parse(item.getString("due_date")));
-		//		assertEquals(msg.getLastUpdateStatus(), OffsetDateTime.parse(item.getString("last_update_status")));
-		assertEquals(GovioMessageStatus.valueOf(msg.getStatus().toString()).toString(), item.getString("status"));
-
 
 		JsonObject payment = item.getJsonObject("payment");
 		assertNotNull(payment);
@@ -906,4 +899,62 @@ class Messages_UC_4_FindMessagesTest {
 		assertEquals(msg.getPayeeTaxcode(), payment.getString("payee_taxcode"));
 	}
 
+	@Test
+	void UC_4_19_FindAllOk_StatusScheduled() throws Exception {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.USERS_QUERY_PARAM_STATUS, GovioMessageEntity.Status.SCHEDULED.toString());
+
+		MvcResult result = this.mockMvc.perform(get(MESSAGES_BASE_PATH).params(params )
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(3, page.getInt("total"));
+
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(3, items.size());
+
+		JsonObject item1 = items.getJsonObject(0);
+		assertEquals(GovioMessageEntity.Status.SCHEDULED.toString(), item1.getString("status"));
+
+		JsonObject item2 = items.getJsonObject(1);
+		assertEquals(GovioMessageEntity.Status.SCHEDULED.toString(), item2.getString("status"));
+
+		JsonObject item3 = items.getJsonObject(2);
+		assertEquals(GovioMessageEntity.Status.SCHEDULED.toString(), item3.getString("status"));
+	}
+	
+	@Test
+	void UC_4_20_FindAllOk_StatusRejected() throws Exception {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add(Costanti.USERS_QUERY_PARAM_STATUS, GovioMessageEntity.Status.REJECTED.toString());
+
+		MvcResult result = this.mockMvc.perform(get(MESSAGES_BASE_PATH).params(params )
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andReturn();
+
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject userList = reader.readObject();
+
+		// Controlli sulla paginazione
+		JsonObject page = userList.getJsonObject("page");
+		assertEquals(0, page.getInt("offset"));
+		assertEquals(Costanti.USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE, page.getInt("limit"));
+		assertEquals(0, page.getInt("total"));
+
+		// Controlli sugli items
+		JsonArray items = userList.getJsonArray("items");
+		assertEquals(0, items.size());
+	}
 }

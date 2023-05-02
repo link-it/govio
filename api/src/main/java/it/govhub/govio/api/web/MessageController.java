@@ -51,12 +51,14 @@ import it.govhub.govio.api.services.MessageService;
 import it.govhub.govio.api.spec.MessageApi;
 import it.govhub.govregistry.commons.config.V1RestController;
 import it.govhub.govregistry.commons.entity.UserEntity;
+import it.govhub.govregistry.commons.exception.InternalConfigurationException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;
 import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.PostgreSQLUtilities;
 import it.govhub.security.services.SecurityService;
 import it.govio.template.BaseMessage;
+import it.govio.template.exception.TemplateFreemarkerException;
 import it.govio.template.exception.TemplateValidationException;
 
 @V1RestController
@@ -98,6 +100,7 @@ public class MessageController implements MessageApi {
 			Long organizationId,
 			String serviceQ,
 			String organizationQ,
+			it.govhub.govio.api.entity.GovioMessageEntity.Status status,
 			Integer limit,
 			Long offset,
 			List<EmbedMessageEnum> embeds) {
@@ -142,6 +145,9 @@ public class MessageController implements MessageApi {
 		}
 		if (organizationQ != null) {
 			spec = spec.and(MessageFilters.likeOrganizationName(organizationQ).or(MessageFilters.likeOrganizationTaxCode(organizationQ))); 
+		}
+		if (status != null) {
+			spec = spec.and(MessageFilters.byStatus(status));
 		}
 		
 		GovioMessageList ret = this.messageService.listMessages(spec, pageRequest, embeds);
@@ -215,11 +221,13 @@ public class MessageController implements MessageApi {
 			return ResponseEntity.ok(this.messageAssembler.toModel(messageEntity));
 		} catch (TemplateValidationException e) {
 			throw new SemanticValidationException(e.getMessage());
-		}
-		
+		} catch (TemplateFreemarkerException e) {
+			if(e.getCause() != null)
+				throw new InternalConfigurationException(e.getMessage() + ": " + e.getCause().getMessage());
+			else
+				throw new InternalConfigurationException(e.getMessage());
+		} 
 	}
-
-	
 }
 
 

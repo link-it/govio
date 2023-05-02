@@ -92,6 +92,11 @@ public class MessageFilters {
 					serviceId);
 	}
 
+	public static Specification<GovioMessageEntity> byStatus(GovioMessageEntity.Status status) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+			cb.equal(	root.get(GovioMessageEntity_.status), status);
+	}
+
 
 	public static Specification<GovioMessageEntity> byOrganizationId(Long organizationId) {
 		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
@@ -176,6 +181,9 @@ public class MessageFilters {
 
 	
 	private MessageFilters() { }
+
+
+
 
 
 

@@ -57,6 +57,8 @@ import it.govio.template.BasicTemplateApplier;
 import it.govio.template.Placeholder;
 import it.govio.template.Template;
 import it.govio.template.TemplateApplierFactory;
+import it.govio.template.exception.TemplateFreemarkerException;
+import it.govio.template.exception.TemplateValidationException;
 
 @Service
 public class MessageService {
@@ -102,7 +104,7 @@ public class MessageService {
 	
 	
 	@Transactional
-	public GovioMessageEntity newMessage(long senderId, long serviceInstanceId, BaseMessage message, Map<String, String> placeholderValues) {
+	public GovioMessageEntity newMessage(long senderId, long serviceInstanceId, BaseMessage message, Map<String, String> placeholderValues) throws TemplateValidationException, TemplateFreemarkerException {
 		
 		GovioServiceInstanceEntity serviceInstance = serviceInstanceRepo.getReferenceById(serviceInstanceId);
 		

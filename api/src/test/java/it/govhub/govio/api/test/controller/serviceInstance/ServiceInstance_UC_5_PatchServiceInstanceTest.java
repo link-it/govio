@@ -159,7 +159,7 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "apiKey", "enabled"})
+	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "/apiKey", "/io_service_id"})
 	void UC_5_03_PatchServiceInstance_RemoveMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
@@ -188,7 +188,7 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "apiKey", "enabled"})
+	@ValueSource(strings = {"/service_id","/organization_id","/template_id", "/io_service_id"})
 	void UC_5_04_PatchServiceInstance_EmptyMandatoryField(String patchField) throws Exception {
 		int id = 1;
 		
@@ -332,5 +332,35 @@ class ServiceInstance_UC_5_PatchServiceInstanceTest {
 		JsonObject si = reader.readObject();
 		
 		assertEquals(apiKey2, si.getString("apiKey"));
+	}
+	
+	@Test
+	void UC_5_09_PatchServiceInstance_IoServiceId() throws Exception {
+		int id = 1;
+		String ioServiceID2 = GovioFileUtils.createIoServiceID();
+		
+		JsonObjectBuilder patchOp = Json.createObjectBuilder()
+				.add("op", OpEnum.REPLACE.toString())
+				.add("path", "/io_service_id")
+				.add("value", ioServiceID2);
+
+		String json = Json.createArrayBuilder()
+				.add(patchOp)
+				.build()
+				.toString();
+
+		MvcResult result = this.mockMvc.perform(patch(SERVICE_INSTANCES_BASE_PATH_DETAIL_ID, id)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.with(csrf())
+				.content(json)
+				.contentType("application/json-patch+json")
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andReturn();
+		
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject si = reader.readObject();
+		
+		assertEquals(ioServiceID2, si.getString("io_service_id"));
 	}
 }

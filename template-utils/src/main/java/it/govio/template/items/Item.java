@@ -39,7 +39,7 @@ public abstract class Item<T> {
 	public abstract T getValue(String stringValue) throws TemplateValidationException;
 	public abstract Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException;
 	
-	protected void validateValue(String value) throws TemplateValidationException {
+	public void validateValue(String value) throws TemplateValidationException {
 		if(mandatory && (value == null))
 			throw new TemplateValidationException(String.format("Il valore per il placeholder %s è obbligatorio", name));		
 	}
@@ -48,7 +48,7 @@ public abstract class Item<T> {
 		return getValue(getStringValueFromCsv(values));
 	}
 	
-	public String getStringValueFromCsv(String[] values) {
+	public String getStringValueFromCsv(String[] values) throws TemplateValidationException {
 		if(values.length <= position)
 			throw new TemplateValidationException(String.format("Numero di valori inferiore a quanto richiesto dal template. Assente il valore %s in posizione %d", name, position));
 		if(values[position].isBlank())

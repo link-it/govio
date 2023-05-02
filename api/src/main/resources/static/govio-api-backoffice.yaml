@@ -678,6 +678,7 @@ paths:
         - $ref: '#/components/parameters/organization_id_query_optional'
         - $ref: '#/components/parameters/service_q'
         - $ref: '#/components/parameters/organization_q'
+        - $ref: '#/components/parameters/message_status_query'
         - $ref: '#/components/parameters/message_ordering_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/sort_direction_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
@@ -783,6 +784,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/service_id_query_optional'
         - $ref: '#/components/parameters/organization_id_query_optional'
+        - $ref: '#/components/parameters/io_service_id_query_optional'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/q_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/enabled_query'
         - $ref: 'govhub-api-commons.yaml#/components/parameters/limit'
@@ -1514,6 +1516,13 @@ components:
       schema:
         $ref: '#/components/schemas/GovioFileId'
         
+    io_service_id_query_optional:
+      name: io_service_id
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/IOServiceId'        
+        
     organization_id_query:
       name: organization_id
       in: query
@@ -1684,6 +1693,14 @@ components:
          required: true
          schema:
             $ref: "#/components/schemas/MessageOrdering"        
+            
+    message_status_query:
+         name: status
+         in: query
+         description: Filters by message state.
+         required: false
+         schema:
+            $ref: "#/components/schemas/GovioMessageStatus"                    
             
     file_ordering_query:
          name: sort
@@ -2278,6 +2295,7 @@ components:
          - organization_id
          - template_id
          - enabled
+         - io_service_id
       properties:
         service_id:
           $ref: 'govhub-api-commons.yaml#/components/schemas/ServiceId'
@@ -2287,7 +2305,9 @@ components:
           $ref: '#/components/schemas/GovioTemplateId'
         enabled:
            type: boolean
-           default: true   
+           default: true
+        io_service_id:
+          $ref: '#/components/schemas/IOServiceId'
            
     GovioServiceInstanceCreate:
       allOf:
@@ -2498,8 +2518,6 @@ components:
               items:
                  $ref: "#/components/schemas/FileStatisticsItem"
            
-
-                       
     FileStatisticsItem:
         type: object
         additionalProperties: false
@@ -2508,7 +2526,12 @@ components:
               $ref: "#/components/schemas/GovioMessageStatus"
            count:
               type: integer
-              format: int64                           
+              format: int64
+              
+    IOServiceId:
+      type: string
+      minLength: 1
+      maxLength: 512                                         
         
     MessageOrdering:
          type: string

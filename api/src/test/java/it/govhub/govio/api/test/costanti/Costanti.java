@@ -62,6 +62,7 @@ public class Costanti {
 	public static final String USERS_QUERY_PARAM_SCHEDULED_EXPEDITION_DATE_TO = "scheduled_expedition_date_to";
 	public static final String USERS_QUERY_PARAM_EXPEDITION_DATE_FROM = "expedition_date_from";
 	public static final String USERS_QUERY_PARAM_EXPEDITION_DATE_TO = "expedition_date_to";
+	public static final String USERS_QUERY_PARAM_IO_SERVICE_ID = "io_service_id";
 	
 	public static final Integer USERS_QUERY_PARAM_LIMIT_DEFAULT_VALUE = LimitOffsetPageRequest.LIMIT_DEFAULT_VALUE;
 	

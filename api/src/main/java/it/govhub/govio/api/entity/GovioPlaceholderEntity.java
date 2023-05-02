@@ -29,6 +29,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +43,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "govio_placeholders")
+@Table(name = "govio_placeholders",
+			uniqueConstraints = {
+					@UniqueConstraint(name = "UniqueGovioPlaceholderName", columnNames = {"name" } ) }
+			)
 public class GovioPlaceholderEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
