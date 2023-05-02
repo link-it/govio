@@ -620,6 +620,7 @@ paths:
         - message
       parameters:
         - $ref: '#/components/parameters/service_instance_id_query'
+        - $ref: '#/components/parameters/idempotency_key'
       summary: Send a new message.
       description: >
          Send a message through the service template.
@@ -1614,6 +1615,14 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/FileMessageStatusEnum'
+        
+    idempotency_key:
+      name: idempotency_key
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid    
         
     line_number_from_query:
       name: line_number_from

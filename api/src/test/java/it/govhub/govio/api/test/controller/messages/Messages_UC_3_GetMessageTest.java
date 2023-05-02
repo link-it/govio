@@ -74,6 +74,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_01_GetMessage_NoPlaceholders() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -93,11 +94,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -177,6 +179,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_02_GetMessage_NoPayment() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
@@ -190,11 +193,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -229,6 +233,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_03_GetMessage_WithPlaceholders() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -253,11 +258,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "3")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -303,6 +309,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_04_GetMessage_OnlyRequired() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
 		String taxCode = "AYCSFK56HUQE969O";
@@ -315,11 +322,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -360,6 +368,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_05_GetMessage_PaymentOnlyRequired() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = null;
@@ -379,11 +388,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));

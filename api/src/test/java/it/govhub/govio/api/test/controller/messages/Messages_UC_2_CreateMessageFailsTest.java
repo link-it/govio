@@ -131,6 +131,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_01_CreateMessage_MissingTaxCode() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -150,6 +151,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -164,7 +166,8 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 * @throws Exception
 	 */
 	@Test
-	void UC_2_02_CreateMessage_MissingScheduledExpeditionDate() throws Exception {
+	void UC_2_02_CreateMessage_MissingInvalidAfterDueDate() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -184,6 +187,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -199,6 +203,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_03_CreateMessage_MissingAmount() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = null;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -218,6 +223,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -233,6 +239,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_04_CreateMessage_MissingNoticeNumber() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = null;
 		Boolean invalidAfterDueDate = true;
@@ -252,6 +259,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -270,6 +278,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_05_CreateMessage_InvalidTaxCode() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -290,6 +299,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -307,6 +317,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -324,6 +335,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -340,6 +352,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_06_CreateMessage_InvalidEmail() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -359,6 +372,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -375,6 +389,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_07_CreateMessage_PlaceHolderNameNotPresent() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -399,6 +414,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -415,6 +431,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_08_CreateMessage_PlaceHolderValueNotPresent() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -439,6 +456,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -455,6 +473,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_09_CreateMessage_InvalidScheduled_expedition_date() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		String taxCode = "AYCSFK56HUQE969O"; 
 		String email = "s.nakamoto@xxxxx.xx";
@@ -466,6 +485,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -482,6 +502,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_10_CreateMessage_InvalidDue_date() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		String taxCode = "AYCSFK56HUQE969O"; 
 		String email = "s.nakamoto@xxxxx.xx";
@@ -493,6 +514,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -512,6 +534,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_11_CreateMessage_PaymentInvalidAmount() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		// 1. valore non numerico
 		String amount = "XXXX";
 		String noticeNumber = "159981576728496290";
@@ -531,6 +554,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -547,6 +571,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -563,6 +588,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -579,6 +605,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_12_CreateMessage_PaymentInvalid_invalid_after_due_date() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		String amount = "9999999999";
 		String noticeNumber = "159981576728496290";
 		String invalidAfterDueDate = "XXX";
@@ -597,6 +624,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -616,6 +644,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_13_CreateMessage_PaymentInvalidNoticeNumber() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		Boolean invalidAfterDueDate = true;
 		String payEETaxCode = "50751457039";
@@ -635,6 +664,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -653,6 +683,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -671,6 +702,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -689,6 +721,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_14_CreateMessage_PaymentInvalidPayeeTaxcode() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -708,6 +741,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -726,6 +760,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -744,6 +779,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -759,6 +795,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_15_CreateMessage_ServiceID_NonRegistrato() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
@@ -774,6 +811,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance",  idNonPresente +"")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -794,6 +832,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_16_CreateMessage_Parametro_ServiceIDNonPresente() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
@@ -806,6 +845,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -826,6 +866,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_17_CreateMessage_AuthorizedSI() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_CIE_ORG);
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_CIE);
 
@@ -833,6 +874,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
+		params.add(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey);
 		
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
@@ -862,7 +904,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAutorizzataSI())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -902,7 +944,8 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 * @throws Exception
 	 */
 	@Test
-	void UC_2_18_CreateMessage_OrganizationNotAuthorized() throws Exception {
+	void UC_2_18_UploadCsvFileOk_OrganizationNotAuthorized() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE);
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_NAME_SERVIZIO_GENERICO);
 
@@ -910,6 +953,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
+		params.add(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey);
 		
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
@@ -942,7 +986,8 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 * @throws Exception
 	 */
 	@Test
-	void UC_2_19_CreateMessage_ServiceInstanceDisabled() throws Exception {
+	void UC_2_19_UploadCsvFileFail_ServiceInstanceDisabled() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OrganizationEntity ente = leggiEnteDB(Costanti.TAX_CODE_ENTE_CREDITORE_2);
 		ServiceEntity servizio = leggiServizioDB(Costanti.SERVICE_IMU);
 
@@ -950,6 +995,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.PARAMETRO_SERVICE_INSTANCE_ID, serviceInstanceEntity.getId() +"");
+		params.add(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey);
 		
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
@@ -987,6 +1033,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_20_CreateMessage_PlaceHoldersRequired() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -1008,6 +1055,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "3")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -1027,6 +1075,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_21_CreateMessage_MissingDueDate() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -1051,6 +1100,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "3")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -1070,6 +1120,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_22_CreateMessage_BadPlaceHolderType() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -1118,6 +1169,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 			this.mockMvc.perform(
 					post(MESSAGES_BASE_PATH)
 					.param("service_instance", "3")
+					.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 					.content(json)
 					.contentType(MediaType.APPLICATION_JSON)
 					.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -1156,6 +1208,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_23_CreateMessage_BadSubjectFreeMarker() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		int idTemplate = 2;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -1201,6 +1254,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "3")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -1220,6 +1274,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 	 */
 	@Test
 	void UC_2_24_CreateMessage_BadMessageBodyFreeMarker() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		int idTemplate = 2;
 		
 		JsonObjectBuilder patchOp = Json.createObjectBuilder()
@@ -1265,6 +1320,7 @@ class Messages_UC_2_CreateMessageFailsTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "3")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
@@ -1275,5 +1331,91 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andExpect(jsonPath("$.type").isString())
 		.andExpect(jsonPath("$.detail", startsWith("Errore nell'applicazione del freemarker per il contenuto del messaggio")))
 		.andReturn();
+	}
+	
+	/**
+	 * Caricamento di un nuovo messaggio senza passare l'idempotencyKey
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	void UC_1_25_CreateMessage_MissingIdempotencyKey() throws Exception {
+		
+		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
+		OffsetDateTime dueDate = null; 
+		
+		String taxCode = "AYCSFK56HUQE969O";
+		String email = null;
+		
+		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, dueDate, taxCode, email, null, null, this.dt);
+		
+		String json = message.toString();
+		
+		this.mockMvc.perform(
+			post(MESSAGES_BASE_PATH)
+			.param("service_instance", "1")
+			.content(json)
+			.contentType(MediaType.APPLICATION_JSON)
+			.with(this.userAuthProfilesUtils.utenzaAdmin())
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.status", is(400)))
+			.andExpect(jsonPath("$.title", is("Bad Request")))
+			.andExpect(jsonPath("$.type").isString())
+			.andExpect(jsonPath("$.detail").isString())
+			.andReturn();
+
+
+	}
+	
+	/**
+	 * Caricamento di un nuovo messaggio indicando una idempotencyKey che non e' un UUID.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	void UC_1_26_CreateMessage_InvalidIdempotencyKey() throws Exception {
+		String idempotencyKey = "XXX";
+		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
+		OffsetDateTime dueDate = null; 
+		
+		String taxCode = "AYCSFK56HUQE969O";
+		String email = null;
+		
+		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, dueDate, taxCode, email, null, null, this.dt);
+		
+		String json = message.toString();
+		
+		this.mockMvc.perform(
+			post(MESSAGES_BASE_PATH)
+			.param("service_instance", "1")
+			.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
+			.content(json)
+			.contentType(MediaType.APPLICATION_JSON)
+			.with(this.userAuthProfilesUtils.utenzaAdmin())
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.status", is(400)))
+			.andExpect(jsonPath("$.title", is("Bad Request")))
+			.andExpect(jsonPath("$.type").isString())
+			.andExpect(jsonPath("$.detail").isString())
+			.andReturn();
+
+		idempotencyKey = Costanti.STRING_256;
+		
+		this.mockMvc.perform(
+				post(MESSAGES_BASE_PATH)
+				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status", is(400)))
+				.andExpect(jsonPath("$.title", is("Bad Request")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
+				.andReturn();
 	}
 }

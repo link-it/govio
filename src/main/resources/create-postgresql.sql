@@ -151,6 +151,18 @@ CREATE TABLE govio_messages
      PRIMARY KEY (id)
   );
 
+create table govio_messages_idempotency_keys (
+	govio_message_id BIGINT not null,
+	bean_hashcode BIGINT,
+	idempotency_key uuid,
+	primary key (govio_message_id)
+);
+
+alter table govio_messages_idempotency_keys 
+   add constraint UniqueIdempotencykeyHashcode unique (idempotency_key, bean_hashcode);
+
+create index BeanHashcodeIdx on govio_messages_idempotency_keys (bean_hashcode);
+
 alter table govio_messages 
    add constraint GovioMessage_GovioServiceInstance 
    foreign key (id_govio_service_instance) 
@@ -171,3 +183,7 @@ alter table govio_file_messages
    foreign key (id_govio_message) 
    references govio_messages;
 
+alter table govio_messages_idempotency_keys 
+   add constraint IdempotencyKey_GovioMessage 
+   foreign key (govio_message_id) 
+   references govio_messages;
