@@ -3,6 +3,7 @@ package it.govhub.govio.api.test.utils;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -11,6 +12,10 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 public class MessageUtils {
+	
+	public static String createIdempotencyKey() {
+		return UUID.randomUUID().toString();
+	}
 
 	public static JsonArray createPlaceHolders(JsonObject ... placeholder) {
 		JsonArrayBuilder placeholders = Json.createArrayBuilder();

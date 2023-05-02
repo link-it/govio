@@ -20,6 +20,7 @@ package it.govhub.govio.api.repository;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.UUID;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -32,6 +33,7 @@ import org.springframework.data.jpa.domain.Specification;
 import it.govhub.govio.api.beans.MessageOrdering;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.entity.GovioMessageEntity_;
+import it.govhub.govio.api.entity.GovioMessageIdempotencyKeyEntity_;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
 import it.govhub.govregistry.commons.entity.OrganizationEntity_;
 import it.govhub.govregistry.commons.entity.ServiceEntity_;
@@ -92,6 +94,15 @@ public class MessageFilters {
 					serviceId);
 	}
 
+	
+	public static Specification<GovioMessageEntity> byIdempotencyKey(UUID key) {
+		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+			cb.equal(
+					root.get(GovioMessageEntity_.idempotencyKey)
+							.get(GovioMessageIdempotencyKeyEntity_.idempotencyKey),
+					key);
+	}
+	
 	public static Specification<GovioMessageEntity> byStatus(GovioMessageEntity.Status status) {
 		return (Root<GovioMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
 			cb.equal(	root.get(GovioMessageEntity_.status), status);
