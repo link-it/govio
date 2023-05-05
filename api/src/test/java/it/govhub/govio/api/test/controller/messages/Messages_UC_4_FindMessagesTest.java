@@ -98,6 +98,7 @@ class Messages_UC_4_FindMessagesTest {
 
 	@BeforeEach
 	void setUp() throws Exception{
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -117,13 +118,15 @@ class Messages_UC_4_FindMessagesTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk())
+		.andExpect(status().isCreated())
 		.andReturn();
 
+		idempotencyKey = MessageUtils.createIdempotencyKey();
 		taxCode = "AYCSFK56HUQE969P";
 		scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(380).toOffsetDateTime(); 
 		JsonObject message2 = MessageUtils.createMessage(scheduledExpeditionDate, dueDate, taxCode, email, null, null, this.dt);
@@ -133,11 +136,12 @@ class Messages_UC_4_FindMessagesTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk())
+		.andExpect(status().isCreated())
 		.andReturn();
 
 		String name = "cie", value = "CA33333FF";
@@ -145,6 +149,7 @@ class Messages_UC_4_FindMessagesTest {
 
 		JsonArray placeholders = MessageUtils.createPlaceHolders(placeholder1);
 
+		idempotencyKey = MessageUtils.createIdempotencyKey();
 		taxCode = "AYCSFK56HUQE969Q";
 		scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(355).toOffsetDateTime(); 
 		JsonObject message3 = MessageUtils.createMessage(amount, noticeNumber, invalidAfterDueDate, payEETaxCode, scheduledExpeditionDate,
@@ -155,11 +160,12 @@ class Messages_UC_4_FindMessagesTest {
 		this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "3")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk())
+		.andExpect(status().isCreated())
 		.andReturn();
 
 	}
