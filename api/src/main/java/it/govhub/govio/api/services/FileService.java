@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -117,8 +118,8 @@ public class FileService {
     		throw new InternalException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
-    	Path destFile =  destPath
-    				.resolve(sourceFilename);
+    	String destFilename = UUID.randomUUID() + "-" + sourceFilename;
+    	Path destFile =  destPath.resolve(destFilename);
     	
     	log.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
     	
