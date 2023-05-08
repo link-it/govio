@@ -152,10 +152,10 @@ CREATE TABLE govio_messages
   );
 
 create table govio_messages_idempotency_keys (
-	govio_message_id BIGINT not null,
+	id_govio_message BIGINT not null,
 	bean_hashcode BIGINT,
 	idempotency_key uuid,
-	primary key (govio_message_id)
+	primary key (id_govio_message)
 );
 
 alter table govio_messages_idempotency_keys 
@@ -185,5 +185,5 @@ alter table govio_file_messages
 
 alter table govio_messages_idempotency_keys 
    add constraint IdempotencyKey_GovioMessage 
-   foreign key (govio_message_id) 
+   foreign key (id_govio_message) 
    references govio_messages;

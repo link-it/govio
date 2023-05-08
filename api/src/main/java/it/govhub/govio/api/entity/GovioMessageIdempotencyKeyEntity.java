@@ -50,7 +50,7 @@ public class GovioMessageIdempotencyKeyEntity {
 	// In questo modo L'id di una IdempotencyKeyMessageEntity è lo stesso della GovioMessageEntity
 	@OneToOne
 	@MapsId				
-	@JoinColumn( name = "govio_message_id", foreignKey = @ForeignKey(name="IdempotencyKey_GovioMessage"))
+	@JoinColumn( name = "id_govio_message", foreignKey = @ForeignKey(name="IdempotencyKey_GovioMessage"))
 	private GovioMessageEntity message;
 	
 	// La chiave di idempotenza usata durante una richiesta

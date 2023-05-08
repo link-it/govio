@@ -125,3 +125,8 @@ create index BeanHashcodeIdx on govio_messages_idempotency_keys (bean_hashcode);
 
 alter table govio_placeholders add constraint UniqueGovioPlaceholderName unique (name);
 
+
+-- PATCH 08-05-2023 renaming chiave per le idempotency_keys
+
+alter table govio_messages_idempotency_keys rename column govio_message_id TO id_govio_message;
+
