@@ -55,19 +55,19 @@ public class Application extends SpringBootServletInitializer {
 	
 	@Scheduled(fixedDelayString = "${scheduler.fileProcessingJob.fixedDelayString:10000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void fileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, NoSuchJobException   {
-		this.log.info("Running scheduled {}", FileProcessingJobConfig.FILEPROCESSING_JOB);
+		this.log.debug("Running scheduled {}", FileProcessingJobConfig.FILEPROCESSING_JOB);
 		this.govioBatches.runFileProcessingJob();
 	}
 	
 	@Scheduled(fixedDelayString = "${scheduler.sendMessageJob.fixedDelayString:60000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void sendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException  {
-		this.log.info("Running scheduled {}", SendMessagesJobConfig.SENDMESSAGES_JOB);
+		this.log.debug("Running scheduled {}", SendMessagesJobConfig.SENDMESSAGES_JOB);
 		this.govioBatches.runSendMessageJob();
 	}
 	
 	@Scheduled(fixedDelayString = "${scheduler.verifyMessagesJob.fixedDelayString:600000}", initialDelayString = "${scheduler.initialDelayString:1}")
 	public void verifyMessagesJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		this.log.info("Running scheduled {}", VerifyMessagesJobConfig.VERIFYMESSAGES_JOBNAME);
+		this.log.debug("Running scheduled {}", VerifyMessagesJobConfig.VERIFYMESSAGES_JOBNAME);
 		this.govioBatches.runVerifyMessagesJob();
 	}
 	
