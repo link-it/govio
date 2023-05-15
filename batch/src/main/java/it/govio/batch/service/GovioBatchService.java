@@ -1,11 +1,9 @@
 package it.govio.batch.service;
 
 import java.util.Date;
-import java.util.Hashtable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -91,7 +89,7 @@ public class GovioBatchService {
 			return null;
 		}
 		else if (lastExecution != null) {
-			ExitStatus exitStatus = lastExecution.getExitStatus();
+			//ExitStatus exitStatus = lastExecution.getExitStatus();
 			
 			// L'Exit Status di un Job è così determinato:
 			// 			- 	If the Step ends with ExitStatus of FAILED, the BatchStatus and ExitStatus of the Job are both FAILED.
@@ -105,13 +103,17 @@ public class GovioBatchService {
 			// In questo caso Creo un nuovo Job.
 			case ABANDONED:
 				log.warn("Trovata Job Execution di id {} abbandonata!", lastExecution.getId());
+				params = new JobParametersBuilder()
+						.addString("When", String.valueOf(System.currentTimeMillis()))
+						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
+				return jobLauncher.run(fileProcessingJob, params);
 			case COMPLETED:
 			
 				// I Job Abandoned non possono essere riavviati. (Sono abbandonati appunto)
 				// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
 				// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
 				// Siamo liberi di andare avanti e di eseguire un nuovo job.
-				log.info("Trovata istanza preesistente per il Job [{}]. Avvio nuovo Job. ", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato COMPLETED. Avvio nuovo Job. ", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 				params = new JobParametersBuilder()
 						.addString("When", String.valueOf(System.currentTimeMillis()))
 						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
@@ -120,7 +122,7 @@ public class GovioBatchService {
 			// In questo caso riavvio.
 			case FAILED:
 			case STOPPED:
-				log.info("Trovata istanza preesistente per il Job [{}]. Riavvio il Job. ", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Riavvio il Job. ", lastExecution, lastExecution.getStatus().toString()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 				Long newExecutionId = jobOperator.restart(lastExecution.getId());
 				return jobExplorer.getJobExecution(newExecutionId);
 			default:
@@ -128,7 +130,7 @@ public class GovioBatchService {
 				// STARTED STARTING e STOPPING non dovremmo mai trovarli, per via del comportamento dello scheduler.
 				
 				// UNKNOWN - Questo possiamo scoprirlo solo operativamente.
-				log.info("Trovata istanza preesistente per il Job [{}]. STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.warn("Trovata istanza preesistente per il Job [{}]. STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 				return null;
 			}
 		}	else {
