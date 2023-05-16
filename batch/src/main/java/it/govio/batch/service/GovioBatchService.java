@@ -1,11 +1,9 @@
 package it.govio.batch.service;
 
 import java.util.Date;
-import java.util.Hashtable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -74,7 +72,7 @@ public class GovioBatchService {
 	 * @throws NoSuchJobExecutionException 
 	 *  
 	 */
-	public JobExecution runFileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, NoSuchJobException {
+	public JobExecution runFileProcessingJob() throws Exception {
 		
 		JobInstance lastInstance = this.jobExplorer.getLastJobInstance(FileProcessingJobConfig.FILEPROCESSING_JOB);
 		
@@ -91,8 +89,6 @@ public class GovioBatchService {
 			return null;
 		}
 		else if (lastExecution != null) {
-			ExitStatus exitStatus = lastExecution.getExitStatus();
-			
 			// L'Exit Status di un Job è così determinato:
 			// 			- 	If the Step ends with ExitStatus of FAILED, the BatchStatus and ExitStatus of the Job are both FAILED.
 			// 			-	Otherwise, the BatchStatus and ExitStatus of the Job are both COMPLETED.
@@ -139,7 +135,7 @@ public class GovioBatchService {
 	}
 }
 
-	public JobExecution runSendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	public JobExecution runSendMessageJob() throws Exception {
 		
 		this.log.info("Copio un eventuale chunk di messaggi perso.");
 		SendMessagesJobConfig.temporaryMessageStore.putAll(SendMessagesJobConfig.temporaryChunkMessageStore);
@@ -153,7 +149,7 @@ public class GovioBatchService {
 		return jobLauncher.run(sendMessagesJob, params);
 	}
 
-	public void runVerifyMessagesJob() throws JobExecutionAlreadyRunningException, JobRestartException, 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	public void runVerifyMessagesJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString(GOVIO_JOB_ID,VerifyMessagesJobConfig.VERIFYMESSAGES_JOBNAME)
 				.addString("When",  String.valueOf(System.currentTimeMillis()))
