@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -33,7 +34,7 @@ import it.govio.batch.service.GovioBatchService;
 
 @SpringBootApplication(scanBasePackages={"it.govio.batch","it.pagopa.io.v1.api"})
 @EnableScheduling
-public class Application {
+public class Application extends SpringBootServletInitializer {
 
 	private Logger log = LoggerFactory.getLogger(Application.class);
 	
