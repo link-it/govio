@@ -347,9 +347,9 @@ class Files_UC_1_UploadFileTest {
 				.with(csrf())
 				.accept(MediaType.APPLICATION_JSON)
 				)
-		.andExpect(status().isUnprocessableEntity())
-		.andExpect(jsonPath("$.status", is(422)))
-		.andExpect(jsonPath("$.title", is("Unprocessable Entity")))
+		.andExpect(status().isConflict())
+		.andExpect(jsonPath("$.status", is(409)))
+		.andExpect(jsonPath("$.title", is("Conflict")))
 		.andExpect(jsonPath("$.type").isString())
 		.andExpect(jsonPath("$.detail").isString())
 		.andReturn();
