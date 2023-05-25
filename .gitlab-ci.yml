@@ -90,8 +90,8 @@ release:
           --assets-link "[ 
             {\"name\":\"govio-${CI_COMMIT_TAG}.war\", \"url\":\"${PACKAGE_REGISTRY_URL}/govio-${CI_COMMIT_TAG}.war\"},
             {\"name\":\"govio-${CI_COMMIT_TAG}.jar\", \"url\":\"${PACKAGE_REGISTRY_URL}/govio-${CI_COMMIT_TAG}.jar\"},
-            {\"name\":\"govio-${CI_COMMIT_TAG}.war\", \"url\":\"${PACKAGE_REGISTRY_URL}/govio-batch-${CI_COMMIT_TAG}.war\"},
-            {\"name\":\"govio-${CI_COMMIT_TAG}.jar\", \"url\":\"${PACKAGE_REGISTRY_URL}/govio-batch-${CI_COMMIT_TAG}.jar\"}
+            {\"name\":\"govio-batch-${CI_COMMIT_TAG}.war\", \"url\":\"${PACKAGE_REGISTRY_URL}/govio-batch-${CI_COMMIT_TAG}.war\"},
+            {\"name\":\"govio-batch-${CI_COMMIT_TAG}.jar\", \"url\":\"${PACKAGE_REGISTRY_URL}/govio-batch-${CI_COMMIT_TAG}.jar\"}
           ]"'
 
 deploy_staging:
