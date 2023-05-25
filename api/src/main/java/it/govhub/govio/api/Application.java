@@ -18,8 +18,6 @@
  */
 package it.govhub.govio.api;
 
-import java.util.Locale;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.core.SpringDocConfigProperties;

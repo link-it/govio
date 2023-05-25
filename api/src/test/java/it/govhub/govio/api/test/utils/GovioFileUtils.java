@@ -66,4 +66,8 @@ public class GovioFileUtils {
 	public static String createApiKey() {
 		return UUID.randomUUID().toString().replace("-", "");
 	}
+	
+	public static String createIoServiceID() {
+		return UUID.randomUUID().toString().replace("-", "");
+	}
 }

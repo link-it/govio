@@ -108,10 +108,10 @@ class Template_UC_8_CreatePlaceHolderTest {
 	}
 
 	@Test
-	void UC_8_02_CreatePlaceHolderOk_PlaceHolderDuplicato() throws Exception {
+	void UC_8_02_CreatePlaceHolderConflict_PlaceHolderDuplicato() throws Exception {
 
 		String json = Json.createObjectBuilder()
-				.add("name", "NuovoPlaceHolder")
+				.add("name", "NuovoPlaceHolderTest2")
 				.add("description", "PlaceHolder di test")
 				.add("example", "PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")
 				.add("type", Type.STRING.toString())
@@ -127,7 +127,7 @@ class Template_UC_8_CreatePlaceHolderTest {
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.name", is("NuovoPlaceHolder")))
+				.andExpect(jsonPath("$.name", is("NuovoPlaceHolderTest2")))
 				.andExpect(jsonPath("$.description", is("PlaceHolder di test")))
 				.andExpect(jsonPath("$.example", is("PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")))
 				.andExpect(jsonPath("$.type", is(Type.STRING.toString())))
@@ -153,26 +153,11 @@ class Template_UC_8_CreatePlaceHolderTest {
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
-				.andExpect(jsonPath("$.name", is("NuovoPlaceHolder")))
-				.andExpect(jsonPath("$.description", is("PlaceHolder di test")))
-				.andExpect(jsonPath("$.example", is("PPPLLLAAACCCEEEHHHOOOLLDDDEEERRR")))
-				.andExpect(jsonPath("$.type", is(Type.STRING.toString())))
-				.andExpect(jsonPath("$.pattern", is("[\\s\\S]*")))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.status", is(409)))
+				.andExpect(jsonPath("$.title", is("Conflict")))
+				.andExpect(jsonPath("$.type").isString())
+				.andExpect(jsonPath("$.detail").isString())
 				.andReturn();
-		
-		reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
-		si = reader.readObject();
-		id = si.getInt("id");
-		
-		govioPlaceholderEntity = this.placeholderRepository.findById((long) id).get();
-		
-		assertEquals(id, govioPlaceholderEntity.getId());
-		assertEquals(si.getString("name"), govioPlaceholderEntity.getName());
-		assertEquals(si.getString("description"), govioPlaceholderEntity.getDescription());
-		assertEquals(si.getString("example"), govioPlaceholderEntity.getExample());
-		assertEquals(si.getString("type"), govioPlaceholderEntity.getType().toString());
-		assertEquals(si.getString("pattern"), govioPlaceholderEntity.getPattern());
 	}
 }

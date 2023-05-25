@@ -46,7 +46,7 @@ public class DateTimeItem extends Item<LocalDateTime> {
 	
 	
 	@Override
-	public LocalDateTime getValue(String stringValue) {
+	public LocalDateTime getValue(String stringValue) throws TemplateValidationException {
 		super.validateValue(stringValue);
 		
 		// Se c'e' un valore, controllo che sia compatibile.
@@ -62,7 +62,7 @@ public class DateTimeItem extends Item<LocalDateTime> {
 	}
 
 	@Override
-	public Map<String, String> getPlaceholderValues(String stringValue) {
+	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
 		LocalDateTime value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();
