@@ -66,12 +66,13 @@ public class GovioFileItemProcessor implements ItemProcessor<GovioFileMessageEnt
 			
 			item.setGovioMessage(govioMessageEntity);
 		} catch (TemplateValidationException | TemplateFreemarkerException e) {
-			if(e.getMessage() != null)
-				item.setError(e.getMessage());
+			if(e.getCause() != null)
+				item.setError(e.getMessage() + ": " + e.getCause().getMessage());
 			else
-				item.setError(String.format("Causa dell'errore sconosciuta: %s", e.getClass().getName()));
-			logger.info("Errore nell'applicazione del template [numlinea: {}] [record: {}] : {}", item.getLineNumber(), item.getLineRecord(), e.getMessage());
-		}
+				item.setError(e.getMessage());
+			
+			logger.info("Errore nell'applicazione del template [numlinea: {}] [record: {}] : {}", item.getLineNumber(), item.getLineRecord(), item.getError());
+		} 
 		return item;
 	}
 	

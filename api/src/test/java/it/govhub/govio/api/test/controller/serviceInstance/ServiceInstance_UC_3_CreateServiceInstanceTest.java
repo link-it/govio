@@ -102,12 +102,14 @@ class ServiceInstance_UC_3_CreateServiceInstanceTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", serviceEntity.getId())
 				.add("organization_id", organizationEntity.getId())
 				.add("template_id", templateEntity.getId())
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -121,6 +123,7 @@ class ServiceInstance_UC_3_CreateServiceInstanceTest {
 				.andExpect(jsonPath("$.id").isNumber())
 				.andExpect(jsonPath("$.apiKey", is(apiKey)))
 				.andExpect(jsonPath("$.enabled", is(true)))
+				.andExpect(jsonPath("$.io_service_id", is(ioServiceID)))
 				.andReturn();
 		
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -135,6 +138,7 @@ class ServiceInstance_UC_3_CreateServiceInstanceTest {
 		
 		assertEquals(id, govioServiceInstanceEntity.getId());
 		assertEquals(si.getString("apiKey"), govioServiceInstanceEntity.getApiKey());
+		assertEquals(si.getString("io_service_id"), govioServiceInstanceEntity.getIoServiceId());
 		assertEquals(si.getBoolean("enabled"), govioServiceInstanceEntity.getEnabled());
 		assertEquals(organizationEntity.getId(), govioServiceInstanceEntity.getOrganization().getId());
 		assertEquals(serviceEntity.getId(), govioServiceInstanceEntity.getService().getId());
@@ -148,12 +152,14 @@ class ServiceInstance_UC_3_CreateServiceInstanceTest {
 		GovioTemplateEntity templateEntity = this.templateRepository.findById(1l).get();
 		
 		String apiKey = GovioFileUtils.createApiKey();
+		String ioServiceID = GovioFileUtils.createIoServiceID();
 		String json = Json.createObjectBuilder()
 				.add("service_id", serviceEntity.getId())
 				.add("organization_id", organizationEntity.getId())
 				.add("template_id", templateEntity.getId())
 				.add("apiKey", apiKey)
 				.add("enabled", true)
+				.add("io_service_id", ioServiceID)
 				.build()
 				.toString();
 		
@@ -167,6 +173,7 @@ class ServiceInstance_UC_3_CreateServiceInstanceTest {
 				.andExpect(jsonPath("$.id").isNumber())
 				.andExpect(jsonPath("$.apiKey", is(apiKey)))
 				.andExpect(jsonPath("$.enabled", is(true)))
+				.andExpect(jsonPath("$.io_service_id", is(ioServiceID)))
 				.andReturn();
 		
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -181,6 +188,7 @@ class ServiceInstance_UC_3_CreateServiceInstanceTest {
 		
 		assertEquals(id, govioServiceInstanceEntity.getId());
 		assertEquals(si.getString("apiKey"), govioServiceInstanceEntity.getApiKey());
+		assertEquals(si.getString("io_service_id"), govioServiceInstanceEntity.getIoServiceId());
 		assertEquals(si.getBoolean("enabled"), govioServiceInstanceEntity.getEnabled());
 		assertEquals(organizationEntity.getId(), govioServiceInstanceEntity.getOrganization().getId());
 		assertEquals(serviceEntity.getId(), govioServiceInstanceEntity.getService().getId());

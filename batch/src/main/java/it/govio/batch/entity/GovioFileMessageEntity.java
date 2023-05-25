@@ -31,6 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +43,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "govio_file_messages")
+@Table(
+		name = "govio_file_messages",
+		uniqueConstraints = {
+				@UniqueConstraint(name = "UniqueGovioFileLineNumber", columnNames = {"id_govio_file", "line_number" }) }
+	   )
 public class GovioFileMessageEntity {
 
 	@Id

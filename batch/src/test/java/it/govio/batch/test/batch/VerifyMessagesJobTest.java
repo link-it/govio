@@ -79,7 +79,6 @@ import it.pagopa.io.v1.api.impl.ApiClient;
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 @TestInstance(Lifecycle.PER_CLASS)
-
 class VerifyMessagesJobTest {
 
 	@Mock

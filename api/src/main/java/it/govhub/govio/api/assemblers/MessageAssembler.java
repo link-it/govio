@@ -37,7 +37,6 @@ import it.govhub.govio.api.beans.EmbedMessageEnum;
 import it.govhub.govio.api.beans.EmbedServiceInstanceEnum;
 import it.govhub.govio.api.beans.GovioMessage;
 import it.govhub.govio.api.beans.GovioMessagePaymentItem;
-import it.govhub.govio.api.beans.GovioMessageStatus;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.web.MessageController;
 import it.govhub.govio.api.web.ServiceInstanceController;
@@ -73,8 +72,7 @@ public class MessageAssembler extends RepresentationModelAssemblerSupport<GovioM
 		GovioMessage ret = instantiateModel(src);
 
 		BeanUtils.copyProperties(src, ret);
-		ret.setStatus(GovioMessageStatus.valueOf(src.getStatus().toString()));
-		ret.setServiceInstanceId(src.getGovioServiceInstance().getId());
+		ret.setStatus(src.getStatus());
 		ret.setSenderId(src.getSender().getId());
 		
 		if(src.getNoticeNumber() != null) {

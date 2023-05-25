@@ -35,7 +35,7 @@ public class StringItem extends Item<String>{
 	}
 	
 	@Override
-	public String getValue(String value) {
+	public String getValue(String value) throws TemplateValidationException {
 		super.validateValue(value);
 		// Se c'e' un pattern ed un valore, controllo che sia compatibile.
 		if(pattern != null && value != null && !Pattern.matches(pattern, value)) {
@@ -45,7 +45,7 @@ public class StringItem extends Item<String>{
 	}
 	
 	@Override
-	public Map<String, String> getPlaceholderValues(String value) {
+	public Map<String, String> getPlaceholderValues(String value) throws TemplateValidationException {
 		Map<String, String> valuesMap = new HashMap<>();
 		
 		if(value == null) return valuesMap;

@@ -51,6 +51,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import it.govhub.govio.api.Application;
+import it.govhub.govio.api.beans.FileOrdering;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.repository.FileRepository;
@@ -543,6 +544,7 @@ class Files_UC_2_FindFilesTest {
 	void UC_2_15_FindAllOk_SortCreationDateDesc() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add(Costanti.USERS_QUERY_PARAM_SORT_DIRECTION, Costanti.QUERY_PARAM_SORT_DIRECTION_DESC);
+		params.add(Costanti.USERS_QUERY_PARAM_SORT, FileOrdering.CREATION_DATE.getValue());
 
 		MvcResult result = this.mockMvc.perform(get(FILES_BASE_PATH).params(params )
 				.with(this.userAuthProfilesUtils.utenzaAdmin())

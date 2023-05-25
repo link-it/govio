@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -53,8 +54,8 @@ import it.govhub.govio.api.repository.FileMessageRepository;
 import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govregistry.commons.exception.ConflictException;
 import it.govhub.govregistry.commons.exception.InternalException;
-import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.security.services.SecurityService;
@@ -103,7 +104,7 @@ public class FileService {
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
-			throw new SemanticValidationException(this.fileMessages.conflict("name", sourceFilename));
+			throw new ConflictException(this.fileMessages.conflict("name", sourceFilename));
 		}
 
     	Path destPath = this.fileRepositoryPath
@@ -117,8 +118,8 @@ public class FileService {
     		throw new InternalException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
-    	Path destFile =  destPath
-    				.resolve(sourceFilename);
+    	String destFilename = UUID.randomUUID() + "-" + sourceFilename;
+    	Path destFile =  destPath.resolve(destFilename);
     	
     	log.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
     	

@@ -57,6 +57,12 @@ public class ServiceInstanceFilters {
 	}
 	
 	
+	public static Specification<GovioServiceInstanceEntity> byIoServiceId(String ioServiceId) {
+        return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
+        	cb.equal(root.get(GovioServiceInstanceEntity_.ioServiceId), ioServiceId); 
+	}
+	
+	
 	public static Specification<GovioServiceInstanceEntity> isEnabled(Boolean enabled) {
         return (Root<GovioServiceInstanceEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> 
         	cb.equal(root.get(GovioServiceInstanceEntity_.enabled), enabled); 

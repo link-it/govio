@@ -89,3 +89,44 @@ ALTER TABLE govhub_users ALTER column full_name SET NOT NULL;
 -- PATCH 7-04-2023 Size not null per govio file
 
 ALTER TABLE govio_files ALTER COLUMN size SET NOT NULL;
+
+
+-- PATCH 19-04*2023 Resi unique file e line-number per i file-messages, in questo modo il batch non può
+-- creare entry duplicate per una stessa riga di un dato csv
+
+alter table govio_file_messages add constraint UniqueGovioFileLineNumber unique (id_govio_file, line_number);
+
+-- PATCH 26-04-2023 Aggiunta campo io_service_id alle service instances
+
+alter table govio_service_instances add column io_service_id varchar(255);
+update govio_service_instances set io_service_id = 'IO SERVICE ID MANCANTE' where io_service_id is null;
+alter table govio_service_instances alter column io_service_id set not null;
+
+-- PATCH 27-04-2023 Aggiunta Idempotency keys per govio_messages
+
+create table govio_messages_idempotency_keys (
+	govio_message_id BIGINT not null,
+	bean_hashcode BIGINT,
+	idempotency_key uuid,
+	primary key (govio_message_id)
+);
+
+alter table govio_messages_idempotency_keys 
+   add constraint UniqueIdempotencykeyHashcode unique (idempotency_key, bean_hashcode);
+
+alter table govio_messages_idempotency_keys 
+   add constraint IdempotencyKey_GovioMessage 
+   foreign key (govio_message_id) 
+   references govio_messages;
+
+create index BeanHashcodeIdx on govio_messages_idempotency_keys (bean_hashcode);
+
+-- PATCH 28-04-2023 Reso unique il nome del placeholder
+
+alter table govio_placeholders add constraint UniqueGovioPlaceholderName unique (name);
+
+
+-- PATCH 08-05-2023 renaming chiave per le idempotency_keys
+
+alter table govio_messages_idempotency_keys rename column govio_message_id TO id_govio_message;
+

@@ -121,6 +121,7 @@ public class ServiceInstanceController implements ServiceApi {
 			Direction sortDirection,
 			Long serviceId,
 			Long organizationId,
+			String  ioServiceId,
 			String q,
 			Boolean enabled,
 			Integer limit,
@@ -164,6 +165,9 @@ public class ServiceInstanceController implements ServiceApi {
 		}
 		if (enabled != null) {
 			spec = spec.and(ServiceInstanceFilters.isEnabled(enabled));
+		}
+		if (! StringUtils.isBlank(ioServiceId)) {
+			spec = spec.and(ServiceInstanceFilters.byIoServiceId(ioServiceId));
 		}
 		
 		Page<GovioServiceInstanceEntity> instances = this.instanceRepo.findAll(spec, pageRequest.pageable);
@@ -252,7 +256,8 @@ public class ServiceInstanceController implements ServiceApi {
 			organizationId(instance.getOrganization().getId()).
 			apiKey(instance.getApiKey()).
 			templateId(instance.getTemplate().getId()).
-			enabled(instance.getEnabled());
+			enabled(instance.getEnabled()).
+			ioServiceId(instance.getIoServiceId());
 		
 		JsonNode newJsonInstance;
 		try {

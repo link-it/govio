@@ -38,7 +38,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import it.govhub.govio.api.Application;
-import it.govhub.govio.api.beans.GovioMessageStatus;
 import it.govhub.govio.api.entity.GovioMessageEntity;
 import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.test.costanti.Costanti;
@@ -75,6 +74,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_01_GetMessage_NoPlaceholders() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -94,11 +94,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -122,7 +123,8 @@ class Messages_UC_3_GetMessageTest {
 		assertEquals(email, messaggio.getString("email"));
 		assertNotNull(messaggio.get("creation_date"));
 		//assertEquals(dt.format(dueDate), messaggio.getString("due_date"));
-		assertEquals("scheduled", messaggio.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
+
 		//	assertEquals(dt.format(scheduledExpeditionDate), messaggio.getString("scheduled_expedition_date"));
 		JsonObject payment = messaggio.getJsonObject("payment");
 		assertNotNull(payment);
@@ -150,7 +152,7 @@ class Messages_UC_3_GetMessageTest {
 			// assertEquals(dt.format(govioMessageEntity.getExpeditionDate()), messaggio.getString("expedition_date"));
 			assertEquals(dt.format(govioMessageEntity.getDueDate()), messaggio.getString("due_date"));
 			assertEquals(dt.format(govioMessageEntity.getLastUpdateStatus()), messaggio.getString("last_update_status"));
-			assertEquals(GovioMessageStatus.valueOf(govioMessageEntity.getStatus().toString()).toString(), messaggio.getString("status"));
+			assertEquals(govioMessageEntity.getStatus(), GovioMessageEntity.Status.valueOf( messaggio.getString("status")));
 		}
 		
 		if(payment != null) {
@@ -177,6 +179,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_02_GetMessage_NoPayment() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
@@ -190,11 +193,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -218,7 +222,7 @@ class Messages_UC_3_GetMessageTest {
 		assertEquals(email, messaggio.getString("email"));
 		assertNotNull(messaggio.get("creation_date"));
 		//assertEquals(dt.format(dueDate), messaggio.getString("due_date"));
-		assertEquals("scheduled", messaggio.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		//	assertEquals(dt.format(scheduledExpeditionDate), messaggio.getString("scheduled_expedition_date"));
 		JsonObject payment = messaggio.getJsonObject("payment");
 		assertNull(payment);
@@ -229,6 +233,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_03_GetMessage_WithPlaceholders() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = true;
@@ -253,11 +258,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "3")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -289,7 +295,7 @@ class Messages_UC_3_GetMessageTest {
 		assertEquals(email, messaggio.getString("email"));
 		assertNotNull(messaggio.get("creation_date"));
 		//assertEquals(dt.format(dueDate), messaggio.getString("due_date"));
-		assertEquals("scheduled", messaggio.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		//	assertEquals(dt.format(scheduledExpeditionDate), messaggio.getString("scheduled_expedition_date"));
 		JsonObject payment = messaggio.getJsonObject("payment");
 		assertNotNull(payment);
@@ -303,23 +309,25 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_04_GetMessage_OnlyRequired() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 
 		String taxCode = "AYCSFK56HUQE969O";
-		String email = "s.nakamoto@xxxxx.xx";
+		String email = null;
 
-		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, null, taxCode, null, null, null, this.dt);
+		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, null, taxCode, email, null, null, this.dt);
 
 		String json = message.toString();
 
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -349,7 +357,7 @@ class Messages_UC_3_GetMessageTest {
 		JsonValue dueDateJson = response.get("due_date");
 		assertNull(dueDateJson);
 		
-		assertEquals("scheduled", response.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNull(payment);
@@ -360,6 +368,7 @@ class Messages_UC_3_GetMessageTest {
 
 	@Test
 	void UC_3_05_GetMessage_PaymentOnlyRequired() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		Long amount = 9999999999L;
 		String noticeNumber = "159981576728496290";
 		Boolean invalidAfterDueDate = null;
@@ -379,11 +388,12 @@ class Messages_UC_3_GetMessageTest {
 		MvcResult result = this.mockMvc.perform(
 				post(MESSAGES_BASE_PATH)
 				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
 				.content(json)
 				.contentType(MediaType.APPLICATION_JSON)
 				.with(this.userAuthProfilesUtils.utenzaAdmin())
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
@@ -407,7 +417,7 @@ class Messages_UC_3_GetMessageTest {
 		assertEquals(email, messaggio.getString("email"));
 		assertNotNull(messaggio.get("creation_date"));
 		//assertEquals(dt.format(dueDate), messaggio.getString("due_date"));
-		assertEquals("scheduled", messaggio.getString("status"));
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
 		//	assertEquals(dt.format(scheduledExpeditionDate), messaggio.getString("scheduled_expedition_date"));
 		JsonObject payment = messaggio.getJsonObject("payment");
 		assertNotNull(payment);
