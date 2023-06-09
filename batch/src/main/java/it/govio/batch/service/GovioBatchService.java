@@ -96,42 +96,38 @@ public class GovioBatchService {
 			//
 			// In questo caso batchStatus e exitStatus combaciano perchè non c'è nessuna logica particolare nel FileProcessingJobConfig
 			// che altera lo stato del job nel caso gli step falliscano.
+			Long newExecutionId = null;
 			switch (lastExecution.getStatus()) {
-
 			// In questo caso Creo un nuovo Job.
 			case ABANDONED:
-				log.warn("Trovata Job Execution di id {} abbandonata!", lastExecution.getId());
+			case UNKNOWN:
+				// I Job Abandoned non possono essere riavviati. (Sono abbandonati appunto)
+				// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
+				// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
+				// Siamo liberi di andare avanti e di eseguire un nuovo job.
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Avvio un nuovo job. ", lastExecution, lastExecution.getStatus().toString()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 				params = new JobParametersBuilder()
 						.addString("When", String.valueOf(System.currentTimeMillis()))
 						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 				return jobLauncher.run(fileProcessingJob, params);
 			case COMPLETED:
-			
-				// I Job Abandoned non possono essere riavviati. (Sono abbandonati appunto)
-				// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
-				// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
-				// Siamo liberi di andare avanti e di eseguire un nuovo job.
 				log.debug("Trovata istanza preesistente per il Job [{}] in stato COMPLETED. Avvio nuovo Job. ", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 				params = new JobParametersBuilder()
 						.addString("When", String.valueOf(System.currentTimeMillis()))
 						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 				return jobLauncher.run(fileProcessingJob, params);
-			
 			// In questo caso riavvio.
 			case FAILED:
 			case STOPPED:
 				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Riavvio il Job. ", lastExecution, lastExecution.getStatus().toString()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
-				Long newExecutionId = jobOperator.restart(lastExecution.getId());
+				newExecutionId = jobOperator.restart(lastExecution.getId());
 				return jobExplorer.getJobExecution(newExecutionId);
 			default:
-				// STARTED, STARTING, STOPPING, UNKNOWN:
 				// STARTED STARTING e STOPPING non dovremmo mai trovarli, per via del comportamento dello scheduler.
-				
-				// UNKNOWN - Questo possiamo scoprirlo solo operativamente.
-				log.warn("Trovata istanza preesistente per il Job [{}]. STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.warn("Trovata istanza preesistente per il Job [{}]. STATO {}. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution, lastExecution.getStatus().toString()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
 				return null;
 			}
-		}	else {
+		} else {
 			params = new JobParametersBuilder()
 					.addString("When", String.valueOf(System.currentTimeMillis()))
 					.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
@@ -141,7 +137,7 @@ public class GovioBatchService {
 
 	public JobExecution runSendMessageJob() throws Exception {
 		
-		this.log.info("Copio un eventuale chunk di messaggi perso.");
+		this.log.debug("Copio un eventuale chunk di messaggi perso.");
 		SendMessagesJobConfig.temporaryMessageStore.putAll(SendMessagesJobConfig.temporaryChunkMessageStore);
 		// TODO: Aggiungi uno step finale che pulisce la map.
 		
