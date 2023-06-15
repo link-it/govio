@@ -105,13 +105,13 @@ public class GovioBatchService {
 				// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
 				// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
 				// Siamo liberi di andare avanti e di eseguire un nuovo job.
-				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Avvio un nuovo job. ", lastExecution, lastExecution.getStatus()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Avvio un nuovo job. ", lastExecution, lastExecution.getStatus());
 				params = new JobParametersBuilder()
 						.addString("When", String.valueOf(System.currentTimeMillis()))
 						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 				return jobLauncher.run(fileProcessingJob, params);
 			case COMPLETED:
-				log.debug("Trovata istanza preesistente per il Job [{}] in stato COMPLETED. Avvio nuovo Job. ", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato COMPLETED. Avvio nuovo Job. ", lastExecution); 
 				params = new JobParametersBuilder()
 						.addString("When", String.valueOf(System.currentTimeMillis()))
 						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
@@ -119,7 +119,7 @@ public class GovioBatchService {
 			// In questo caso riavvio.
 			case FAILED:
 			case STOPPED:
-				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Riavvio il Job. ", lastExecution, lastExecution.getStatus()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Riavvio il Job. ", lastExecution, lastExecution.getStatus()); 
 				newExecutionId = jobOperator.restart(lastExecution.getId());
 				return jobExplorer.getJobExecution(newExecutionId);
 			default:
