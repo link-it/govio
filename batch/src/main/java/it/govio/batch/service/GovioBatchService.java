@@ -124,7 +124,7 @@ public class GovioBatchService {
 				return jobExplorer.getJobExecution(newExecutionId);
 			default:
 				// STARTED STARTING e STOPPING non dovremmo mai trovarli, per via del comportamento dello scheduler.
-				log.warn("Trovata istanza preesistente per il Job [{}]. STATO {}. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution, lastExecution.getStatus().toString()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.warn("Trovata istanza preesistente per il Job [{}]. STATO {}. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution, lastExecution.getStatus()); 
 				return null;
 			}
 		} else {
