@@ -65,7 +65,6 @@ import it.govio.template.exception.TemplateFreemarkerException;
 import it.govio.template.exception.TemplateValidationException;
 import it.govhub.govregistry.commons.exception.ConflictException;
 
-
 @V1RestController
 public class MessageController implements MessageApi {
 	
@@ -219,9 +218,9 @@ public class MessageController implements MessageApi {
 			// TODO: Dopo i merge, mettere il contenuto di questo else nel messageService in modo da semplificare la logica
 			//	del controller.
 			BaseMessage message = BaseMessage.builder()
-					.dueDate(govioNewMessage.getDueDate() == null ? null : govioNewMessage.getDueDate().toLocalDateTime())
+					.dueDate(govioNewMessage.getDueDate() == null ? null : govioNewMessage.getDueDate())
 					.email(govioNewMessage.getEmail())
-					.scheduledExpeditionDate(govioNewMessage.getScheduledExpeditionDate().toLocalDateTime())
+					.scheduledExpeditionDate(govioNewMessage.getScheduledExpeditionDate())
 					.taxcode(govioNewMessage.getTaxcode())
 					.build();
 			if(govioNewMessage.getPayment() != null) {
