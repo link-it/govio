@@ -14,7 +14,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="it.govio" level="DEBUG" additivity="false">
+	<logger name="it.govio" level="OFF" additivity="false">
 		<appender-ref ref="STDOUT" />
 	</logger>
 
@@ -47,7 +47,7 @@
 	</logger>
 
 
-	<root level="ERROR">
+	<root level="OFF">
 		<appender-ref ref="STDOUT" />
 	</root>
 
