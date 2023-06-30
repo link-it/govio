@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -169,7 +169,7 @@ class FileProcessingJobTest {
 		file1writer.close();
 
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
-				.creationDate(LocalDateTime.now())
+				.creationDate(OffsetDateTime.now())
 				.govioServiceInstance(serviceInstanceEntity.get())
 				.govhubUserId(1l)
 				.location(file.toPath().toString())
@@ -220,7 +220,7 @@ class FileProcessingJobTest {
 		file1writer.close();
 
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
-				.creationDate(LocalDateTime.now())
+				.creationDate(OffsetDateTime.now())
 				.govioServiceInstance(serviceInstanceEntity.get())
 				.govhubUserId(1l)
 				.location(file.toPath().toString())
@@ -262,7 +262,7 @@ class FileProcessingJobTest {
 		file1writer.close();
 
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
-				.creationDate(LocalDateTime.now())
+				.creationDate(OffsetDateTime.now())
 				.govioServiceInstance(instanceService)
 				.govhubUserId(1l)
 				.location(file.toPath().toString())

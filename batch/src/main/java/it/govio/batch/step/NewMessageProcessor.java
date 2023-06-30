@@ -18,7 +18,7 @@
  */
 package it.govio.batch.step;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -95,7 +95,7 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		// setto i dati rimanenti del content
 		if(item.getDueDate() != null) {
 			// IO richiede la data in UTC
-			mc.setDueDate(dtf.format(item.getDueDate().atZone(ZoneId.of("Europe/Rome")).withZoneSameInstant(ZoneId.of("UTC"))));
+			mc.setDueDate(dtf.format(item.getDueDate().atZoneSameInstant(ZoneId.of("UTC"))));
 		}
 		mc.setMarkdown(item.getMarkdown());
 		mc.setSubject(item.getSubject());
@@ -106,7 +106,7 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 			CreatedMessage submitMessageforUserWithFiscalCodeInBody = backendIOClient.submitMessageforUserWithFiscalCodeInBody(message);
 			item.setAppioMessageId(submitMessageforUserWithFiscalCodeInBody.getId());
 			item.setStatus(Status.SENT);
-			item.setExpeditionDate(LocalDateTime.now());
+			item.setExpeditionDate(OffsetDateTime.now());
 			logger.info("Messaggio spedito con successo. Id: {}", item.getAppioMessageId());
 		} catch (HttpClientErrorException e) {
 			item.setStatus(handleRestClientException(e));
@@ -115,7 +115,7 @@ public class NewMessageProcessor extends GovioMessageAbstractProcessor {
 		} catch (Exception e) {
 			handleRestClientException(e);
 		}
-		item.setLastUpdateStatus(LocalDateTime.now());
+		item.setLastUpdateStatus(OffsetDateTime.now());
 		return item;		
 	}
 
