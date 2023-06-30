@@ -18,7 +18,7 @@
  */
 package it.govio.template;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
@@ -34,6 +34,6 @@ public class BaseMessage {
 		private Boolean invalidAfterDueDate;
 		private String payee;
 		private String email;
-		private LocalDateTime scheduledExpeditionDate;
-		private LocalDateTime dueDate;
+		private OffsetDateTime scheduledExpeditionDate;
+		private OffsetDateTime dueDate;
 }

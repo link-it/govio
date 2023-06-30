@@ -20,6 +20,8 @@ package it.govio.template.items;
 
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -33,7 +35,7 @@ import it.govio.template.exception.TemplateValidationException;
 
 
 
-public class DateTimeItem extends Item<LocalDateTime> {
+public class DateTimeItem extends Item<OffsetDateTime> {
 	
 	private Logger logger = LoggerFactory.getLogger(DateTimeItem.class);
 	protected static final DateTimeFormatter baseFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.ITALY);
@@ -46,13 +48,15 @@ public class DateTimeItem extends Item<LocalDateTime> {
 	
 	
 	@Override
-	public LocalDateTime getValue(String stringValue) throws TemplateValidationException {
+	public OffsetDateTime getValue(String stringValue) throws TemplateValidationException {
 		super.validateValue(stringValue);
 		
 		// Se c'e' un valore, controllo che sia compatibile.
 		if(stringValue != null && !stringValue.isBlank()) {
 			try {
-				return LocalDateTime.parse(stringValue);
+				return LocalDateTime.parse(stringValue)
+			            .atZone(ZoneId.of("Europe/Rome"))
+			            .toOffsetDateTime();
 			} catch (DateTimeParseException e) {
 				logger.debug("Validazione della data con ora fallita: {}", e.getMessage());
 				throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non presenta una data con ora valida.", stringValue, name));
@@ -63,7 +67,7 @@ public class DateTimeItem extends Item<LocalDateTime> {
 
 	@Override
 	public Map<String, String> getPlaceholderValues(String stringValue) throws TemplateValidationException {
-		LocalDateTime value = getValue(stringValue);
+		OffsetDateTime value = getValue(stringValue);
 		
 		Map<String, String> valuesMap = new HashMap<>();
 		if(value == null) return valuesMap;
