@@ -19,7 +19,6 @@
 package it.govhub.govio.api.services;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +135,7 @@ public class MessageService {
 		
 		// IO si aspetta le date con TimeZone a Europe/Rome, per 
 		OffsetDateTime now = OffsetDateTime.now();
-		OffsetDateTime dueDate = message.getDueDate() == null ? null : message.getDueDate().atZone(ZoneId.of(timeZone)).toOffsetDateTime();
+		OffsetDateTime dueDate = message.getDueDate() == null ? null : message.getDueDate();
 		
 		GovioMessageEntity newMessage = GovioMessageEntity.builder()
 				.amount(message.getAmount())
@@ -149,7 +148,7 @@ public class MessageService {
 				.markdown(markdown)
 				.noticeNumber(message.getNoticeNumber())
 				.payeeTaxcode(message.getPayee())
-				.scheduledExpeditionDate(message.getScheduledExpeditionDate().atZone(ZoneId.of(timeZone)).toOffsetDateTime())
+				.scheduledExpeditionDate(message.getScheduledExpeditionDate())
 				.sender(em.getReference(UserEntity.class, senderId))
 				.status(GovioMessageEntity.Status.SCHEDULED)
 				.subject(subject)

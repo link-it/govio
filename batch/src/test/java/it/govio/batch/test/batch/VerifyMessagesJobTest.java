@@ -21,7 +21,7 @@ package it.govio.batch.test.batch;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -142,9 +142,9 @@ class VerifyMessagesJobTest {
 					.markdown("Lorem Ipsum")
 					.subject("Subject")
 					.taxcode(String.format("%03d", i) + "AAA00A00A000A")
-					.scheduledExpeditionDate(LocalDateTime.now().minusDays(1))
-					.creationDate(LocalDateTime.now().minusDays(2))
-					.expeditionDate(LocalDateTime.now().minusDays(1))
+					.scheduledExpeditionDate(OffsetDateTime.now().minusDays(1))
+					.creationDate(OffsetDateTime.now().minusDays(2))
+					.expeditionDate(OffsetDateTime.now().minusDays(1))
 					.appioMessageId(UUID.randomUUID().toString());
 					
 			switch (i%3) {

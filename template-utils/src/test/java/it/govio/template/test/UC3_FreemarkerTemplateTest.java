@@ -29,6 +29,8 @@ import it.govio.template.exception.TemplateValidationException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,12 +49,12 @@ class UC3_FreemarkerTemplateTest {
 	private BaseMessage getDefaultMessage() {
 		return BaseMessage.builder()
 				.amount(100l)
-				.dueDate(LocalDateTime.of(2050, 12, 31, 12, 0, 0))
+				.dueDate(ZonedDateTime.of(LocalDateTime.of(2050, 12, 31, 12, 0, 0), ZoneId.of("Europe/Rome")).toOffsetDateTime())
 				.email("s.nakamoto@xxxx.xx")
 				.invalidAfterDueDate(true)
 				.noticeNumber("301000001234500000")
 				.payee("01234567890")
-				.scheduledExpeditionDate(LocalDateTime.of(2050, 12, 31, 12, 0, 0))
+				.scheduledExpeditionDate(ZonedDateTime.of(LocalDateTime.of(2050, 12, 31, 12, 0, 0), ZoneId.of("Europe/Rome")).toOffsetDateTime())
 				.taxcode("AAAAAA00A00A000A")
 				.build();
 	}

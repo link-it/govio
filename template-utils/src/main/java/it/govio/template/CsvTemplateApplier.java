@@ -20,7 +20,7 @@ package it.govio.template;
 
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,12 +50,12 @@ public class CsvTemplateApplier extends TemplateApplier {
 			throw new TemplateValidationException("Impossibile tokenizzare il record: " + e);
 		}
 		String taxcode = getTaxcode(splitted);
-		LocalDateTime dueDate = getDuedate(splitted);
+		OffsetDateTime dueDate = getDuedate(splitted);
 		String noticeNumber = getNoticeNumber(splitted);
 		String payee = getPayee(splitted);
 		Long amount = getAmount(splitted);
 		Boolean invalidAfterDueDate = getInvalidAfterDueDate(splitted);
-		LocalDateTime scheduledExpeditionDate = getScheduledExpeditionDate(splitted);
+		OffsetDateTime scheduledExpeditionDate = getScheduledExpeditionDate(splitted);
 		
 		Map<String, String> placeholderValues = new HashMap<>();
 		for(Item<?> item : items.values()) {
@@ -76,7 +76,7 @@ public class CsvTemplateApplier extends TemplateApplier {
 				.build();
 	}
 
-	private LocalDateTime getScheduledExpeditionDate(String[] splitted) throws TemplateValidationException {
+	private OffsetDateTime getScheduledExpeditionDate(String[] splitted) throws TemplateValidationException {
 		DateTimeItem item = (DateTimeItem) items.get( ItemKeys.EXPEDITIONDATE.toString());
 		if(item != null)
 			return item.getValueFromCsv(splitted);
@@ -104,7 +104,7 @@ public class CsvTemplateApplier extends TemplateApplier {
 		return item != null ? item.getValueFromCsv(splitted) : null;
 	}
 
-	private LocalDateTime getDuedate(String[] splitted) throws TemplateValidationException {
+	private OffsetDateTime getDuedate(String[] splitted) throws TemplateValidationException {
 		DateTimeItem item = (DateTimeItem) items.get( ItemKeys.DUEDATE.toString());
 		return item != null ? item.getValueFromCsv(splitted) : null;
 	}

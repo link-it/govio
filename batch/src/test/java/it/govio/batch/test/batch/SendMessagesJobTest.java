@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -148,8 +148,8 @@ class SendMessagesJobTest {
 					.markdown("Lorem Ipsum")
 					.subject("Subject")
 					.taxcode(String.format("%03d", i) + "AAA00A00A000A")
-					.scheduledExpeditionDate(LocalDateTime.now().minusDays(1))
-					.creationDate(LocalDateTime.now().minusDays(2))
+					.scheduledExpeditionDate(OffsetDateTime.now().minusDays(1))
+					.creationDate(OffsetDateTime.now().minusDays(2))
 					.status(Status.SCHEDULED)
 					.build();
 			govioMessagesRepository.save(message);
