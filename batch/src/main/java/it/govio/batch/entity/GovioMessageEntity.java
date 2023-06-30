@@ -19,7 +19,7 @@
 package it.govio.batch.entity;
 
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -98,18 +98,18 @@ public class GovioMessageEntity {
 	private String appioMessageId;
 
 	@Column(name = "creation_date", nullable = false)
-	private LocalDateTime creationDate;
+	private OffsetDateTime creationDate;
 
 	@Column(name = "scheduled_expedition_date", nullable = false)
-	private LocalDateTime scheduledExpeditionDate;
+	private OffsetDateTime scheduledExpeditionDate;
 
 	@Column(name = "expedition_date")
-	private LocalDateTime expeditionDate;
+	private OffsetDateTime expeditionDate;
 
 	@Column(name = "due_date")
-	private LocalDateTime dueDate;
+	private OffsetDateTime dueDate;
 
 	@Column(name = "last_update_status")
-	private LocalDateTime lastUpdateStatus;
+	private OffsetDateTime lastUpdateStatus;
 
 }

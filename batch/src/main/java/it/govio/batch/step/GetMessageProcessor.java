@@ -18,7 +18,7 @@
  */
 package it.govio.batch.step;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class GetMessageProcessor extends GovioMessageAbstractProcessor {
 		} catch (Exception e) {
 			handleRestClientException(e);
 		}
-		item.setLastUpdateStatus(LocalDateTime.now());
+		item.setLastUpdateStatus(OffsetDateTime.now());
 		return item;
 	}
 	
