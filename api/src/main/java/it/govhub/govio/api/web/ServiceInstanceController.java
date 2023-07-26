@@ -58,6 +58,7 @@ import it.govhub.govio.api.beans.GovioServiceInstanceList;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity_;
+import it.govhub.govio.api.entity.GovioTemplateEntity_;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
 import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceFilters;
@@ -128,7 +129,7 @@ public class ServiceInstanceController implements ServiceApi {
 			Long offset,
 			 List<EmbedServiceInstanceEnum> embed) {
 		
-		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(sortDirection, GovioServiceInstanceEntity_.ORGANIZATION +"."+OrganizationEntity_.LEGAL_NAME, GovioServiceInstanceEntity_.SERVICE + "." + ServiceEntity_.NAME));
+		LimitOffsetPageRequest pageRequest = new LimitOffsetPageRequest(offset, limit, Sort.by(sortDirection, GovioServiceInstanceEntity_.TEMPLATE + "." + GovioTemplateEntity_.NAME, GovioServiceInstanceEntity_.ID));
 		
 		Specification<GovioServiceInstanceEntity> spec = ServiceInstanceFilters.empty();
 

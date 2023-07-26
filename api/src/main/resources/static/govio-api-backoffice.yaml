@@ -5,11 +5,6 @@ info:
   x-api-id: govio-backoffice
   version: 1.0.1
   description: >
-    # Warning
-
-    **This is an experimental API that is (most probably) going to change as we
-    evolve the IO platform.**
-
     # Introduction
 
     This is the documentation of the GovIO API for 3rd party services. This API
