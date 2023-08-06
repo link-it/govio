@@ -70,8 +70,6 @@ import it.govhub.govregistry.commons.api.beans.Service;
 import it.govhub.govregistry.commons.api.beans.ServiceList;
 import it.govhub.govregistry.commons.api.beans.ServiceOrdering;
 import it.govhub.govregistry.commons.config.V1RestController;
-import it.govhub.govregistry.commons.entity.OrganizationEntity_;
-import it.govhub.govregistry.commons.entity.ServiceEntity_;
 import it.govhub.govregistry.commons.exception.BadRequestException;
 import it.govhub.govregistry.commons.exception.ConflictException;
 import it.govhub.govregistry.commons.exception.ResourceNotFoundException;

@@ -22,6 +22,7 @@ package it.govio.template.items;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -54,12 +55,16 @@ public class DateTimeItem extends Item<OffsetDateTime> {
 		// Se c'e' un valore, controllo che sia compatibile.
 		if(stringValue != null && !stringValue.isBlank()) {
 			try {
-				return LocalDateTime.parse(stringValue)
-			            .atZone(ZoneId.of("Europe/Rome"))
-			            .toOffsetDateTime();
-			} catch (DateTimeParseException e) {
-				logger.debug("Validazione della data con ora fallita: {}", e.getMessage());
-				throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non presenta una data con ora valida.", stringValue, name));
+				return OffsetDateTime.parse(stringValue);
+			} catch (DateTimeParseException e1) {
+				try {
+					return LocalDateTime.parse(stringValue)
+				            .atZone(ZoneId.of("Europe/Rome"))
+				            .toOffsetDateTime();
+				} catch (DateTimeParseException e) {
+					logger.debug("Validazione della data con ora fallita: {}", e.getMessage());
+					throw new TemplateValidationException(String.format("Il valore %s del placeholder %s non presenta una data con ora valida.", stringValue, name));
+				}
 			}
 		}
 		return null;
