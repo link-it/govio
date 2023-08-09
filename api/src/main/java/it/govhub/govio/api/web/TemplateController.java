@@ -436,7 +436,8 @@ public class TemplateController implements TemplateApi {
 		}
 		
 		template.getGovioTemplatePlaceholders().remove(placeholder);
-		this.templateRepo.save(template);
+		placeholder.setGovioTemplate(null);
+		template = this.templateRepo.save(template);
 
 		// Scorro tutti i placeholders e se successivi al corrente, decremento la posizione
 		for(var p : template.getGovioTemplatePlaceholders() ) {
