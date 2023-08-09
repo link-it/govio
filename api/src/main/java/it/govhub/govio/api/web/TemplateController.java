@@ -421,7 +421,6 @@ public class TemplateController implements TemplateApi {
 	}
 	
 	
-	@Transactional
 	@Override
 	public ResponseEntity<Void> removeTemplatePlaceholder(Long templateId, Long placeholderId) {
 		
@@ -434,9 +433,8 @@ public class TemplateController implements TemplateApi {
 		if (placeholder == null) {
 			throw new ResourceNotFoundException(this.placeholderMessages.idNotFound(placeholderId));
 		}
-		
-		template.getGovioTemplatePlaceholders().remove(placeholder);
 		this.templatePlaceholderRepo.delete(placeholder);
+		template.getGovioTemplatePlaceholders().remove(placeholder);
 		template = this.templateRepo.save(template);
 
 		// Scorro tutti i placeholders e se successivi al corrente, decremento la posizione
