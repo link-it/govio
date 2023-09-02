@@ -140,7 +140,7 @@ CREATE TABLE govio_messages
 create table govio_messages_idempotency_keys (
 	id_govio_message BIGINT not null,
 	bean_hashcode BIGINT,
-	idempotency_key uuid,
+	idempotency_key VARBINARY(36),
 	primary key (id_govio_message)
 );
 
