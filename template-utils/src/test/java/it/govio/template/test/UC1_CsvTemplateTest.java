@@ -526,4 +526,46 @@ class UC1_CsvTemplateTest {
 		assertNull(messaggio.getDueDate());
 		assertNull(messaggio.getPayee());
 	}
+	
+	@Test
+	@DisplayName("template con due date con timezone")
+	void UC_1_23_DueExpeditionDateTimezone() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
+		List<Placeholder> placeholders = new ArrayList<> ();
+
+		Template template = Template
+				.builder()
+				.hasDueDate(true)
+				.hasPayment(true)
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
+				.subject("hello, il subject deve essere almeno dieci caratteri")
+				.placeholders(placeholders)
+				.build();
+
+		CsvTemplateApplier templateApplier = TemplateApplierFactory.buildCSVTemplateApplier(template);
+		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A,2007-12-03T10:15:30Z,2007-12-03T10:15:30Z,200000000000000000,100000000000000000,false,12345678901");
+
+		assertEquals("il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15",messaggio.getMarkdown());
+		assertEquals(false,messaggio.getInvalidAfterDueDate());
+	}
+	
+	@Test
+	@DisplayName("template con due date con offset")
+	void UC_1_24_DueExpeditionDateOffsetTimezone() throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException {
+		List<Placeholder> placeholders = new ArrayList<> ();
+
+		Template template = Template
+				.builder()
+				.hasDueDate(true)
+				.hasPayment(true)
+				.messageBody("il comune di Empoli lo avvisa che il pagamento è di ${amount} effettuato da ${payee} in data ${due_date_date} alle ore ${due_date_time}")
+				.subject("hello, il subject deve essere almeno dieci caratteri")
+				.placeholders(placeholders)
+				.build();
+
+		CsvTemplateApplier templateApplier = TemplateApplierFactory.buildCSVTemplateApplier(template);
+		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A,2007-12-03T10:15:30+01:00,2007-12-03T10:15:30+01:00,200000000000000000,100000000000000000,false,12345678901");
+
+		assertEquals("il comune di Empoli lo avvisa che il pagamento è di 100000000000000000 effettuato da 12345678901 in data 03/12/2007 alle ore 10:15",messaggio.getMarkdown());
+		assertEquals(false,messaggio.getInvalidAfterDueDate());
+	}
 }
