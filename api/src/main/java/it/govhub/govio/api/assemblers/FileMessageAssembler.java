@@ -48,15 +48,17 @@ public class FileMessageAssembler extends RepresentationModelAssemblerSupport<Go
 
 		FileMessage ret = instantiateModel(src);
 
+		BeanUtils.copyProperties(src, ret);
+		
 		FileMessageStatusEnum status = src.getGovioMessage() == null ? FileMessageStatusEnum.ERROR
 				: FileMessageStatusEnum.ACQUIRED;
-
-		BeanUtils.copyProperties(src, ret);
+		ret.status(status);
+		
 
 		if (status == FileMessageStatusEnum.ACQUIRED) {
 			ret.status(status).message(this.msgItemAssembler.toModel(src.getGovioMessage()));
 		}
-
+		
 		return ret;
 	}
 

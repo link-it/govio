@@ -42,6 +42,10 @@ public class MessageItemAssembler extends RepresentationModelAssemblerSupport<Go
 
 		GovioMessageItem ret = instantiateModel(src);
 		ret.setId(src.getId());
+		ret.setCreationDate(src.getCreationDate());
+		ret.setAppioMessageId(src.getAppioMessageId());
+		ret.setExpeditionDate(src.getExpeditionDate());
+		ret.setStatus(src.getStatus());
 		return ret;
 	}
 
