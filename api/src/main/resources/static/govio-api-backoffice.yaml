@@ -2505,11 +2505,34 @@ components:
     GovioMessageItem:
       type: object
       additionalProperties: false
-      properties:
-        id:
-          $ref: '#/components/schemas/MessageId'
       required:
         - id
+        - status
+        - creation_date
+      properties:
+        id:
+          type: integer
+          description: GovIO Message Id.
+          format: int64
+          example: 1
+        status:
+          $ref: '#/components/schemas/GovioMessageStatus'
+        status_detail:
+          maxLength: 2000000
+          minLength: 0
+          pattern: '[\s\S]*'
+          type: string
+        appio_message_id:
+          maxLength: 1024
+          minLength: 0
+          pattern: .*
+          type: string
+        creation_date:
+          type: string
+          format: date-time
+        expedition_date:
+          type: string
+          format: date-time    
 
     FileStatistics:
         type: object
