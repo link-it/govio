@@ -147,10 +147,6 @@ public class FileService {
 	@Transactional
 	public FileMessageList listFileMessages(Specification<GovioFileMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
 		
-		// TODO: Qui ho bisogno di un'entity graph che di ogni fileEntity mi peschi anche i
-		// fileMessages, altrimenti pago altre
-		// N query quando vado a convertire i files
-		
 		Page<GovioFileMessageEntity> fileList = this.fileMessageRepo.findAll(spec, pageRequest.pageable);
 
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())

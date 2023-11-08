@@ -18,11 +18,22 @@
  */
 package it.govhub.govio.api.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
+import it.govhub.govio.api.entity.GovioFileMessageEntity_;
+import it.govhub.govio.api.entity.GovioMessageEntity_;
 
 public interface FileMessageRepository extends JpaRepositoryImplementation<GovioFileMessageEntity, Long>{
 
+    @EntityGraph(attributePaths = {
+    		GovioFileMessageEntity_.GOVIO_MESSAGE,
+    		GovioFileMessageEntity_.GOVIO_MESSAGE+"."+GovioMessageEntity_.IDEMPOTENCY_KEY
+    })
+	public Page<GovioFileMessageEntity> findAll(Specification<GovioFileMessageEntity> spec, Pageable pageable);
 }
 
