@@ -1772,7 +1772,6 @@ components:
     GovioBaseMessage:
       required:
         - markdown
-        - scheduled_expedition_date
         - taxcode
       type: object
       properties:
@@ -1796,7 +1795,9 @@ components:
         scheduled_expedition_date:
           type: string
           format: date-time
-          description: The date when this message has to be sent to the citizien.
+          description: > 
+            The date when this message has to be sent to the citizien.
+            If not provided or provided in the past, it will be updated to current time.
         due_date:
           type: string
           format: date-time

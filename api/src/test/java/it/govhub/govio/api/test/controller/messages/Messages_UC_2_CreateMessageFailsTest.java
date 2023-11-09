@@ -163,38 +163,38 @@ class Messages_UC_2_CreateMessageFailsTest {
 	/**
 	 * Caricamento di un nuovo messaggio senza indicare il campo obbligatorio scheduledExpeditionDate.
 	 * 
+	 * Questo non e' piu' un errore: viene preso come default now()
 	 * @throws Exception
 	 */
-	@Test
-	void UC_2_02_CreateMessage_MissingInvalidAfterDueDate() throws Exception {
-		String idempotencyKey = MessageUtils.createIdempotencyKey();
-		Long amount = 9999999999L;
-		String noticeNumber = "159981576728496290";
-		Boolean invalidAfterDueDate = true;
-		String payEETaxCode = "50751457039";
-
-		OffsetDateTime scheduledExpeditionDate = null; //ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
-		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
-
-		String taxCode = "AYCSFK56HUQE969O";
-		String email = "s.nakamoto@xxxxx.xx";
-
-		JsonObject message = MessageUtils.createMessage(amount, noticeNumber, invalidAfterDueDate, payEETaxCode, scheduledExpeditionDate,
-				dueDate, taxCode, email, null, this.dt);
-
-		String json = message.toString();
-
-		this.mockMvc.perform(
-				post(MESSAGES_BASE_PATH)
-				.param("service_instance", "1")
-				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
-				.content(json)
-				.contentType(MediaType.APPLICATION_JSON)
-				.with(this.userAuthProfilesUtils.utenzaAdmin())
-				.accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isBadRequest())
-		.andReturn();
-	}
+//	void UC_2_02_CreateMessage_MissingInvalidAfterDueDate() throws Exception {
+//		String idempotencyKey = MessageUtils.createIdempotencyKey();
+//		Long amount = 9999999999L;
+//		String noticeNumber = "159981576728496290";
+//		Boolean invalidAfterDueDate = true;
+//		String payEETaxCode = "50751457039";
+//
+//		OffsetDateTime scheduledExpeditionDate = null;  
+//		OffsetDateTime dueDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
+//
+//		String taxCode = "AYCSFK56HUQE969O";
+//		String email = "s.nakamoto@xxxxx.xx";
+//
+//		JsonObject message = MessageUtils.createMessage(amount, noticeNumber, invalidAfterDueDate, payEETaxCode, scheduledExpeditionDate,
+//				dueDate, taxCode, email, null, this.dt);
+//
+//		String json = message.toString();
+//
+//		this.mockMvc.perform(
+//				post(MESSAGES_BASE_PATH)
+//				.param("service_instance", "1")
+//				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
+//				.content(json)
+//				.contentType(MediaType.APPLICATION_JSON)
+//				.with(this.userAuthProfilesUtils.utenzaAdmin())
+//				.accept(MediaType.APPLICATION_JSON))
+//		.andExpect(status().isBadRequest())
+//		.andReturn();
+//	}
 
 	/**
 	 * Caricamento di un nuovo messaggio senza indicare il campo obbligatorio amount.
