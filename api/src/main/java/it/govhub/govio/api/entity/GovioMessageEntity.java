@@ -116,7 +116,7 @@ public class GovioMessageEntity {
 	private OffsetDateTime lastUpdateStatus;
 	
     @OneToOne(mappedBy = "message", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn			// Indica che la primary key di questa tabella è usata come valore della foreign key della IdempotencyKeyMessageEntity
+    @PrimaryKeyJoinColumn			
     private GovioMessageIdempotencyKeyEntity idempotencyKey;
 
 }
