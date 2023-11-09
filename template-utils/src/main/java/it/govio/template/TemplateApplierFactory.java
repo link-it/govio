@@ -63,7 +63,7 @@ public class TemplateApplierFactory {
 		Item<?> taxcode = new StringItem(index, ItemKeys.TAXCODE.toString(), true, "[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]");
 		items.put(ItemKeys.TAXCODE.toString(), taxcode);
 
-		Item<?> expeditionDateTime = new DateTimeItem(++index, ItemKeys.EXPEDITIONDATE.toString(), true);
+		Item<?> expeditionDateTime = new DateTimeItem(++index, ItemKeys.EXPEDITIONDATE.toString(), false);
 		items.put(ItemKeys.EXPEDITIONDATE.toString(), expeditionDateTime);
 		
 		if(hasDueDate) {
