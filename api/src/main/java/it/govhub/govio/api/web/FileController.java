@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
@@ -54,6 +55,7 @@ import it.govhub.govio.api.beans.FileList;
 import it.govhub.govio.api.beans.FileMessageList;
 import it.govhub.govio.api.beans.FileMessageStatusEnum;
 import it.govhub.govio.api.beans.FileOrdering;
+import it.govhub.govio.api.beans.FileStatsInner;
 import it.govhub.govio.api.beans.GovioFile;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
@@ -308,6 +310,20 @@ public class FileController implements FileApi {
 		FileMessageList ret = this.fileService.listFileMessages(spec, pageRequest);
 		
 		return ResponseEntity.ok(ret);
+	}
+
+
+	@Override
+	public ResponseEntity<List<FileStatsInner>> readFileMessagesStats(@Min(0) Long id) {
+		
+		GovioFileEntity file = this.fileRepo.findById(id)
+				.orElseThrow( () -> new ResourceNotFoundException(this.fileMessages.idNotFound(id)));
+		GovioServiceInstanceEntity instance = file.getServiceInstance();
+		
+		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
+		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
+		
+		return ResponseEntity.ok(this.fileService.getFileStats(id));
 	}
 
 	
