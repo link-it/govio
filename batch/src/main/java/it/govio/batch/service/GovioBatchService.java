@@ -34,13 +34,13 @@ public class GovioBatchService {
 
 	@Autowired
 	JobLauncher jobLauncher;
-	
+
 	@Autowired
 	JobRepository jobRepository;
-	
+
 	@Autowired
 	JobExplorer jobExplorer;
-	
+
 	@Autowired
 	JobOperator jobOperator;
 
@@ -55,9 +55,9 @@ public class GovioBatchService {
 	@Autowired
 	@Qualifier(VerifyMessagesJobConfig.VERIFYMESSAGES_JOBNAME)
 	private Job verifyMessagesJob;
-	
+
 	private Logger log = LoggerFactory.getLogger(GovioBatchService.class);
-	
+
 	private static final String CURRENTDATE_STRING = "CurrentDate";
 
 	/**
@@ -72,25 +72,23 @@ public class GovioBatchService {
 	 * @throws NoSuchJobExecutionException 
 	 *  
 	 */
-	public JobExecution runFileProcessingJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, NoSuchJobException {
-		
+	public JobExecution runFileProcessingJob() throws Exception {
+
 		JobInstance lastInstance = this.jobExplorer.getLastJobInstance(FileProcessingJobConfig.FILEPROCESSING_JOB);
-		
+
 		// Determino i JobParameters con cui lanciare il Job. In base al loro valore avverrà un avvio nuovo, un restart, o nulla.
 		JobParameters params = null;
 		JobExecution lastExecution = null;
-		
+
 		if (lastInstance != null) {
 			lastExecution = this.jobExplorer.getLastJobExecution(lastInstance);
 		}
-		
+
 		if (lastInstance != null && lastExecution == null) {
 			log.error("Trovata istanza preesistente per il job [{}] ma senza una JobExecution associata, forse l'esecuzione deve ancora partire. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOB);
 			return null;
 		}
 		else if (lastExecution != null) {
-			//ExitStatus exitStatus = lastExecution.getExitStatus();
-			
 			// L'Exit Status di un Job è così determinato:
 			// 			- 	If the Step ends with ExitStatus of FAILED, the BatchStatus and ExitStatus of the Job are both FAILED.
 			// 			-	Otherwise, the BatchStatus and ExitStatus of the Job are both COMPLETED.
@@ -98,64 +96,54 @@ public class GovioBatchService {
 			//
 			// In questo caso batchStatus e exitStatus combaciano perchè non c'è nessuna logica particolare nel FileProcessingJobConfig
 			// che altera lo stato del job nel caso gli step falliscano.
+			Long newExecutionId = null;
 			switch (lastExecution.getStatus()) {
-
 			// In questo caso Creo un nuovo Job.
 			case ABANDONED:
-				log.warn("Trovata Job Execution di id {} abbandonata!", lastExecution.getId());
-				params = new JobParametersBuilder()
-						.addString("When", String.valueOf(System.currentTimeMillis()))
-						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
-				return jobLauncher.run(fileProcessingJob, params);
+			case UNKNOWN:
 			case COMPLETED:
-			
 				// I Job Abandoned non possono essere riavviati. (Sono abbandonati appunto)
 				// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
 				// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
 				// Siamo liberi di andare avanti e di eseguire un nuovo job.
-				log.debug("Trovata istanza preesistente per il Job [{}] in stato COMPLETED. Avvio nuovo Job. ", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Avvio un nuovo job. ", lastExecution, lastExecution.getStatus());
 				params = new JobParametersBuilder()
 						.addString("When", String.valueOf(System.currentTimeMillis()))
 						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 				return jobLauncher.run(fileProcessingJob, params);
-			
-			// In questo caso riavvio.
 			case FAILED:
 			case STOPPED:
-				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Riavvio il Job. ", lastExecution, lastExecution.getStatus().toString()); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
-				Long newExecutionId = jobOperator.restart(lastExecution.getId());
+				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Riavvio il Job. ", lastExecution, lastExecution.getStatus()); 
+				newExecutionId = jobOperator.restart(lastExecution.getId());
 				return jobExplorer.getJobExecution(newExecutionId);
 			default:
-				// STARTED, STARTING, STOPPING, UNKNOWN:
 				// STARTED STARTING e STOPPING non dovremmo mai trovarli, per via del comportamento dello scheduler.
-				
-				// UNKNOWN - Questo possiamo scoprirlo solo operativamente.
-				log.warn("Trovata istanza preesistente per il Job [{}]. STATO INASPETTATO. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution); //FileProcessingJobConfig.FILEPROCESSING_JOB, exitStatus, lastExecution.getStatus());
+				log.warn("Trovata istanza preesistente per il Job [{}]. STATO {}. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", lastExecution, lastExecution.getStatus()); 
 				return null;
 			}
-		}	else {
+		} else {
 			params = new JobParametersBuilder()
 					.addString("When", String.valueOf(System.currentTimeMillis()))
 					.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 			return jobLauncher.run(fileProcessingJob, params);
+		}
 	}
-}
 
-	public JobExecution runSendMessageJob() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		
-		this.log.info("Copio un eventuale chunk di messaggi perso.");
+	public JobExecution runSendMessageJob() throws Exception {
+
+		this.log.debug("Copio un eventuale chunk di messaggi perso.");
 		SendMessagesJobConfig.temporaryMessageStore.putAll(SendMessagesJobConfig.temporaryChunkMessageStore);
 		// TODO: Aggiungi uno step finale che pulisce la map.
-		
+
 		JobParameters params = new JobParametersBuilder().
 				addString(GOVIO_JOB_ID, SendMessagesJobConfig.SENDMESSAGES_JOB).
 				addString("When", String.valueOf(System.currentTimeMillis())).
 				toJobParameters();
-		
+
 		return jobLauncher.run(sendMessagesJob, params);
 	}
 
-	public void runVerifyMessagesJob() throws JobExecutionAlreadyRunningException, JobRestartException, 	JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	public void runVerifyMessagesJob() throws Exception {
 		JobParameters params = new JobParametersBuilder()
 				.addString(GOVIO_JOB_ID,VerifyMessagesJobConfig.VERIFYMESSAGES_JOBNAME)
 				.addString("When",  String.valueOf(System.currentTimeMillis()))

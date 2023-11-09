@@ -19,7 +19,7 @@
 package it.govio.batch.config;
 
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
@@ -77,8 +77,8 @@ public class VerifyMessagesJobConfig extends AbstractMessagesJobConfig {
 	@Bean("expiredExpeditionDateMessageCursor")
 	@StepScope
 	protected JpaCursorItemReader<GovioMessageEntity> expiredExpeditionDateMessageCursor(@Value("#{jobParameters[CurrentDate]}") Date now) {
-		LocalDateTime from = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime().minusMinutes(delay);
-		LocalDateTime to = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime().minusDays(window);
+		OffsetDateTime from = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime().minusMinutes(delay);
+		OffsetDateTime to = now.toInstant().atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime().minusDays(window);
 		Status[] statuses = {Status.SENT, Status.THROTTLED, Status.ACCEPTED};
         JpaCursorItemReader<GovioMessageEntity> itemReader = new JpaCursorItemReader<>();
         itemReader.setQueryString("SELECT msg FROM GovioMessageEntity msg JOIN FETCH msg.govioServiceInstance srv WHERE msg.status IN :statuses AND msg.expeditionDate < :t0 AND msg.expeditionDate > :t1");

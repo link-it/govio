@@ -19,7 +19,7 @@
 package it.govio.batch.entity;
 
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -69,10 +69,10 @@ public class GovioFileEntity {
 	private String name;
 
 	@Column(name = "creation_date", nullable = false)
-	private LocalDateTime creationDate;
+	private OffsetDateTime creationDate;
 	
 	@Column(name = "processing_date")
-	private LocalDateTime processingDate;
+	private OffsetDateTime processingDate;
 	
 	@Column(name = "location", nullable = false,  length = 1024)
 	private String location;

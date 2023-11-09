@@ -25,6 +25,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -44,17 +47,20 @@ import it.govhub.govio.api.assemblers.FileAssembler;
 import it.govhub.govio.api.assemblers.FileMessageAssembler;
 import it.govhub.govio.api.assemblers.MessageAssembler;
 import it.govhub.govio.api.beans.FileMessageList;
+import it.govhub.govio.api.beans.FileStatsInner;
 import it.govhub.govio.api.config.GovioRoles;
 import it.govhub.govio.api.entity.GovioFileEntity;
 import it.govhub.govio.api.entity.GovioFileMessageEntity;
+import it.govhub.govio.api.entity.GovioMessageEntity.Status;
 import it.govhub.govio.api.entity.GovioServiceInstanceEntity;
 import it.govhub.govio.api.messages.FileMessages;
 import it.govhub.govio.api.repository.FileMessageRepository;
 import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.MessageRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
+import it.govhub.govio.api.repository.model.MessageStatusCount;
+import it.govhub.govregistry.commons.exception.ConflictException;
 import it.govhub.govregistry.commons.exception.InternalException;
-import it.govhub.govregistry.commons.exception.SemanticValidationException;
 import it.govhub.govregistry.commons.utils.LimitOffsetPageRequest;
 import it.govhub.govregistry.commons.utils.ListaUtils;
 import it.govhub.security.services.SecurityService;
@@ -103,7 +109,7 @@ public class FileService {
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_SYSADMIN) ;
 		
 		if (this.fileRepo.findByNameAndServiceInstance(sourceFilename, instance).isPresent()) {
-			throw new SemanticValidationException(this.fileMessages.conflict("name", sourceFilename));
+			throw new ConflictException(this.fileMessages.conflict("name", sourceFilename));
 		}
 
     	Path destPath = this.fileRepositoryPath
@@ -117,8 +123,8 @@ public class FileService {
     		throw new InternalException("Non è stato possibile creare la directory per conservare i files");
     	}
     	
-    	Path destFile =  destPath
-    				.resolve(sourceFilename);
+    	String destFilename = UUID.randomUUID() + "-" + sourceFilename;
+    	Path destFile =  destPath.resolve(destFilename);
     	
     	log.info("Streaming uploaded csv [{}] to [{}]", sourceFilename, destFile);
     	
@@ -146,10 +152,6 @@ public class FileService {
 	@Transactional
 	public FileMessageList listFileMessages(Specification<GovioFileMessageEntity> spec, LimitOffsetPageRequest pageRequest) {
 		
-		// TODO: Qui ho bisogno di un'entity graph che di ogni fileEntity mi peschi anche i
-		// fileMessages, altrimenti pago altre
-		// N query quando vado a convertire i files
-		
 		Page<GovioFileMessageEntity> fileList = this.fileMessageRepo.findAll(spec, pageRequest.pageable);
 
 		HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
@@ -165,5 +167,20 @@ public class FileService {
 		return ret;
 	}
 	
-	
+	@Transactional
+	public List<FileStatsInner> getFileStats(Long id) {
+		
+		List<MessageStatusCount> countTotalFileMessageByStatus = this.fileMessageRepo.countTotalFileMessageByStatus(id);
+
+		List<FileStatsInner> ret = new ArrayList<>();
+		for (MessageStatusCount messageStatusCount : countTotalFileMessageByStatus) {
+			FileStatsInner fs = new FileStatsInner();
+			fs.setCount(messageStatusCount.getCount());
+			fs.setStatus(messageStatusCount.getStatus());
+			if(fs.getStatus() == null) fs.setStatus(Status.REJECTED);
+			ret.add(fs);
+		}
+		
+		return ret;
+	}
 }

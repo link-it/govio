@@ -45,9 +45,9 @@ public class BasicTemplateApplier extends TemplateApplier {
 		if(message.getAmount() != null)
 			placeholders.put(ItemKeys.AMOUNT.toString(), message.getAmount().toString());
 		if(message.getDueDate() != null)
-			placeholders.put(ItemKeys.DUEDATE.toString(), message.getDueDate().toString());
+			placeholders.put(ItemKeys.DUEDATE.toString(), message.getDueDate().toLocalDateTime().toString());
 		if(message.getScheduledExpeditionDate() != null)
-			placeholders.put(ItemKeys.EXPEDITIONDATE.toString(), message.getScheduledExpeditionDate().toString());
+			placeholders.put(ItemKeys.EXPEDITIONDATE.toString(), message.getScheduledExpeditionDate().toLocalDateTime().toString());
 		if(message.getInvalidAfterDueDate() != null)
 			placeholders.put(ItemKeys.INVALIDAFTERDUEDATE.toString(), message.getInvalidAfterDueDate().toString());
 		if(message.getNoticeNumber() != null)

@@ -22,13 +22,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import it.govio.batch.entity.GovioFileEntity;
 import it.govio.batch.entity.GovioMessageEntity;
@@ -47,9 +44,9 @@ public class GovioMessageBuilder {
 				.subject("Subject")
 				.taxcode("AAAAAA00A00A000A")
 				.status(status)
-				.creationDate(LocalDateTime.now())
-				.scheduledExpeditionDate(LocalDateTime.now());
-		if (due_date) messageEntity.dueDate(LocalDateTime.now().plusDays(3));
+				.creationDate(OffsetDateTime.now())
+				.scheduledExpeditionDate(OffsetDateTime.now());
+		if (due_date) messageEntity.dueDate(OffsetDateTime.now().plusDays(3));
 		if (amount != null && amount > 0) {
 			messageEntity.amount(amount);
 			messageEntity.noticeNumber(noticeNumber);
@@ -62,7 +59,7 @@ public class GovioMessageBuilder {
 		case SENT:
 		case THROTTLED:
 		case ACCEPTED:
-			messageEntity.expeditionDate(LocalDateTime.now());
+			messageEntity.expeditionDate(OffsetDateTime.now());
 			messageEntity.appioMessageId(UUID.randomUUID().toString());
 			break;
 		default:
@@ -72,8 +69,6 @@ public class GovioMessageBuilder {
 		GovioMessageEntity message = messageEntity.build();
 		return message;
 	}
-	
-	private static Logger log = LoggerFactory.getLogger(GovioMessageBuilder.class);
 	
 	public static GovioFileEntity buildFile(TemporaryFolder t, GovioServiceInstanceEntity instanceService, String i) throws IOException {
 		File file = t.newFile(i+".csv");
@@ -87,7 +82,7 @@ public class GovioMessageBuilder {
 		file1writer.close();
 	
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
-				.creationDate(LocalDateTime.now())
+				.creationDate(OffsetDateTime.now())
 				.govioServiceInstance(instanceService)
 				.govhubUserId(1l)
 				.location(file.toPath().toString())
@@ -148,7 +143,7 @@ public class GovioMessageBuilder {
 		file1writer.close();
 	
 		GovioFileEntity govioFile1 = GovioFileEntity.builder()
-				.creationDate(LocalDateTime.now())
+				.creationDate(OffsetDateTime.now())
 				.govioServiceInstance(instanceService)
 				.govhubUserId(1l)
 				.location(file.toPath().toString())
