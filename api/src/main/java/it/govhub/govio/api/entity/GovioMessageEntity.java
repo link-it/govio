@@ -20,6 +20,7 @@ package it.govhub.govio.api.entity;
 
 import java.time.OffsetDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -30,10 +31,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.springframework.stereotype.Component;
 
 import it.govhub.govregistry.commons.entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -49,7 +50,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Component
 @Table(name = "govio_messages")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class GovioMessageEntity {
@@ -114,5 +114,9 @@ public class GovioMessageEntity {
 
 	@Column(name = "last_update_status")
 	private OffsetDateTime lastUpdateStatus;
+	
+    @OneToOne(mappedBy = "message", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn			
+    private GovioMessageIdempotencyKeyEntity idempotencyKey;
 
 }

@@ -5,11 +5,6 @@ info:
   x-api-id: govio-backoffice
   version: 1.0.1
   description: >
-    # Warning
-
-    **This is an experimental API that is (most probably) going to change as we
-    evolve the IO platform.**
-
     # Introduction
 
     This is the documentation of the GovIO API for 3rd party services. This API
@@ -613,13 +608,42 @@ paths:
           $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
         default:
           $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
-                    
+          
+  '/files/{id}/stats':
+    parameters:
+      - $ref: '#/components/parameters/file_id'
+    get:
+      tags:
+        - file
+      summary: Retrieve the file processing messages statistics.
+      description: Retrieve the file messages statistics.
+      operationId: readFileMessagesStats
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/FileStats'
+        '401':
+          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+        '403':
+          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+        '404':
+          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
+        '429':
+          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+        '503':
+          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+        default:
+          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'                    
   /messages:
     post:
       tags:
         - message
       parameters:
         - $ref: '#/components/parameters/service_instance_id_query'
+        - $ref: '#/components/parameters/idempotency_key'
       summary: Send a new message.
       description: >
          Send a message through the service template.
@@ -1615,6 +1639,14 @@ components:
       schema:
         $ref: '#/components/schemas/FileMessageStatusEnum'
         
+    idempotency_key:
+      name: idempotency_key
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid    
+        
     line_number_from_query:
       name: line_number_from
       in: query
@@ -1725,6 +1757,17 @@ components:
        pattern: .*
        maxLength: 2048
        example: file1.csv
+
+    FileStats:
+      type: array
+      items:
+        type: object
+        properties:
+          status:
+            $ref: '#/components/schemas/GovioMessageStatus'
+          count:
+            type: integer
+            format: int64
 
     GovioBaseMessage:
       required:
@@ -1919,7 +1962,7 @@ components:
           format: int64
           minimum: 1
           maximum: 9999999999
-          example: 62.12
+          example: 1000
         notice_number:
           description: >-
              The field ["Numero Avviso"]  of pagoPa, needed to identify the payment. 
@@ -2271,6 +2314,7 @@ components:
         - forbidden
         - processed
         - created
+        - discarded
         
     FileUserItem:
       type: object
@@ -2501,11 +2545,34 @@ components:
     GovioMessageItem:
       type: object
       additionalProperties: false
-      properties:
-        id:
-          $ref: '#/components/schemas/MessageId'
       required:
         - id
+        - status
+        - creation_date
+      properties:
+        id:
+          type: integer
+          description: GovIO Message Id.
+          format: int64
+          example: 1
+        status:
+          $ref: '#/components/schemas/GovioMessageStatus'
+        status_detail:
+          maxLength: 2000000
+          minLength: 0
+          pattern: '[\s\S]*'
+          type: string
+        appio_message_id:
+          maxLength: 1024
+          minLength: 0
+          pattern: .*
+          type: string
+        creation_date:
+          type: string
+          format: date-time
+        expedition_date:
+          type: string
+          format: date-time    
 
     FileStatistics:
         type: object
@@ -2531,7 +2598,7 @@ components:
     IOServiceId:
       type: string
       minLength: 1
-      maxLength: 512                                         
+      maxLength: 255
         
     MessageOrdering:
          type: string

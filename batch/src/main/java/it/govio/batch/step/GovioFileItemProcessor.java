@@ -18,7 +18,7 @@
  */
 package it.govio.batch.step;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class GovioFileItemProcessor implements ItemProcessor<GovioFileMessageEnt
 			Message message = templateApplier.buildMessage(item.getLineRecord());
 			GovioMessageEntity govioMessageEntity = GovioMessageEntity.builder()
 					.amount(message.getAmount())
-					.creationDate(LocalDateTime.now())
+					.creationDate(OffsetDateTime.now())
 					.dueDate(message.getDueDate())
 					.email(message.getEmail())
 					.invalidAfterDueDate(message.getInvalidAfterDueDate())
