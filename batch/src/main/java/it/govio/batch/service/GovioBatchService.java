@@ -34,13 +34,13 @@ public class GovioBatchService {
 
 	@Autowired
 	JobLauncher jobLauncher;
-	
+
 	@Autowired
 	JobRepository jobRepository;
-	
+
 	@Autowired
 	JobExplorer jobExplorer;
-	
+
 	@Autowired
 	JobOperator jobOperator;
 
@@ -55,9 +55,9 @@ public class GovioBatchService {
 	@Autowired
 	@Qualifier(VerifyMessagesJobConfig.VERIFYMESSAGES_JOBNAME)
 	private Job verifyMessagesJob;
-	
+
 	private Logger log = LoggerFactory.getLogger(GovioBatchService.class);
-	
+
 	private static final String CURRENTDATE_STRING = "CurrentDate";
 
 	/**
@@ -73,17 +73,17 @@ public class GovioBatchService {
 	 *  
 	 */
 	public JobExecution runFileProcessingJob() throws Exception {
-		
+
 		JobInstance lastInstance = this.jobExplorer.getLastJobInstance(FileProcessingJobConfig.FILEPROCESSING_JOB);
-		
+
 		// Determino i JobParameters con cui lanciare il Job. In base al loro valore avverrà un avvio nuovo, un restart, o nulla.
 		JobParameters params = null;
 		JobExecution lastExecution = null;
-		
+
 		if (lastInstance != null) {
 			lastExecution = this.jobExplorer.getLastJobExecution(lastInstance);
 		}
-		
+
 		if (lastInstance != null && lastExecution == null) {
 			log.error("Trovata istanza preesistente per il job [{}] ma senza una JobExecution associata, forse l'esecuzione deve ancora partire. Nessun Job avviato, se la situazione persiste anche nelle prossime run è richiesto un'intervento manuale.", FileProcessingJobConfig.FILEPROCESSING_JOB);
 			return null;
@@ -101,6 +101,7 @@ public class GovioBatchService {
 			// In questo caso Creo un nuovo Job.
 			case ABANDONED:
 			case UNKNOWN:
+			case COMPLETED:
 				// I Job Abandoned non possono essere riavviati. (Sono abbandonati appunto)
 				// https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#aborting-a-job
 				// Se è in stato abandoned allora assumiamo che sia stata una scelta del programmatore o di un operatore del batch metterlo in quello stato.
@@ -110,13 +111,6 @@ public class GovioBatchService {
 						.addString("When", String.valueOf(System.currentTimeMillis()))
 						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 				return jobLauncher.run(fileProcessingJob, params);
-			case COMPLETED:
-				log.debug("Trovata istanza preesistente per il Job [{}] in stato COMPLETED. Avvio nuovo Job. ", lastExecution); 
-				params = new JobParametersBuilder()
-						.addString("When", String.valueOf(System.currentTimeMillis()))
-						.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
-				return jobLauncher.run(fileProcessingJob, params);
-			// In questo caso riavvio.
 			case FAILED:
 			case STOPPED:
 				log.debug("Trovata istanza preesistente per il Job [{}] in stato {}. Riavvio il Job. ", lastExecution, lastExecution.getStatus()); 
@@ -132,20 +126,20 @@ public class GovioBatchService {
 					.addString("When", String.valueOf(System.currentTimeMillis()))
 					.addString(GOVIO_JOB_ID, FileProcessingJobConfig.FILEPROCESSING_JOB).toJobParameters();
 			return jobLauncher.run(fileProcessingJob, params);
+		}
 	}
-}
 
 	public JobExecution runSendMessageJob() throws Exception {
-		
+
 		this.log.debug("Copio un eventuale chunk di messaggi perso.");
 		SendMessagesJobConfig.temporaryMessageStore.putAll(SendMessagesJobConfig.temporaryChunkMessageStore);
 		// TODO: Aggiungi uno step finale che pulisce la map.
-		
+
 		JobParameters params = new JobParametersBuilder().
 				addString(GOVIO_JOB_ID, SendMessagesJobConfig.SENDMESSAGES_JOB).
 				addString("When", String.valueOf(System.currentTimeMillis())).
 				toJobParameters();
-		
+
 		return jobLauncher.run(sendMessagesJob, params);
 	}
 
