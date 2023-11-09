@@ -65,7 +65,6 @@ import it.govhub.govio.api.messages.FileMessages;
 import it.govhub.govio.api.messages.ServiceInstanceMessages;
 import it.govhub.govio.api.repository.FileFilters;
 import it.govhub.govio.api.repository.FileMessageFilters;
-import it.govhub.govio.api.repository.FileMessagesStatusCount;
 import it.govhub.govio.api.repository.FileRepository;
 import it.govhub.govio.api.repository.ServiceInstanceRepository;
 import it.govhub.govio.api.services.FileService;
@@ -245,13 +244,6 @@ public class FileController implements FileApi {
 		
 		this.authService.hasAnyOrganizationAuthority(instance.getOrganization().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN);
 		this.authService.hasAnyServiceAuthority(instance.getService().getId(), GovioRoles.GOVIO_SENDER, GovioRoles.GOVIO_VIEWER, GovioRoles.GOVIO_SYSADMIN) ;
-		
-		
-		List<FileMessagesStatusCount> countsByState = this.fileRepo.getCountByState(id);
-		
-		for(FileMessagesStatusCount c: countsByState) {
-			c.toString();
-		}
 		
 		GovioFile ret = this.fileAssembler.toEmbeddedModel(file);
 		return ResponseEntity.ok(	ret);
