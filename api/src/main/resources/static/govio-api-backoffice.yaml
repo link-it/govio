@@ -608,7 +608,35 @@ paths:
           $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
         default:
           $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'
-                    
+          
+  '/files/{id}/stats':
+    parameters:
+      - $ref: '#/components/parameters/file_id'
+    get:
+      tags:
+        - file
+      summary: Retrieve the file processing messages statistics.
+      description: Retrieve the file messages statistics.
+      operationId: readFileMessagesStats
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/FileStats'
+        '401':
+          $ref: 'govhub-api-commons.yaml#/components/responses/401Unauthorized'
+        '403':
+          $ref: 'govhub-api-commons.yaml#/components/responses/403Forbidden'
+        '404':
+          $ref: 'govhub-api-commons.yaml#/components/responses/404NotFound'
+        '429':
+          $ref: 'govhub-api-commons.yaml#/components/responses/429TooManyRequests'
+        '503':
+          $ref: 'govhub-api-commons.yaml#/components/responses/503ServiceUnavailable'
+        default:
+          $ref: 'govhub-api-commons.yaml#/components/responses/ResponseDefault'                    
   /messages:
     post:
       tags:
@@ -1730,10 +1758,20 @@ components:
        maxLength: 2048
        example: file1.csv
 
+    FileStats:
+      type: array
+      items:
+        type: object
+        properties:
+          status:
+            $ref: '#/components/schemas/GovioMessageStatus'
+          count:
+            type: integer
+            format: int64
+
     GovioBaseMessage:
       required:
         - markdown
-        - scheduled_expedition_date
         - taxcode
       type: object
       properties:
@@ -1757,7 +1795,9 @@ components:
         scheduled_expedition_date:
           type: string
           format: date-time
-          description: The date when this message has to be sent to the citizien.
+          description: > 
+            The date when this message has to be sent to the citizien.
+            If not provided or provided in the past, it will be updated to current time.
         due_date:
           type: string
           format: date-time
@@ -1923,7 +1963,7 @@ components:
           format: int64
           minimum: 1
           maximum: 9999999999
-          example: 62.12
+          example: 1000
         notice_number:
           description: >-
              The field ["Numero Avviso"]  of pagoPa, needed to identify the payment. 
@@ -2275,6 +2315,7 @@ components:
         - forbidden
         - processed
         - created
+        - discarded
         
     FileUserItem:
       type: object

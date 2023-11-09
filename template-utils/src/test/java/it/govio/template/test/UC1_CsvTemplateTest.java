@@ -62,7 +62,7 @@ class UC1_CsvTemplateTest {
 
 	@Test
 	@DisplayName("template senza ScheduledExpeditionDate")
-	void UC_1_2_ScheduledExpeditionDateNull(){
+	void UC_1_2_ScheduledExpeditionDateNull()  throws IOException, TemplateException, TemplateValidationException, TemplateFreemarkerException{
 		List<Placeholder> placeholders = new ArrayList<> ();
 		Template template = Template
 				.builder()
@@ -74,9 +74,8 @@ class UC1_CsvTemplateTest {
 				.build();
 		CsvTemplateApplier templateApplier = TemplateApplierFactory.buildCSVTemplateApplier(template);
 
-		assertThrows(TemplateValidationException.class, () -> {
-			templateApplier.buildMessage("RSSMRO00A00A000A");
-		});
+		Message messaggio = templateApplier.buildMessage("RSSMRO00A00A000A");
+		assertNotNull(messaggio.getScheduledExpeditionDate());
 	}
 
 	@Test
