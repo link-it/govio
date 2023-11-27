@@ -77,11 +77,15 @@ public class CsvTemplateApplier extends TemplateApplier {
 	}
 
 	private OffsetDateTime getScheduledExpeditionDate(String[] splitted) throws TemplateValidationException {
+		// Se la data di spedizione e' assente o decorsa, si imposta la data corrente.
 		DateTimeItem item = (DateTimeItem) items.get( ItemKeys.EXPEDITIONDATE.toString());
-		if(item != null)
-			return item.getValueFromCsv(splitted);
-		else 
-			throw new TemplateValidationException("La data di spedizione è obbligatoria");
+		OffsetDateTime now = OffsetDateTime.now();
+		if(item != null) {
+			OffsetDateTime scheduledExpetitionDate = item.getValueFromCsv(splitted);
+			if(scheduledExpetitionDate != null && scheduledExpetitionDate.compareTo(now) > 0) 
+				return scheduledExpetitionDate;
+		}
+		return now;
 	}
 
 	private Boolean getInvalidAfterDueDate(String[] splitted) throws TemplateValidationException {
