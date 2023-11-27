@@ -178,6 +178,11 @@ public class MessageController implements MessageApi {
 	@Override
 	public ResponseEntity<GovioMessage> sendMessage(Long serviceInstance, UUID idempotencyKey, GovioNewMessage govioNewMessage) {
 		
+		// Gestisco la casistica di data di spedizione decorsa o non fornita
+		if(govioNewMessage.getScheduledExpeditionDate() == null || govioNewMessage.getScheduledExpeditionDate().compareTo(OffsetDateTime.now()) < 0) {
+			govioNewMessage.setScheduledExpeditionDate(OffsetDateTime.now());
+		} 
+			
 		// Faccio partire la validazione custom per la stringa \u0000
 		if (govioNewMessage.getPlaceholders() != null) {
 			int i = 0;
@@ -187,6 +192,7 @@ public class MessageController implements MessageApi {
 				i++;
 			}
 		}
+		
 		UserEntity principal = SecurityService.getPrincipal();
 		
 		log.info("Sending new message from user [{}] to service instance [{}]: {} ", principal.getPrincipal(), serviceInstance, govioNewMessage);

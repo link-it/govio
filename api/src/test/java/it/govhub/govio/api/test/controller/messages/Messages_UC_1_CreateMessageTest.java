@@ -230,13 +230,12 @@ class Messages_UC_1_CreateMessageTest {
 	void UC_1_04_CreateMessage_OnlyRequired() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
 		
-		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
 		OffsetDateTime dueDate = null; 
 		
 		String taxCode = "AYCSFK56HUQE969O";
 		String email = null;
 		
-		JsonObject message = MessageUtils.createMessage(scheduledExpeditionDate, dueDate, taxCode, email, null, null, this.dt);
+		JsonObject message = MessageUtils.createMessage(null, dueDate, taxCode, email, null, null, this.dt);
 		
 		String json = message.toString();
 		
@@ -268,7 +267,7 @@ class Messages_UC_1_CreateMessageTest {
 		assertNull(dueDateJson);
 		
 		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
-		assertEquals(dt.format(scheduledExpeditionDate), response.getString("scheduled_expedition_date"));
+		assertNotNull(response.getString("scheduled_expedition_date"));
 		JsonObject payment = response.getJsonObject("payment");
 		assertNull(payment);
 
@@ -476,5 +475,53 @@ class Messages_UC_1_CreateMessageTest {
 		
 		long countCreate2 = this.messageRepo.count();
 		assertEquals(countCreate1, countCreate2);
+	}
+	
+	@Test
+	void UC_1_08_CreateMessage_OldExpeditionDate() throws Exception {
+		String idempotencyKey = MessageUtils.createIdempotencyKey();
+		
+		OffsetDateTime scheduledExpeditionDate = ZonedDateTime.now(ZoneId.of(this.timeZone)).plusDays(365).toOffsetDateTime(); 
+		OffsetDateTime dueDate = null; 
+		
+		String taxCode = "AYCSFK56HUQE969O";
+		String email = null;
+		
+		JsonObject message = MessageUtils.createMessage(OffsetDateTime.MIN, dueDate, taxCode, email, null, null, this.dt);
+		
+		String json = message.toString();
+		
+		MvcResult result = this.mockMvc.perform(
+				post(MESSAGES_BASE_PATH)
+				.param("service_instance", "1")
+				.param(Costanti.MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY, idempotencyKey)
+				.content(json)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(this.userAuthProfilesUtils.utenzaAdmin())
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated())
+				.andReturn();
+
+		JsonReader reader = Json.createReader(new ByteArrayInputStream(result.getResponse().getContentAsByteArray()));
+		JsonObject response = reader.readObject();
+		
+		assertNotNull(response.get("id"));
+		assertEquals(taxCode, response.getString("taxcode"));
+		assertEquals("Lorem ipsum dolor sit amet.", response.getString("subject"));
+		assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur", response.getString("markdown"));
+		
+		JsonValue emailJson = response.get("email");
+		assertNull(emailJson);
+		
+		assertNotNull(response.get("creation_date"));
+		
+		JsonValue dueDateJson = response.get("due_date");
+		assertNull(dueDateJson);
+		
+		assertEquals(GovioMessageEntity.Status.SCHEDULED, GovioMessageEntity.Status.valueOf(response.getString("status")));
+		assertEquals(1, scheduledExpeditionDate.compareTo(OffsetDateTime.now().minusMinutes(15)));
+		JsonObject payment = response.getJsonObject("payment");
+		assertNull(payment);
+
 	}
 }
