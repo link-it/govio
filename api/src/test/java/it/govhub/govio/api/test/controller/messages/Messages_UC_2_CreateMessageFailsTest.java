@@ -1,3 +1,21 @@
+/*
+ * GovHub - Application suite for Public Administration
+ *
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govhub.govio.api.test.controller.messages;
 
 import static org.hamcrest.Matchers.is;
@@ -124,11 +142,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		return findAll.size() > 0 ? findAll.get(0) : null;
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio senza indicare il campo obbligatorio taxCode.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_01_CreateMessage_MissingTaxCode() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -160,12 +173,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio senza indicare il campo obbligatorio scheduledExpeditionDate.
-	 * 
-	 * Questo non e' piu' un errore: viene preso come default now()
-	 * @throws Exception
-	 */
 //	void UC_2_02_CreateMessage_MissingInvalidAfterDueDate() throws Exception {
 //		String idempotencyKey = MessageUtils.createIdempotencyKey();
 //		Long amount = 9999999999L;
@@ -196,11 +203,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 //		.andReturn();
 //	}
 
-	/**
-	 * Caricamento di un nuovo messaggio senza indicare il campo obbligatorio amount.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_03_CreateMessage_MissingAmount() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -232,11 +234,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio senza indicare il campo obbligatorio noticeNumber.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_04_CreateMessage_MissingNoticeNumber() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -268,14 +265,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo taxCode viene impostato con valori che non rispettano i criteri previsti:
-	 * - minLength 16
-	 * - maxLength: 16
-	 * - pattern: [A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z] 
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_05_CreateMessage_InvalidTaxCode() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -344,12 +333,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo email viene impostato con valori che non rispettano i criteri previsti:
-	 * - maxLength: 255
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_06_CreateMessage_InvalidEmail() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -382,11 +365,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio con placeHolder che non specifica il campo name
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_07_CreateMessage_PlaceHolderNameNotPresent() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -424,11 +402,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio con placeHolder che non specifica il campo value
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_08_CreateMessage_PlaceHolderValueNotPresent() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -466,11 +439,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo di tipo date scheduledExpeditionDate contiene una data non valida
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_09_CreateMessage_InvalidScheduled_expedition_date() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -495,11 +463,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo di tipo date dueDate contiene una data non valida
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_10_CreateMessage_InvalidDue_date() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -524,14 +487,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo amount viene impostato con valori che non rispettano i criteri previsti:
-	 * - stringa errata XXXX
-	 * - minimum: 1
-	 * - maximum: 9999999999
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_11_CreateMessage_PaymentInvalidAmount() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -598,11 +553,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo di tipo boolean invalidAfterDueDate contiene una valore non valido
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_12_CreateMessage_PaymentInvalid_invalid_after_due_date() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -634,14 +584,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo noticeNumber viene impostato con valori che non rispettano i criteri previsti:
-	 * - pattern: ^[0123][0-9]{17}$
-	 * - maxlength 18
-	 * - minlength 18
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_13_CreateMessage_PaymentInvalidNoticeNumber() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -711,14 +653,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio il campo payEETaxCode viene impostato con valori che non rispettano i criteri previsti:
-	 * - pattern: [0-9]{11}
-	 * - maxlength 11
-	 * - minlength 11
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_14_CreateMessage_PaymentInvalidPayeeTaxcode() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -788,11 +722,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio per un serviceIstance non registrato
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_15_CreateMessage_ServiceID_NonRegistrato() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -825,11 +754,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio senza indicare un serviceInstance nella richiesta
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_16_CreateMessage_Parametro_ServiceIDNonPresente() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -859,11 +783,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio con verifica dell'applicazione dei placeholder
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_17_CreateMessage_AuthorizedSI() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -938,11 +857,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		assertEquals(payEETaxCode, payment.getString("payee_taxcode"));
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio per un serviceIstance a cui l'utenza non e' autorizzata.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_18_UploadCsvFileOk_OrganizationNotAuthorized() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -980,11 +894,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 
-	/**
-	 * Caricamento di un nuovo messaggio per un serviceIstance disabilitato.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_19_UploadCsvFileFail_ServiceInstanceDisabled() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -1026,11 +935,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio senza indicare i placeholders per un template che li richiede. 
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_20_CreateMessage_PlaceHoldersRequired() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -1068,11 +972,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio senza indicare la dueDate per un template che la richiede. 
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_21_CreateMessage_MissingDueDate() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -1113,11 +1012,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio indicando un placeholders di un tipo non valido per il template. 
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_22_CreateMessage_BadPlaceHolderType() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -1201,11 +1095,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		}
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio dove il template del subject e' errato.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_23_CreateMessage_BadSubjectFreeMarker() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -1267,11 +1156,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio dove il template del body e' errato.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_2_24_CreateMessage_BadMessageBodyFreeMarker() throws Exception {
 		String idempotencyKey = MessageUtils.createIdempotencyKey();
@@ -1333,11 +1217,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 		.andReturn();
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio senza passare l'idempotencyKey
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_1_25_CreateMessage_MissingIdempotencyKey() throws Exception {
 		
@@ -1368,11 +1247,6 @@ class Messages_UC_2_CreateMessageFailsTest {
 
 	}
 	
-	/**
-	 * Caricamento di un nuovo messaggio indicando una idempotencyKey che non e' un UUID.
-	 * 
-	 * @throws Exception
-	 */
 	@Test
 	void UC_1_26_CreateMessage_InvalidIdempotencyKey() throws Exception {
 		String idempotencyKey = "XXX";

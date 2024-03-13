@@ -1,3 +1,21 @@
+/*
+ * GovHub - Application suite for Public Administration
+ *
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.batch.test.batch.builders;
 
 import java.util.HashMap;
@@ -12,15 +30,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.transaction.PlatformTransactionManager;
 
-/**
- *	 Factory per StepBuilder che hooka dei listener configurati dall'applicazione, in base al nome
- *  dello step da generare.
- *  
- *  Configura i listener per l'intera esecuzione dello step, e i listeners per i writer e i readers.
- * 
- *  Utile in fase di test, o per il supporto a un sistema di monitoraggio e configurazione dei batch.
- *
- */
 public class ObservableStepBuilderFactory extends StepBuilderFactory {
 	
 	public HashMap<String, StepExecutionListener> executionListeners = new HashMap<>();

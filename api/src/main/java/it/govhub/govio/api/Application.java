@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -68,19 +68,11 @@ public class Application extends SpringBootServletInitializer {
 	String timeZone;
 
 
-	/**
-	 * Gestisce la famiglia di header X-Forwarded o lo header Forwarded.
-	 * Utile per la scrittura dei link hateoas in modo che tengano conto della presenza del proxy. 
-	 */
 	@Bean
 	public ForwardedHeaderFilter forwardedHeaderFilter() {
 		return new ForwardedHeaderFilter();
 	}
 
-	/**
-	 * Modifichiamo il serializzatore JSON in modo da serializzare le Base64String
-	 * come stringhe normali
-	 */
 	@Bean
 	public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
 		return builder ->  builder.
@@ -95,20 +87,11 @@ public class Application extends SpringBootServletInitializer {
 		
 		Logger log = LoggerFactory.getLogger(WebMvcConfig.class);
 		
-		/**
-		 * Questa  serve per serializzare correttamente gli enum passati via
-		 * parametro query. Altrimenti è necessario passarli in upperCase.
-		 *
-		 */
 		@Override
 		public void addFormatters(FormatterRegistry registry) {
 			ApplicationConversionService.configure(registry);
 		}
 		
-		/**
-		 * Ignoriamo lo header Accept, avendo un solo content-type da restituire per endpoint.
-		 * Disabilitiamo di fatto la content-negotiation.
-		 */
 		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			log.info("Configuring the content negotiator...");
@@ -119,21 +102,12 @@ public class Application extends SpringBootServletInitializer {
 		}
 	}
 	
-	/**
-	 * Questo Bean Restituisce un Problem quando spring-security rifiuta una
-	 * richiesta perchè ritenuta ad esempio non sicura.
-	 */
 	@Bean
 	public RequestRejectedHandler requestRejectedHandler() {
 	   return new RequestRejectedExceptionHandler();
 	}
 	
 	
-	/**
-	 * Configurazione minimale per SpringDoc in modo che carichi gli asset sotto 
-	 * src/main/resources/static
-	 * 
-	 */
 	@Primary
 	@Bean
 	SpringDocConfiguration springDocConfiguration(){

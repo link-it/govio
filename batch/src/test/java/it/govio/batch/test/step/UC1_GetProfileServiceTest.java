@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -95,12 +95,6 @@ class UC1_GetProfileServiceTest {
 		return message;
 	}
 
-	/**
-	 * Predispone il mock del servizio IO in caso di spedizione con successo 
-	 * @param govioMessageEntity 
-	 * @param exception
-	 * @throws Exception
-	 */
 	private void setupRestTemplateMock(GovioMessageEntity message, LimitedProfile profile) throws Exception {
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 		fiscalCodePayload.setFiscalCode(message.getTaxcode());
@@ -123,12 +117,6 @@ class UC1_GetProfileServiceTest {
 	}
 	
 	
-	/**
-	 * Predispone il mock del servizio IO in caso di spedizione con errore 
-	 * @param govioMessageEntity 
-	 * @param exception
-	 * @throws Exception
-	 */
 	private void setupRestTemplateMock(GovioMessageEntity message, RestClientException exception) throws Exception {
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 		fiscalCodePayload.setFiscalCode(message.getTaxcode());

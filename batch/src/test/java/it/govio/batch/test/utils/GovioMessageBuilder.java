@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -94,12 +94,6 @@ public class GovioMessageBuilder {
 	}
 	
 	
-	/**
-	 * Trasforma un numero in un codice fiscale, in modo tale da generare messaggi univoci e poterli
-	 * distinguere nei mock.
-	 * 
-	 * Max 100 file.
-	 */
 	public static String indexToFiscalCode(int idx) {
 		String prefix = decimalToAlphabetical(idx);
 		String suffix = "00A00Y000Z";
@@ -107,13 +101,6 @@ public class GovioMessageBuilder {
 		return prefix  + suffix;
 	}
 
-	/**
-	 * Trasforma un numero in una stringa alfabetica di 6 caratteri.
-	 * A = 0
-	 * X = 24
-	 * Z = Padding
-	 * Contiamo in tetravigesimale
-	 */
 	private static String decimalToAlphabetical(int i) {
 		final int start = 65;		// Lettera A in ascii
 		String ret = "A";

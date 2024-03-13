@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -122,14 +122,6 @@ class SendMessagesJobTest {
 	    this.jobLauncherTestUtils.setJob(job);
 	}
 	
-	/**
-	 * Database inizializzato con:
-	 * - 100 messaggi schedulati
-	 * - 100 messaggi in errore
-	 * - 100 messaggi spediti
-	 * - 100 messaggi 
-	 * @throws Exception
-	 */
 
 	@BeforeEach
 	void setUp(){

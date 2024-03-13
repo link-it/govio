@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -34,11 +34,6 @@ import it.govio.batch.entity.GovioTemplatePlaceholderEntity;
 import it.govio.template.Placeholder;
 import it.govio.template.Template;
 
-/**
- *  Per ogni file dei govioFileEntities crea un ExecutionContext con dentro le informazioni del GovioFile,
- *  inoltre inizializza il template per quel file.
- *
- */
 public class GovioFilePartitioner implements Partitioner {
 
 	List<GovioFileEntity> govioFileEntities;

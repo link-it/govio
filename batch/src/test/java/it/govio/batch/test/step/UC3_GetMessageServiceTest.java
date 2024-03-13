@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -87,17 +87,6 @@ class UC3_GetMessageServiceTest {
 	@SuppressWarnings("unchecked")
 	final ArgumentCaptor<RequestEntity<Void>> captor = ArgumentCaptor.forClass(RequestEntity.class);
 
-	/**
-	 * Costruisce e inserisce in DB un GovioMessageEntity spedito.
-	 * @param due_date
-	 * @param amount
-	 * @param noticeNumber
-	 * @param invalidAfterDueDate
-	 * @param p
-	 * @param email
-	 * @return
-	 * @throws URISyntaxException
-	 */
 	private GovioMessageEntity buildGovioMessageEntity(Status status) throws URISyntaxException {
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		GovioMessageEntity message = new GovioMessageBuilder().buildGovioMessageEntity(serviceInstanceEntity.get(), status, false, null, null, false, null, null);
