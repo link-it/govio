@@ -1,3 +1,21 @@
+/*
+ * GovHub - Application suite for Public Administration
+ *
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package it.govio.batch.service;
 
 import java.util.Date;
@@ -60,18 +78,6 @@ public class GovioBatchService {
 
 	private static final String CURRENTDATE_STRING = "CurrentDate";
 
-	/**
-	 * Possiamo avere un'unica istanza attiva di questo Job. 
-	 * Se c'è già un job passato che non è terminato ma e fermo, va ripresa l'esecuzione di quel job finchè non termina.
-	 * @return 
-	 * @throws JobParametersInvalidException 
-	 * @throws JobInstanceAlreadyCompleteException 
-	 * @throws JobRestartException 
-	 * @throws JobExecutionAlreadyRunningException 
-	 * @throws NoSuchJobException 
-	 * @throws NoSuchJobExecutionException 
-	 *  
-	 */
 	public JobExecution runFileProcessingJob() throws Exception {
 
 		JobInstance lastInstance = this.jobExplorer.getLastJobInstance(FileProcessingJobConfig.FILEPROCESSING_JOB);

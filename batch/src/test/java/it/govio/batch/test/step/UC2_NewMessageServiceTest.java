@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -94,17 +94,6 @@ class UC2_NewMessageServiceTest {
 		MockitoAnnotations.openMocks(this);
 	}
 
-	/**
-	 * Costruisce e inserisce in DB un GovioMessageEntity pronto per la spedizione. I parametri obbligatori sono gia' inclusi.
-	 * @param due_date
-	 * @param amount
-	 * @param noticeNumber
-	 * @param invalidAfterDueDate
-	 * @param p
-	 * @param email
-	 * @return
-	 * @throws URISyntaxException
-	 */
 	private GovioMessageEntity buildGovioMessageEntity(boolean due_date, Long amount, String noticeNumber, boolean invalidAfterDueDate, Payee payee, String email) throws URISyntaxException {
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		GovioMessageEntity message = new GovioMessageBuilder().buildGovioMessageEntity(serviceInstanceEntity.get(), Status.RECIPIENT_ALLOWED, due_date, amount, noticeNumber, invalidAfterDueDate, payee, email);
@@ -112,11 +101,6 @@ class UC2_NewMessageServiceTest {
 		return message;
 	}
 
-	/**
-	 * Costruisce il model NewMessage previsto nella richiesta a IO corrispondente al GovioMessageEntity in input
-	 * @param govioMessageEntity
-	 * @return
-	 */
 	private NewMessage buildExpectedNewMessageRequest(GovioMessageEntity govioMessageEntity) {
 		NewMessage newMessage = new NewMessage();
 
@@ -148,11 +132,6 @@ class UC2_NewMessageServiceTest {
 		return newMessage;
 	}
 
-	/**
-	 * Predispone il mock del servizio IO in caso di spedizione con successo 
-	 * @param govioMessageEntity 
-	 * @throws Exception
-	 */
 	private void setupRestTemplateMock(GovioMessageEntity govioMessageEntity) throws Exception {
 		NewMessage newMessage = buildExpectedNewMessageRequest(govioMessageEntity);
 
@@ -174,12 +153,6 @@ class UC2_NewMessageServiceTest {
 		.when(restTemplate.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
 	}
 
-	/**
-	 * Predispone il mock del servizio IO in caso di spedizione con errore 
-	 * @param govioMessageEntity 
-	 * @param exception
-	 * @throws Exception
-	 */
 	private void setupRestTemplateMock(GovioMessageEntity message, RestClientException exception) throws Exception {
 		NewMessage newMessage = buildExpectedNewMessageRequest(message);
 
@@ -220,13 +193,6 @@ class UC2_NewMessageServiceTest {
 		assertEquals(GovioMessageEntity.Status.PROFILE_NOT_EXISTS, processedMessage.getStatus());
 	}
 	
-	/*
-	@Test
-	@DisplayName("UC2.3: Sender not allowed")
-	public void UC2_3_SenderNotAllowed() throws Exception {
-		util(HttpStatus.OK, GovioMessageEntity.Status.SENDER_NOT_ALLOWED);
-	}
-	 */
 	
 	@Test
 	@DisplayName("UC2.4: Denied)")

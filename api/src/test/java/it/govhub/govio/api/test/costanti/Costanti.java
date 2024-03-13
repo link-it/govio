@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -90,15 +90,6 @@ public class Costanti {
 	
 	public static final String MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY = "idempotency_key";
 	
-	/* ORGANIZATIONS */
-	
-	public static OrganizationEntity getEnteCreditore() {
-		return OrganizationEntity.builder()
-				.taxCode(Costanti.TAX_CODE_ENTE_CREDITORE)
-				.legalName(Costanti.LEGALNAME_ENTE_CREDITORE)
-				.build();
-	}
-	/* SERVICES */
 	
 	public static ServiceEntity getServizioGenerico() {
 		return ServiceEntity.builder()

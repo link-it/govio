@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -33,11 +33,6 @@ import it.govio.batch.entity.GovioFileMessageEntity;
 import it.govio.batch.entity.GovioServiceInstanceEntity;
 import it.govio.batch.repository.GovioFileMessagesRepository;
 
-/**
- * Popola i riferimenti agli oggetti di Govio e scrive su database i GofioFileMessageEntity costruiti a partire dalla righe del csv. 
- *
- *
- */
 public class GovioFileItemWriter implements ItemWriter<GovioFileMessageEntity> {
 
 	@PersistenceContext

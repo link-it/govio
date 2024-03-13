@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -138,10 +138,6 @@ public class FileProcessingJobConfig {
 				.build();
 	}
 
-	/**
-	 * Step che legge un CSV e ne memorizza il contenuto in GovioMessageFile
-	 * @return
-	 */
 	@Bean
 	@Qualifier(LOAD_CSV_FILE_TO_DB_STEP)
 	public Step loadCsvFileToDbStep(
@@ -159,10 +155,6 @@ public class FileProcessingJobConfig {
 				.build();
 	}
 
-	/**
-	 * Mappa le righe di un file in uno stream di GovioFileMessageEntity
-	 *  
-	 */
 	@Bean
 	@StepScope
 	@Qualifier(GOVIO_FILE_ITEM_READER)

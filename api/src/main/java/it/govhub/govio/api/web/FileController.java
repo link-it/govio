@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -105,11 +105,6 @@ public class FileController implements FileApi {
 	
 	Logger log = LoggerFactory.getLogger(FileController.class);
 	
-	/**
-	 * I parametri argomento vengono ignorati e sono null. Abbiamo disabilitato la gestione del multipart di spring 
-	 * in modo da poter utilizzare commons-fileupload di apache in modo da fare lo streaming della
-	 * richiesta direttamente su file.
-	 */
 	@Override
 	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId,  MultipartFile file) {
 		

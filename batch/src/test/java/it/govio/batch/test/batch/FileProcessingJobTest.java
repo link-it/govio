@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -106,10 +106,6 @@ class FileProcessingJobTest {
 		govioMessagesRepository.deleteAll();
 	}
 
-	/**
-	 * Test di elaborazione con successo di una serie di tracciati CSV
-	 * @throws Exception
-	 */
 	@Test
 	void csvLoadOk() throws Exception {
 		

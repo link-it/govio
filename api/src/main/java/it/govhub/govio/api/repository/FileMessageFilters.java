@@ -1,7 +1,7 @@
 /*
- * GovIO - Notification system for AppIO
+ * GovHub - Application suite for Public Administration
  *
- * Copyright (c) 2021-2023 Link.it srl (http://www.link.it).
+ * Copyright (c) 2023-2024 Link.it srl (https://www.link.it).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3, as published by
@@ -49,18 +49,12 @@ public class FileMessageFilters {
 		};
 	}
 
-	/**
-	 * Restituisce i fileMessages in stato logico 'ACQUIRED' ovvero con un messaggio collegato.
-	 */
 	public static Specification<GovioFileMessageEntity> acquired() {
 		return (Root<GovioFileMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
 		cb.isNotNull(root.get(GovioFileMessageEntity_.govioMessage));
 	}
 
 
-	/**
-	 * Restituisce i fileMessages in stato logico 'ERROR' ovvero senzaun messaggio collegato.
-	 */
 	public static Specification<GovioFileMessageEntity> error() {
 		return (Root<GovioFileMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
 		cb.isNull(root.get(GovioFileMessageEntity_.govioMessage));
