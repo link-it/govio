@@ -105,6 +105,11 @@ public class FileController implements FileApi {
 	
 	Logger log = LoggerFactory.getLogger(FileController.class);
 	
+	/**
+	 * I parametri argomento vengono ignorati e sono null. Abbiamo disabilitato la gestione del multipart di spring 
+	 * in modo da poter utilizzare commons-fileupload di apache in modo da fare lo streaming della
+	 * richiesta direttamente su file.
+	 */
 	@Override
 	public ResponseEntity<GovioFile> uploadFile(Long serviceInstanceId,  MultipartFile file) {
 		

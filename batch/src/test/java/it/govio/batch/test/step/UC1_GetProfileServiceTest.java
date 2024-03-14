@@ -95,6 +95,12 @@ class UC1_GetProfileServiceTest {
 		return message;
 	}
 
+	/**
+	 * Predispone il mock del servizio IO in caso di spedizione con successo 
+	 * @param govioMessageEntity 
+	 * @param exception
+	 * @throws Exception
+	 */
 	private void setupRestTemplateMock(GovioMessageEntity message, LimitedProfile profile) throws Exception {
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 		fiscalCodePayload.setFiscalCode(message.getTaxcode());
@@ -117,6 +123,12 @@ class UC1_GetProfileServiceTest {
 	}
 	
 	
+	/**
+	 * Predispone il mock del servizio IO in caso di spedizione con errore 
+	 * @param govioMessageEntity 
+	 * @param exception
+	 * @throws Exception
+	 */
 	private void setupRestTemplateMock(GovioMessageEntity message, RestClientException exception) throws Exception {
 		FiscalCodePayload fiscalCodePayload = new FiscalCodePayload();
 		fiscalCodePayload.setFiscalCode(message.getTaxcode());

@@ -31,6 +31,11 @@ import it.govio.batch.test.batch.builders.ObservableJobBuilderFactory;
 import it.govio.batch.test.batch.builders.ObservableStepBuilderFactory;
 import it.govio.batch.test.listeners.StepDescriptorListener;
 
+/**
+ * In questa configurazione registriamo un solo listener che imposta lo stato di esecuzione del
+ * primo step del SendMessagesJob
+ * 
+ */
 @TestConfiguration
 public class EndToEndBrokenDbTestObservableConfig {
 

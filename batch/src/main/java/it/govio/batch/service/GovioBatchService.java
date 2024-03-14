@@ -78,6 +78,18 @@ public class GovioBatchService {
 
 	private static final String CURRENTDATE_STRING = "CurrentDate";
 
+	/**
+	 * Possiamo avere un'unica istanza attiva di questo Job. 
+	 * Se c'è già un job passato che non è terminato ma e fermo, va ripresa l'esecuzione di quel job finchè non termina.
+	 * @return 
+	 * @throws JobParametersInvalidException 
+	 * @throws JobInstanceAlreadyCompleteException 
+	 * @throws JobRestartException 
+	 * @throws JobExecutionAlreadyRunningException 
+	 * @throws NoSuchJobException 
+	 * @throws NoSuchJobExecutionException 
+	 *  
+	 */
 	public JobExecution runFileProcessingJob() throws Exception {
 
 		JobInstance lastInstance = this.jobExplorer.getLastJobInstance(FileProcessingJobConfig.FILEPROCESSING_JOB);

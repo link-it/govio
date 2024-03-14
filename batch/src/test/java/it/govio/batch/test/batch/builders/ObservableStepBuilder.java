@@ -32,6 +32,13 @@ import org.springframework.batch.core.step.builder.SimpleStepBuilder;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.repeat.CompletionPolicy;
 
+/**
+ *	 Step Builder Osservabile che hooka dei listener configurati dall'applicazione, in base al nome
+ *  dello step da generare.
+ * 
+ *  Utile in fase di test, o per il supporto a un sistema di monitoraggio e configurazione dei batch.
+ *
+ */
 public class ObservableStepBuilder extends StepBuilder {
 
 	public Set<StepListener> listeners = new HashSet<>();

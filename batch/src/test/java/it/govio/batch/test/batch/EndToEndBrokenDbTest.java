@@ -96,6 +96,19 @@ import it.pagopa.io.v1.api.beans.LimitedProfile;
 import it.pagopa.io.v1.api.beans.NewMessage;
 import it.pagopa.io.v1.api.impl.ApiClient;
 
+/**
+ * Test end to end del batch: FileProcessing -> SendMessages -> Verify Messages.
+
+ * Durante l'esecuzione di ciascun job, tolgo il database da sotto il test, in modo che fallisca e finisca in uno stato inconsistente.
+ * Poi vediamo cosa succede.
+ * 
+ *	 Nota: Tutte le variabili sono dichiarate come "final" per evitare bug nel test, dato che a livello di righe di codice è molto lungo.
+ * Non affidandoci al riassegnare variabili, in ogni punto siamo sicuri di usare proprio quella jobExecution, quella jobIstance ecc...
+ * 
+ * Nota2: Dovrei testare esplicitamente nel metodo del test il fatto che la future sia fallita per un'eccezione del database.
+ * Infatti adesso la future può restituire null in due casi, anche quando il relativo job lanciato restituisce null.
+ * 
+ */
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Import({ JobOperatorConfig.class, EndToEndBrokenDbTestObservableConfig.class})

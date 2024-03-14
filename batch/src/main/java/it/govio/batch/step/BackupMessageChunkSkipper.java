@@ -28,6 +28,11 @@ import org.springframework.transaction.TransactionException;
 
 import it.govio.batch.config.SendMessagesJobConfig;
 
+/**
+ * In caso di errori di database, mette il chunk corrente dei messaggi nella coda dei 
+ *  messaggi da non rispedire.
+ *
+ */
 public class BackupMessageChunkSkipper implements SkipPolicy {
 	
 	Logger log = LoggerFactory.getLogger(BackupMessageChunkSkipper.class);

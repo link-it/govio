@@ -33,6 +33,11 @@ import it.govio.batch.test.batch.builders.ObservableJobBuilderFactory;
 import it.govio.batch.test.batch.builders.ObservableStepBuilderFactory;
 import it.govio.batch.test.listeners.JobStopperAfterStepListener;
 
+/**
+ * In questa configurazione facciamo in modo di interrompere l'esecuzione del
+ * job, dopo il primo step di lettura e aggiornamento stato dei file "
+ *
+ */
 @TestConfiguration
 public class FileProcessingInterruptedTestConfig {
 
