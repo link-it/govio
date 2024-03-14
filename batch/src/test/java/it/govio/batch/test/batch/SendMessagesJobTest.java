@@ -122,6 +122,14 @@ class SendMessagesJobTest {
 	    this.jobLauncherTestUtils.setJob(job);
 	}
 	
+	/**
+	 * Database inizializzato con:
+	 * - 100 messaggi schedulati
+	 * - 100 messaggi in errore
+	 * - 100 messaggi spediti
+	 * - 100 messaggi 
+	 * @throws Exception
+	 */
 
 	@BeforeEach
 	void setUp(){

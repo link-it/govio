@@ -345,6 +345,12 @@ class Messages_UC_1_CreateMessageTest {
 		assertNull(invalid_after_due_date);
 	}
 	
+	/***
+	 * Verifica che inviando due volte un messaggio con la stessa idempotency_key, il secondo ritorna 200 e su db non viene creato un nuovo messaggio
+	 * 
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	void UC_1_06_CreateMessage_SameMessageSameIdempotencyKey() throws Exception {
 		long countIniziale = this.messageRepo.count();
@@ -411,6 +417,11 @@ class Messages_UC_1_CreateMessageTest {
 		assertEquals(countCreate1, countCreate2);
 	}
 	
+	/**
+	 * Verifica che inviando due messaggi diversi con stessa idempotency_key, il secondo ritorna 409 e su db non viene creato un nuovo messaggio
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	void UC_1_07_CreateMessage_DifferentMessageSameIdempotencyKey() throws Exception {
 		long countIniziale = this.messageRepo.count();

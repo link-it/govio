@@ -37,6 +37,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Motivazioni di questa implementazione non intrusiva, cioè con una tabella e un'entità a parte:
+ *		- Le query più frequenti gestiscono meno dati: Le operazioni di lettura, e di scrittura in batch sono molto più frequenti di quelle di creazione del singolo messaggio e non utilizzano 
+ *		  le informazioni sulla idempotency key.	
+ *		Consente di delineare una procedura per aggiungere una IdempotencyKey anche per altre risorse. All'inizio con copia incolla, poi abbiamo gli strumenti per metterla in una libreria
+ *     a parte e poter aggiungere idempotency key a piacere.
+ *
+ */
 @Setter
 @Getter
 @Builder

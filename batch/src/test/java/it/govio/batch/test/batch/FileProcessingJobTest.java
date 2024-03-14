@@ -106,6 +106,10 @@ class FileProcessingJobTest {
 		govioMessagesRepository.deleteAll();
 	}
 
+	/**
+	 * Test di elaborazione con successo di una serie di tracciati CSV
+	 * @throws Exception
+	 */
 	@Test
 	void csvLoadOk() throws Exception {
 		

@@ -87,6 +87,17 @@ class UC3_GetMessageServiceTest {
 	@SuppressWarnings("unchecked")
 	final ArgumentCaptor<RequestEntity<Void>> captor = ArgumentCaptor.forClass(RequestEntity.class);
 
+	/**
+	 * Costruisce e inserisce in DB un GovioMessageEntity spedito.
+	 * @param due_date
+	 * @param amount
+	 * @param noticeNumber
+	 * @param invalidAfterDueDate
+	 * @param p
+	 * @param email
+	 * @return
+	 * @throws URISyntaxException
+	 */
 	private GovioMessageEntity buildGovioMessageEntity(Status status) throws URISyntaxException {
 		Optional<GovioServiceInstanceEntity> serviceInstanceEntity = govioServiceInstancesRepository.findById(1L);
 		GovioMessageEntity message = new GovioMessageBuilder().buildGovioMessageEntity(serviceInstanceEntity.get(), status, false, null, null, false, null, null);

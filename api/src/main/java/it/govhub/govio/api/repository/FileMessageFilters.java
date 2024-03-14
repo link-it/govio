@@ -49,12 +49,18 @@ public class FileMessageFilters {
 		};
 	}
 
+	/**
+	 * Restituisce i fileMessages in stato logico 'ACQUIRED' ovvero con un messaggio collegato.
+	 */
 	public static Specification<GovioFileMessageEntity> acquired() {
 		return (Root<GovioFileMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
 		cb.isNotNull(root.get(GovioFileMessageEntity_.govioMessage));
 	}
 
 
+	/**
+	 * Restituisce i fileMessages in stato logico 'ERROR' ovvero senzaun messaggio collegato.
+	 */
 	public static Specification<GovioFileMessageEntity> error() {
 		return (Root<GovioFileMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
 		cb.isNull(root.get(GovioFileMessageEntity_.govioMessage));

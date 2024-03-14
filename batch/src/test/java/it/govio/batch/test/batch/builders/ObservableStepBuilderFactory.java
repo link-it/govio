@@ -30,6 +30,15 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.transaction.PlatformTransactionManager;
 
+/**
+ *	 Factory per StepBuilder che hooka dei listener configurati dall'applicazione, in base al nome
+ *  dello step da generare.
+ *  
+ *  Configura i listener per l'intera esecuzione dello step, e i listeners per i writer e i readers.
+ * 
+ *  Utile in fase di test, o per il supporto a un sistema di monitoraggio e configurazione dei batch.
+ *
+ */
 public class ObservableStepBuilderFactory extends StepBuilderFactory {
 	
 	public HashMap<String, StepExecutionListener> executionListeners = new HashMap<>();

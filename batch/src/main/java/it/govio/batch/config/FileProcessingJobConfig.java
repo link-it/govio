@@ -138,6 +138,10 @@ public class FileProcessingJobConfig {
 				.build();
 	}
 
+	/**
+	 * Step che legge un CSV e ne memorizza il contenuto in GovioMessageFile
+	 * @return
+	 */
 	@Bean
 	@Qualifier(LOAD_CSV_FILE_TO_DB_STEP)
 	public Step loadCsvFileToDbStep(
@@ -155,6 +159,10 @@ public class FileProcessingJobConfig {
 				.build();
 	}
 
+	/**
+	 * Mappa le righe di un file in uno stream di GovioFileMessageEntity
+	 *  
+	 */
 	@Bean
 	@StepScope
 	@Qualifier(GOVIO_FILE_ITEM_READER)

@@ -90,6 +90,15 @@ public class Costanti {
 	
 	public static final String MESSAGES_QUERY_PARAM_IDEMPOTENCY_KEY = "idempotency_key";
 	
+	/* ORGANIZATIONS */
+	
+	public static OrganizationEntity getEnteCreditore() {
+		return OrganizationEntity.builder()
+				.taxCode(Costanti.TAX_CODE_ENTE_CREDITORE)
+				.legalName(Costanti.LEGALNAME_ENTE_CREDITORE)
+				.build();
+	}
+	/* SERVICES */
 	
 	public static ServiceEntity getServizioGenerico() {
 		return ServiceEntity.builder()

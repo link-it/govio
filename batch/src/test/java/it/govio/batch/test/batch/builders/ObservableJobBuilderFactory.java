@@ -28,6 +28,13 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 
+/**
+ *	 Factory per JobBuilder che hooka dei listener configurati dall'applicazione, in base al nome
+ *  dello step da generare.
+ * 
+ *  Utile in fase di test, o per il supporto a un sistema di monitoraggio e configurazione dei batch.
+ *
+ */
 public class ObservableJobBuilderFactory extends JobBuilderFactory {
 	
 	public HashMap<String, JobExecutionListener> listeners = new HashMap<>();

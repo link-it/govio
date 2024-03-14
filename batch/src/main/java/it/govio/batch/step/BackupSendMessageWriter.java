@@ -28,6 +28,15 @@ import it.govio.batch.entity.GovioMessageEntity;
 import it.govio.batch.repository.GovioMessagesRepository;
 
 
+/**
+ * Message Writer che salva su RAM i riferimenti agli elementi del chunk corrente.
+ * 
+ * La scrittura sul database potrebbe fallire, e una riesecuzione del job può discernere se un messaggio
+ * è stato già inviato o meno. 
+ * 
+ * @author Francesco Scarlato
+ *
+ */
 public class BackupSendMessageWriter implements ItemWriter<GovioMessageEntity> {
 	
 	GovioMessagesRepository messageRepo;

@@ -96,6 +96,11 @@ class FileProcessingInterruptedJobTest {
 		govioMessagesRepository.deleteAll();
 	}
 
+	/**
+	 * Test di elaborazione tracciato a metà: Interrompiamo l'esecuzione del batch non appena finisce la
+	 * promoteProcessingFileListener e riavviamo l'esecuzione, (Creando una nuova JobExecution)
+	 * 
+	 */
 	@Test
 	void csvLoadInterruptedAndRestartedNew() throws Exception {
 		
